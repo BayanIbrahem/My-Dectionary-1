@@ -6,18 +6,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDTopLevelDestinations
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
 fun WordsListRoute(
-    wordsList: MDTopLevelDestinations.WordsList,
+    wordsList: MDDestination.TopLevel.WordsList,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        // TODO, add words list route
-        Text("Words List Screen")
+        // TODO, add word list route
+        Text("Words list Screen")
     }
 }

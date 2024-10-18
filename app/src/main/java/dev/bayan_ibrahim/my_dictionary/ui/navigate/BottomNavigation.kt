@@ -21,7 +21,7 @@ fun MDBottomNavigationBar(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     NavigationBar(modifier = modifier) {
-        MDTopLevelDestinations.Enum.entries.forEach { topLevelRoute ->
+        MDDestination.TopLevel.Enum.entries.forEach { topLevelRoute ->
             val selected by remember(currentDestination?.hierarchy) {
                 derivedStateOf {
                     currentDestination?.hierarchy?.any {

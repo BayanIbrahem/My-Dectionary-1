@@ -8,10 +8,10 @@ data class Language(
     val localDisplayName: String,
 )
 
-val allLanguages by lazy {
+val allLanguages: Map<String, Language> by lazy {
     val defaultLocale = Locale.getDefault()
-    Locale.getAvailableLocales().map { locale ->
-        Language(
+    Locale.getAvailableLocales().associate { locale ->
+        locale.language to Language(
             code = locale.language,
             selfDisplayName = locale.displayLanguage,
             localDisplayName = locale.getDisplayLanguage(defaultLocale)

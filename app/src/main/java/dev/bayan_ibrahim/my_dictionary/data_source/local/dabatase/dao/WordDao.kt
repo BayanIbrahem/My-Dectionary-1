@@ -5,65 +5,128 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordsIdName
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordsTableName
-import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordBaseWordId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WordDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertWord(word: Word)
+    suspend fun insertWord(word: WordEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertRelatedWords(words: Collection<WordTypeTagRelatedWordEntity>)
+
+    @Transaction
+    suspend fun insertWordWithRelations(word: WordEntity, relatedWords: List<WordTypeTagRelatedWordEntity>): Long {
+        val wordId = insertWord(word)
+        val relatedWordsWithWordIdAndNullId = relatedWords.map { it.copy(baseWordId = wordId, id = null) }
+        insertRelatedWords(relatedWordsWithWordIdAndNullId)
+        return wordId
+    }
 
     @Update
-    fun updateWord(word: Word)
+    suspend fun updateWord(word: WordEntity)
+
+    @Transaction
+    suspend fun updateWordWithRelations(word: WordEntity, relatedWords: List<WordTypeTagRelatedWordEntity>) {
+        updateWord(word)
+        deleteRelatedWordsOf(word.id!!)
+        val relatedWordsWithNullId = relatedWords.map { it.copy(id = null) }
+        insertRelatedWords(relatedWordsWithNullId)
+    }
 
     @Delete
-    fun deleteWord(vararg words: Word)
+    suspend fun deleteWord(vararg words: WordEntity)
 
     @Delete
-    fun deleteWord(words: Collection<Word>)
+    suspend fun deleteWord(words: Collection<WordEntity>)
 
     @Query(
         """
-            DELETE FROM $dbWordsTableName WHERE $dbWordsIdName IN (:ids)
+            DELETE FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordBaseWordId = :wordId
         """
     )
-    fun deleteWords(vararg ids: Long): Int
+    suspend fun deleteRelatedWordsOf(wordId: Long)
 
     @Query(
         """
-            DELETE FROM $dbWordsTableName WHERE $dbWordsIdName IN (:ids)
+            DELETE FROM $dbWordTable WHERE $dbWordId IN (:ids)
         """
     )
-    fun deleteWords(ids: Collection<Long>): Int
+    suspend fun deleteWords(vararg ids: Long): Int
 
     @Query(
         """
-        SELECT * FROM $dbWordsTableName WHERE $dbWordsIdName = :id
+            DELETE FROM $dbWordTable WHERE $dbWordId IN (:ids)
         """
     )
-    fun getWord(id: Long): Word?
+    suspend fun deleteWords(ids: Collection<Long>): Int
 
     @Query(
         """
-        SELECT * FROM $dbWordsTableName WHERE $dbWordsIdName in (:ids)
+        SELECT * FROM $dbWordTable WHERE $dbWordId = :id
         """
     )
-    fun getWords(vararg ids: Long): Flow<List<Word>>
+    suspend fun getWord(id: Long): WordEntity?
 
     @Query(
         """
-        SELECT * FROM $dbWordsTableName WHERE $dbWordsIdName in (:ids)
+            SELECT * FROM $dbWordTable WHERE $dbWordId in (:ids)
         """
     )
-    fun getWords(ids: Collection<Long>): Flow<List<Word>>
+    fun getWords(vararg ids: Long): Flow<List<WordEntity>>
 
     @Query(
         """
-            SELECT * FROM $dbWordsTableName
+            SELECT * FROM $dbWordTable WHERE $dbWordId in (:ids)
         """
     )
-    fun getAllWords(): Flow<List<Word>>
+    fun getWords(ids: Collection<Long>): Flow<List<WordEntity>>
+
+    @Query(
+        """
+            SELECT * FROM $dbWordTable
+        """
+    )
+    fun getAllWords(): Flow<List<WordEntity>>
+
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM $dbWordTable WHERE $dbWordId = :id
+        """
+    )
+    suspend fun getWordWithRelatedWords(id: Long): WordWithRelatedWords?
+
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM $dbWordTable WHERE $dbWordId in (:ids)
+        """
+    )
+    fun getWordsWithRelatedWords(vararg ids: Long): Flow<List<WordWithRelatedWords>>
+
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM $dbWordTable WHERE $dbWordId in (:ids)
+        """
+    )
+    fun getWordsWithRelatedWords(ids: Collection<Long>): Flow<List<WordWithRelatedWords>>
+
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM $dbWordTable
+        """
+    )
+    fun getAllWordsWithRelatedWords(): Flow<List<WordWithRelatedWords>>
 }

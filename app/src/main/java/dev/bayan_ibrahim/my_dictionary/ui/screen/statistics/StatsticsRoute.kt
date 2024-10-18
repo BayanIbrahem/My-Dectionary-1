@@ -6,11 +6,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDTopLevelDestinations
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
 fun StatisticsRoute(
-    statistics: MDTopLevelDestinations.Statistics,
+    statistics: MDDestination.TopLevel.Statistics,
     modifier: Modifier = Modifier,
 ) {
     Box(

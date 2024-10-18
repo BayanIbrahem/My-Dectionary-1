@@ -24,6 +24,7 @@ protobuf = "3.25.2"
 protobufPlugin = "0.9.4"
 coil = "2.7.0"
 kotlinComposeCompiler = "1.5.15"
+desugaring = "2.1.2"
 
 [libraries]
 # json serialization
@@ -89,6 +90,8 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 
 ## espresso
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+# desugaring
+core-desugaring = {group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugaring"}
 # ______
 
 [plugins]

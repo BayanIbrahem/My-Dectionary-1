@@ -24,6 +24,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        multiDexEnabled = true
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -39,6 +41,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -55,6 +58,9 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    lint {
+        checkReleaseBuilds = false
     }
 }
 
@@ -75,22 +81,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(platform(libs.androidx.compose.bom))
 
-//    google-dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-//    google-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
-//    google-dagger-hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
-//    google-dagger-hilt-ext-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltExt" }
     implementation(libs.google.dagger.hilt.android)
     implementation(libs.google.dagger.hilt.core)
     implementation(libs.google.dagger.hilt.ext.compiler)
     ksp(libs.google.dagger.hilt.compiler)
 
-
-//    androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-//    androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-//    androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-//    androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
-//    androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
-    // room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
@@ -98,6 +93,8 @@ dependencies {
     testImplementation(libs.androidx.room.testing)
 
     testImplementation(libs.junit)
+
+    coreLibraryDesugaring(libs.core.desugaring)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
