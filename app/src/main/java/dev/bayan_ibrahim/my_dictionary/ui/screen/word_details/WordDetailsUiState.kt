@@ -23,6 +23,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 
 interface WordDetailsUiState : MDUiState {
     val isEditModeOn: Boolean
+    val valid: Boolean
     val id: Long
     val language: Language
     val meaning: String
@@ -40,6 +41,8 @@ interface WordDetailsUiState : MDUiState {
 
 class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     override var isEditModeOn: Boolean by mutableStateOf(true)
+    override var valid: Boolean by mutableStateOf(false)
+        private set
     override var id: Long by mutableLongStateOf(INVALID_ID)
     override var language: Language by mutableStateOf(INVALID_LANGUAGE)
     override var meaning: String by mutableStateOf(INVALID_TEXT)
@@ -54,25 +57,65 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     override var learningProgress: Float by mutableFloatStateOf(0f)
         private set
 
-    private val translationsIdsGenerator = IncrementalIdGenerator()
-    private val tagsIdsGenerator = IncrementalIdGenerator()
-    private val relatedWordsIdsGenerator = IncrementalIdGenerator()
-    private val examplesIdsGenerator = IncrementalIdGenerator()
+    private val idGenerator = IncrementalIdGenerator()
+
+    fun validateWord() {
+        valid = meaning.isNotBlank() && translation.isNotBlank()
+    }
 
     fun addAdditionalTranslation(value: String) {
-        additionalTranslations[translationsIdsGenerator.nextId()] = value
+        additionalTranslations[idGenerator.nextId()] = value
     }
 
     fun addTag(value: String) {
-        tags[tagsIdsGenerator.nextId()] = value
+        tags[idGenerator.nextId()] = value
     }
 
     fun addRelatedWord(relation: String, value: String) {
-        relatedWords[relatedWordsIdsGenerator.nextId()] = relation to value
+        relatedWords[idGenerator.nextId()] = relation to value
     }
 
     fun addExample(value: String) {
-        examples[examplesIdsGenerator.nextId()] = value
+        examples[idGenerator.nextId()] = value
+    }
+
+    fun ensureOnTrailingBlankItemAdditionalTranslation() = additionalTranslations.ensureOneTrailingBlankItem()
+
+    fun ensureOnTrailingBlankItemTag() = tags.ensureOneTrailingBlankItem()
+
+    fun ensureOnTrailingBlankItemExample() = examples.ensureOneTrailingBlankItem()
+
+    fun ensureOnTrailingBlankItemRelatedWord() {
+        val selectedTypeRelations = this.selectedTypeTag?.relations?.toSet()
+        if (selectedTypeRelations.isNullOrEmpty()) {
+            this.relatedWords.clear()
+        } else {
+            this.relatedWords.run {
+                val maxId = maxOfOrNull { it.key } // latest value
+                val blankValues = filterValues { it.first !in selectedTypeRelations || it.second.isBlank() }
+                blankValues.forEach { (id, _) ->
+                    if (id != maxId) {
+                        remove(id)
+                    }
+                }
+                if (this[maxId]?.let { it.first !in selectedTypeRelations || it.second.isBlank() } != false) {
+                    this[idGenerator.nextId()] = selectedTypeRelations.first() to INVALID_TEXT
+                }
+            }
+        }
+    }
+
+    private fun SnapshotStateMap<Long, String>.ensureOneTrailingBlankItem() {
+        val maxId = maxOfOrNull { it.key } // latest value
+        val blankValues = filterValues { it.isBlank() }
+        blankValues.forEach { (id, _) ->
+            if (id != maxId) {
+                remove(id)
+            }
+        }
+        if (this[maxId]?.isNotBlank() != false) {
+            this[idGenerator.nextId()] = INVALID_TEXT
+        }
     }
 
     fun loadWord(word: Word) {
@@ -81,15 +124,15 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         language = word.language
         transcription = word.transcription
         translation = word.translation
-        additionalTranslations.setAll(word.additionalTranslations.associateBy { translationsIdsGenerator.nextId() })
-        tags.setAll(word.tags.associateBy { tagsIdsGenerator.nextId() })
+        additionalTranslations.setAll(word.additionalTranslations.associateBy { idGenerator.nextId() })
+        tags.setAll(word.tags.associateBy { idGenerator.nextId() })
         selectedTypeTag = word.wordTypeTag
         relatedWords.setAll(
             word.relatedWords.associate {
-                relatedWordsIdsGenerator.nextId() to (it.relationLabel to it.value)
+                idGenerator.nextId() to (it.relationLabel to it.value)
             }
         )
-        examples.setAll(word.examples.associateBy { examplesIdsGenerator.nextId() })
+        examples.setAll(word.examples.associateBy { idGenerator.nextId() })
         learningProgress = word.learningProgress
     }
 

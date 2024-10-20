@@ -39,7 +39,7 @@ fun MDNavHost(
         }
         composable<WordDetails> {
             val wordDetails: WordDetails = it.toRoute()
-            WordDetailsRoute(wordDetails = wordDetails)
+            WordDetailsRoute(wordDetails = wordDetails, pop = navController::popBackStack)
         }
     }
 }

@@ -7,6 +7,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordDetailsRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.Dispatchers
@@ -17,23 +18,51 @@ import javax.inject.Inject
 class WordDetailsViewModel @Inject constructor(
     private val repo: WordDetailsRepo,
 ) : ViewModel() {
-    private val state: WordDetailsMutableUiState = WordDetailsMutableUiState()
+    private val _uiState: WordDetailsMutableUiState = WordDetailsMutableUiState()
+    val uiState: WordDetailsUiState get() = _uiState
+
     fun initWithNavigationArgs(args: MDDestination.WordDetails) {
         viewModelScope.launch(Dispatchers.IO) {
-            args.wordId?.let { id ->
-                val word = repo.getWord(id)
-                state.loadWord(word)
+            _uiState.onExecute {
+                args.wordId?.let { id ->
+                    val word = repo.getWord(id)
+                    _uiState.loadWord(word)
+                }
+                val tags = repo.getLanguageTags(args.languageCode)
+                    .ifEmpty {
+                        listOf(
+                            WordTypeTag(
+                                id = INVALID_ID,
+                                name = "dummy_type_tag",
+                                language = Language("en", "English", "English"),
+                                relations = listOf(
+                                    "relation1",
+                                    "relation2"
+                                )
+                            )
+                        )
+                    }
+                _uiState.typeTags.setAll(tags)
+                _uiState.selectedTypeTag = tags.firstOrNull()
+                // if it is a new word then it should be the on edit mode initially otherwise it should be on reading mode
+                _uiState.isEditModeOn = args.wordId == null
+
+                _uiState.ensureOnTrailingBlankItemAdditionalTranslation()
+                _uiState.ensureOnTrailingBlankItemTag()
+                _uiState.ensureOnTrailingBlankItemExample()
+                _uiState.ensureOnTrailingBlankItemTag()
+                _uiState.ensureOnTrailingBlankItemRelatedWord()
+
+                true
             }
-            val tags = repo.getLanguageTags(args.languageCode)
-            state.typeTags.setAll(tags)
-            // if it is a new word then it should be the on edit mode initially otherwise it should be on reading mode
-            state.isEditModeOn = args.wordId == null
         }
     }
 
     private fun ensureEditableUiState(scope: WordDetailsMutableUiState.() -> Unit) {
-        if (!state.isLoading && state.isEditModeOn) {
-            state.scope()
+        viewModelScope.launch {
+            if (!_uiState.isLoading && _uiState.isEditModeOn) {
+                _uiState.scope()
+            }
         }
     }
 
@@ -41,24 +70,24 @@ class WordDetailsViewModel @Inject constructor(
         navigationActions: WordDetailsNavigationUiActions,
     ): WordDetailsBusinessUiActions = object : WordDetailsBusinessUiActions {
         override fun onEnableEditMode() {
-            if (!state.isLoading) {
-                state.isEditModeOn = true
+            if (!_uiState.isLoading) {
+                _uiState.isEditModeOn = true
             }
         }
 
         override fun onSaveChanges() = ensureEditableUiState {
             viewModelScope.launch(Dispatchers.IO) {
-                state.onExecute {
-                    state.isEditModeOn = false
+                _uiState.onExecute {
+                    _uiState.isEditModeOn = false
                     onValidateAdditionalTranslations()
                     onValidateTags()
                     onValidateRelatedWords()
                     onValidateExamples()
-                    val word = state.toWord()
+                    val word = _uiState.toWord()
                     if (word.id == INVALID_ID) {
                         val newWord = repo.saveNewWord(word)
                         // we can import the whole word but this is faster
-                        state.id = newWord.id
+                        _uiState.id = newWord.id
                     } else {
                         repo.saveExistedWord(word)
                     }
@@ -68,77 +97,58 @@ class WordDetailsViewModel @Inject constructor(
         }
 
         override fun onCancelChanges() = ensureEditableUiState {
-            if (state.id == INVALID_ID) {
+            if (_uiState.id == INVALID_ID) {
                 navigationActions.pop()
             } else {
                 viewModelScope.launch(Dispatchers.IO) {
-                    state.onExecute {
+                    _uiState.onExecute {
                         val navArgs = MDDestination.WordDetails(
-                            wordId = state.id,
-                            languageCode = state.language.code
+                            wordId = _uiState.id,
+                            languageCode = _uiState.language.code
                         )
                         initWithNavigationArgs(navArgs)
-                        state.isEditModeOn = false
+                        _uiState.isEditModeOn = false
                         true
                     }
                 }
             }
         }
 
-        override fun onMeaningChanged(newMeaning: String) = ensureEditableUiState {
+        override fun onMeaningChange(newMeaning: String) = ensureEditableUiState {
             meaning = newMeaning
+            validateWord()
         }
 
-        override fun onTranscriptionChanged(newTranscription: String) = ensureEditableUiState {
+        override fun onTranscriptionChange(newTranscription: String) = ensureEditableUiState {
             transcription = newTranscription
         }
 
-        override fun onTranslationChanged(newTranslation: String) = ensureEditableUiState {
+        override fun onTranslationChange(newTranslation: String) = ensureEditableUiState {
             translation = newTranslation
-        }
-
-        override fun onAddNewAdditionalTranslation() = ensureEditableUiState {
-            addAdditionalTranslation(INVALID_TEXT)
+            validateWord()
         }
 
         override fun onEditAdditionalTranslation(id: Long, newAdditionalTranslation: String) = ensureEditableUiState {
             additionalTranslations[id] = newAdditionalTranslation
         }
 
-        override fun onRemoveAdditionalTranslation(id: Long, additionalTranslation: String) = ensureEditableUiState {
-            additionalTranslations.remove(id)
-        }
-
-        override fun onValidateAdditionalTranslations(focusedTextFieldId: Long?) {
-            state.additionalTranslations.forEach { (id, translation) ->
-                if (id != focusedTextFieldId && translation.isBlank()) {
-                    state.additionalTranslations.remove(id)
-                }
-            }
-        }
-
-        override fun onAddNewTag() = ensureEditableUiState {
-            addTag(INVALID_TEXT)
-        }
+        override fun onValidateAdditionalTranslations(focusedTextFieldId: Long?) = _uiState.additionalTranslations.validateField(
+            focusedTextFieldId = focusedTextFieldId,
+            onAdd = _uiState::addAdditionalTranslation
+        )
 
         override fun onEditTag(id: Long, newTag: String) = ensureEditableUiState {
             tags[id] = newTag
         }
 
-        override fun onRemoveTag(id: Long, tag: String) = ensureEditableUiState {
-            tags.remove(id)
-        }
-
-        override fun onValidateTags(focusedTextFieldId: Long?) = ensureEditableUiState {
-            tags.forEach { (id, tag) ->
-                if (id != focusedTextFieldId && tag.isBlank()) {
-                    tags.remove(id)
-                }
-            }
-        }
+        override fun onValidateTags(focusedTextFieldId: Long?) = _uiState.tags.validateField(
+            focusedTextFieldId = focusedTextFieldId,
+            onAdd = _uiState::addTag
+        )
 
         override fun onChangeTypeTag(newTypeTag: WordTypeTag?) = ensureEditableUiState {
             this.selectedTypeTag = newTypeTag
+            this.ensureOnTrailingBlankItemRelatedWord()
         }
 
         override fun onAddNewRelatedWord(relation: String) = ensureEditableUiState {
@@ -151,39 +161,57 @@ class WordDetailsViewModel @Inject constructor(
         }
 
         override fun onEditRelatedWordValue(id: Long, newValue: String) = ensureEditableUiState {
-            val oldRelation = relatedWords[id]?.second ?: return@ensureEditableUiState
+            val oldRelation = relatedWords[id]?.first ?: return@ensureEditableUiState
             relatedWords[id] = oldRelation to newValue
         }
 
         override fun onRemoveRelatedWord(id: Long, relation: String, value: String) {
-            state.relatedWords.remove(id)
+            _uiState.relatedWords.remove(id)
         }
 
         override fun onValidateRelatedWords(focusedTextFieldId: Long?) {
-            state.relatedWords.forEach { (id, relatedWord) ->
-                if (id != focusedTextFieldId && relatedWord.second.isBlank()) {
-                    state.relatedWords.remove(id)
+            _uiState.relatedWords.run {
+                viewModelScope.launch {
+                    val typeRelations = _uiState.selectedTypeTag?.relations?.toSet()
+
+                    if (typeRelations.isNullOrEmpty()) return@launch
+
+                    val latestId = maxOf { it.key } // latest id
+                    forEach { (id, relation) ->
+                        if (id != focusedTextFieldId && id != latestId && (relation.first !in typeRelations || relation.second.isBlank())) {
+                            remove(id)
+                        }
+                    }
+                    if (this@run[latestId]?.let { (it.first !in typeRelations || it.second.isBlank()) } != true) {
+                        _uiState.addRelatedWord(typeRelations.first(), INVALID_TEXT)
+                    }
                 }
             }
-        }
-
-        override fun onAddNewExample() = ensureEditableUiState {
-            addExample(INVALID_TEXT)
         }
 
         override fun onEditExample(id: Long, newExample: String) = ensureEditableUiState {
             examples[id] = newExample
         }
 
-        override fun onRemoveExample(id: Long, example: String) = ensureEditableUiState {
-            examples.remove(id)
-        }
+        override fun onValidateExamples(focusedTextFieldId: Long?) = _uiState.examples.validateField(
+            focusedTextFieldId = focusedTextFieldId,
+            onAdd = _uiState::addExample
+        )
+    }
 
-        override fun onValidateExamples(focusedTextFieldId: Long?) {
-            state.examples.forEach { (id, example) ->
-                if (id != focusedTextFieldId && example.isBlank()) {
-                    state.examples.remove(id)
+    private fun MutableMap<Long, String>.validateField(
+        focusedTextFieldId: Long?,
+        onAdd: (String) -> Unit,
+    ) {
+        viewModelScope.launch {
+            val latestId = maxOf { it.key } // latest id
+            forEach { (id, tag) ->
+                if (id != focusedTextFieldId && id != latestId && tag.isBlank()) {
+                    remove(id)
                 }
+            }
+            if (!this@validateField[latestId].isNullOrBlank()) {
+                onAdd(INVALID_TEXT)
             }
         }
     }

@@ -33,11 +33,6 @@ abstract class MDMutableUiState(
 
     inline fun onExecute(body: () -> Boolean) {
         onLoadData()
-        if (body()) {
-            error = "Error"
-            validData = false
-        } else {
-            onFinishDataLoad(true)
-        }
+        onFinishDataLoad(body())
     }
 }

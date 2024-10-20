@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDApp
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.WordDetailsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @AndroidEntryPoint
@@ -17,7 +19,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyDictionaryTheme {
-                MDApp()
+//                MDApp()
+                WordDetailsRoute(
+                    pop = {},
+                    wordDetails = MDDestination.WordDetails(null, "en")
+                )
             }
         }
     }

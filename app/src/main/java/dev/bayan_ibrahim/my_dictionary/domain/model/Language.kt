@@ -6,7 +6,10 @@ data class Language(
     val code: String,
     val selfDisplayName: String,
     val localDisplayName: String,
-)
+) {
+    val fullDisplayName: String
+        get() = if (selfDisplayName == localDisplayName) selfDisplayName else "$selfDisplayName - $localDisplayName"
+}
 
 val allLanguages: Map<String, Language> by lazy {
     val defaultLocale = Locale.getDefault()
