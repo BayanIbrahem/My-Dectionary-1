@@ -8,12 +8,19 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.LanguageWordSpaceEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceAverageLearningProgress
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceLanguageCode
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceWordsCount
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordBaseWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLearningProgress
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTags
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -93,6 +100,13 @@ interface WordDao {
 
     @Query(
         """
+            SELECT * FROM $dbWordTable WHERE $dbWordLanguageCode = :languageCode
+        """
+    )
+    fun getWordsOfLanguage(languageCode: String): Flow<List<WordEntity>>
+
+    @Query(
+        """
             SELECT * FROM $dbWordTable
         """
     )
@@ -125,8 +139,38 @@ interface WordDao {
     @Transaction
     @Query(
         """
+            SELECT * FROM $dbWordTable WHERE $dbWordLanguageCode = :languageCode
+        """
+    )
+    fun getWordsWithRelatedOfLanguage(languageCode: String): Flow<List<WordWithRelatedWords>>
+
+    @Transaction
+    @Query(
+        """
             SELECT * FROM $dbWordTable
         """
     )
     fun getAllWordsWithRelatedWords(): Flow<List<WordWithRelatedWords>>
+
+    @Query(
+        """
+            SELECT $dbWordTags 
+            FROM $dbWordTable 
+            WHERE $dbWordLanguageCode = :code
+        """
+    )
+    fun getTagsInLanguage(code: String): Flow<List<String>>
+
+    @Query(
+        """
+            SELECT 
+                $dbWordLanguageCode as $dbLanguageWordSpaceLanguageCode, 
+                COUNT(*) as $dbLanguageWordSpaceWordsCount, 
+                AVG($dbWordLearningProgress) $dbLanguageWordSpaceAverageLearningProgress
+            FROM $dbWordTable
+            GROUP BY $dbWordLanguageCode
+            ORDER BY $dbLanguageWordSpaceWordsCount DESC
+    """
+    )
+    fun getLanguagesWordSpaces(): Flow<List<LanguageWordSpaceEntity>>
 }

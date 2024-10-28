@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.protobuf)
 }
 
 android {
@@ -22,7 +23,7 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0"
 
         multiDexEnabled = true
 
@@ -64,6 +65,46 @@ android {
     }
 }
 
+protobuf {
+    protoc {
+        artifact = libs.google.protobuf.protoc.get().toString()
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                register("java") {
+                    option("lite")
+                }
+                register("kotlin") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+//
+//androidComponents {
+//    onVariants(selector().all()) { variant ->
+//        afterEvaluate {
+//////            option 1
+//            val protoTask =
+//                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
+//
+//            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
+//                dependsOn(protoTask)
+//                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
+//                    protoTask.outputBaseDir
+//                )
+//            }
+//////            option 2
+////            val capName = variant.name.capitalized()
+////            tasks.getByName<KotlinCompile>("ksp${capName}Kotlin") {
+////                setSource(tasks.getByName("generate${capName}Proto").outputs)
+////            }
+//        }
+//    }
+//}
+
 dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.activity.compose)
@@ -83,7 +124,7 @@ dependencies {
 
     implementation(libs.google.dagger.hilt.android)
     implementation(libs.google.dagger.hilt.core)
-    implementation(libs.google.dagger.hilt.ext.compiler)
+    ksp(libs.google.dagger.hilt.ext.compiler)
     ksp(libs.google.dagger.hilt.compiler)
 
     implementation(libs.androidx.room.runtime)
@@ -91,6 +132,15 @@ dependencies {
     implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.androidx.room.testing)
+
+    implementation(libs.kotlinx.collections.immutable)
+
+    implementation(libs.androidx.datastore.core) /* proto data store */
+    implementation(libs.androidx.datastore.preferences) /* preferences data store */
+    implementation(libs.google.protobuf.kotlin.lite)
+    implementation(libs.google.protobuf.protoc)
+
+    compileOnly(libs.ksp.gradlePlugin)
 
     testImplementation(libs.junit)
 

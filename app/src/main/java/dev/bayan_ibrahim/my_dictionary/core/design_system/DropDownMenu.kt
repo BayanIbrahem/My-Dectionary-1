@@ -149,6 +149,7 @@ fun <Data : Any> MDBasicDropDownMenu(
             Box {
                 Column(
                     modifier = modifier,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (allowCancelSelection) {
                         Card(
@@ -234,7 +235,7 @@ private fun MDMenuItem(
 
 @Preview
 @Composable
-private fun JPBasicDropDownPreview() {
+private fun MDBasicDropDownPreview() {
     MyDictionaryTheme {
         Box(
             modifier = Modifier

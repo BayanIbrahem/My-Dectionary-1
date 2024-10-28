@@ -2,8 +2,10 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.LanguageWordSpaceEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
 
 fun WordWithRelatedWords.asWordModel(
@@ -51,3 +53,9 @@ fun Word.asRelatedWords(): List<WordTypeTagRelatedWordEntity> = this.relatedWord
         word = word.value,
     )
 }
+
+fun LanguageWordSpaceEntity.asWordSpaceModel(): LanguageWordSpace = LanguageWordSpace(
+    language = allLanguages[languageCode]!!,
+    wordsCount = wordsCount,
+    averageLearningProgress = averageLearningProgress,
+)

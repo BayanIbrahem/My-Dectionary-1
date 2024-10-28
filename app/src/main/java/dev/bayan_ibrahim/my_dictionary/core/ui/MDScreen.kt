@@ -27,7 +27,7 @@ fun MDScreen(
 ) {
     Scaffold(modifier = modifier) {
         Box(
-            modifier = modifier.padding(it),
+            modifier = Modifier.padding(it),
             contentAlignment = contentAlignment
         ) {
             if (uiState.isLoading) {

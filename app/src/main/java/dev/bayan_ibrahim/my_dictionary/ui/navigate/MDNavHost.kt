@@ -27,7 +27,12 @@ fun MDNavHost(
     ) {
         composable<WordsList> { backStackEntry ->
             val wordsList: WordsList = backStackEntry.toRoute()
-            WordsListRoute(wordsList)
+            WordsListRoute(
+                wordsList,
+                navigateToWordsDetails = { id, code ->
+                    navController.navigate(WordDetails(id, code))
+                }
+            )
         }
         composable<Profile> { backStackEntry ->
             val profile: Profile = backStackEntry.toRoute()

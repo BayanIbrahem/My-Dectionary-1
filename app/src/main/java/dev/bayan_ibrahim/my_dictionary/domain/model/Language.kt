@@ -9,6 +9,40 @@ data class Language(
 ) {
     val fullDisplayName: String
         get() = if (selfDisplayName == localDisplayName) selfDisplayName else "$selfDisplayName - $localDisplayName"
+
+    fun matchQuery(query: String): Boolean = checkLanguageFullMatchSearchQuery(this, query)
+    fun hasMatchQuery(query: String): Boolean = checkLanguagePartialMatchSearchQuery(this, query)
+}
+
+fun checkLanguageFullMatchSearchQuery(
+    language: Language,
+    query: String,
+): Boolean = checkLanguageMatchSearchQuery(
+    language = language,
+    query = query,
+    selector = String::equals
+)
+
+fun checkLanguagePartialMatchSearchQuery(
+    language: Language,
+    query: String,
+): Boolean = checkLanguageMatchSearchQuery(
+    language = language,
+    query = query,
+    selector = String::contains
+)
+
+private fun checkLanguageMatchSearchQuery(
+    language: Language,
+    query: String,
+    selector: String.(String) -> Boolean,
+): Boolean {
+    val normalizedQuery = query.trim().lowercase()
+    return sequenceOf(
+        language.code,
+        language.selfDisplayName,
+        language.localDisplayName
+    ).any { it.selector(normalizedQuery) }
 }
 
 val allLanguages: Map<String, Language> by lazy {
@@ -21,3 +55,4 @@ val allLanguages: Map<String, Language> by lazy {
         )
     }
 }
+
