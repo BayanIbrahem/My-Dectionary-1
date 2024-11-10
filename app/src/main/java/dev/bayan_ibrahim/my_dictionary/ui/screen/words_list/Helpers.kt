@@ -17,15 +17,15 @@ enum class WordsListSearchTarget(
     val includeMeaning: Boolean,
     val includeTranslation: Boolean,
 ) : LabeledEnum {
-    Meaning(strLabel = "Meaning Only", includeMeaning = true, includeTranslation = false),
-    Translation(strLabel = "Translations Only", includeMeaning = false, includeTranslation = true),
-    All(strLabel = "Meaning and translations", includeMeaning = true, includeTranslation = true);
+    Meaning(strLabel = "Meaning Only", includeMeaning = true, includeTranslation = false), // TODO, string res
+    Translation(strLabel = "Translations Only", includeMeaning = false, includeTranslation = true),// TODO, string res
+    All(strLabel = "Meaning and translations", includeMeaning = true, includeTranslation = true);// TODO, string res
 }
 
 enum class WordsListSortBy(override val strLabel: String) : LabeledEnum {
-    Meaning("Meaning"),
-    Translation("Translation"),
-    LearningProgress("Learning Progress");
+    Meaning("Meaning"),// TODO, string res
+    Translation("Translation"),// TODO, string res
+    LearningProgress("Learning Progress");// TODO, string res
 //    CreatedAt, // TODO, coming soon
 //    UpdatedAt
 }

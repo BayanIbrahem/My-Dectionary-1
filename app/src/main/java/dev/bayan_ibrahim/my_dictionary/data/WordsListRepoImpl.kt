@@ -82,6 +82,9 @@ class WordsListRepoImpl(
         entities.map(LanguageWordSpaceEntity::asWordSpaceModel)
     }
 
+    override suspend fun getLanguagesWordSpaces(languageCode: String): LanguageWordSpace? =
+        wordDao.getLanguagesWordSpace(languageCode)?.asWordSpaceModel()
+
     private fun WordWithRelatedWords.checkMatchViewPreferences(preferences: WordsListViewPreferences): Boolean {
         // search
         val normalizedSearchQuery = preferences.searchQuery.trim().lowercase()

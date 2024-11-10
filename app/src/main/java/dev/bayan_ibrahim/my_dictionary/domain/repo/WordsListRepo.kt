@@ -21,4 +21,5 @@ interface WordsListRepo {
 
     // WordSpaces
     fun getAllLanguagesWordSpaces(): Flow<List<LanguageWordSpace>>
+    suspend fun getLanguagesWordSpaces(languageCode: String): LanguageWordSpace?
 }

@@ -50,7 +50,7 @@ fun MDWordFieldTextField(
     modifier: Modifier = Modifier,
     label: String = "",
     placeholder: String = label,
-    showLabelOnPreviewMode: Boolean = false,
+    showLabelOnEditMode: Boolean = false,
     readOnly: Boolean = false,
     enabled: Boolean = true,
     focusManager: FocusManager = LocalFocusManager.current,
@@ -70,8 +70,8 @@ fun MDWordFieldTextField(
         targetValue = if (isFocused) colors.focusedTextColor else colors.unfocusedTextColor,
         label = "prefix color"
     )
-    val textFieldLabel by remember(readOnly, showLabelOnPreviewMode) {
-        derivedStateOf { if (readOnly || showLabelOnPreviewMode) label else "" }
+    val textFieldLabel by remember(readOnly, showLabelOnEditMode) {
+        derivedStateOf { if (readOnly || showLabelOnEditMode) label else "" }
     }
     MDBasicTextField(
         value = value,

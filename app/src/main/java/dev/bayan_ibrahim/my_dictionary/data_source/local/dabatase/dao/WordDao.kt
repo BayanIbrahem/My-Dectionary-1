@@ -173,4 +173,19 @@ interface WordDao {
     """
     )
     fun getLanguagesWordSpaces(): Flow<List<LanguageWordSpaceEntity>>
+
+    @Query(
+        """
+            SELECT 
+                $dbWordLanguageCode as $dbLanguageWordSpaceLanguageCode, 
+                COUNT(*) as $dbLanguageWordSpaceWordsCount, 
+                AVG($dbWordLearningProgress) $dbLanguageWordSpaceAverageLearningProgress
+            FROM $dbWordTable
+            WHERE $dbWordLanguageCode = :languageCode
+            GROUP BY $dbWordLanguageCode
+            ORDER BY $dbLanguageWordSpaceWordsCount DESC
+            LIMIT 1
+    """
+    )
+    suspend fun getLanguagesWordSpace(languageCode: String): LanguageWordSpaceEntity?
 }

@@ -49,10 +49,10 @@ fun MDWordsListLanguageSelectionPageDialog(
     onQueryChange: (String) -> Unit,
     languagesWithWords: PersistentList<LanguageWordSpace>,
     languagesWithoutWords: PersistentList<LanguageWordSpace>,
-    onSelectLanguage: (Language) -> Unit,
+    onSelectWordSpace: (LanguageWordSpace) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedLanguage: Language? by remember {
+    var selectedWordSpace: LanguageWordSpace? by remember {
         mutableStateOf(null)
     }
     val queryChangeAction by remember {
@@ -60,8 +60,8 @@ fun MDWordsListLanguageSelectionPageDialog(
             { query: String ->
                 onQueryChange(query)
                 // if the selected language filtered out from the selection, it became null
-                if (selectedLanguage?.hasMatchQuery(query) == false) {
-                    selectedLanguage = null
+                if (selectedWordSpace?.language?.hasMatchQuery(query) == false) {
+                    selectedWordSpace = null
                 }
             }
         }
@@ -77,10 +77,10 @@ fun MDWordsListLanguageSelectionPageDialog(
             )
         },
         onPrimaryClick = {
-            selectedLanguage?.let(onSelectLanguage)
+            selectedWordSpace?.let(onSelectWordSpace)
         },
         primaryActionLabel = "Select Language", // TODO, string res
-        primaryClickEnabled = selectedLanguage != null,
+        primaryClickEnabled = selectedWordSpace != null,
         onSecondaryClick = onDismissRequest,
         showActionsHorizontalDivider = false,
         modifier = modifier.width(250.dp),
@@ -88,8 +88,8 @@ fun MDWordsListLanguageSelectionPageDialog(
         LanguagesContent(
             languagesWithWords = languagesWithWords,
             languagesWithoutWords = languagesWithoutWords,
-            selectedLanguageCode = selectedLanguage?.code,
-            onClickLanguage = { selectedLanguage = it },
+            selectedLanguageCode = selectedWordSpace?.language?.code,
+            onClickWordSpace = { selectedWordSpace = it },
             modifier = Modifier
                 .padding(8.dp)
                 .size(250.dp, 200.dp),
@@ -141,7 +141,7 @@ private fun LanguagesContent(
     languagesWithWords: PersistentList<LanguageWordSpace>,
     languagesWithoutWords: PersistentList<LanguageWordSpace>,
     selectedLanguageCode: String?,
-    onClickLanguage: (Language) -> Unit,
+    onClickWordSpace: (LanguageWordSpace) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val activeWorkSpacesCount by remember(languagesWithWords) {
@@ -175,7 +175,7 @@ private fun LanguagesContent(
                 selectedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 selectedContentColor = MaterialTheme.colorScheme.onSurface,
-                onClick = { onClickLanguage(wordSpace.language) }
+                onClick = { onClickWordSpace(wordSpace) }
             )
         }
         if (inactiveWorkSpacesCount > 0) {
@@ -200,7 +200,7 @@ private fun LanguagesContent(
                 selectedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 selectedContentColor = MaterialTheme.colorScheme.onSurface,
-                onClick = { onClickLanguage(wordSpace.language) }
+                onClick = { onClickWordSpace(wordSpace) }
             )
         }
         if (inactiveWorkSpacesCount + activeWorkSpacesCount == 0) {
@@ -268,7 +268,7 @@ private fun MDWordsListLanguageSelectionPageDialogPreview() {
                         Language(code = "de", selfDisplayName = "German", localDisplayName = "Deutsch")
                     )
                 ),
-                onSelectLanguage = {}
+                onSelectWordSpace = {}
             )
         }
     }

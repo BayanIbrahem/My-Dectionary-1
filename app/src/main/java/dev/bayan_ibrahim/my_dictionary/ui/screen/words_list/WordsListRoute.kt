@@ -21,10 +21,10 @@ fun WordsListRoute(
     }
 
     val uiState = viewModel.uiState
-    val navActions by remember(uiState.language.code) {
+    val navActions by remember(uiState.selectedWordSpace.language.code) {
         derivedStateOf {
             object : WordsListNavigationUiActions {
-                override fun navigateToWordDetails(wordId: Long?) = navigateToWordsDetails(wordId, uiState.language.code)
+                override fun navigateToWordDetails(wordId: Long?) = navigateToWordsDetails(wordId, uiState.selectedWordSpace.language.code)
             }
         }
     }

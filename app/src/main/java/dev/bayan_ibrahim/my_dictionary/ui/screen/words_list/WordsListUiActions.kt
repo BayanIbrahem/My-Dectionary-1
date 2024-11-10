@@ -1,14 +1,17 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import androidx.compose.runtime.Immutable
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 
 interface WordsListBusinessUiActions {
     // work space
     fun onLanguageWordSpaceSearchQueryChange(searchQuery: String)
     fun onShowLanguageWordSpacesDialog()
     fun onHideLanguageWordSpacesDialog()
-    fun onSelectLanguageWordSpace(language: Language)
+    fun onSelectLanguageWordSpace(wordSpace: LanguageWordSpace)
+    fun onDeleteLanguageWordSpace()
+    fun onConfirmDeleteLanguageWordSpace()
+    fun onCancelDeleteLanguageWordSpace()
 
     // main clicks
     fun onClickWord(id: Long)

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
@@ -45,10 +44,13 @@ class WordsListViewModel @Inject constructor(
     fun initWithNavArgs(args: MDDestination.TopLevel.WordsList) {
         viewModelScope.launch {
             _uiState.onExecute {
-                val language = args.languageCode ?: repo.getSelectedLanguagePage()
+                val languageCode = args.languageCode ?: repo.getSelectedLanguagePage()?.code
 
-                if (language != null) {
-                    _uiState.language = allLanguages[language]!!
+                if (languageCode != null) {
+                    _uiState.selectedWordSpace =
+                        repo.getLanguagesWordSpaces(languageCode = languageCode) ?: allLanguages[languageCode]!!.let { language ->
+                            LanguageWordSpace(language)
+                        }
 
                     _uiState.preferencesState.onApplyPreferences(viewPreferences.first())
 
@@ -101,17 +103,30 @@ class WordsListViewModel @Inject constructor(
             _uiState.isLanguagesWordSpacesDialogShown = false
         }
 
-        override fun onSelectLanguageWordSpace(language: Language) {
-            _uiState.language = language
+        override fun onSelectLanguageWordSpace(wordSpace: LanguageWordSpace) {
+            _uiState.selectedWordSpace = wordSpace
 
             viewModelScope.launch {
                 launch {
                     syncWordsList()
                 }
                 launch {
-                    repo.setSelectedLanguagePage(language.code)
+                    repo.setSelectedLanguagePage(wordSpace.language.code)
                 }
             }
+        }
+
+        override fun onDeleteLanguageWordSpace() {
+            val currentWordSpace = uiState.activeLanguagesWordSpaces
+            TODO("Not yet implemented")
+        }
+
+        override fun onConfirmDeleteLanguageWordSpace() {
+            TODO("Not yet implemented")
+        }
+
+        override fun onCancelDeleteLanguageWordSpace() {
+            TODO("Not yet implemented")
         }
 
         override fun onClickWord(id: Long) {
@@ -205,18 +220,18 @@ class WordsListViewModel @Inject constructor(
         }
 
         override fun onDeleteSelection() {
-            _uiState.isDeleteWordConfirmDialogShown = true
+            _uiState.isSelectedWordsDeleteDialogShown = true
         }
 
         override fun onConfirmDeleteSelection() {
-            if (uiState.isSelectModeOn && uiState.isDeleteWordConfirmDialogShown) {
+            if (uiState.isSelectModeOn && uiState.isSelectedWordsDeleteDialogShown) {
                 viewModelScope.launch {
                     _uiState.onExecute {
                         val ids = uiState.selectedWords
 
                         repo.deleteWords(ids)
 
-                        _uiState.isDeleteWordConfirmDialogShown = false
+                        _uiState.isSelectedWordsDeleteDialogShown = false
                         _uiState.isSelectModeOn = false
                         true
                     }
@@ -225,7 +240,7 @@ class WordsListViewModel @Inject constructor(
         }
 
         override fun onCancelDeleteSelection() {
-            _uiState.isDeleteWordConfirmDialogShown = false
+            _uiState.isSelectedWordsDeleteDialogShown = false
         }
 
         override fun onClearSelection() {
@@ -248,7 +263,7 @@ class WordsListViewModel @Inject constructor(
     private suspend fun syncWordsList() {
         _uiState.onExecute {
             val preferences = viewPreferences.first()
-            val newWords = repo.getWordsList(uiState.language.code, preferences).firstOrNull() ?: emptyList()
+            val newWords = repo.getWordsList(uiState.selectedWordSpace.language.code, preferences).firstOrNull() ?: emptyList()
             _uiState.words.clear()
             _uiState.words.addAll(newWords)
             true

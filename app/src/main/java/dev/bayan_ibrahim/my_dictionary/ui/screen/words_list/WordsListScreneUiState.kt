@@ -21,32 +21,38 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
 
 interface WordsListUiState : MDUiState {
-    val language: Language
+    val selectedWordSpace: LanguageWordSpace
     val activeLanguagesWordSpaces: PersistentList<LanguageWordSpace>
     val inactiveLanguagesWordSpaces: PersistentList<LanguageWordSpace>
     val languagesWordSpaceSearchQuery: String
     val isLanguagesWordSpacesDialogShown: Boolean
+    val isLanguageWordSpaceDeleteDialogShown: Boolean
+    val isLanguageWordSpaceDeleteProcessRunning: Boolean
     val words: List<Word>
     val languageTags: PersistentSet<String>
     val isSelectModeOn: Boolean
     val selectedWords: PersistentSet<Long>
-    val isDeleteWordConfirmDialogShown: Boolean
+    val isSelectedWordsDeleteDialogShown: Boolean
+    val isSelectedWordsDeleteProcessRunning: Boolean
     val preferencesState: WordsListViewPreferencesState
 }
 
 class WordsListMutableUiState(
     defaultPreferences: WordsListViewPreferences = defaultWordsListViewPreferences,
 ) : WordsListUiState, MDMutableUiState() {
-    override var language: Language by mutableStateOf(INVALID_LANGUAGE)
+    override var selectedWordSpace: LanguageWordSpace by mutableStateOf(LanguageWordSpace())
     override var activeLanguagesWordSpaces: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
     override var inactiveLanguagesWordSpaces: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
     override var languagesWordSpaceSearchQuery: String by mutableStateOf(INVALID_TEXT)
     override var isLanguagesWordSpacesDialogShown: Boolean by mutableStateOf(false)
+    override val isLanguageWordSpaceDeleteDialogShown: Boolean by mutableStateOf(false)
+    override val isLanguageWordSpaceDeleteProcessRunning: Boolean by mutableStateOf(false)
     override val words: SnapshotStateList<Word> = mutableStateListOf()
     override var languageTags: PersistentSet<String> by mutableStateOf(persistentSetOf())
     override var isSelectModeOn: Boolean by mutableStateOf(false)
     override var selectedWords: PersistentSet<Long> by mutableStateOf(persistentSetOf())
-    override var isDeleteWordConfirmDialogShown: Boolean by mutableStateOf(false)
+    override var isSelectedWordsDeleteDialogShown: Boolean by mutableStateOf(false)
+    override val isSelectedWordsDeleteProcessRunning: Boolean by mutableStateOf(false)
     override val preferencesState = WordsListViewPreferencesMutableState(defaultPreferences)
 }
 

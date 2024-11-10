@@ -52,7 +52,7 @@ fun LazyListScope.wordDetailsTextFieldList(
                 .animateItem(),
             index = i.inc(),
             label = label,
-            showLabelOnPreviewMode = isFirst,
+            showLabelOnEditMode = isFirst,
             hasBottomHorizontalDivider = isLast,
             placeholder = placeholder,
             onFocusEvent = {
