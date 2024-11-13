@@ -15,7 +15,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
-import dev.bayan_ibrahim.my_dictionary.domain.repo.WordsListRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
@@ -25,11 +25,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
-class WordsListRepoImpl(
+class MDWordsListRepoImpl(
     private val wordDao: WordDao,
     private val tagDao: WordTypeTagDao,
     private val preferences: MDPreferences,
-) : WordsListRepo {
+) : MDWordsListRepo {
     override fun getViewPreferences(): Flow<WordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
 
     override suspend fun setViewPreferences(preferences: WordsListViewPreferences) = this.preferences.writeWordsListViewPreferences {

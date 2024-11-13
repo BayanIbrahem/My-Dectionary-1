@@ -9,7 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
-import dev.bayan_ibrahim.my_dictionary.domain.repo.WordDetailsRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WordDetailsViewModel @Inject constructor(
-    private val repo: WordDetailsRepo,
+    private val repo: MDWordDetailsRepo,
 ) : ViewModel() {
     private val _uiState: WordDetailsMutableUiState = WordDetailsMutableUiState()
     val uiState: WordDetailsUiState get() = _uiState

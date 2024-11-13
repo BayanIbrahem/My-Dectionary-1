@@ -9,15 +9,15 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelated
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
-import dev.bayan_ibrahim.my_dictionary.domain.repo.WordDetailsRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class WordDetailsRepoImpl(
+class MDWordDetailsRepoImpl(
     private val wordDao: WordDao,
     private val tagDao: WordTypeTagDao,
-) : WordDetailsRepo {
+) : MDWordDetailsRepo {
     override suspend fun getWord(wordId: Long): Word {
         val word = wordDao.getWordWithRelatedWords(wordId)
         require(word != null) { "Invalid Word Id $wordId" }

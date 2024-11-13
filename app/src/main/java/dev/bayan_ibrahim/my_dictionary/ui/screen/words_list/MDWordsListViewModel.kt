@@ -7,7 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.repo.WordsListRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
@@ -27,7 +27,7 @@ private const val searchQueryDelay = 500L // 0.5 sec
 
 @HiltViewModel
 class MDWordsListViewModel @Inject constructor(
-    private val repo: WordsListRepo,
+    private val repo: MDWordsListRepo,
 ) : ViewModel() {
     private val _uiState: MDWordsListMutableUiState = MDWordsListMutableUiState()
     val uiState: MDWordsListUiState = _uiState

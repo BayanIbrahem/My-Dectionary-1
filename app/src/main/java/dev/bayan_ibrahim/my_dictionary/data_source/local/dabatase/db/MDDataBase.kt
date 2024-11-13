@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagRelatedWordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
@@ -22,4 +23,5 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
 abstract class MDDataBase : RoomDatabase() {
     abstract fun getWordDao(): WordDao
     abstract fun getWordTypeTagDao(): WordTypeTagDao
+    abstract fun getWordTypeTagRelatedWordDao(): WordTypeTagRelatedWordDao
 }

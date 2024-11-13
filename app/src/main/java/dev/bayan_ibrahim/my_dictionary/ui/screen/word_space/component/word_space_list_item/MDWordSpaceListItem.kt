@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component
+package dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,9 +58,6 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpaceMutableState
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpaceState
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWorkSpaceActions
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -71,9 +69,22 @@ import kotlinx.coroutines.delay
 @Composable
 fun MDWordSpaceListItem(
     state: LanguageWordSpaceState,
-    actions: LanguageWorkSpaceActions,
+    actions: LanguageWordSpaceActions,
+    currentEditableLanguageCode: String?,
     modifier: Modifier = Modifier,
 ) {
+    val isEditable by remember(currentEditableLanguageCode) {
+        derivedStateOf {
+            currentEditableLanguageCode?.let {
+                state.wordSpace.language.code == it
+            } ?: true
+        }
+    }
+    LaunchedEffect(isEditable) {
+        if (!isEditable && state.isEditModeOn)
+            // TODO, throw an exception or maybe close the other one
+            actions.onCancel()
+    }
     var onConfirmEditField: (newValue: String) -> Unit by remember {
         mutableStateOf({})
     }
@@ -81,7 +92,7 @@ fun MDWordSpaceListItem(
         mutableStateOf("")
     }
     WordsSpaceFieldEditDialog(
-        showDialog = state.showEditDialog,
+        showDialog = state.isEditDialogShown,
         onDismiss = actions::onHideDialog,
         onConfirm = { newValue ->
             onConfirmEditField(newValue)
@@ -121,19 +132,22 @@ fun MDWordSpaceListItem(
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else if (state.isEditModeOn) {
                     IconButton(
-                        onClick = actions::onCancel
+                        onClick = actions::onCancel,
+                        enabled = isEditable,
                     ) {
                         Icon(imageVector = Icons.Default.Close, contentDescription = null)
                     }
 
                     IconButton(
-                        onClick = actions::onSubmit
+                        onClick = actions::onSubmit,
+                        enabled = isEditable,
                     ) {
                         Icon(imageVector = Icons.Default.Star, contentDescription = null) // TODO, string res
                     }
                 } else {
                     IconButton(
-                        onClick = actions::onEnableEditMode
+                        onClick = actions::onEnableEditMode,
+                        enabled = isEditable,
                     ) {
                         Icon(imageVector = Icons.Default.Edit, contentDescription = null)
                     }
@@ -441,7 +455,7 @@ private fun MDWordSpaceListItemPreview() {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                MDWordSpaceListItem(state = state, actions = actions)
+                MDWordSpaceListItem(state = state, actions = actions, language.code)
             }
         }
     }
@@ -478,7 +492,7 @@ private val state = LanguageWordSpaceMutableState(
     ).map { MDEditableField.of(it) }
 )
 
-private val actions = LanguageWorkSpaceActions(
+private val actions = LanguageWordSpaceActions(
     state = state,
     scope = CoroutineScope(Dispatchers.Default),
     onSubmitRequest = {

@@ -4,7 +4,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import kotlinx.coroutines.flow.Flow
 
-interface WordDetailsRepo {
+interface MDWordDetailsRepo {
     suspend fun getWord(wordId: Long): Word
     suspend fun saveNewWord(word: Word): Word
     suspend fun saveExistedWord(word: Word)

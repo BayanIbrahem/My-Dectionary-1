@@ -28,7 +28,7 @@ fun WordWithRelatedWords.asWordModel(
             RelatedWord(
                 id = word.id!!,
                 baseWordId = this.word.id,
-                relationLabel = word.relationLabel,
+                relationLabel = word.relationId,
                 value = word.word,
             )
         }
@@ -51,7 +51,7 @@ fun Word.asWordEntity(): WordEntity = WordEntity(
 fun Word.asRelatedWords(): List<WordTypeTagRelatedWordEntity> = this.relatedWords.map { word ->
     WordTypeTagRelatedWordEntity(
         id = word.id.nullIfInvalid(),
-        relationLabel = word.relationLabel,
+        relationId = word.relationLabel,
         baseWordId = this.id,
         word = word.value,
     )

@@ -188,4 +188,13 @@ interface WordDao {
     """
     )
     suspend fun getLanguagesWordSpace(languageCode: String): LanguageWordSpaceEntity?
+
+    @Query(
+        """
+            SELECT * 
+            FROM $dbWordTable
+        """
+    )
+    fun e()
+
 }

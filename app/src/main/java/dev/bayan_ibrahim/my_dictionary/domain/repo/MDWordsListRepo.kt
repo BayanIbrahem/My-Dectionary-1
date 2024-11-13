@@ -6,7 +6,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import kotlinx.coroutines.flow.Flow
 
-interface WordsListRepo {
+interface MDWordsListRepo {
     // view preferences
     fun getViewPreferences(): Flow<WordsListViewPreferences>
     suspend fun setViewPreferences(preferences: WordsListViewPreferences)

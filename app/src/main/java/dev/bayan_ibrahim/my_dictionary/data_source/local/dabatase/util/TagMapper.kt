@@ -11,3 +11,22 @@ fun TypeTagWithRelation.asTagModel(): WordTypeTag = WordTypeTag(
     language = allLanguages[this.tag.language]!!,
     relations = this.relations.map { WordTypeTagRelation(label = it.label, id = it.id!!) }
 )
+
+fun TypeTagWithRelation.asTagModelWithCount(relationsCount: Map<Long, Int>): WordTypeTag {
+    var tagWordsCount = 0
+    return WordTypeTag(
+        id = this.tag.id!!,
+        name = this.tag.name,
+        language = allLanguages[this.tag.language]!!,
+        relations = this.relations.map {
+            WordTypeTagRelation(
+                label = it.label,
+                id = it.id!!,
+                wordsCount = relationsCount[it.id]?.also { relationWordCount ->
+                    tagWordsCount += relationWordCount
+                } ?: 0
+            )
+        },
+        wordsCount = tagWordsCount
+    )
+}

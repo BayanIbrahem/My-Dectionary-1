@@ -11,7 +11,6 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTag
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordRelationId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationLabel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 
 @Entity(
@@ -42,7 +41,7 @@ data class WordTypeTagRelatedWordEntity(
     @ColumnInfo(name = dbTypeTagRelatedWordId)
     val id: Long? = null,
     @ColumnInfo(name = dbTypeTagRelatedWordRelationId)
-    val relationLabel: String,
+    val relationId: Long,
     @ColumnInfo(name = dbTypeTagRelatedWordBaseWordId)
     val baseWordId: Long,
     @ColumnInfo(name = dbTypeTagRelatedWordName)
