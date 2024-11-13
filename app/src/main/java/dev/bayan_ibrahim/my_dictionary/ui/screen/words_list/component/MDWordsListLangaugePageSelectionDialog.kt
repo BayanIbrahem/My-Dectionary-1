@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDLanguageWordSpaceListItem
@@ -76,12 +77,16 @@ fun MDWordsListLanguageSelectionPageDialog(
                 modifier = Modifier.padding(8.dp),
             )
         },
-        onPrimaryClick = {
-            selectedWordSpace?.let(onSelectWordSpace)
+        actions = {
+            MDAlertDialogActions(
+                onPrimaryClick = {
+                    selectedWordSpace?.let(onSelectWordSpace)
+                },
+                primaryActionLabel = "Select Language", // TODO, string res
+                primaryClickEnabled = selectedWordSpace != null,
+                onSecondaryClick = onDismissRequest,
+            )
         },
-        primaryActionLabel = "Select Language", // TODO, string res
-        primaryClickEnabled = selectedWordSpace != null,
-        onSecondaryClick = onDismissRequest,
         showActionsHorizontalDivider = false,
         modifier = modifier.width(250.dp),
     ) {

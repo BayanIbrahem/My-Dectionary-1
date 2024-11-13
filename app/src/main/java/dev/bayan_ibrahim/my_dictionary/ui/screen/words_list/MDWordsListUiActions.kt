@@ -2,8 +2,12 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import androidx.compose.runtime.Immutable
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
 
-interface WordsListBusinessUiActions {
+interface MDWordsListBusinessUiActions {
     // work space
     fun onLanguageWordSpaceSearchQueryChange(searchQuery: String)
     fun onShowLanguageWordSpacesDialog()
@@ -22,10 +26,17 @@ interface WordsListBusinessUiActions {
     fun onClearViewPreferences()
 
     // view-filters
+    fun onHideViewPreferencesDialog()
+    fun onShowViewPreferencesDialog()
+
     fun onSearchQueryChange(query: String)
-    fun onToggleTagFilter(tag: String, select: Boolean)
+    fun onSelectSearchTarget(searchTarget: WordsListSearchTarget)
+    fun onTagSearchQueryChange(query: String)
+    fun onSelectTag(tag: String)
+    fun onRemoveTag(tag: String)
+
     fun onToggleIncludeSelectedTags(includeSelectedTags: Boolean) // include or exclude selected tags
-    fun onToggleLearningProgressGroup(group: WordsListLearningProgressGroup, selected: Boolean)
+    fun onSelectLearningGroup(group: WordsListLearningProgressGroup)
     fun onToggleAllLearningProgressGroups(selected: Boolean)
 
     // view-orders
@@ -42,13 +53,13 @@ interface WordsListBusinessUiActions {
     fun onClearSelection()
 }
 
-interface WordsListNavigationUiActions {
+interface MDWordsListNavigationUiActions {
     fun navigateToWordDetails(wordId: Long?)
 }
 
 @Immutable
-class WordsListUiActions(
-    navigationActions: WordsListNavigationUiActions,
-    businessActions: WordsListBusinessUiActions,
-) : WordsListBusinessUiActions by businessActions, WordsListNavigationUiActions by navigationActions
+class MDWordsListUiActions(
+    navigationActions: MDWordsListNavigationUiActions,
+    businessActions: MDWordsListBusinessUiActions,
+) : MDWordsListBusinessUiActions by businessActions, MDWordsListNavigationUiActions by navigationActions
 

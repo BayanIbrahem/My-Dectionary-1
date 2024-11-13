@@ -25,6 +25,7 @@ const val dbTypeTagLanguage = "tag_language"
 
 // Word type tag relation:
 const val dbTypeTagRelationTable = "tagRelations"
+const val dbTypeTagRelationId = "relation_id"
 const val dbTypeTagRelationLabel = "relation_label"
 const val dbTypeTagRelationTagId = "relation_tagId"
 

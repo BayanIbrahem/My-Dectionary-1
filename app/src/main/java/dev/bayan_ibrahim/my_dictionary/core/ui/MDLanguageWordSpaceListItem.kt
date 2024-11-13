@@ -69,7 +69,11 @@ fun MDLanguageWordSpaceListItem(
         Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
             Text(
                 text = wordSpace.language.code.uppercase(),
-                style = MaterialTheme.typography.titleLarge,
+                style = if (wordSpace.language.isLongCode) {
+                    MaterialTheme.typography.titleSmall
+                } else {
+                    MaterialTheme.typography.titleLarge
+                },
                 color = animatedContentColor
             )
         }

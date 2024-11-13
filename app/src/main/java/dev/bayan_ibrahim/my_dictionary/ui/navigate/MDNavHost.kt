@@ -8,12 +8,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.Profile
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.Statistics
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordSpace
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordsList
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.WordDetails
-import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.ProfileRoute
-import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.StatisticsRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.MDProfileRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.MDStatisticsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.WordDetailsRoute
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.MDWordSpaceRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.MDWordsListRoute
 
 @Composable
 fun MDNavHost(
@@ -27,8 +29,8 @@ fun MDNavHost(
     ) {
         composable<WordsList> { backStackEntry ->
             val wordsList: WordsList = backStackEntry.toRoute()
-            WordsListRoute(
-                wordsList,
+            MDWordsListRoute(
+                navArgs = wordsList,
                 navigateToWordsDetails = { id, code ->
                     navController.navigate(WordDetails(id, code))
                 }
@@ -36,15 +38,20 @@ fun MDNavHost(
         }
         composable<Profile> { backStackEntry ->
             val profile: Profile = backStackEntry.toRoute()
-            ProfileRoute(profile = profile)
+            MDProfileRoute(profile = profile)
         }
         composable<Statistics> { backStackEntry ->
             val statistics: Statistics = backStackEntry.toRoute()
-            StatisticsRoute(statistics = statistics)
+            MDStatisticsRoute(statistics = statistics)
         }
         composable<WordDetails> {
             val wordDetails: WordDetails = it.toRoute()
             WordDetailsRoute(wordDetails = wordDetails, pop = navController::popBackStack)
+        }
+
+        composable<WordSpace> {
+            val wordDetails: WordSpace = it.toRoute()
+            MDWordSpaceRoute(navArgs = wordDetails)
         }
     }
 }

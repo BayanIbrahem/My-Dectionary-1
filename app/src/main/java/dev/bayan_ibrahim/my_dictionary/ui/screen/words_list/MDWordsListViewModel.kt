@@ -1,23 +1,23 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -26,15 +26,16 @@ import javax.inject.Inject
 private const val searchQueryDelay = 500L // 0.5 sec
 
 @HiltViewModel
-class WordsListViewModel @Inject constructor(
+class MDWordsListViewModel @Inject constructor(
     private val repo: WordsListRepo,
 ) : ViewModel() {
-    private val _uiState: WordsListMutableUiState = WordsListMutableUiState()
-    val uiState: WordsListUiState = _uiState
+    private val _uiState: MDWordsListMutableUiState = MDWordsListMutableUiState()
+    val uiState: MDWordsListUiState = _uiState
 
     private val viewPreferences = repo.getViewPreferences().onStart {
         this.emit(defaultWordsListViewPreferences)
     }
+
     private val selectedLanguagePage = repo.getSelectedLanguagePageStream().onStart {
         this.emit(null)
     }.onEach {
@@ -46,53 +47,57 @@ class WordsListViewModel @Inject constructor(
             _uiState.onExecute {
                 val languageCode = args.languageCode ?: repo.getSelectedLanguagePage()?.code
 
+
                 if (languageCode != null) {
                     _uiState.selectedWordSpace =
-                        repo.getLanguagesWordSpaces(languageCode = languageCode) ?: allLanguages[languageCode]!!.let { language ->
-                            LanguageWordSpace(language)
-                        }
-
+                        repo.getLanguagesWordSpaces(languageCode = languageCode) ?: LanguageWordSpace(allLanguages[languageCode]!!)
                     _uiState.preferencesState.onApplyPreferences(viewPreferences.first())
 
                     syncWordsList()
+                } else {
+                    _uiState.selectedWordSpace = LanguageWordSpace()
+                    _uiState.validData = false
                 }
+
+                // init languages list
+                onLanguageWordSpaceSearchQueryChange("")
+
                 true
             }
         }
     }
 
-    private val languageSearchQueryFlow: MutableStateFlow<String> = MutableStateFlow(INVALID_TEXT)
     private val languagesWordSpacesFlow = repo.getAllLanguagesWordSpaces()
-        .onStart {
-            emptyList<LanguageWordSpace>()
-        }.combine(
-            languageSearchQueryFlow.onStart { INVALID_TEXT }
-        ) { wordSpaces, searchQuery ->
-            if (searchQuery.isBlank()) {
-                wordSpaces
-            } else {
-                wordSpaces.filter { it.language.hasMatchQuery(searchQuery) }
-            }
-        }.flowOn(Dispatchers.Default).onEach {
-            _uiState.activeLanguagesWordSpaces = it.filter { it.wordsCount > 0 }.toPersistentList()
-            _uiState.inactiveLanguagesWordSpaces = it.filter { it.wordsCount == 0 }.toPersistentList()
-        }
 
     fun getUiActions(
-        navActions: WordsListNavigationUiActions,
-    ) = WordsListUiActions(
+        navActions: MDWordsListNavigationUiActions,
+    ) = MDWordsListUiActions(
         navigationActions = navActions,
         businessActions = getBusinessActions(navActions)
     )
 
-    // TODO, check selection actions for top app bar
+    private fun onLanguageWordSpaceSearchQueryChange(searchQuery: String) {
+        _uiState.languagesWordSpaceSearchQuery = searchQuery
+        viewModelScope.launch {
+            val searchQueryMatchedLanguages = languagesWordSpacesFlow.first().run {
+                Log.d("language", "all word spaces $this")
+                if (searchQuery.isBlank()) this
+                else filter {
+                    it.language.hasMatchQuery(searchQuery)
+                }
+            }
+
+            Log.d("language", "all word spaces matches ($searchQuery) $searchQueryMatchedLanguages")
+            _uiState.activeLanguagesWordSpaces = searchQueryMatchedLanguages.filter { it.wordsCount > 0 }.toPersistentList()
+            _uiState.inactiveLanguagesWordSpaces = searchQueryMatchedLanguages.filter { it.wordsCount == 0 }.toPersistentList()
+        }
+    }
 
     private fun getBusinessActions(
-        navActions: WordsListNavigationUiActions,
-    ): WordsListBusinessUiActions = object : WordsListBusinessUiActions {
+        navActions: MDWordsListNavigationUiActions,
+    ): MDWordsListBusinessUiActions = object : MDWordsListBusinessUiActions {
         override fun onLanguageWordSpaceSearchQueryChange(searchQuery: String) {
-            _uiState.languagesWordSpaceSearchQuery = searchQuery
-            languageSearchQueryFlow.value = searchQuery
+            this@MDWordsListViewModel.onLanguageWordSpaceSearchQueryChange(searchQuery)
         }
 
         override fun onShowLanguageWordSpacesDialog() {
@@ -117,16 +122,18 @@ class WordsListViewModel @Inject constructor(
         }
 
         override fun onDeleteLanguageWordSpace() {
-            val currentWordSpace = uiState.activeLanguagesWordSpaces
-            TODO("Not yet implemented")
+            _uiState.isLanguageWordSpaceDeleteDialogShown = true
         }
 
         override fun onConfirmDeleteLanguageWordSpace() {
-            TODO("Not yet implemented")
+            _uiState.isLanguageWordSpaceDeleteProcessRunning = true
+            // todo, delete
+            _uiState.isLanguageWordSpaceDeleteProcessRunning = false
+            _uiState.isLanguageWordSpaceDeleteDialogShown = false
         }
 
         override fun onCancelDeleteLanguageWordSpace() {
-            TODO("Not yet implemented")
+            _uiState.isLanguageWordSpaceDeleteDialogShown = false
         }
 
         override fun onClickWord(id: Long) {
@@ -153,27 +160,52 @@ class WordsListViewModel @Inject constructor(
             this.onApplyPreferences(defaultWordsListViewPreferences)
         }
 
+        override fun onHideViewPreferencesDialog() {
+            _uiState.isViewPreferencesDialogShown = false
+        }
+
+        override fun onShowViewPreferencesDialog() {
+            _uiState.isViewPreferencesDialogShown = true
+        }
+
         override fun onSearchQueryChange(query: String) = editViewByPreferences {
             this.searchQuery = query
         }
 
-        override fun onToggleTagFilter(tag: String, select: Boolean) = editViewByPreferences {
-            if (select) {
-                this.selectedTags = this.selectedTags.add(tag)
-            } else {
-                this.selectedTags = this.selectedTags.remove(tag)
+        override fun onSelectSearchTarget(searchTarget: WordsListSearchTarget) = editViewByPreferences {
+            this.searchTarget = searchTarget
+        }
+
+        override fun onTagSearchQueryChange(query: String) {
+            _uiState.tagSearchQuery = query
+            viewModelScope.launch {
+                // todo normalize this search method
+                val queryRegex = query.lowercase().toCharArray().joinToString(".*", ".*", ".*").toRegex()
+                val newTags = repo.getLanguageTags(uiState.selectedWordSpace.language.code).first().filter { tag ->
+                    tag !in uiState.preferencesState.selectedTags && queryRegex.matches(tag.lowercase())
+                }
+                _uiState.tagsSuggestions.clear()
+                _uiState.tagsSuggestions.addAll(newTags)
             }
+        }
+
+        override fun onSelectTag(tag: String) = editViewByPreferences {
+            this.selectedTags.add(tag)
+            _uiState.tagSearchQuery = ""
+        }
+
+        override fun onRemoveTag(tag: String) = editViewByPreferences {
+            this.selectedTags.remove(tag)
         }
 
         override fun onToggleIncludeSelectedTags(includeSelectedTags: Boolean) = editViewByPreferences {
             this.includeSelectedTags = includeSelectedTags
         }
 
-        override fun onToggleLearningProgressGroup(
+        override fun onSelectLearningGroup(
             group: WordsListLearningProgressGroup,
-            selected: Boolean,
         ) = editViewByPreferences {
-            if (selected) {
+            if (group in selectedLearningProgressGroups) {
                 this.selectedLearningProgressGroups = this.selectedLearningProgressGroups.add(group)
             } else {
                 this.selectedLearningProgressGroups = this.selectedLearningProgressGroups.remove(group)

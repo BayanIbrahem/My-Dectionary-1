@@ -6,7 +6,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTa
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.LanguageWordSpaceEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordSpaceModel
@@ -16,10 +16,10 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordsListRepo
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListLearningProgressGroup
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListSortBy
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -78,8 +78,21 @@ class WordsListRepoImpl(
         wordDao.deleteWords(ids)
     }
 
-    override fun getAllLanguagesWordSpaces(): Flow<List<LanguageWordSpace>> = wordDao.getLanguagesWordSpaces().map { entities ->
-        entities.map(LanguageWordSpaceEntity::asWordSpaceModel)
+    override fun getAllLanguagesWordSpaces(
+        includeNotUsedLanguages: Boolean,
+    ): Flow<List<LanguageWordSpace>> = if (includeNotUsedLanguages) {
+        wordDao.getLanguagesWordSpaces().map { entities ->
+            val dbModels = entities.map(LanguageWordSpaceEntity::asWordSpaceModel)
+            (dbModels + allLanguages.map { (_, language) ->
+                LanguageWordSpace(language = language)
+            }).distinctBy {
+                it.language.code
+            }
+        }
+    } else {
+        wordDao.getLanguagesWordSpaces().map { entities ->
+            entities.map(LanguageWordSpaceEntity::asWordSpaceModel)
+        }
     }
 
     override suspend fun getLanguagesWordSpaces(languageCode: String): LanguageWordSpace? =

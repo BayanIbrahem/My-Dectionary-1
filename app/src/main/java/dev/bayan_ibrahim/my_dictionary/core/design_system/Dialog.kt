@@ -2,18 +2,18 @@ package dev.bayan_ibrahim.my_dictionary.core.design_system
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,17 +23,18 @@ import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 data object MDDialogDefaults {
-    val primaryActionColor: Color
-        @Composable
-        get() = MaterialTheme.colorScheme.primary
-
-    val secondaryActionColor: Color
-        @Composable
-        get() = MaterialTheme.colorScheme.primary
-
-    val tertiaryActionColor: Color
-        @Composable
-        get() = MaterialTheme.colorScheme.error
+    @Composable
+    fun colors(
+        cardColors: MDCardColors = MDCardDefaults.colors(),
+        primaryActionColor: Color = MaterialTheme.colorScheme.primary,
+        secondaryActionColor: Color = MaterialTheme.colorScheme.primary,
+        tertiaryActionColor: Color = MaterialTheme.colorScheme.primary,
+    ): MDDialogColors = MDDialogColors(
+        cardColors = cardColors,
+        primaryActionColor = primaryActionColor,
+        secondaryActionColor = secondaryActionColor,
+        tertiaryActionColor = tertiaryActionColor
+    )
 
     val shape: CornerBasedShape
         @Composable
@@ -41,36 +42,55 @@ data object MDDialogDefaults {
         get() = MaterialTheme.shapes.large
 }
 
+@Immutable
+data class MDDialogColors(
+    val cardColors: MDCardColors,
+    val primaryActionColor: Color,
+    val secondaryActionColor: Color,
+    val tertiaryActionColor: Color,
+)
+
 @Composable
 fun MDBasicDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     shape: CornerBasedShape = MDDialogDefaults.shape,
+    colors: MDDialogColors = MDDialogDefaults.colors(),
+    headerModifier: Modifier = MDCardDefaults.headerModifier,
+    footerModifier: Modifier = MDCardDefaults.footerModifier,
+    contentModifier: Modifier = MDCardDefaults.contentModifier,
     showActionsHorizontalDivider: Boolean = true,
-    title: @Composable ColumnScope.() -> Unit = {},
+    title: @Composable BoxScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     if (showDialog)
         Dialog(
             onDismissRequest = onDismissRequest,
         ) {
-            Card(
+            MDCard(
                 modifier = modifier,
                 shape = shape,
-            ) {
-                title()
-                content()
-                if (showActionsHorizontalDivider) {
-                    HorizontalDivider()
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    content = actions
-                )
-            }
+                colors = colors.cardColors,
+                headerModifier = headerModifier,
+                footerModifier = footerModifier,
+                contentModifier = contentModifier,
+                headerClickable = false,
+                cardClickable = false,
+                header = title,
+                footer = {
+                    if (showActionsHorizontalDivider) {
+                        HorizontalDivider()
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        content = actions
+                    )
+                },
+                content = content,
+            )
         }
 }
 

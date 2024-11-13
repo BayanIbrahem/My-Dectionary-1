@@ -19,11 +19,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyDictionaryTheme {
-//                MDApp()
-                WordDetailsRoute(
-                    pop = {},
-                    wordDetails = MDDestination.WordDetails(null, "en")
-                )
+                MDApp()
+//                WordDetailsRoute(
+//                    pop = {},
+//                    wordDetails = MDDestination.WordDetails(null, "en")
+//                )
             }
         }
     }

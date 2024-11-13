@@ -6,6 +6,9 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_tab
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
+import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
 
 fun WordWithRelatedWords.asWordModel(

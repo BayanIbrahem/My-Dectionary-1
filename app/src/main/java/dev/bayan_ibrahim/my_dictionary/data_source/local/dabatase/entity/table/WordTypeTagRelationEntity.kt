@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationLabel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationTagId
@@ -26,7 +27,9 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTag
     ]
 )
 data class WordTypeTagRelationEntity(
-    @PrimaryKey()
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = dbTypeTagRelationId)
+    val id: Long? = null,
     @ColumnInfo(name = dbTypeTagRelationLabel)
     val label: String,
     @ColumnInfo(name = dbTypeTagRelationTagId)

@@ -3,8 +3,8 @@ package dev.bayan_ibrahim.my_dictionary.data
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.Word
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelatedWords
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordEntity

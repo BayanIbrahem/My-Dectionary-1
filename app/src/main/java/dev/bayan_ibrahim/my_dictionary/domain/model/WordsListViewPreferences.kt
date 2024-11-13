@@ -1,10 +1,10 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model
 
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListLearningProgressGroup
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListSortBy
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
 
 
 interface WordsListViewPreferences {
@@ -15,6 +15,11 @@ interface WordsListViewPreferences {
     val selectedLearningProgressGroups: Set<WordsListLearningProgressGroup>
     val sortBy: WordsListSortBy
     val sortByOrder: WordsListSortByOrder
+
+    val effectiveFilter: Boolean
+        get() = searchQuery.isNotBlank()
+                || selectedTags.isNotEmpty()
+                || (WordsListLearningProgressGroup.entries.count() > selectedLearningProgressGroups.count())
 }
 
 data class WordsListViewPreferencesBuilder(

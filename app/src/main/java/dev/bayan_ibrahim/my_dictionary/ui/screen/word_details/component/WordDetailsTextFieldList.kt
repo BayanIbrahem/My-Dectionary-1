@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.core.ui.UnavailableComponentHint
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 
 fun LazyListScope.wordDetailsTextFieldList(
     items: Map<Long, String>,
@@ -67,10 +68,10 @@ fun LazyListScope.wordDetailsTextFieldList(
 }
 
 fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
-    items: Map<Long, Pair<String, String>>,
+    items: Map<Long, Pair<WordTypeTagRelation, String>>,
     onItemValueChange: (Long, String) -> Unit,
-    typeRelations: List<String>?,
-    onSelectRelation: (Long, String) -> Unit,
+    typeRelations: List<WordTypeTagRelation>?,
+    onSelectRelation: (Long, WordTypeTagRelation) -> Unit,
     leadingIcon: ImageVector,
     groupLabel: String,
     itemModifier: Modifier = Modifier,
@@ -121,7 +122,7 @@ fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
                             onSelectRelation(id, relation)
                         }
                     },
-                    suggestionTitle = { this },
+                    suggestionTitle = { label },
                     leadingIcon = leadingIcon,
                     label = label,
                     modifier = Modifier.weight(1f),

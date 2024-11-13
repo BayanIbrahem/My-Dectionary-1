@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
-fun ProfileRoute(
+fun MDProfileRoute(
     profile: MDDestination.TopLevel.Profile,
     modifier: Modifier = Modifier,
 ) {

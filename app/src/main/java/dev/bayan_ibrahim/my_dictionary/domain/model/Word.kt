@@ -1,7 +1,6 @@
-package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
+package dev.bayan_ibrahim.my_dictionary.domain.model
 
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 
 data class Word(
     val id: Long,

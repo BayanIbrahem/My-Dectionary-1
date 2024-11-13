@@ -7,20 +7,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDMutableUiState
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
-import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_LANGUAGE
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.Word
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
 
-interface WordsListUiState : MDUiState {
+interface MDWordsListUiState : MDUiState {
     val selectedWordSpace: LanguageWordSpace
     val activeLanguagesWordSpaces: PersistentList<LanguageWordSpace>
     val inactiveLanguagesWordSpaces: PersistentList<LanguageWordSpace>
@@ -34,26 +36,35 @@ interface WordsListUiState : MDUiState {
     val selectedWords: PersistentSet<Long>
     val isSelectedWordsDeleteDialogShown: Boolean
     val isSelectedWordsDeleteProcessRunning: Boolean
+
+    // view preferences
+    val isViewPreferencesDialogShown: Boolean
     val preferencesState: WordsListViewPreferencesState
+    val tagSearchQuery: String
+    val tagsSuggestions: List<String>
 }
 
-class WordsListMutableUiState(
+class MDWordsListMutableUiState(
     defaultPreferences: WordsListViewPreferences = defaultWordsListViewPreferences,
-) : WordsListUiState, MDMutableUiState() {
+) : MDWordsListUiState, MDMutableUiState() {
     override var selectedWordSpace: LanguageWordSpace by mutableStateOf(LanguageWordSpace())
     override var activeLanguagesWordSpaces: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
     override var inactiveLanguagesWordSpaces: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
     override var languagesWordSpaceSearchQuery: String by mutableStateOf(INVALID_TEXT)
     override var isLanguagesWordSpacesDialogShown: Boolean by mutableStateOf(false)
-    override val isLanguageWordSpaceDeleteDialogShown: Boolean by mutableStateOf(false)
-    override val isLanguageWordSpaceDeleteProcessRunning: Boolean by mutableStateOf(false)
+    override var isLanguageWordSpaceDeleteDialogShown: Boolean by mutableStateOf(false)
+    override var isLanguageWordSpaceDeleteProcessRunning: Boolean by mutableStateOf(false)
     override val words: SnapshotStateList<Word> = mutableStateListOf()
     override var languageTags: PersistentSet<String> by mutableStateOf(persistentSetOf())
     override var isSelectModeOn: Boolean by mutableStateOf(false)
     override var selectedWords: PersistentSet<Long> by mutableStateOf(persistentSetOf())
     override var isSelectedWordsDeleteDialogShown: Boolean by mutableStateOf(false)
-    override val isSelectedWordsDeleteProcessRunning: Boolean by mutableStateOf(false)
+    override var isSelectedWordsDeleteProcessRunning: Boolean by mutableStateOf(false)
+    override var isViewPreferencesDialogShown: Boolean by mutableStateOf(false)
+
     override val preferencesState = WordsListViewPreferencesMutableState(defaultPreferences)
+    override var tagSearchQuery: String by mutableStateOf(INVALID_TEXT)
+    override val tagsSuggestions: SnapshotStateList<String> = mutableStateListOf()
 }
 
 

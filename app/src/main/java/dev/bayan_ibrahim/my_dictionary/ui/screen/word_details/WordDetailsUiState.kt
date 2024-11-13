@@ -16,10 +16,11 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_LANGUAGE
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.Word
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
+import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 
 interface WordDetailsUiState : MDUiState {
     val isEditModeOn: Boolean
@@ -33,7 +34,7 @@ interface WordDetailsUiState : MDUiState {
     val tags: Map<Long, String>
     val typeTags: List<WordTypeTag>
     val selectedTypeTag: WordTypeTag?
-    val relatedWords: Map<Long, Pair<String, String>> // Map<Label, List<Word>>, for each relation it may have more than one value
+    val relatedWords: Map<Long, Pair<WordTypeTagRelation, String>> // Map<Label, List<Word>>, for each relation it may have more than one value
     val examples: Map<Long, String>
     val learningProgress: Float
     // todo add some statistics
@@ -52,7 +53,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     override val tags: SnapshotStateMap<Long, String> = mutableStateMapOf()
     override val typeTags: SnapshotStateList<WordTypeTag> = mutableStateListOf()
     override var selectedTypeTag: WordTypeTag? by mutableStateOf(null)
-    override val relatedWords: SnapshotStateMap<Long, Pair<String, String>> = mutableStateMapOf()
+    override val relatedWords: SnapshotStateMap<Long, Pair<WordTypeTagRelation, String>> = mutableStateMapOf()
     override val examples: SnapshotStateMap<Long, String> = mutableStateMapOf()
     override var learningProgress: Float by mutableFloatStateOf(0f)
         private set
@@ -71,7 +72,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         tags[idGenerator.nextId()] = value
     }
 
-    fun addRelatedWord(relation: String, value: String) {
+    fun addRelatedWord(relation: WordTypeTagRelation, value: String) {
         relatedWords[idGenerator.nextId()] = relation to value
     }
 
@@ -129,7 +130,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         selectedTypeTag = word.wordTypeTag
         relatedWords.setAll(
             word.relatedWords.associate {
-                idGenerator.nextId() to (it.relationLabel to it.value)
+                idGenerator.nextId() to (WordTypeTagRelation(it.relationLabel) to it.value)
             }
         )
         examples.setAll(word.examples.associateBy { idGenerator.nextId() })
@@ -149,7 +150,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
             RelatedWord(
                 id = INVALID_ID,
                 baseWordId = this.id,
-                relationLabel = word.first,
+                relationLabel = word.first.label,
                 value = word.second
             )
         },

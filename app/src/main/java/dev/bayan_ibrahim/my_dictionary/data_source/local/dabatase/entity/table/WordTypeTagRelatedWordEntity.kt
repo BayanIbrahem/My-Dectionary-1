@@ -10,6 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTag
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordName
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordRelationId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationLabel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 
@@ -18,7 +19,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
     foreignKeys = [
         ForeignKey(
             entity = WordTypeTagRelationEntity::class,
-            parentColumns = [dbTypeTagRelationLabel],
+            parentColumns = [dbTypeTagRelationId],
             childColumns = [dbTypeTagRelatedWordRelationId],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE,

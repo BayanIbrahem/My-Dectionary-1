@@ -1,8 +1,8 @@
 package dev.bayan_ibrahim.my_dictionary.core.design_system
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -34,58 +33,29 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 fun MDAlertDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
-    title: @Composable ColumnScope.() -> Unit,
+    title: @Composable BoxScope.() -> Unit,
     modifier: Modifier = Modifier,
-    tertiaryActionButtonMinSpacing: Dp = 8.dp,
     shape: CornerBasedShape = MDDialogDefaults.shape,
-    onPrimaryClick: () -> Unit,
-    onSecondaryClick: () -> Unit,
-    onTertiaryClick: () -> Unit = {},
-    primaryClickEnabled: Boolean = true,
-    secondaryClickEnabled: Boolean = true,
-    tertiaryClickEnabled: Boolean = true,
-    primaryActionLabel: String = "Confirm", // TODO, string res
-    secondaryActionLabel: String = "Cancel", // TODO, string res
-    tertiaryActionLabel: String = "Reset", // TODO, string res
-    dismissOnPrimaryClick: Boolean = true,
-    dismissOnSecondaryClick: Boolean = true,
-    dismissOnTertiaryClick: Boolean = true,
-    primaryActionTextColor: Color = MDDialogDefaults.primaryActionColor,
-    secondaryActionTextColor: Color = MDDialogDefaults.secondaryActionColor,
-    tertiaryActionTextColor: Color = MDDialogDefaults.tertiaryActionColor,
-    hasTertiaryAction: Boolean = false,
+    colors: MDDialogColors = MDDialogDefaults.colors(),
+    headerModifier: Modifier = MDCardDefaults.headerModifier,
+    footerModifier: Modifier = MDCardDefaults.footerModifier,
+    contentModifier: Modifier = MDCardDefaults.contentModifier,
     showActionsHorizontalDivider: Boolean = true,
-    content: @Composable ColumnScope.() -> Unit,
+    actions: @Composable RowScope.() -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     MDBasicDialog(
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
         modifier = modifier.width(IntrinsicSize.Max),
         shape = shape,
+        colors = colors,
+        headerModifier = headerModifier,
+        footerModifier = footerModifier,
+        contentModifier = contentModifier,
         title = title,
         showActionsHorizontalDivider = showActionsHorizontalDivider,
-        actions = {
-            AlertDialogActions(
-                onDismissRequest = onDismissRequest,
-                onPrimaryClick = onPrimaryClick,
-                onSecondaryClick = onSecondaryClick,
-                onTertiaryClick = onTertiaryClick,
-                primaryClickEnabled = primaryClickEnabled,
-                secondaryClickEnabled = secondaryClickEnabled,
-                tertiaryClickEnabled = tertiaryClickEnabled,
-                primaryActionLabel = primaryActionLabel,
-                secondaryActionLabel = secondaryActionLabel,
-                tertiaryActionLabel = tertiaryActionLabel,
-                dismissOnPrimaryClick = dismissOnPrimaryClick,
-                dismissOnSecondaryClick = dismissOnSecondaryClick,
-                dismissOnTertiaryClick = dismissOnTertiaryClick,
-                primaryActionTextColor = primaryActionTextColor,
-                secondaryActionTextColor = secondaryActionTextColor,
-                tertiaryActionTextColor = tertiaryActionTextColor,
-                tertiaryButtonPadding = tertiaryActionButtonMinSpacing,
-                hasTertiaryAction = hasTertiaryAction,
-            )
-        },
+        actions = actions,
         content = content
     )
 
@@ -123,25 +93,25 @@ fun MDAlertDialogTextTitle(
 }
 
 @Composable
-private fun RowScope.AlertDialogActions(
-    onDismissRequest: () -> Unit,
-    onPrimaryClick: () -> Unit,
-    onSecondaryClick: () -> Unit,
-    onTertiaryClick: () -> Unit,
-    primaryClickEnabled: Boolean,
-    secondaryClickEnabled: Boolean,
-    tertiaryClickEnabled: Boolean,
-    primaryActionLabel: String,
-    secondaryActionLabel: String,
-    tertiaryActionLabel: String,
-    dismissOnPrimaryClick: Boolean,
-    dismissOnSecondaryClick: Boolean,
-    dismissOnTertiaryClick: Boolean,
-    primaryActionTextColor: Color,
-    secondaryActionTextColor: Color,
-    tertiaryActionTextColor: Color,
-    tertiaryButtonPadding: Dp,
+fun RowScope.MDAlertDialogActions(
+    onDismissRequest: () -> Unit = {},
+    onPrimaryClick: () -> Unit = {},
+    onSecondaryClick: () -> Unit = {},
+    onTertiaryClick: () -> Unit = {},
+    primaryClickEnabled: Boolean = true,
+    secondaryClickEnabled: Boolean = true,
+    tertiaryClickEnabled: Boolean = true,
+    primaryActionLabel: String = "Confirm", // TODO, string res
+    secondaryActionLabel: String = "Cancel", // TODO, string res
+    tertiaryActionLabel: String = "Reset", // TODO, string res
+    dismissOnPrimaryClick: Boolean = true,
+    dismissOnSecondaryClick: Boolean = true,
+    dismissOnTertiaryClick: Boolean = true,
+    hasPrimaryAction: Boolean = true,
+    hasSecondaryAction: Boolean = true,
     hasTertiaryAction: Boolean = false,
+    tertiaryButtonPadding: Dp = 8.dp,
+    colors: MDDialogColors = MDDialogDefaults.colors(),
 ) {
     val primaryAction by remember(dismissOnPrimaryClick) {
         derivedStateOf {
@@ -174,7 +144,7 @@ private fun RowScope.AlertDialogActions(
         TextButton(
             onClick = tertiaryAction,
             enabled = tertiaryClickEnabled,
-            colors = ButtonDefaults.textButtonColors(contentColor = tertiaryActionTextColor)
+            colors = ButtonDefaults.textButtonColors(contentColor = colors.tertiaryActionColor)
         ) {
             Text(tertiaryActionLabel)
         }
@@ -184,19 +154,23 @@ private fun RowScope.AlertDialogActions(
                 .weight(1f)
         )
     }
-    TextButton(
-        onClick = secondaryAction,
-        enabled = secondaryClickEnabled,
-        colors = ButtonDefaults.textButtonColors(contentColor = secondaryActionTextColor)
-    ) {
-        Text(secondaryActionLabel)
+    if (hasSecondaryAction) {
+        TextButton(
+            onClick = secondaryAction,
+            enabled = secondaryClickEnabled,
+            colors = ButtonDefaults.textButtonColors(contentColor = colors.secondaryActionColor)
+        ) {
+            Text(secondaryActionLabel)
+        }
     }
-    TextButton(
-        onClick = primaryAction,
-        enabled = primaryClickEnabled,
-        colors = ButtonDefaults.textButtonColors(contentColor = primaryActionTextColor)
-    ) {
-        Text(primaryActionLabel)
+    if (hasPrimaryAction) {
+        TextButton(
+            onClick = primaryAction,
+            enabled = primaryClickEnabled,
+            colors = ButtonDefaults.textButtonColors(contentColor = colors.primaryActionColor)
+        ) {
+            Text(primaryActionLabel)
+        }
     }
 }
 
@@ -214,9 +188,14 @@ private fun MDAlertDialogPreview() {
                     title = {
                         MDAlertDialogTextTitle("title", subtitle = "subtitle", hasHorizontalDivider = true)
                     },
-                    onPrimaryClick = {},
-                    onSecondaryClick = {},
-                    hasTertiaryAction = true
+                    actions = {
+                        MDAlertDialogActions(
+                            onDismissRequest = {},
+                            onPrimaryClick = {},
+                            onSecondaryClick = {},
+                            hasTertiaryAction = true
+                        )
+                    },
                 ) {
                     Text("Content")
                 }

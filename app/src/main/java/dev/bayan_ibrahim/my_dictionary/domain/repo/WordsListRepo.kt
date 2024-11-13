@@ -1,6 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.domain.repo
 
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
@@ -20,6 +20,6 @@ interface WordsListRepo {
     suspend fun deleteWords(ids: Collection<Long>)
 
     // WordSpaces
-    fun getAllLanguagesWordSpaces(): Flow<List<LanguageWordSpace>>
+    fun getAllLanguagesWordSpaces(includeNotUsedLanguages: Boolean = true): Flow<List<LanguageWordSpace>>
     suspend fun getLanguagesWordSpaces(languageCode: String): LanguageWordSpace?
 }

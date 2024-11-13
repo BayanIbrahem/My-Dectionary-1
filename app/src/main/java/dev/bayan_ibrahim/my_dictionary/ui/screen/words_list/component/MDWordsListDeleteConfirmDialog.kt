@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,6 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogColors
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogDefaults
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Composable
@@ -60,15 +64,21 @@ fun MDWordsListDeleteConfirmDialog(
                 }
             }
         },
-        onPrimaryClick = onConfirm,
-        onSecondaryClick = onCancel,
         modifier = modifier,
-        primaryActionLabel = "Delete",
-        primaryActionTextColor = MaterialTheme.colorScheme.error,
-        dismissOnPrimaryClick = true,
-        dismissOnSecondaryClick = false,
-        primaryClickEnabled = !isDeleteRunning,
-        secondaryClickEnabled = !isDeleteRunning,
+        actions = {
+            MDAlertDialogActions(
+                onPrimaryClick = onConfirm,
+                onSecondaryClick = onCancel,
+                primaryActionLabel = "Delete",
+                colors = MDDialogDefaults.colors(
+                    primaryActionColor = MaterialTheme.colorScheme.error,
+                ),
+                dismissOnPrimaryClick = true,
+                dismissOnSecondaryClick = false,
+                primaryClickEnabled = !isDeleteRunning,
+                secondaryClickEnabled = !isDeleteRunning,
+            )
+        },
     ) {
         Text(
             text = deleteMessage,

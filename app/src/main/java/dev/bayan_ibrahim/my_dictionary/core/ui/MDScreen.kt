@@ -4,13 +4,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,9 +28,33 @@ fun MDScreen(
     modifier: Modifier = Modifier,
     invalidDataMessage: String = "Invalid Data", // TODO, string res
     contentAlignment: Alignment = Alignment.Center,
+    showFloatingActionButtonOnLoading: Boolean = false,
+    showFloatingActionButtonOnError: Boolean = false,
+    contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
+    topBar: @Composable () -> Unit = {},
+    floatingActionButton: (@Composable () -> Unit) = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
-    Scaffold(modifier = modifier) {
+    val showFab by remember(
+        key1 = uiState,
+        key2 = showFloatingActionButtonOnLoading,
+        key3 = showFloatingActionButtonOnError,
+    ) {
+        derivedStateOf {
+            (!uiState.isLoading || showFloatingActionButtonOnLoading)
+                    || (uiState.error == null || showFloatingActionButtonOnError)
+        }
+    }
+    Scaffold(
+        modifier = modifier,
+        topBar = topBar,
+        contentWindowInsets = contentWindowInsets,
+        floatingActionButton = {
+            if (showFab) {
+                floatingActionButton()
+            }
+        },
+    ) {
         Box(
             modifier = Modifier.padding(it),
             contentAlignment = contentAlignment

@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -25,7 +24,8 @@ import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.core.ui.UnavailableComponentHint
 import dev.bayan_ibrahim.my_dictionary.core.ui.scrollbar
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.WordDetailsTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.wordDetailsRelatedWordsTextFieldsList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.wordDetailsTextFieldList
@@ -204,8 +204,8 @@ private fun getUiActions() = WordDetailsUiActions(
         override fun onEditTag(id: Long, newTag: String) {}
         override fun onValidateTags(focusedTextFieldId: Long?) {}
         override fun onChangeTypeTag(newTypeTag: WordTypeTag?) {}
-        override fun onAddNewRelatedWord(relation: String) {}
-        override fun onEditRelatedWordRelation(id: Long, newRelation: String) {}
+        override fun onAddNewRelatedWord(relation: WordTypeTagRelation) {}
+        override fun onEditRelatedWordRelation(id: Long, newRelation: WordTypeTagRelation) {}
         override fun onEditRelatedWordValue(id: Long, newValue: String) {}
         override fun onRemoveRelatedWord(id: Long, relation: String, value: String) {}
         override fun onValidateRelatedWords(focusedTextFieldId: Long?) {}

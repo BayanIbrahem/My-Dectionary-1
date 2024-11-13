@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model
 
+import android.util.Log
 import java.util.Locale
 
 data class Language(
@@ -7,42 +8,43 @@ data class Language(
     val selfDisplayName: String,
     val localDisplayName: String,
 ) {
+    /**
+     * code may be 2 or 3 chars this will be true if the code length is 3 this may be used
+     * to make text smaller for viewing code
+     */
+    val isLongCode: Boolean = code.length > 2
     val fullDisplayName: String
         get() = if (selfDisplayName == localDisplayName) selfDisplayName else "$selfDisplayName - $localDisplayName"
 
-    fun matchQuery(query: String): Boolean = checkLanguageFullMatchSearchQuery(this, query)
+    val valid = code.length in 2..3
+
     fun hasMatchQuery(query: String): Boolean = checkLanguagePartialMatchSearchQuery(this, query)
 }
 
-fun checkLanguageFullMatchSearchQuery(
-    language: Language,
-    query: String,
-): Boolean = checkLanguageMatchSearchQuery(
-    language = language,
-    query = query,
-    selector = String::equals
-)
+private val queryRegexMap: MutableMap<String, Regex> = mutableMapOf()
 
-fun checkLanguagePartialMatchSearchQuery(
+private fun checkLanguagePartialMatchSearchQuery(
     language: Language,
     query: String,
-): Boolean = checkLanguageMatchSearchQuery(
-    language = language,
-    query = query,
-    selector = String::contains
-)
-
-private fun checkLanguageMatchSearchQuery(
-    language: Language,
-    query: String,
-    selector: String.(String) -> Boolean,
 ): Boolean {
-    val normalizedQuery = query.trim().lowercase()
+    val queryRegex = queryRegexMap.getOrPut(query.trim().lowercase()) {
+        query
+            .trim()
+            .lowercase()
+            .toCharArray()
+            .joinToString(
+                separator = ".*",
+                prefix = ".*",
+                postfix = ".*"
+            ).toRegex()
+    }
     return sequenceOf(
         language.code,
         language.selfDisplayName,
         language.localDisplayName
-    ).any { it.selector(normalizedQuery) }
+    ).any {
+        queryRegex.matches(it.lowercase()) // no need to trim since this values are not from user
+    }
 }
 
 val allLanguages: Map<String, Language> by lazy {
@@ -53,6 +55,8 @@ val allLanguages: Map<String, Language> by lazy {
             selfDisplayName = locale.displayLanguage,
             localDisplayName = locale.getDisplayLanguage(defaultLocale)
         )
+    }.also {
+        Log.d("language", "lazy builder value, $it")
     }
 }
 

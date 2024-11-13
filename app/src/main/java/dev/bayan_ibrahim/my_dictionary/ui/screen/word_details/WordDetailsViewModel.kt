@@ -6,8 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordDetailsRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,7 @@ class WordDetailsViewModel @Inject constructor(
     private val _uiState: WordDetailsMutableUiState = WordDetailsMutableUiState()
     val uiState: WordDetailsUiState get() = _uiState
 
-    fun initWithNavigationArgs(args: MDDestination.WordDetails) {
+    fun initWithNavArgs(args: MDDestination.WordDetails) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.onExecute {
                 args.wordId?.let { id ->
@@ -36,8 +37,8 @@ class WordDetailsViewModel @Inject constructor(
                                 name = "dummy_type_tag",
                                 language = Language("en", "English", "English"),
                                 relations = listOf(
-                                    "relation1",
-                                    "relation2"
+                                    WordTypeTagRelation("relation1"),
+                                    WordTypeTagRelation("relation2"),
                                 )
                             )
                         )
@@ -106,7 +107,7 @@ class WordDetailsViewModel @Inject constructor(
                             wordId = _uiState.id,
                             languageCode = _uiState.language.code
                         )
-                        initWithNavigationArgs(navArgs)
+                        initWithNavArgs(navArgs)
                         _uiState.isEditModeOn = false
                         true
                     }
@@ -151,11 +152,11 @@ class WordDetailsViewModel @Inject constructor(
             this.ensureOnTrailingBlankItemRelatedWord()
         }
 
-        override fun onAddNewRelatedWord(relation: String) = ensureEditableUiState {
+        override fun onAddNewRelatedWord(relation: WordTypeTagRelation) = ensureEditableUiState {
             addRelatedWord(relation, INVALID_TEXT)
         }
 
-        override fun onEditRelatedWordRelation(id: Long, newRelation: String) = ensureEditableUiState {
+        override fun onEditRelatedWordRelation(id: Long, newRelation: WordTypeTagRelation) = ensureEditableUiState {
             val oldValue = relatedWords[id]?.second ?: INVALID_TEXT
             relatedWords[id] = newRelation to oldValue
         }

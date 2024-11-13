@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
+package dev.bayan_ibrahim.my_dictionary.ui.screen.word_space
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,21 +10,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
-fun WordsListRoute(
-    wordsList: MDDestination.TopLevel.WordsList,
-    navigateToWordsDetails: (wordId: Long?, languageCode: String) -> Unit,
+fun MDWordSpaceRoute(
+    navArgs: MDDestination.TopLevel.WordSpace,
     modifier: Modifier = Modifier,
-    viewModel: WordsListViewModel = hiltViewModel(),
+    viewModel: MDWordSpaceViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(wordsList) {
-        viewModel.initWithNavArgs(wordsList)
+    LaunchedEffect(navArgs) {
+        viewModel.initWithNavArgs(navArgs)
     }
 
     val uiState = viewModel.uiState
-    val navActions by remember(uiState.selectedWordSpace.language.code) {
+    val navActions by remember {
         derivedStateOf {
-            object : WordsListNavigationUiActions {
-                override fun navigateToWordDetails(wordId: Long?) = navigateToWordsDetails(wordId, uiState.selectedWordSpace.language.code)
+            object : MDWordSpaceNavigationUiActions {
             }
         }
     }
@@ -33,8 +31,7 @@ fun WordsListRoute(
             viewModel.getUiActions(navActions)
         }
     }
-
-    WordsListScreen(
+    MDWordSpaceScreen(
         uiState = uiState,
         uiActions = uiActions,
         modifier = modifier,

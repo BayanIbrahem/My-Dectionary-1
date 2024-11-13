@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
-fun StatisticsRoute(
+fun MDStatisticsRoute(
     statistics: MDDestination.TopLevel.Statistics,
     modifier: Modifier = Modifier,
 ) {

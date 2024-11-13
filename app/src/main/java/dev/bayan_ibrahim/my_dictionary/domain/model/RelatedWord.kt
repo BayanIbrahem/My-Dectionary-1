@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
+package dev.bayan_ibrahim.my_dictionary.domain.model
 
 data class RelatedWord(
     val id: Long,
