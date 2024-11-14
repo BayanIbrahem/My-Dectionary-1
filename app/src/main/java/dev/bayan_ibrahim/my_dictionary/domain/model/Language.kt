@@ -1,33 +1,33 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model
 
-import android.util.Log
 import java.util.Locale
 
 data class Language(
-    val code: String,
+    val code: LanguageCode,
     val selfDisplayName: String,
     val localDisplayName: String,
 ) {
+    val valid: Boolean
+        get() = code.valid
+
     /**
      * code may be 2 or 3 chars this will be true if the code length is 3 this may be used
      * to make text smaller for viewing code
      */
-    val isLongCode: Boolean = code.length > 2
     val fullDisplayName: String
         get() = if (selfDisplayName == localDisplayName) selfDisplayName else "$selfDisplayName - $localDisplayName"
 
-    val valid = code.length in 2..3
-
     fun hasMatchQuery(query: String): Boolean = checkLanguagePartialMatchSearchQuery(this, query)
+
 }
 
-private val queryRegexMap: MutableMap<String, Regex> = mutableMapOf()
+private val queryRegexCacheMap: MutableMap<String, Regex> = mutableMapOf()
 
 private fun checkLanguagePartialMatchSearchQuery(
     language: Language,
     query: String,
 ): Boolean {
-    val queryRegex = queryRegexMap.getOrPut(query.trim().lowercase()) {
+    val queryRegex = queryRegexCacheMap.getOrPut(query.trim().lowercase()) {
         query
             .trim()
             .lowercase()
@@ -39,7 +39,7 @@ private fun checkLanguagePartialMatchSearchQuery(
             ).toRegex()
     }
     return sequenceOf(
-        language.code,
+        language.code.code,
         language.selfDisplayName,
         language.localDisplayName
     ).any {
@@ -47,16 +47,26 @@ private fun checkLanguagePartialMatchSearchQuery(
     }
 }
 
-val allLanguages: Map<String, Language> by lazy {
+@get:JvmName("LanguageCode_language")
+val LanguageCode.language: Language
+    get() = allLanguages[this]!!
+
+@get:JvmName("LanguageCode_wordSpace")
+val LanguageCode.wordSpace: LanguageWordSpace
+    get() = LanguageWordSpace(language)
+
+@get:JvmName("Language_wordSpace")
+val Language.wordSpace: LanguageWordSpace
+    get() = LanguageWordSpace(this)
+
+val allLanguages: Map<LanguageCode, Language> by lazy {
     val defaultLocale = Locale.getDefault()
     Locale.getAvailableLocales().associate { locale ->
-        locale.language to Language(
-            code = locale.language,
+        locale.language.code to Language(
+            code = locale.language.code,
             selfDisplayName = locale.displayLanguage,
             localDisplayName = locale.getDisplayLanguage(defaultLocale)
         )
-    }.also {
-        Log.d("language", "lazy builder value, $it")
     }
 }
 

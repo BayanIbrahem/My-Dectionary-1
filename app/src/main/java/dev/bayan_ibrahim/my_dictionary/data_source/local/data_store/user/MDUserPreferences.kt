@@ -4,6 +4,8 @@ import android.content.Context
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
 import dev.bayan_ibrahim.my_dictionary.domain.model.UserPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.language
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -21,7 +23,7 @@ class MDUserPreferencesImpl(
     override fun getUserPreferencesStream(): Flow<UserPreferences> = proto.data.map {
         UserPreferences(
             selectedLanguagePage = if (it.hasSelectedLanguagePage()) {
-                allLanguages[it.selectedLanguagePage]
+                it.selectedLanguagePage.code.language
             } else {
                 null
             }
@@ -36,7 +38,7 @@ class MDUserPreferencesImpl(
                 if (code == null) {
                     this.clearSelectedLanguagePage()
                 } else {
-                    this.selectedLanguagePage = code
+                    this.selectedLanguagePage = code.code
                 }
             }
         }

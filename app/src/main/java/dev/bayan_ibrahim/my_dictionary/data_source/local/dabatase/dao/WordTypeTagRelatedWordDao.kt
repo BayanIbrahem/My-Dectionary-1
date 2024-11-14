@@ -14,42 +14,42 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTag
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WordTypeTagRelatedWordDao {
+abstract class WordTypeTagRelatedWordDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelatedWord(word: WordTypeTagRelatedWordEntity)
+    abstract suspend fun insertRelatedWord(word: WordTypeTagRelatedWordEntity)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelatedWords(words: List<WordTypeTagRelatedWordEntity>)
+    abstract suspend fun insertRelatedWords(words: List<WordTypeTagRelatedWordEntity>)
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun updateRelatedWord(word: WordTypeTagRelatedWordEntity)
+    abstract suspend fun updateRelatedWord(word: WordTypeTagRelatedWordEntity)
 
     @Delete
-    suspend fun deleteRelatedWord(word: WordTypeTagRelatedWordEntity)
+    abstract suspend fun deleteRelatedWord(word: WordTypeTagRelatedWordEntity)
 
     @Delete
-    suspend fun deleteRelatedWords(words: List<WordTypeTagRelatedWordEntity>)
+    abstract suspend fun deleteRelatedWords1(words: List<WordTypeTagRelatedWordEntity>)
 
     @Query(
         """
             DELETE FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordId = :id
         """
     )
-    suspend fun deleteRelatedWord(id: Long)
+    abstract suspend fun deleteRelatedWord(id: Long)
 
     @Query(
         """
             DELETE FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordId IN (:ids)
         """
     )
-    suspend fun deleteRelatedWords(ids: List<Long>)
+    abstract suspend fun deleteRelatedWords2(ids: List<Long>)
 
     @Query(
         """
             SELECT * FROM $dbTypeTagRelatedWordTable 
         """
     )
-    fun getAllRelatedWords(): Flow<List<WordTypeTagRelatedWordEntity>>
+    abstract fun getAllRelatedWords(): Flow<List<WordTypeTagRelatedWordEntity>>
 
     @Query(
         """
@@ -60,5 +60,5 @@ interface WordTypeTagRelatedWordDao {
             GROUP BY $dbTypeTagRelatedWordRelationId
         """
     )
-    fun getRelatedWordsCount(): Map<@MapColumn("id") Long, @MapColumn("count") Int>
+    abstract fun getRelatedWordsCount(): Map<@MapColumn("id") Long, @MapColumn("count") Int>
 }

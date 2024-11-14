@@ -23,4 +23,5 @@ class DatabaseModule {
         klass = MDDataBase::class.java,
         name = "my_dictionary_db"
     ).build()
+
 }

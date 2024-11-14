@@ -30,7 +30,6 @@ interface MDWordsListUiState : MDUiState {
     val isLanguagesWordSpacesDialogShown: Boolean
     val isLanguageWordSpaceDeleteDialogShown: Boolean
     val isLanguageWordSpaceDeleteProcessRunning: Boolean
-    val words: List<Word>
     val languageTags: PersistentSet<String>
     val isSelectModeOn: Boolean
     val selectedWords: PersistentSet<Long>
@@ -54,7 +53,6 @@ class MDWordsListMutableUiState(
     override var isLanguagesWordSpacesDialogShown: Boolean by mutableStateOf(false)
     override var isLanguageWordSpaceDeleteDialogShown: Boolean by mutableStateOf(false)
     override var isLanguageWordSpaceDeleteProcessRunning: Boolean by mutableStateOf(false)
-    override val words: SnapshotStateList<Word> = mutableStateListOf()
     override var languageTags: PersistentSet<String> by mutableStateOf(persistentSetOf())
     override var isSelectModeOn: Boolean by mutableStateOf(false)
     override var selectedWords: PersistentSet<Long> by mutableStateOf(persistentSetOf())

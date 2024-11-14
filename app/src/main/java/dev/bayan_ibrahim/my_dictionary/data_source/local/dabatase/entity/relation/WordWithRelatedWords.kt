@@ -15,5 +15,5 @@ data class WordWithRelatedWords(
         parentColumn = dbWordId,
         entityColumn = dbTypeTagRelatedWordBaseWordId,
     )
-    val relatedWords: List<WordTypeTagRelatedWordEntity>
+    val relatedWords: List<WordTypeTagRelatedWordWithRelationEntity>
 )

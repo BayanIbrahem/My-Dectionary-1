@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerBasedShape
@@ -19,13 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Composable
@@ -39,6 +38,7 @@ fun MDLanguageWordSpaceListItem(
     selectedContainerColor: Color = MaterialTheme.colorScheme.primary,
     selectedContentColor: Color = MaterialTheme.colorScheme.onPrimary,
     shape: CornerBasedShape = MaterialTheme.shapes.medium,
+    hideWordCountAndProgress: Boolean = false,
     cornerRadius: Dp = 8.dp,
 ) {
     val animatedContainerColor by animateColorAsState(
@@ -68,8 +68,8 @@ fun MDLanguageWordSpaceListItem(
     ) {
         Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
             Text(
-                text = wordSpace.language.code.uppercase(),
-                style = if (wordSpace.language.isLongCode) {
+                text = wordSpace.language.code.uppercaseCode,
+                style = if (wordSpace.language.code.isLong) {
                     MaterialTheme.typography.titleSmall
                 } else {
                     MaterialTheme.typography.titleLarge
@@ -82,22 +82,23 @@ fun MDLanguageWordSpaceListItem(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Text(
-                text = wordSpace.language.fullDisplayName,
+                text = if (hideWordCountAndProgress) wordSpace.language.selfDisplayName else wordSpace.language.fullDisplayName,
                 style = MaterialTheme.typography.bodyLarge,
                 color = animatedContentColor
             )
             Row {
                 Text(
-                    text = "${wordSpace.wordsCount} words", // TODO, string res
+                    text = if (hideWordCountAndProgress) wordSpace.language.localDisplayName else "${wordSpace.wordsCount} words", // TODO, string res
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f),
                     color = animatedContentVariantColor,
                 )
-                Text(
-                    text = "progress ${wordSpace.averageLearningProgress.times(1000).toInt().div(10f)}%", // TODO, string res, TODO, format
-                    style = MaterialTheme.typography.bodySmall,
-                    color = animatedContentVariantColor,
-                )
+                if (!hideWordCountAndProgress)
+                    Text(
+                        text = "progress ${wordSpace.averageLearningProgress.times(1000).toInt().div(10f)}%", // TODO, string res, TODO, format
+                        style = MaterialTheme.typography.bodySmall,
+                        color = animatedContentVariantColor,
+                    )
             }
         }
     }
@@ -112,7 +113,11 @@ private fun LanguagesContentPreview() {
         ) {
             MDLanguageWordSpaceListItem(
                 LanguageWordSpace(
-                    language = Language("en", "English", "English"),
+                    language = Language(
+                        "en".code,
+                        "English",
+                        "English"
+                    ),
                     wordsCount = 100,
                     averageLearningProgress = 0.1f
                 ),

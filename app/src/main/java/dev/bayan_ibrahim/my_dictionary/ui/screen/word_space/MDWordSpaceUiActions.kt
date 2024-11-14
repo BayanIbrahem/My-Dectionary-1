@@ -1,9 +1,11 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.word_space
 
 import androidx.compose.runtime.Immutable
+import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
 
 interface MDWordSpaceBusinessUiActions {
     // work space
+    fun onAddNewWordSpace(code: LanguageCode)
 }
 
 interface MDWordSpaceNavigationUiActions {

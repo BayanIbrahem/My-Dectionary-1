@@ -1,12 +1,10 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component
 
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseOutExpo
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -35,9 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -45,6 +40,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 /**
@@ -68,40 +64,10 @@ fun MDWordsListTopAppBar(
     onDeleteSelection: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    /**
-     * **animated value:**
-     * - selection mode on:  animate to [topAppBarHeight]
-     * - selection mode off: animate to **0**
-     * ______
-     * **vertical translation:**
-     * - selection mode on:  vertical translation to up to minus [topAppBarHeight] as target state,
-     * - selection mode off: vertical translation to down to **0** as target state
-     * ______
-     * **clipping:**
-     * - selection mode on:  shift clipping rect down in total by [topAppBarHeight], so it will
-     * clip items vertically from y equals [topAppBarHeight] to y equals 2 * [topAppBarHeight] (second top app bar)
-     * - selection mode off: shift clipping rect up to 0 so it will clip item vertically from y equals 0 to y equals [topAppBarHeight]
-     * (first top app bar
-     */
-    val animatedHeight: Dp by animateDpAsState(
-        targetValue = if (isSelectionModeOn) topAppBarHeight else 0.dp, label = "animated height",
-        animationSpec = tween(500, easing = EaseOutExpo),
-    )
-    Box(
+    Column(
         modifier = Modifier
     ) {
-        Column(
-            modifier = Modifier
-                .graphicsLayer { translationY = -animatedHeight.toPx() }
-                .drawWithContent {
-                    clipRect(
-                        top = animatedHeight.toPx(),
-                        bottom = topAppBarHeight.plus(animatedHeight).toPx(),
-                    ) {
-                        this@drawWithContent.drawContent()
-                    }
-                },
-        ) {
+        AnimatedVisibility(!isSelectionModeOn) {
             WordsListTopAppBarNormalMode(
                 language = language,
                 visibleWordsCount = visibleWordsCount,
@@ -111,6 +77,8 @@ fun MDWordsListTopAppBar(
                 onDeleteWordSpace = onDeleteWordSpace,
                 modifier = modifier,
             )
+        }
+        AnimatedVisibility(isSelectionModeOn) {
             WordsListTopAppBarSelectionMode(
                 selectedWordsCount = selectedWordsCount,
                 totalWordsCount = visibleWordsCount,
@@ -354,7 +322,7 @@ private fun WordsListTopAppBarPreview() {
                 }
                 MDWordsListTopAppBar(
                     isSelectionModeOn = selectionMode,
-                    language = Language("ar", "العربية", "Arabic"),
+                    language = Language("ar".code, "العربية", "Arabic"),
                     selectedWordsCount = 5,
                     visibleWordsCount = 100,
                     totalWordsCount = 200,

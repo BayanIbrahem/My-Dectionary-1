@@ -1,9 +1,11 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Checkbox
@@ -18,7 +20,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordListItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListLanguageSelectionPageDialog
@@ -28,21 +32,26 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsLis
 @Composable
 fun MDWordsListScreen(
     uiState: MDWordsListUiState,
+    wordsList: List<Word>,
     uiActions: MDWordsListUiActions,
     modifier: Modifier = Modifier,
 ) {
+    val selectedWordsCount by remember(uiState.selectedWords) {
+        derivedStateOf {
+            uiState.selectedWords.count()
+        }
+    }
     MDScreen(
         uiState = uiState,
         modifier = modifier,
         invalidDataMessage = "Select a language to start", // TODO, string res
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             MDWordsListTopAppBar(
                 isSelectionModeOn = uiState.isSelectModeOn,
                 language = uiState.selectedWordSpace.language,
-                selectedWordsCount = uiState.selectedWords.count(),
-                visibleWordsCount = uiState.words.count(),
-                totalWordsCount = uiState.words.count(), // TODO, pass total words count,
+                selectedWordsCount = selectedWordsCount,
+                visibleWordsCount = wordsList.count(),
+                totalWordsCount = wordsList.count(), // TODO, pass total words count,
                 onAdjustFilterPreferences = uiActions::onShowViewPreferencesDialog,
                 onSelectLanguagePage = uiActions::onShowLanguageWordSpacesDialog,
                 onDeleteWordSpace = uiActions::onDeleteLanguageWordSpace,
@@ -67,13 +76,18 @@ fun MDWordsListScreen(
         var expandedWordId: Long? by remember {
             mutableStateOf(null)
         }
-        LazyColumn(
+        LazyVerticalGrid(
             modifier = Modifier.fillMaxSize(),
+            columns = GridCells.Adaptive(250.dp),
+            contentPadding = PaddingValues(8.dp)
         ) {
-            if (uiState.words.isEmpty()) {
+            if (wordsList.isEmpty()) {
                 item(
                     key = -4,
-                    contentType = "placeholder"
+                    contentType = "placeholder",
+                    span = {
+                        GridItemSpan(this.maxLineSpan)
+                    }
                 ) {
                     Text(
                         text = if (uiState.preferencesState.effectiveFilter) {
@@ -86,7 +100,7 @@ fun MDWordsListScreen(
                 }
             } else {
                 items(
-                    items = uiState.words,
+                    items = wordsList,
                     key = { it.id },
                     contentType = { "word" }
                 ) { word ->
@@ -102,12 +116,16 @@ fun MDWordsListScreen(
                         word = word,
                         expanded = isExpanded,
                         primaryAction = {
-                            if(uiState.isSelectModeOn) {
+                            if (uiState.isSelectModeOn) {
                                 Checkbox(checked = isSelected, onCheckedChange = null)
                             }
                         },
                         onClickHeader = {
-                            expandedWordId = word.id
+                            if (expandedWordId == word.id) {
+                                expandedWordId = null
+                            } else {
+                                expandedWordId = word.id
+                            }
                         },
                         onClick = {
                             uiActions.onClickWord(word.id)
@@ -139,11 +157,11 @@ fun MDWordsListScreen(
         onConfirm = uiActions::onConfirmDeleteSelection,
         title = "Delete Words", // TODO, string res
         runningDeleteMessage = "Deletion process is running please wait...",// TODO, string res
-        confirmDeleteMessage = "Are you sure you want to delete ${uiState.selectedWords.count()} words?\n\n this action can not be undone."
+        confirmDeleteMessage = "Are you sure you want to delete $selectedWordsCount words?\n\nthis action can not be undone." // TODO, string res
     )
     // delete word space confirm dialog:
     MDWordsListDeleteConfirmDialog(
-        showDialog = uiState.isSelectedWordsDeleteDialogShown,
+        showDialog = uiState.isLanguageWordSpaceDeleteDialogShown,
         isDeleteRunning = uiState.isLanguageWordSpaceDeleteProcessRunning,
         onCancel = uiActions::onCancelDeleteLanguageWordSpace,
         onConfirm = uiActions::onConfirmDeleteLanguageWordSpace,

@@ -18,13 +18,19 @@ import kotlinx.coroutines.flow.Flow
 interface WordTypeTagDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTagType(tag: WordTypeTagEntity)
+    suspend fun insertTagType(tag: WordTypeTagEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertTagTypes(tags: List<WordTypeTagEntity>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertTagTypes(vararg tags: WordTypeTagEntity): List<Long>
 
     @Update
     suspend fun updateTagType(vararg tag: WordTypeTagEntity)
 
     @Update
-    suspend fun updateTagType(tags: List<WordTypeTagEntity>)
+    suspend fun updateTagTypes(tags: List<WordTypeTagEntity>)
 
     @Delete
     suspend fun deleteTagType(tag: WordTypeTagEntity)
@@ -52,6 +58,9 @@ interface WordTypeTagDao {
     )
     suspend fun getTagType(id: Long): TypeTagWithRelation?
 
+    /**
+     * return only tags of languages that have ones
+     */
     @Transaction
     @Query(
         """

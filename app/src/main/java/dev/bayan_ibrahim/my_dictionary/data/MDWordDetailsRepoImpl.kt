@@ -1,8 +1,10 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.LanguageEntity
 import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelatedWords
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.map
 class MDWordDetailsRepoImpl(
     private val wordDao: WordDao,
     private val tagDao: WordTypeTagDao,
+    private val languageDao: LanguageDao,
 ) : MDWordDetailsRepo {
     override suspend fun getWord(wordId: Long): Word {
         val word = wordDao.getWordWithRelatedWords(wordId)
@@ -31,6 +34,7 @@ class MDWordDetailsRepoImpl(
         require(word.id == INVALID_ID) { "expected invalid id for new word but get ${word.id}, if you are trying to update a word try using saveExistedWord method" }
         val entity = word.asWordEntity()
         val relatedWords = word.asRelatedWords()
+        languageDao.insertLanguage(LanguageEntity(word.language.code.code))
         val id = wordDao.insertWordWithRelations(entity, relatedWords)
         return getWord(id)
     }

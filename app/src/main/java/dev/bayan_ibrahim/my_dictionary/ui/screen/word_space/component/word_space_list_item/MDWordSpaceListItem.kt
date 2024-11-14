@@ -57,9 +57,11 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +72,7 @@ import kotlinx.coroutines.delay
 fun MDWordSpaceListItem(
     state: LanguageWordSpaceState,
     actions: LanguageWordSpaceActions,
-    currentEditableLanguageCode: String?,
+    currentEditableLanguageCode: LanguageCode?,
     modifier: Modifier = Modifier,
 ) {
     val isEditable by remember(currentEditableLanguageCode) {
@@ -82,7 +84,7 @@ fun MDWordSpaceListItem(
     }
     LaunchedEffect(isEditable) {
         if (!isEditable && state.isEditModeOn)
-            // TODO, throw an exception or maybe close the other one
+        // TODO, throw an exception or maybe close the other one
             actions.onCancel()
     }
     var onConfirmEditField: (newValue: String) -> Unit by remember {
@@ -112,8 +114,8 @@ fun MDWordSpaceListItem(
 
                 ) {
                 Text(
-                    text = state.wordSpace.language.code.uppercase(),
-                    style = if (state.wordSpace.language.isLongCode) {
+                    text = state.wordSpace.language.code.uppercaseCode,
+                    style = if (state.wordSpace.language.code.isLong) {
                         MaterialTheme.typography.titleSmall
                     } else {
                         MaterialTheme.typography.titleLarge
@@ -155,6 +157,12 @@ fun MDWordSpaceListItem(
             }
         }
     ) {
+        if (state.tags.isEmpty() && !state.isEditModeOn) {
+            Text(
+                text = "No tags yet in this language, press edit button on the card to add some",
+                style = MaterialTheme.typography.bodyLarge
+            ) // TODO, string res
+        }
         Column(
             modifier = Modifier
                 .heightIn(max = 300.dp)
@@ -461,7 +469,11 @@ private fun MDWordSpaceListItemPreview() {
     }
 }
 
-private val language = Language("de", "Deutsch", "German")
+private val language = Language(
+    code = "de".code,
+    selfDisplayName = "Deutsch",
+    localDisplayName = "German"
+)
 private val state = LanguageWordSpaceMutableState(
     wordSpace = LanguageWordSpace(
         language = language,
@@ -498,4 +510,6 @@ private val actions = LanguageWordSpaceActions(
     onSubmitRequest = {
         delay(500)
     },
+    onEditCapture = {},
+    onEditRelease = {}
 )

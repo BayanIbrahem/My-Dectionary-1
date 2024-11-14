@@ -12,6 +12,7 @@ const val dbWordExamples = "word_examples"
 const val dbWordTranscription = "word_transcription"
 const val dbWordLearningProgress = "word_learningProgress"
 const val dbWordTypeTag = "word_typeTag"
+
 // LanguageWordSpace :
 const val dbLanguageWordSpaceLanguageCode = "languageWordSpace_code"
 const val dbLanguageWordSpaceWordsCount = "languageWordSpace_wordsCount"
@@ -35,3 +36,7 @@ const val dbTypeTagRelatedWordId = "relatedWord_id"
 const val dbTypeTagRelatedWordRelationId = "relatedWord_relationId"
 const val dbTypeTagRelatedWordBaseWordId = "relatedWord_baseWordId"
 const val dbTypeTagRelatedWordName = "relatedWord_name"
+
+// Language:
+const val dbLanguageTable = "languages"
+const val dbLanguageCode = "language_code"

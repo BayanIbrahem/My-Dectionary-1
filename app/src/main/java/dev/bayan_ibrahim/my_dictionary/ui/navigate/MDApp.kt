@@ -46,7 +46,7 @@ fun MDApp(
         },
     ) { padding ->
         MDNavHost(
-            navController,
+            navController = navController,
             modifier = Modifier.padding(padding)
         )
     }

@@ -23,7 +23,8 @@ class DataModule {
         db: MDDataBase,
     ): MDWordDetailsRepo = MDWordDetailsRepoImpl(
         wordDao = db.getWordDao(),
-        tagDao = db.getWordTypeTagDao()
+        tagDao = db.getWordTypeTagDao(),
+        languageDao = db.getLanguageDao()
     )
 
     @Singleton
@@ -34,16 +35,13 @@ class DataModule {
     ): MDWordsListRepo = MDWordsListRepoImpl(
         wordDao = db.getWordDao(),
         tagDao = db.getWordTypeTagDao(),
-        preferences = preferences
+        wordSpaceDao = db.getLanguageWordSpaceDao(),
+        preferences = preferences,
     )
 
     @Singleton
     @Provides
     fun providesWordsSpacesRepo(
         db: MDDataBase,
-    ): MDWordSpaceRepo = MDWordSpaceRepoImpl(
-        wordDao = db.getWordDao(),
-        tagDao = db.getWordTypeTagDao(),
-        relatedWordsDao = db.getWordTypeTagRelatedWordDao()
-    )
+    ): MDWordSpaceRepo = MDWordSpaceRepoImpl(db)
 }

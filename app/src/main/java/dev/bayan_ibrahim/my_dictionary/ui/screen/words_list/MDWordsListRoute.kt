@@ -7,12 +7,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
 fun MDWordsListRoute(
     navArgs: MDDestination.TopLevel.WordsList,
-    navigateToWordsDetails: (wordId: Long?, languageCode: String) -> Unit,
+    navigateToWordsDetails: (wordId: Long?, code: LanguageCode) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MDWordsListViewModel = hiltViewModel(),
 ) {
@@ -21,6 +23,7 @@ fun MDWordsListRoute(
     }
 
     val uiState = viewModel.uiState
+    val wordsList by viewModel.wordsList.collectAsStateWithLifecycle()
     val navActions by remember(uiState.selectedWordSpace.language.code) {
         derivedStateOf {
             object : MDWordsListNavigationUiActions {
@@ -37,6 +40,7 @@ fun MDWordsListRoute(
     MDWordsListScreen(
         uiState = uiState,
         uiActions = uiActions,
+        wordsList = wordsList,
         modifier = modifier,
     )
 }

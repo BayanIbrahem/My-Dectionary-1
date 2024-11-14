@@ -9,10 +9,13 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.language
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,13 +32,14 @@ class WordDetailsViewModel @Inject constructor(
                     val word = repo.getWord(id)
                     _uiState.loadWord(word)
                 }
+                _uiState.language = args.languageCode.code.language
                 val tags = repo.getLanguageTags(args.languageCode)
                     .ifEmpty {
                         listOf(
                             WordTypeTag(
                                 id = INVALID_ID,
                                 name = "dummy_type_tag",
-                                language = Language("en", "English", "English"),
+                                language = Language("en".code, "English", "English"),
                                 relations = listOf(
                                     WordTypeTagRelation("relation1"),
                                     WordTypeTagRelation("relation2"),
@@ -78,6 +82,7 @@ class WordDetailsViewModel @Inject constructor(
 
         override fun onSaveChanges() = ensureEditableUiState {
             viewModelScope.launch(Dispatchers.IO) {
+                var isNew: Boolean = false
                 _uiState.onExecute {
                     _uiState.isEditModeOn = false
                     onValidateAdditionalTranslations()
@@ -86,13 +91,20 @@ class WordDetailsViewModel @Inject constructor(
                     onValidateExamples()
                     val word = _uiState.toWord()
                     if (word.id == INVALID_ID) {
+                        isNew = true
                         val newWord = repo.saveNewWord(word)
                         // we can import the whole word but this is faster
                         _uiState.id = newWord.id
                     } else {
+                        isNew = false
                         repo.saveExistedWord(word)
                     }
                     true
+                }
+                if (isNew) {
+                    withContext(Dispatchers.Main.immediate) {
+                        navigationActions.pop()
+                    }
                 }
             }
         }
@@ -105,7 +117,7 @@ class WordDetailsViewModel @Inject constructor(
                     _uiState.onExecute {
                         val navArgs = MDDestination.WordDetails(
                             wordId = _uiState.id,
-                            languageCode = _uiState.language.code
+                            languageCode = _uiState.language.code.code
                         )
                         initWithNavArgs(navArgs)
                         _uiState.isEditModeOn = false

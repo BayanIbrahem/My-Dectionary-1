@@ -32,7 +32,7 @@ fun MDNavHost(
             MDWordsListRoute(
                 navArgs = wordsList,
                 navigateToWordsDetails = { id, code ->
-                    navController.navigate(WordDetails(id, code))
+                    navController.navigate(WordDetails(id, code.code))
                 }
             )
         }

@@ -1,20 +1,24 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageWordSpaceDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.LanguageWordSpaceEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
-import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordSpaceModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.language
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
@@ -28,6 +32,7 @@ import kotlinx.coroutines.flow.map
 class MDWordsListRepoImpl(
     private val wordDao: WordDao,
     private val tagDao: WordTypeTagDao,
+    private val wordSpaceDao: LanguageWordSpaceDao,
     private val preferences: MDPreferences,
 ) : MDWordsListRepo {
     override fun getViewPreferences(): Flow<WordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
@@ -36,9 +41,9 @@ class MDWordsListRepoImpl(
         preferences
     }
 
-    override suspend fun setSelectedLanguagePage(code: String) {
+    override suspend fun setSelectedLanguagePage(code: LanguageCode) {
         preferences.writeUserPreferences {
-            it.copy(selectedLanguagePage = allLanguages[code]!!)
+            it.copy(selectedLanguagePage = code.language)
         }
     }
 
@@ -46,22 +51,22 @@ class MDWordsListRepoImpl(
 
     override fun getSelectedLanguagePageStream(): Flow<Language?> {
         return preferences.getUserPreferencesStream().map {
-            it.selectedLanguagePage ?: wordDao.getLanguagesWordSpaces().first().firstOrNull()?.let { workSpace ->
-                allLanguages[workSpace.languageCode]
+            it.selectedLanguagePage ?: wordSpaceDao.getLanguagesWordSpaces().first().firstOrNull()?.let { workSpace ->
+                workSpace.languageCode.code.language
             }
         }
     }
 
-    override fun getLanguageTags(languageCode: String): Flow<Set<String>> = wordDao.getTagsInLanguage(languageCode).map {
+    override fun getLanguageTags(code: LanguageCode): Flow<Set<String>> = wordDao.getTagsInLanguage(code.code).map {
         it.map {
             StringListConverter.stringToListConverter(it)
         }.flatten().toSet()
     }
 
     override fun getWordsList(
-        languageCode: String,
+        code: LanguageCode,
         viewPreferences: WordsListViewPreferences,
-    ): Flow<List<Word>> = wordDao.getWordsWithRelatedOfLanguage(languageCode).map {
+    ): Flow<List<Word>> = wordDao.getWordsWithRelatedOfLanguage(code.code).map {
         it.mapNotNull { wordWithRelation ->
             if (wordWithRelation.checkMatchViewPreferences(viewPreferences)) {
                 val wordTypeTag = wordWithRelation.word.wordTypeTagId?.let { typeTagId ->
@@ -81,7 +86,7 @@ class MDWordsListRepoImpl(
     override fun getAllLanguagesWordSpaces(
         includeNotUsedLanguages: Boolean,
     ): Flow<List<LanguageWordSpace>> = if (includeNotUsedLanguages) {
-        wordDao.getLanguagesWordSpaces().map { entities ->
+        wordSpaceDao.getLanguagesWordSpaces().map { entities ->
             val dbModels = entities.map(LanguageWordSpaceEntity::asWordSpaceModel)
             (dbModels + allLanguages.map { (_, language) ->
                 LanguageWordSpace(language = language)
@@ -90,13 +95,13 @@ class MDWordsListRepoImpl(
             }
         }
     } else {
-        wordDao.getLanguagesWordSpaces().map { entities ->
+        wordSpaceDao.getLanguagesWordSpaces().map { entities ->
             entities.map(LanguageWordSpaceEntity::asWordSpaceModel)
         }
     }
 
-    override suspend fun getLanguagesWordSpaces(languageCode: String): LanguageWordSpace? =
-        wordDao.getLanguagesWordSpace(languageCode)?.asWordSpaceModel()
+    override suspend fun getLanguagesWordSpaces(code: LanguageCode): LanguageWordSpace? =
+        wordSpaceDao.getLanguagesWordSpace(code.code)?.asWordSpaceModel()
 
     private fun WordWithRelatedWords.checkMatchViewPreferences(preferences: WordsListViewPreferences): Boolean {
         // search
@@ -111,14 +116,15 @@ class MDWordsListRepoImpl(
             this.word.tags.any { it in preferences.selectedTags }
         } else {
             this.word.tags.all { it !in preferences.selectedTags }
-        }
+        } || preferences.selectedTags.isEmpty()
         if (!matchTags) return false
 
         // learning group
         val wordLearningGroup = WordsListLearningProgressGroup.of(this.word.learningProgress)
 
+        val matchLearningGroup = wordLearningGroup in preferences.selectedLearningProgressGroups || preferences.selectedLearningProgressGroups.isEmpty()
         @Suppress("RedundantIf", "RedundantSuppression")
-        if (wordLearningGroup !in preferences.selectedLearningProgressGroups) return false
+        if (!matchLearningGroup) return false
 
         return true
     }

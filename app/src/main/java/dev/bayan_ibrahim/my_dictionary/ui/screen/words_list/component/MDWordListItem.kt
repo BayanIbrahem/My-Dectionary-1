@@ -11,7 +11,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +50,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import kotlin.math.roundToInt
 
@@ -98,8 +98,8 @@ fun MDWordListItem(
 
                 ) {
                 Text(
-                    text = word.language.code.uppercase(),
-                    style = if (word.language.isLongCode) {
+                    text = word.language.code.uppercaseCode,
+                    style = if (word.language.code.isLong) {
                         MaterialTheme.typography.titleSmall
                     } else {
                         MaterialTheme.typography.titleLarge
@@ -122,15 +122,17 @@ fun MDWordListItem(
             .fillMaxWidth()
             .padding(MDCardDefaults.footerPaddingValues),
         footer = {
+            if (word.tags.isNotEmpty()) {
+                Text(
+                    modifier = Modifier.align(Alignment.BottomStart),
+                    text = word.tags.safeSubList(0, 3).joinToString(", #", "#"),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Text(
                 modifier = Modifier.align(Alignment.BottomEnd),
                 text = "${word.wordTypeTag?.name?.plus(", ") ?: ""}progress ${word.learningProgress.times(100).roundToInt()}%",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                modifier = Modifier.align(Alignment.BottomStart),
-                text = word.tags.safeSubList(0, 3).joinToString(", #", "#"),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -151,7 +153,7 @@ fun MDWordListItem(
                     },
                     text = word.additionalTranslations.joinToString(
                         separator = ", ",
-                        prefix = if (word.additionalTranslations.isNotEmpty()) ", " else ""
+                        prefix = if (word.additionalTranslations.isNotEmpty()) " | " else "",
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -177,7 +179,7 @@ fun MDWordListItem(
                 ) {
                     Text(
                         modifier = Modifier.basicMarquee(),
-                        text = "Examples", // TODO, string res
+                        text = if (word.examples.isEmpty()) "No Examples yet" else "Examples", // TODO, string res
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -217,14 +219,14 @@ private fun MDWordListItemPreview() {
                         meaning = "Auge",
                         translation = "Eye",
                         additionalTranslations = listOf("Human Eye", "Human Eye 2"),
-                        language = Language("de", "Deutsch", "German"),
+                        language = Language("de".code, "Deutsch", "German"),
                         tags = listOf("Human body", "Organic"),
                         transcription = "auge",
                         examples = listOf("I habe zwei auge", "some other example"),
                         wordTypeTag = WordTypeTag(
                             id = 0,
                             name = "name",
-                            language = Language("de", "Deutsch", "German"),
+                            language = Language("de".code, "Deutsch", "German"),
                             relations = listOf(WordTypeTagRelation("relation 1"), WordTypeTagRelation("relation 2")),
                             wordsCount = 30,
                         )

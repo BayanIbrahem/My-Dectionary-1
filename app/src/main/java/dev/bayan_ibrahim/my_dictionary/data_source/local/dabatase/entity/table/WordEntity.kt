@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageCode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordAdditionalTranslations
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordExamples
@@ -28,12 +29,21 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTyp
             entity = WordTypeTagEntity::class,
             parentColumns = [dbTypeTagId],
             childColumns = [dbWordTypeTag],
-            onUpdate = ForeignKey.CASCADE,
-            onDelete = ForeignKey.CASCADE,
-        )
+            onUpdate = ForeignKey.SET_NULL,
+            onDelete = ForeignKey.SET_NULL,
+        ),
+
+        ForeignKey(
+            entity = LanguageEntity::class,
+            parentColumns = [dbLanguageCode],
+            childColumns = [dbWordLanguageCode],
+            onUpdate = ForeignKey.RESTRICT,
+            onDelete = ForeignKey.RESTRICT,
+        ),
     ],
     indices = [
-        Index(dbWordTypeTag)
+        Index(dbWordTypeTag),
+        Index(dbWordLanguageCode),
     ]
 )
 @TypeConverters(StringListConverter::class)

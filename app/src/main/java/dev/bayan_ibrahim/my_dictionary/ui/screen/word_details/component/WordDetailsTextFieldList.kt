@@ -122,7 +122,9 @@ fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
                             onSelectRelation(id, relation)
                         }
                     },
-                    suggestionTitle = { label },
+                    suggestionTitle = {
+                        this.label
+                    },
                     leadingIcon = leadingIcon,
                     label = label,
                     modifier = Modifier.weight(1f),

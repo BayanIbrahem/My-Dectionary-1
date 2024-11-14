@@ -4,9 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
+import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.language
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
@@ -16,10 +19,17 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,28 +42,43 @@ class MDWordsListViewModel @Inject constructor(
     private val _uiState: MDWordsListMutableUiState = MDWordsListMutableUiState()
     val uiState: MDWordsListUiState = _uiState
 
+    private val currentLanguageFlow: Flow<Language?> = repo.getSelectedLanguagePageStream()
+
     private val viewPreferences = repo.getViewPreferences().onStart {
         this.emit(defaultWordsListViewPreferences)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val wordsList: StateFlow<List<Word>> = currentLanguageFlow.combine(viewPreferences) { language, viewPreferences ->
+        language to viewPreferences
+    }.flatMapConcat { (language, viewPreferences) ->
+        language?.let { repo.getWordsList(it.code, viewPreferences) } ?: flow<List<Word>> {
+            emit(emptyList())
+        }.also {
+            it
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = listOf()
+    )
+
     private val selectedLanguagePage = repo.getSelectedLanguagePageStream().onStart {
         this.emit(null)
-    }.onEach {
+    }.map {
         _uiState.validData = it != null
+        it
     }
 
     fun initWithNavArgs(args: MDDestination.TopLevel.WordsList) {
         viewModelScope.launch {
             _uiState.onExecute {
-                val languageCode = args.languageCode ?: repo.getSelectedLanguagePage()?.code
-
+                val languageCode = args.languageCode?.code ?: repo.getSelectedLanguagePage()?.code
 
                 if (languageCode != null) {
                     _uiState.selectedWordSpace =
-                        repo.getLanguagesWordSpaces(languageCode = languageCode) ?: LanguageWordSpace(allLanguages[languageCode]!!)
+                        repo.getLanguagesWordSpaces(code = languageCode) ?: LanguageWordSpace(languageCode.language)
                     _uiState.preferencesState.onApplyPreferences(viewPreferences.first())
-
-                    syncWordsList()
                 } else {
                     _uiState.selectedWordSpace = LanguageWordSpace()
                     _uiState.validData = false
@@ -113,9 +138,6 @@ class MDWordsListViewModel @Inject constructor(
 
             viewModelScope.launch {
                 launch {
-                    syncWordsList()
-                }
-                launch {
                     repo.setSelectedLanguagePage(wordSpace.language.code)
                 }
             }
@@ -145,11 +167,8 @@ class MDWordsListViewModel @Inject constructor(
         }
 
         override fun onLongClickWord(id: Long) {
-            if (uiState.isSelectModeOn) {
-                onToggleSelectWord(id)
-            } else {
-                _uiState.isSelectModeOn = true
-            }
+            _uiState.isSelectModeOn = true
+            onToggleSelectWord(id)
         }
 
         override fun onAddNewWord() {
@@ -256,7 +275,7 @@ class MDWordsListViewModel @Inject constructor(
         }
 
         override fun onConfirmDeleteSelection() {
-            if (uiState.isSelectModeOn && uiState.isSelectedWordsDeleteDialogShown) {
+            if (uiState.isSelectModeOn) {
                 viewModelScope.launch {
                     _uiState.onExecute {
                         val ids = uiState.selectedWords
@@ -281,7 +300,7 @@ class MDWordsListViewModel @Inject constructor(
         }
     }
 
-    private fun allWordsIds() = uiState.words.map { it.id }.toPersistentSet()
+    private fun allWordsIds() = wordsList.value.map { it.id }.toPersistentSet()
 
     private fun onToggleSelectWord(id: Long) {
         val isSelected = id in uiState.selectedWords
@@ -292,22 +311,9 @@ class MDWordsListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun syncWordsList() {
-        _uiState.onExecute {
-            val preferences = viewPreferences.first()
-            val newWords = repo.getWordsList(uiState.selectedWordSpace.language.code, preferences).firstOrNull() ?: emptyList()
-            _uiState.words.clear()
-            _uiState.words.addAll(newWords)
-            true
-        }
-    }
-
     private fun editViewByPreferences(body: WordsListViewPreferencesMutableState.() -> Unit) {
         _uiState.preferencesState.body()
         viewModelScope.launch {
-            launch {
-                syncWordsList()
-            }
             launch {
                 repo.setViewPreferences(uiState.preferencesState)
             }

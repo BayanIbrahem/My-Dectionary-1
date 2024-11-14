@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogColors
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogDefaults
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
@@ -48,16 +47,15 @@ fun MDWordsListDeleteConfirmDialog(
     MDAlertDialog(
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
+        textStyle = MDCardDefaults.textStyles(headerTextStyle = MaterialTheme.typography.titleLarge),
+        headerModifier = Modifier.padding(8.dp),
         title = {
             Row(
-                modifier = Modifier
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = title,
                     modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleLarge
                 )// TODO, string res
                 if (isDeleteRunning) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
@@ -67,6 +65,7 @@ fun MDWordsListDeleteConfirmDialog(
         modifier = modifier,
         actions = {
             MDAlertDialogActions(
+                onDismissRequest = onDismissRequest,
                 onPrimaryClick = onConfirm,
                 onSecondaryClick = onCancel,
                 primaryActionLabel = "Delete",

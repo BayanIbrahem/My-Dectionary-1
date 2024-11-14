@@ -1,10 +1,15 @@
 package dev.bayan_ibrahim.my_dictionary.core.util
 
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
 
 const val INVALID_ID = -1L
 const val INVALID_TEXT = ""
-val INVALID_LANGUAGE = Language("", "", "")
+val INVALID_LANGUAGE = Language(
+    code = "".code,
+    selfDisplayName = "",
+    localDisplayName = ""
+)
 
 @JvmName("LongNullIfInvalid")
 fun Long.nullIfInvalid() = nullIfInvalid(INVALID_ID)

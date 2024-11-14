@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Composable
@@ -185,7 +186,7 @@ private fun WordDetailsTopAppBarPreview() {
                 WordDetailsTopAppBar(
                     isEditModeOn = false,
                     isNewWord = false,
-                    language = Language("en", "English", "English"),
+                    language = Language("en".code, "English", "English"),
                     learningProgress = 0.1f,
                     validWord = true,
                     onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
@@ -193,7 +194,7 @@ private fun WordDetailsTopAppBarPreview() {
                 WordDetailsTopAppBar(
                     isEditModeOn = true,
                     isNewWord = false,
-                    language = Language("en", "English", "English"),
+                    language = Language("en".code, "English", "English"),
                     learningProgress = 0.1f,
                     validWord = true,
                     onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
@@ -201,7 +202,7 @@ private fun WordDetailsTopAppBarPreview() {
                 WordDetailsTopAppBar(
                     isEditModeOn = true,
                     isNewWord = false,
-                    language = Language("en", "English", "English"),
+                    language = Language("en".code, "English", "English"),
                     learningProgress = 0.1f,
                     validWord = false,
                     onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
@@ -210,7 +211,7 @@ private fun WordDetailsTopAppBarPreview() {
                 WordDetailsTopAppBar(
                     isEditModeOn = true,
                     isNewWord = true,
-                    language = Language("en", "English", "English"),
+                    language = Language("en".code, "English", "English"),
                     learningProgress = 0.1f,
                     validWord = true,
                     onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
