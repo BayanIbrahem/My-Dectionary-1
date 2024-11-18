@@ -6,11 +6,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.ExportToFile
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.Profile
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.Statistics
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordSpace
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordsList
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.WordDetails
+import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.MDExportToFileRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.import_from_file.MDImportFromFileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.MDProfileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.MDStatisticsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.WordDetailsRoute
@@ -38,7 +41,10 @@ fun MDNavHost(
         }
         composable<Profile> { backStackEntry ->
             val profile: Profile = backStackEntry.toRoute()
-            MDProfileRoute(profile = profile)
+            MDProfileRoute(
+                profile = profile,
+                navigateToScreen = navController::navigate
+            )
         }
         composable<Statistics> { backStackEntry ->
             val statistics: Statistics = backStackEntry.toRoute()
@@ -52,6 +58,16 @@ fun MDNavHost(
         composable<WordSpace> {
             val wordDetails: WordSpace = it.toRoute()
             MDWordSpaceRoute(navArgs = wordDetails)
+        }
+
+        composable<MDDestination.ImportFromFile> {
+            val importFromFile: MDDestination.ImportFromFile = it.toRoute()
+            MDImportFromFileRoute(importFromFile)
+        }
+
+        composable<ExportToFile> {
+            val exportToFile: ExportToFile = it.toRoute()
+            MDExportToFileRoute(exportToFile)
         }
     }
 }

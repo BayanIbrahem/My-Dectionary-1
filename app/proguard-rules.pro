@@ -41,3 +41,6 @@
 -dontwarn javax.lang.model.util.SimpleElementVisitor8
 -dontwarn javax.lang.model.util.SimpleTypeVisitor8
 -dontwarn javax.lang.model.util.Types
+-dontwarn org.intellij.lang.annotations.Language
+-dontwarn org.jetbrains.annotations.NotNull
+-dontwarn org.jetbrains.annotations.Nullable

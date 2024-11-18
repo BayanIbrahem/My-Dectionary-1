@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.core.design_system
 
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -41,11 +43,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDImeAction
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 object MDTextFieldDefaults {
+    val shape: CornerBasedShape
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.shapes.medium
     val textStyle: TextStyle
         @Composable
         @ReadOnlyComposable
@@ -164,6 +169,7 @@ fun MDBasicTextField(
     onKeyboardAction: KeyboardActionScope.() -> Unit = {},
     focusManager: FocusManager = LocalFocusManager.current,
     colors: TextFieldColors = MDTextFieldDefaults.colors(),
+    shape: CornerBasedShape = MDTextFieldDefaults.shape,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     labelStyle: TextStyle = MDTextFieldDefaults.labelStyle,
     hasBottomHorizontalDivider: Boolean = false,
@@ -178,8 +184,10 @@ fun MDBasicTextField(
             Text(
                 text = label,
                 style = labelStyle,
-                modifier = Modifier.padding(start = 8.dp).basicMarquee(),
-                maxLines =1,
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .basicMarquee(),
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
@@ -195,18 +203,20 @@ fun MDBasicTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium,
+            shape = shape,
             minLines = minLines,
             maxLines = maxLines,
             readOnly = readOnly,
             enabled = enabled,
-            placeholder = { Text(
-                text = placeholder,
-                maxLines = maxLines,
-                minLines = minLines,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.basicMarquee(),
-            ) },
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    maxLines = maxLines,
+                    minLines = minLines,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.basicMarquee(),
+                )
+            },
             keyboardOptions = KeyboardOptions(imeAction = imeAction.imeAction),
             keyboardActions = keyboardActions,
             colors = colors,
@@ -254,7 +264,7 @@ private fun MDTextFieldPreview() {
                     onValueChange = { value = it },
                     label = "label",
                     placeholder = "Place holder",
-                    hasBottomHorizontalDivider = true,
+                    hasBottomHorizontalDivider = false,
                     leadingIcons = {
                         IconButton(
                             onClick = {},
@@ -282,7 +292,8 @@ private fun MDTextFieldPreview() {
                         ) {
                             Icon(Icons.Default.Close, null)
                         }
-                    }
+                    },
+
                 )
             }
         }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="byte_short">%s B</string>
+    <string name="kilobyte_short">%s KB</string>
+    <string name="megabyte_short">%s MB</string>
+    <string name="gigabyte_short">%s GB</string>
+    <string name="terabyte_short">%s TB</string>
+    <string name="byte_long">%s byte</string>
+    <string name="kilobyte_long">%s kilobyte</string>
+    <string name="megabyte_long">%s megabyte</string>
+    <string name="gigabyte_long">%s gigabyte</string>
+    <string name="terabyte_long">%s terabyte</string>
+</resources>

@@ -82,28 +82,6 @@ protobuf {
         }
     }
 }
-//
-//androidComponents {
-//    onVariants(selector().all()) { variant ->
-//        afterEvaluate {
-//////            option 1
-//            val protoTask =
-//                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
-//
-//            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
-//                dependsOn(protoTask)
-//                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
-//                    protoTask.outputBaseDir
-//                )
-//            }
-//////            option 2
-////            val capName = variant.name.capitalized()
-////            tasks.getByName<KotlinCompile>("ksp${capName}Kotlin") {
-////                setSource(tasks.getByName("generate${capName}Proto").outputs)
-////            }
-//        }
-//    }
-//}
 
 dependencies {
     implementation(libs.androidx.activity.compose)
@@ -142,6 +120,10 @@ dependencies {
 
     compileOnly(libs.ksp.gradlePlugin)
 
+    implementation(libs.androidx.coroutines.android)
+    testImplementation(libs.androidx.coroutines.test)
+    androidTestImplementation(libs.androidx.coroutines.test)
+
     testImplementation(libs.junit)
 
     coreLibraryDesugaring(libs.core.desugaring)
@@ -152,4 +134,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(kotlin("reflect"))
 }

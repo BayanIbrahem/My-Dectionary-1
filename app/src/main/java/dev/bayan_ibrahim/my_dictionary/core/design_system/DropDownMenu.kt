@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +44,9 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Stable
 data object MDDropDownMenuDefaults {
+    val fieldShape: CornerBasedShape
+        @Composable
+        get() = MDTextFieldDefaults.shape
     val fieldColors: TextFieldColors
         @Composable
         get() = MDTextFieldDefaults.colors()
@@ -71,13 +78,14 @@ data class MDMenuColors(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@JvmName("MBBasicDropDownMenuString")
 @Composable
 fun <Data : Any> MDBasicDropDownMenu(
     value: Data?,
     onValueChange: (String) -> Unit,
     suggestions: List<Data>,
     suggestionTitle: @Composable Data.() -> String,
+    selectedSuggestionTitle: (@Composable Data.() -> String)? = null,
     onSelectSuggestion: (Int, Data?) -> Unit,
     modifier: Modifier = Modifier,
     suggestionSubtitle: @Composable Data.() -> String? = { null },
@@ -95,10 +103,87 @@ fun <Data : Any> MDBasicDropDownMenu(
     onKeyboardAction: KeyboardActionScope.() -> Unit = {},
     focusManager: FocusManager = LocalFocusManager.current,
     fieldColors: TextFieldColors = MDDropDownMenuDefaults.fieldColors,
+    fieldShape: CornerBasedShape = MDDropDownMenuDefaults.fieldShape,
     menuColors: MDMenuColors = MDDropDownMenuDefaults.menuColors(),
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     labelStyle: TextStyle = MDTextFieldDefaults.labelStyle,
     hasBottomHorizontalDivider: Boolean = false,
+    menuMatchFieldWidth: Boolean = true,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
+    allowCancelSelection: Boolean = true,
+) {
+    MDBasicDropDownMenu(
+        value = value,
+        onValueChange = onValueChange,
+        suggestions = suggestions,
+        suggestionAnnotatedTitle = { buildAnnotatedString { append(suggestionTitle()) } },
+        selectedSuggestionAnnotatedTitle = selectedSuggestionTitle?.let {
+            { buildAnnotatedString { append(selectedSuggestionTitle()) } }
+        },
+        onSelectSuggestion = onSelectSuggestion,
+        modifier = modifier,
+        suggestionAnnotatedSubtitle = { suggestionSubtitle()?.let { buildAnnotatedString { append(it) } } },
+        fieldModifier = fieldModifier,
+        placeholder = placeholder,
+        label = label,
+        minLines = minLines,
+        maxLines = maxLines,
+        fieldReadOnly = fieldReadOnly,
+        menuReadOnly = menuReadOnly,
+        enabled = enabled,
+        leadingIcons = leadingIcons,
+        trailingIcons = trailingIcons,
+        imeAction = imeAction,
+        onKeyboardAction = onKeyboardAction,
+        focusManager = focusManager,
+        fieldColors = fieldColors,
+        fieldShape = fieldShape,
+        menuColors = menuColors,
+        textStyle = textStyle,
+        labelStyle = labelStyle,
+        hasBottomHorizontalDivider = hasBottomHorizontalDivider,
+        menuMatchFieldWidth = menuMatchFieldWidth,
+        prefix = prefix,
+        suffix = suffix,
+        allowCancelSelection = allowCancelSelection
+    )
+}
+
+fun String.toAnnotatedString() = AnnotatedString(this)
+
+@JvmName("MBBasicDropDownMenuAnnotatedString")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun <Data : Any> MDBasicDropDownMenu(
+    value: Data?,
+    onValueChange: (String) -> Unit,
+    suggestions: List<Data>,
+    suggestionAnnotatedTitle: @Composable Data.() -> AnnotatedString,
+    selectedSuggestionAnnotatedTitle: (@Composable Data.() -> AnnotatedString)? = null,
+    onSelectSuggestion: (Int, Data?) -> Unit,
+    modifier: Modifier = Modifier,
+    suggestionAnnotatedSubtitle: @Composable Data.() -> AnnotatedString? = { null },
+    fieldModifier: Modifier = Modifier,
+    placeholder: String = "",
+    label: String = "",
+    minLines: Int = 1,
+    maxLines: Int = 3,
+    fieldReadOnly: Boolean = false,
+    menuReadOnly: Boolean = false,
+    enabled: Boolean = true,
+    leadingIcons: (@Composable RowScope.() -> Unit)? = null,
+    trailingIcons: (@Composable RowScope.() -> Unit)? = null,
+    imeAction: MDImeAction = MDImeAction.Done,
+    onKeyboardAction: KeyboardActionScope.() -> Unit = {},
+    focusManager: FocusManager = LocalFocusManager.current,
+    fieldColors: TextFieldColors = MDDropDownMenuDefaults.fieldColors,
+    fieldShape: CornerBasedShape = MDDropDownMenuDefaults.fieldShape,
+    menuColors: MDMenuColors = MDDropDownMenuDefaults.menuColors(),
+    textStyle: TextStyle = MDTextFieldDefaults.textStyle,
+    labelStyle: TextStyle = MDTextFieldDefaults.labelStyle,
+    hasBottomHorizontalDivider: Boolean = false,
+    menuMatchFieldWidth: Boolean = true,
     prefix: @Composable (() -> Unit)? = null,
     suffix: @Composable (() -> Unit)? = null,
     allowCancelSelection: Boolean = true,
@@ -113,9 +198,14 @@ fun <Data : Any> MDBasicDropDownMenu(
             showDropDownMenu = it && !menuReadOnly
         }
     ) {
-        val fieldValue = value?.suggestionTitle() ?: ""
+        val selectedSuggestionTitleBuilder by remember(selectedSuggestionAnnotatedTitle != null) {
+            derivedStateOf {
+                selectedSuggestionAnnotatedTitle ?: suggestionAnnotatedTitle
+            }
+        }
+        val fieldValue = value?.selectedSuggestionTitleBuilder() ?: buildAnnotatedString { append("") }
         MDBasicTextField(
-            value = fieldValue,
+            value = fieldValue.text,
             onValueChange = {
                 onValueChange(it)
             },
@@ -133,6 +223,7 @@ fun <Data : Any> MDBasicDropDownMenu(
             onKeyboardAction = onKeyboardAction,
             focusManager = focusManager,
             colors = fieldColors,
+            shape = fieldShape,
             textStyle = textStyle,
             labelStyle = labelStyle,
             hasBottomHorizontalDivider = hasBottomHorizontalDivider,
@@ -145,6 +236,7 @@ fun <Data : Any> MDBasicDropDownMenu(
                 showDropDownMenu = false
             },
             containerColor = menuColors.menuColor,
+            matchTextFieldWidth = menuMatchFieldWidth,
         ) {
             Box {
                 Column(
@@ -177,15 +269,15 @@ fun <Data : Any> MDBasicDropDownMenu(
                         }
                     }
                     suggestions.forEachIndexed { i, suggestion ->
-                        val title = suggestion.suggestionTitle()
-                        val subtitle = suggestion.suggestionSubtitle()
+                        val title = suggestion.suggestionAnnotatedTitle()
+                        val subtitle = suggestion.suggestionAnnotatedSubtitle()
                         MDMenuItem(
                             title = title,
                             subtitle = subtitle,
                             cardColors = menuColors.cardColors,
                             onClick = {
                                 onSelectSuggestion(i, suggestion)
-                                onValueChange(title)
+                                onValueChange(title.text)
                                 showDropDownMenu = false
                             }
                         )
@@ -196,10 +288,11 @@ fun <Data : Any> MDBasicDropDownMenu(
     }
 }
 
+
 @Composable
 private fun MDMenuItem(
-    title: String,
-    subtitle: String?,
+    title: AnnotatedString,
+    subtitle: AnnotatedString?,
     cardColors: CardColors,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -268,11 +361,11 @@ private fun MDBasicDropDownPreview() {
                 MDBasicDropDownMenu(
                     value = value2,
                     onValueChange = { value2 = it },
+                    suggestions = List(3) { "item $it" },
+                    suggestionTitle = { this },
                     fieldReadOnly = false,
                     placeholder = "placeholder, editable medium",
-                    suggestions = List(3) { "item $it" },
                     onSelectSuggestion = { i, suggestion -> },
-                    suggestionTitle = { this },
                     suggestionSubtitle = { this }
                 )
             }

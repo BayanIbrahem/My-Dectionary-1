@@ -62,4 +62,14 @@ sealed interface MDDestination {
         val wordId: Long? = null,
         val languageCode: String,
     ) : MDDestination
+
+    @Serializable
+    data object ImportFromFile: MDDestination
+
+    @Serializable
+    data object ExportToFile: MDDestination
+
+    @Serializable
+    data object AutoBackup: MDDestination
 }
+
