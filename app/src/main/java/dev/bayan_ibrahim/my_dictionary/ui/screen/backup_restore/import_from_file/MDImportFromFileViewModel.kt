@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -76,7 +75,11 @@ class MDImportFromFileViewModel @Inject constructor(
             if (uiState.validFile || uiState.fileValidationInProgress) {
                 viewModelScope.launch(Dispatchers.IO) {
                     uiState.selectedFileData?.let { data ->
-                        repo.processFile(data).collect {
+                        repo.processFile(
+                            fileData = data,
+                            existedWordStrategy = uiState.existedWordStrategy,
+                            corruptedWordStrategy = uiState.corruptedWordStrategy,
+                        ).collect {
                             _importSummaryFlow.value = it
                             Log.d("summary", "import summary updated ${it.totalEntriesRead}")
                         }

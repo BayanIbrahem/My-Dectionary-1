@@ -1,8 +1,8 @@
 package dev.bayan_ibrahim.my_dictionary.domain.repo
 
-import android.net.Uri
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileProcessingSummary
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
 import kotlinx.coroutines.flow.Flow
 
 interface MDImportFromFileRepo {
@@ -10,6 +10,8 @@ interface MDImportFromFileRepo {
 
     fun processFile(
         fileData: MDFileData,
+        existedWordStrategy: MDFileStrategy,
+        corruptedWordStrategy: MDFileStrategy,
         onInvalidStream: () -> Unit = {},
         onUnsupportedFile: () -> Unit = {},
         onReadStreamError: (throwable: Throwable) -> Unit = {},
