@@ -93,7 +93,9 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         } else {
             this.relatedWords.run {
                 val maxId = maxOfOrNull { it.key } // latest value
-                val blankValues = filterValues { it.first !in selectedTypeRelations || it.second.isBlank() }
+                val blankValues = filterValues { (r, w) ->
+                    r.label.isBlank() || w.isBlank()
+                }
                 blankValues.forEach { (id, _) ->
                     if (id != maxId) {
                         remove(id)
@@ -128,11 +130,13 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         additionalTranslations.setAll(word.additionalTranslations.associateBy { idGenerator.nextId() })
         tags.setAll(word.tags.associateBy { idGenerator.nextId() })
         selectedTypeTag = word.wordTypeTag
-        relatedWords.setAll(
-            word.relatedWords.associate {
-                idGenerator.nextId() to (WordTypeTagRelation(it.relationLabel) to it.value)
-            }
-        )
+        selectedTypeTag?.relations?.associateBy { it.id }?.let { relations ->
+            relatedWords.setAll(
+                word.relatedWords.associate {
+                    idGenerator.nextId() to (relations[it.relationId]!! to it.value)
+                }
+            )
+        }
         examples.setAll(word.examples.associateBy { idGenerator.nextId() })
         learningProgress = word.learningProgress
     }

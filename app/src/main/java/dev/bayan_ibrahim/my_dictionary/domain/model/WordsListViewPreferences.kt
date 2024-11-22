@@ -19,7 +19,7 @@ interface WordsListViewPreferences {
     val effectiveFilter: Boolean
         get() = searchQuery.isNotBlank()
                 || selectedTags.isNotEmpty()
-                || (WordsListLearningProgressGroup.entries.count() > selectedLearningProgressGroups.count())
+                || (selectedLearningProgressGroups.count() in 1..(WordsListLearningProgressGroup.entries.count()))
 }
 
 data class WordsListViewPreferencesBuilder(

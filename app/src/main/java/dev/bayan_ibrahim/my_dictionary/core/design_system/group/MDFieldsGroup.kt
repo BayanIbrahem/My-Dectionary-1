@@ -72,6 +72,7 @@ fun MDFieldsGroup(
     fields: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         CompositionLocalProvider(
@@ -80,7 +81,6 @@ fun MDFieldsGroup(
             title()
         }
         MDCard(
-            modifier = modifier,
             shape = shape,
             colors = MDCardDefaults.colors(
                 contentContentColor = colors.contentColor,

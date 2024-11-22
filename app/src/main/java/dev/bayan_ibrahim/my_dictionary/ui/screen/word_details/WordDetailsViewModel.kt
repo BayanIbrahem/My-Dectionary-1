@@ -34,19 +34,6 @@ class WordDetailsViewModel @Inject constructor(
                 }
                 _uiState.language = args.languageCode.code.language
                 val tags = repo.getLanguageTags(args.languageCode)
-                    .ifEmpty {
-                        listOf(
-                            WordTypeTag(
-                                id = INVALID_ID,
-                                name = "dummy_type_tag",
-                                language = Language("en".code, "English", "English"),
-                                relations = listOf(
-                                    WordTypeTagRelation("relation1"),
-                                    WordTypeTagRelation("relation2"),
-                                )
-                            )
-                        )
-                    }
                 _uiState.typeTags.setAll(tags)
                 _uiState.selectedTypeTag = tags.firstOrNull()
                 // if it is a new word then it should be the on edit mode initially otherwise it should be on reading mode

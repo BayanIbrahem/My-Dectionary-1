@@ -2,6 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -46,6 +47,7 @@ fun MDWordsListScreen(
         uiState = uiState,
         modifier = modifier,
         invalidDataMessage = "Select a language to start", // TODO, string res
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             MDWordsListTopAppBar(
                 isSelectionModeOn = uiState.isSelectModeOn,

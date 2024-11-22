@@ -64,6 +64,7 @@ fun MDWordSpaceScreen(
     ) {
         LazyVerticalGrid(
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(8.dp),
             columns = GridCells.Adaptive(300.dp)
         ) {

@@ -5,10 +5,12 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.material3.Card
@@ -39,6 +41,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDImeAction
+import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroupColors
+import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroupDefaults
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
@@ -51,32 +57,14 @@ data object MDDropDownMenuDefaults {
         @Composable
         get() = MDTextFieldDefaults.colors()
 
-    @Composable
-    fun menuColors(
-        fieldColors: TextFieldColors = this.fieldColors,
-    ): MDMenuColors = MDMenuColors(
-        menuColor = Color.Transparent,
-        itemContainerColor = fieldColors.focusedContainerColor,
-        itemContentColor = fieldColors.focusedTextColor,
-        disabledItemContainerColor = fieldColors.unfocusedContainerColor,
-        disabledItemContentColor = fieldColors.unfocusedTextColor
-    )
+    val menuShape: CornerBasedShape
+        @Composable
+        get() = MDFieldsGroupDefaults.shape
+    val menuColors: MDFieldsGroupColors
+        @Composable
+        get() = MDFieldsGroupDefaults.colors()
 }
 
-data class MDMenuColors(
-    val menuColor: Color,
-    val itemContainerColor: Color,
-    val itemContentColor: Color,
-    val disabledItemContainerColor: Color,
-    val disabledItemContentColor: Color,
-) {
-    val cardColors = CardColors(
-        containerColor = itemContainerColor,
-        contentColor = itemContentColor,
-        disabledContainerColor = disabledItemContainerColor,
-        disabledContentColor = disabledItemContentColor
-    )
-}
 
 @JvmName("MBBasicDropDownMenuString")
 @Composable
@@ -104,7 +92,7 @@ fun <Data : Any> MDBasicDropDownMenu(
     focusManager: FocusManager = LocalFocusManager.current,
     fieldColors: TextFieldColors = MDDropDownMenuDefaults.fieldColors,
     fieldShape: CornerBasedShape = MDDropDownMenuDefaults.fieldShape,
-    menuColors: MDMenuColors = MDDropDownMenuDefaults.menuColors(),
+    menuColors: MDFieldsGroupColors = MDDropDownMenuDefaults.menuColors,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     labelStyle: TextStyle = MDTextFieldDefaults.labelStyle,
     hasBottomHorizontalDivider: Boolean = false,
@@ -179,7 +167,8 @@ fun <Data : Any> MDBasicDropDownMenu(
     focusManager: FocusManager = LocalFocusManager.current,
     fieldColors: TextFieldColors = MDDropDownMenuDefaults.fieldColors,
     fieldShape: CornerBasedShape = MDDropDownMenuDefaults.fieldShape,
-    menuColors: MDMenuColors = MDDropDownMenuDefaults.menuColors(),
+    menuColors: MDFieldsGroupColors = MDDropDownMenuDefaults.menuColors,
+    menuShape: CornerBasedShape = MDDropDownMenuDefaults.menuShape,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     labelStyle: TextStyle = MDTextFieldDefaults.labelStyle,
     hasBottomHorizontalDivider: Boolean = false,
@@ -228,59 +217,53 @@ fun <Data : Any> MDBasicDropDownMenu(
             labelStyle = labelStyle,
             hasBottomHorizontalDivider = hasBottomHorizontalDivider,
             prefix = prefix,
-            suffix = suffix
+            suffix = suffix,
         )
         ExposedDropdownMenu(
             expanded = showDropDownMenu,
             onDismissRequest = {
                 showDropDownMenu = false
             },
-            containerColor = menuColors.menuColor,
+            containerColor = Color.Transparent,
             matchTextFieldWidth = menuMatchFieldWidth,
         ) {
             Box {
-                Column(
-                    modifier = modifier,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                MDFieldsGroup(
+                    modifier = modifier.width(IntrinsicSize.Max),
+                    colors = menuColors,
+                    shape = menuShape,
                 ) {
                     if (allowCancelSelection) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                        MDField(
+                            trailingIcon = {},
                             onClick = {
                                 onSelectSuggestion(0, null)
                                 onValueChange(INVALID_TEXT)
                                 showDropDownMenu = false
                             },
-                            shape = MaterialTheme.shapes.medium,
-                            colors = menuColors.cardColors,
                         ) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                Text(
-                                    text = "Cancel selection",/* TODO, string res */
-                                    modifier = Modifier.padding(8.dp),
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Italic,
-                                )
-                            }
+                            Text(
+                                text = "Cancel selection",/* TODO, string res */
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Italic,
+                            )
                         }
                     }
                     suggestions.forEachIndexed { i, suggestion ->
                         val title = suggestion.suggestionAnnotatedTitle()
                         val subtitle = suggestion.suggestionAnnotatedSubtitle()
-                        MDMenuItem(
-                            title = title,
-                            subtitle = subtitle,
-                            cardColors = menuColors.cardColors,
+                        MDField(
                             onClick = {
                                 onSelectSuggestion(i, suggestion)
                                 onValueChange(title.text)
                                 showDropDownMenu = false
                             }
-                        )
+                        ) {
+                            Column {
+                                Text(title)
+                                subtitle?.let { Text(it) }
+                            }
+                        }
                     }
                 }
             }
