@@ -7,8 +7,11 @@ data class Language(
     val selfDisplayName: String,
     val localDisplayName: String,
 ) {
-    val valid: Boolean
+    val validCode: Boolean
         get() = code.valid
+
+    val validLanguage: Boolean
+        get() = validCode && code in allLanguages
 
     /**
      * code may be 2 or 3 chars this will be true if the code length is 3 this may be used
@@ -50,6 +53,9 @@ private fun checkLanguagePartialMatchSearchQuery(
 @get:JvmName("LanguageCode_language")
 val LanguageCode.language: Language
     get() = allLanguages[this]!!
+
+val LanguageCode.languageOrNull: Language?
+    get() = allLanguages[this]
 
 @get:JvmName("LanguageCode_wordSpace")
 val LanguageCode.wordSpace: LanguageWordSpace

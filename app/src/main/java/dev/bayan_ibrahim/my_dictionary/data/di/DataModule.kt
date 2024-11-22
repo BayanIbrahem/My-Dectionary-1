@@ -1,10 +1,8 @@
 package dev.bayan_ibrahim.my_dictionary.data.di
 
-import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDRawWord
 import dev.bayan_ibrahim.my_dictionary.data.MDImportFromFileRepoImpl
@@ -14,7 +12,7 @@ import dev.bayan_ibrahim.my_dictionary.data.MDWordsListRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferences
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderDecorator
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.json.MDJsonFileReader
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.MDCSVFileSplitter
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordSpaceRepo
@@ -57,8 +55,10 @@ class DataModule {
     fun provideImportFromFileRepo(
         db: MDDataBase,
         rawWordReader: MDFileReaderDecorator<MDRawWord>,
+        rawWordCSVFileSplitter: MDCSVFileSplitter<MDRawWord>
     ): MDImportFromFileRepo = MDImportFromFileRepoImpl(
         db = db,
-        rawWordReader = rawWordReader
+        rawWordReader = rawWordReader,
+        rawWordCSVFileSplitter = rawWordCSVFileSplitter
     )
 }

@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 abstract class WordTypeTagRelatedWordDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun insertRelatedWord(word: WordTypeTagRelatedWordEntity)
+    abstract suspend fun insertRelatedWord(word: WordTypeTagRelatedWordEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insertRelatedWords(words: List<WordTypeTagRelatedWordEntity>)
@@ -58,6 +58,13 @@ abstract class WordTypeTagRelatedWordDao {
         """
     )
     abstract fun getAllRelatedWords(): Flow<List<WordTypeTagRelatedWordEntity>>
+
+    @Query(
+        """
+            SELECT * FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordBaseWordId IN (:baseWordIds)
+        """
+    )
+    abstract fun getAllRelatedWordsOfWords(baseWordIds: Collection<Long>): Flow<List<WordTypeTagRelatedWordEntity>>
 
     @Query(
         """

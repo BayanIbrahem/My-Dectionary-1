@@ -39,12 +39,12 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListViewPreferencesMutableState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesTab
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.WordsListViewPreferencesMutableState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesTab
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import kotlin.math.roundToInt
 
@@ -80,6 +80,7 @@ fun MDWordsListViewPreferencesDialog(
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
         modifier = modifier,
+        headerModifier = Modifier,
         title = {
             MDTabRow(
                 tabs = MDWordsListViewPreferencesTab.entries.map { it.tabData },
@@ -318,7 +319,9 @@ private fun CheckableListItem(
     content: @Composable () -> Unit,
 ) {
     Row(
-        modifier = modifier.height(48.dp).clickable(onClick = onClick),
+        modifier = modifier
+            .height(48.dp)
+            .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

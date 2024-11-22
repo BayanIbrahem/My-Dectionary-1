@@ -5,38 +5,29 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileProcessingSummary
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileProcessingSummaryStatus
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileType
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummary
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryStatus
 import dev.bayan_ibrahim.my_dictionary.domain.model.readFileData
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.ImportFromFileTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFileFileIdentifier
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFileStrategyRadioGroup
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 val corruptedFields = listOf(
     MDFileStrategy.Ignore,
@@ -57,7 +48,9 @@ fun MDImportFromFileScreen(
         }
     }
     val isImportInProgress by remember(summary.status) {
-        derivedStateOf { summary.status == MDFileProcessingSummaryStatus.RUNNING }
+        derivedStateOf {
+            summary.status.isRunning
+        }
     }
 
     MDScreen(
@@ -113,21 +106,22 @@ fun MDImportFromFileScreen(
                 }
             }
             AnimatedVisibility(
-                visible = isImportInProgress
+                visible = summary.status != MDFileProcessingSummaryStatus.IDLE
             ) {
                 Column {
                     Text("Importing file") // TODO, string res
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                    if (summary.status.isRunning) {
+                        LinearProgressIndicator(
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                    val runningTime by remember(summary.processingStartTime, summary.processingEndTime) {
+                        derivedStateOf {
+                            summary.runningTime
+                        }
+                    }
                     // TODO, view them better
-                    Text("status: ${summary.status}")
-                    Text("Total recognized items: ${summary.totalEntriesRead}")
-                    Text("Words count: ${summary.wordsCount}")
-                    Text("Languages count: ${summary.languagesCount}")
-                    Text("Tags count: ${summary.tagsCount}")
-                    Text("Type tags count: ${summary.wordTypeTagCount}")
-                    Text("Relations count: ${summary.wordTypeTagRelationCount}")
+                    Text(summary.asString(runningTime = runningTime))
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = uiActions::onCancelImportProcess,
@@ -138,44 +132,4 @@ fun MDImportFromFileScreen(
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun ImportFromFileScreenPreview() {
-    MyDictionaryTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                MDImportFromFileScreen(
-                    uiState = uiState,
-                    uiActions = MDImportFromFileUiActions(
-                        object : MDImportFromFileNavigationUiActions {
-                        },
-                        object : MDImportFromFileBusinessUiActions {
-                            override fun onSelectFile(fileData: MDFileData) {
-                                uiState.selectedFileData = fileData
-                            }
-
-                            override fun onSelectFileType(selectedFileType: MDFileType?) {}
-                            override fun onOverrideFileTypeCheckChange(checked: Boolean) {}
-                            override fun onChangeCorruptedWordStrategy(strategy: MDFileStrategy) {}
-                            override fun onChangeExistedWordStrategy(strategy: MDFileStrategy) {}
-                            override fun onStartImportProcess() {}
-                            override fun onCancelImportProcess() {}
-                        },
-                    ),
-                    summary = MDFileProcessingSummary()
-                )
-            }
-        }
-    }
-}
-
-private val uiState = MDImportFromFileMutableUiState().apply {
-    onExecute { true }
 }

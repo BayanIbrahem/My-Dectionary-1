@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
@@ -21,7 +20,11 @@ fun MDImportFromFileRoute(
     }
 
     val uiState = viewModel.uiState
-    val summary by viewModel.importSummary.collectAsStateWithLifecycle()
+    val summary by remember {
+        derivedStateOf {
+            viewModel.importSummary
+        }
+    }
     val navActions by remember {
         derivedStateOf {
             object : MDImportFromFileNavigationUiActions {

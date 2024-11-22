@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.di
 
 import android.content.Context
+import androidx.core.net.toUri
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,6 +11,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDRawWord
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderDecorator
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderWrapper
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.MDCSVFileReader
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.MDCSVFileSplitter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.MDRawWordCSVSerializer
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.serializer.MDCSVSerializer
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.json.MDJsonFileReader
@@ -57,4 +59,21 @@ class DataSourceModule {
     @Singleton
     @Provides
     fun providesCsvRawWordSerializer(): MDCSVSerializer<MDRawWord> = MDRawWordCSVSerializer()
+
+    @Singleton
+    @Provides
+    fun providesCsvRawWordSplitter(
+        @ApplicationContext
+        context: Context,
+        csvRawWordSerializer: MDCSVSerializer<MDRawWord>,
+    ): MDCSVFileSplitter<MDRawWord> = MDCSVFileSplitter(
+        serializer = csvRawWordSerializer,
+        openInputStream = {
+            context.contentResolver.openInputStream(it.uri)
+        },
+        openOutputStream = {
+            context.contentResolver.openOutputStream(it.toUri())!!
+        },
+        cacheDirectory = context.cacheDir
+    )
 }

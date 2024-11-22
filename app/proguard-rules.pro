@@ -44,3 +44,7 @@
 -dontwarn org.intellij.lang.annotations.Language
 -dontwarn org.jetbrains.annotations.NotNull
 -dontwarn org.jetbrains.annotations.Nullable
+-keep class dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.** {
+*;
+}
+

@@ -9,7 +9,7 @@ data class MDFileData(
     val uri: Uri,
     val name: String,
     val mimeType: String?,
-    val sizeBytes: MDFileSize,
+    val sizeBytes: MDFileSize = MDFileSize.zero,
 )
 
 fun Context.readFileData(uri: Uri?): MDFileData? {

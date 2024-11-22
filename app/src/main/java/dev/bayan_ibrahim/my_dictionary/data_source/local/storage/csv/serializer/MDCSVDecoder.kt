@@ -18,7 +18,6 @@ interface MDCSVDecoder<T> {
             getLine = iterator::nextOrNull,
         )
     }
-
 }
 
 inline fun <T> MDCSVDecoder<T>.decodeLines(

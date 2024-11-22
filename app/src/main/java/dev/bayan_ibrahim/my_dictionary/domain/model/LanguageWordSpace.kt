@@ -7,6 +7,6 @@ data class LanguageWordSpace(
     val wordsCount: Int = 0,
     val averageLearningProgress: Float = 0f,
 ) {
-    val valid: Boolean get() = language.valid
+    val valid: Boolean get() = language.validCode
 }
 

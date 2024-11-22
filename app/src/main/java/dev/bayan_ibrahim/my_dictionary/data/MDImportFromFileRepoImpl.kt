@@ -1,37 +1,36 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
-import android.util.Log
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDRawWord
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDRawWordTypeTag
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.TypeTagWithRelation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.LanguageEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.exception.CloseTransactionException
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderDecorator
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.MDCSVFileSplitter
+import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileProcessingSummary
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileProcessingSummaryStatus
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.FileProcessingSummaryErrorType
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingMutableSummaryActions
+import dev.bayan_ibrahim.my_dictionary.domain.model.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.languageOrNull
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 private const val TAG = "file_reader"
 
 class MDImportFromFileRepoImpl(
     private val db: MDDataBase,
     private val rawWordReader: MDFileReaderDecorator<MDRawWord>,
+    private val rawWordCSVFileSplitter: MDCSVFileSplitter<MDRawWord>,
 ) : MDImportFromFileRepo {
     private val wordDao = db.getWordDao()
     private val tagDao = db.getWordTypeTagDao()
@@ -39,229 +38,318 @@ class MDImportFromFileRepoImpl(
     private val relationDao = db.getWordTypeTagRelationDao()
     private val relatedDao = db.getWordTypeTagRelatedWordDao()
 
-    override suspend fun checkFileIFValid(fileData: MDFileData): Boolean {
+    override suspend fun checkFileIfValid(fileData: MDFileData): Boolean {
         val valid = rawWordReader.validHeader(fileData)
         return valid
     }
 
-    override fun processFile(
+    override suspend fun processFile(
         fileData: MDFileData,
+        outputSummaryActions: MDFileProcessingMutableSummaryActions,
         existedWordStrategy: MDFileStrategy,
         corruptedWordStrategy: MDFileStrategy,
-        onInvalidStream: () -> Unit,
-        onUnsupportedFile: () -> Unit,
-        onReadStreamError: (throwable: Throwable) -> Unit,
         tryGetReaderByMimeType: Boolean,
         tryGetReaderByFileHeader: Boolean,
-    ): Flow<MDFileProcessingSummary> {
-        return flow {
-            val summaryHolder = RawWordSummaryHolder()
-            try {
-                db.withTransaction {
-                    rawWordReader.readFile(
-                        fileData = fileData,
-                        onInvalidStream = {
-                            Log.d(TAG, "invalid input stream for file $fileData")
-                            onInvalidStream()
-                            emit(summaryHolder.getEndSummary())
-                        },
-                        onUnsupportedFile = {
-                            Log.d(TAG, "unsupported file type $fileData")
-                            onUnsupportedFile()
-                            emit(summaryHolder.getEndSummary())
-                        },
-                        onReadStreamError = {
-                            Log.d(TAG, "read steam error $it cause: ${it.cause} for file $fileData")
-                            onReadStreamError(it)
-                            emit(summaryHolder.getEndSummary())
-                        },
-                        onComplete = {
-                            Log.d(TAG, "read steam ended for file $fileData")
-                            emit(summaryHolder.getEndSummary())
-                        }
-                    ) { word ->
-                        Log.d(TAG, "read file, read valid word $word")
-                        summaryHolder.update(word)
-
-                        handleRawWord(word, existedWordStrategy, corruptedWordStrategy)
-                        emit(summaryHolder.getOnGoingSummary())
-                        true
-                    }
+        allowedLanguages: Set<Language>,
+    ) = withContext(Dispatchers.IO) {
+        outputSummaryActions.onSplitFile()
+        val splittedFilesData: Map<String, MDFileData> = splitInputFile(
+            allowedLanguages = allowedLanguages,
+            fileData = fileData,
+            onRecognizeLanguage = { language ->
+                // ensure adding language
+                val isNewLanguage = !languageDao.hasLanguage(language.code.code)
+                if (isNewLanguage) {
+                    languageDao.insertLanguage(LanguageEntity(language.code.code))
                 }
-            } finally {
-                emit(summaryHolder.getEndSummary())
-                throw CancellationException("end flow")
+
+                outputSummaryActions.onRecognizeLanguage(language, isNewLanguage)
             }
-        }.flowOn(Dispatchers.IO)
+        )
+        splittedFilesData.forEach { (languageCode, fileData) ->
+            val language = languageCode.code.language
+            parseFileData(
+                language = language,
+                fileData = fileData,
+                outputSummaryActions = outputSummaryActions,
+                existedWordStrategy = existedWordStrategy,
+                corruptedWordStrategy = corruptedWordStrategy,
+                tryGetReaderByMimeType = tryGetReaderByMimeType,
+                tryGetReaderByFileHeader = tryGetReaderByFileHeader
+            )
+        }
     }
 
-    private suspend fun MDImportFromFileRepoImpl.handleRawWord(
-        word: MDRawWord,
+    private suspend fun parseFileData(
+        language: Language,
+        fileData: MDFileData,
+        outputSummaryActions: MDFileProcessingMutableSummaryActions,
         existedWordStrategy: MDFileStrategy,
         corruptedWordStrategy: MDFileStrategy,
+        tryGetReaderByMimeType: Boolean,
+        tryGetReaderByFileHeader: Boolean,
     ) {
-        val code = word.language.code
-        if (code.valid) {
-            val similarDbWord = getSimilarWordInDatabase(
-                code = code,
-                meaning = word.meaning,
-                translation = word.translation
-            )
-            if (similarDbWord == null) {
-                handleAddingNewRawWord(word)
-            } else {
-                handleAddingExistedRawWord(
-                    word = word,
-                    similarWord = similarDbWord,
-                    strategy = existedWordStrategy
-                )
-            }
-        } else {
-            handleCorruptedRawWord(corruptedWordStrategy)
-        }
-    }
+        // language is already in the database for sure
+        outputSummaryActions.onSetCurrentLanguage(language)
+        outputSummaryActions.onScanDatabase()
 
-    private suspend fun getSimilarWordInDatabase(code: LanguageCode, meaning: String, translation: String): WordEntity? {
-        val m = meaning.trim().lowercase()
-        val t = translation.trim().lowercase()
-        return wordDao.getWordsOfLanguage(code.code).map {
-            it.firstOrNull { entity ->
-                entity.meaning.trim().lowercase() == m && entity.translation.trim().lowercase() == t
-            }
-        }.first()
-    }
+        /** k: tag name normalized, v: tag id */
+        val allTypeTags = mutableMapOf<String, Long>()
 
-    private suspend fun handleAddingNewRawWord(word: MDRawWord) {
-        Log.d(TAG, "adding new raw word to database")
+        /** k: relation label normalized, v: [tag id to label id] (name is not unique) */
+        val allTypeTagsRelations = mutableMapOf<String, MutableSet<Pair<Long, Long>>>()
 
-        ensureAddingLanguage(word.language)
-        val typeTag = word.wordTypeTag?.let {
-            handleAddingRawWordTypeTag(word.language, it)
-        }
-        val newWord = WordEntity(
-            id = null,
-            meaning = word.meaning,
-            translation = word.translation,
-            languageCode = word.language,
-            additionalTranslations = word.additionalTranslations,
-            tags = word.tags,
-            transcription = word.transcription,
-            examples = word.examples,
-            wordTypeTagId = typeTag?.tag?.id,
+        /** k: relation id, v: relation label (not normalized) */
+        val allTypeTagsRelationsLabels = mutableMapOf<Long, String>()
+        initTagsAndRelationsOfLanguage(
+            language = language,
+            allTypeTags = allTypeTags,
+            allTypeTagsRelations = allTypeTagsRelations,
+            allTypeTagsRelationsLabels = allTypeTagsRelationsLabels
         )
-        val newWordID = wordDao.insertWord(newWord)
-        typeTag?.let { tagWithRelation ->
-            handleAddingRawWordRelations(newWordID, word, tagWithRelation)
-        }
-    }
 
-    private suspend fun handleAddingExistedRawWord(
-        word: MDRawWord,
-        similarWord: WordEntity,
-        strategy: MDFileStrategy,
-    ) {
-        when (strategy) {
-            MDFileStrategy.Ignore -> {
-                Log.d(TAG, "ignore existed word due to ignore existed word strategy")
-            }
+        /** k: (normalized meaning, normalized translation), k: word id */
+        val allWords = mutableMapOf<Pair<String, String>, Long>()
+        initWordsOfLanguages(language, allWords)
 
-            MDFileStrategy.OverrideAll, MDFileStrategy.OverrideValid -> {
-                val wordId = similarWord.id!!
-                Log.d(TAG, "override existed word due to override existed word strategy")
-                // TODO,
+        val allWordsTags = wordDao.getTagsInLanguage(language.code.code).first().flatMap {
+            StringListConverter.stringToListConverter(it) // decode it as it is decoded in the first place
+        }.toSet()
 
-                val typeTag = word.wordTypeTag?.let {
-                    handleAddingRawWordTypeTag(word.language, it)
-                }
+        /**
+         *  k: word id,
+         *  v: map of word relations {
+         *      k: (normalized relation label, normalized related word)
+         *      v: related word id
+         *  }
+         */
+        val allRelatedWords: MutableMap<Long, MutableMap<Pair<String, String>, Long>> = mutableMapOf()
+        initRelatedWordsOfLanguage(allWords, allTypeTagsRelationsLabels, allRelatedWords)
 
-                val wordWithUpdatedField = handleOverrideFields(
-                    rawWord = word,
-                    dbWord = similarWord,
-                    overrideAll = strategy == MDFileStrategy.OverrideAll,
-                    typeTagId = typeTag?.tag?.id
+        outputSummaryActions.onStoreData()
+        db.withTransaction {
+            rawWordReader.readFile(
+                fileData = fileData,
+                onInvalidStream = {
+                    outputSummaryActions.onError(FileProcessingSummaryErrorType.INVALID_STREAM)
+                },
+                onUnsupportedFile = {
+                    outputSummaryActions.onError(FileProcessingSummaryErrorType.UNSUPPORTED_FILE)
+                },
+                onReadStreamError = {
+                    outputSummaryActions.onError(FileProcessingSummaryErrorType.CORRUPTED_FILE)
+                },
+                tryGetReaderByMimeType = tryGetReaderByMimeType,
+                tryGetReaderByFileHeader = tryGetReaderByFileHeader,
+                onComplete = {
+                    outputSummaryActions.onComplete()
+                },
+            ) { rawWord ->
+                outputSummaryActions.recognizeRawWord()
+                val rawWordIdentifier = Pair(
+                    first = rawWord.meaning.trim().lowercase(),
+                    second = rawWord.translation.trim().lowercase(),
                 )
-                wordDao.updateWord(wordWithUpdatedField)
-                // delete realted word of this word
-                relatedDao.deleteRelatedWordsOfWord(wordId)
-                typeTag?.let { tagWithRelation ->
-                    handleAddingRawWordRelations(
-                        wordId = wordId,
-                        word = word,
-                        tagWithRelation = tagWithRelation
-                    )
+                val isValidWord = rawWord.meaning.isNotBlank() && rawWord.translation.isNotBlank() && rawWord.language.code.languageOrNull != null
+                val isNewWord = rawWordIdentifier !in allWords
+                val handleWord = if (!isValidWord) {
+                    if (corruptedWordStrategy == MDFileStrategy.Abort) {
+                        throw CloseTransactionException
+                    }
+                    outputSummaryActions.recognizeCorruptedWord()
+                    false
+                } else if (!isNewWord) {
+                    when (existedWordStrategy) {
+                        MDFileStrategy.Ignore -> false
+                        MDFileStrategy.OverrideAll,
+                        MDFileStrategy.OverrideValid,
+                            -> true
+
+                        MDFileStrategy.Abort -> throw CloseTransactionException
+                    }.also {
+                        if (it) {
+                            outputSummaryActions.recognizeUpdatedWord()
+                        } else {
+                            outputSummaryActions.recognizeIgnoredWord()
+                        }
+                    }
+                } else {
+                    outputSummaryActions.recognizeNewWord()
+                    true
                 }
+                if (handleWord) {
+                    // type tag and relations
+                    val tagId: Long? = rawWord.wordTypeTag?.let { tag ->
+                        val tagIdentifier = tag.name.trim().lowercase()
+                        val tagId: Long = allTypeTags.getOrPut(tagIdentifier) {
+                            tagDao.insertTagType(
+                                WordTypeTagEntity(id = null, name = tag.name, language = language.code.code)
+                            ).also {
+                                outputSummaryActions.recognizeNewTypeTag()
+                            }
+                        }
+                        tagId
+                    }
 
-            }
+                    // word entity
+                    val wordId = allWords.getOrPut(rawWordIdentifier) {
+                        wordDao.insertWord(
+                            WordEntity(
+                                id = null,
+                                meaning = rawWord.meaning,
+                                translation = rawWord.translation,
+                                languageCode = language.code.code,
+                                additionalTranslations = rawWord.additionalTranslations.filter { it.isNotBlank() },
+                                tags = rawWord.tags.filter { it.isNotBlank() },
+                                wordTypeTagId = tagId,
+                                learningProgress = 0f,
+                                transcription = rawWord.transcription.ifBlank { "" },
+                                examples = rawWord.examples.filter { it.isNotBlank() }
+                            )
+                        )
+                    }
+                    if (!isNewWord) {
+                        val entityWord = wordDao.getWord(wordId)!!
+                        val overrideAll = existedWordStrategy == MDFileStrategy.OverrideAll
+                        val newEntityWord = handleOverrideEntityWordsFromRawWord(
+                            rawWord = rawWord,
+                            dbWord = entityWord,
+                            overrideAll = overrideAll,
+                            typeTagId = tagId
+                        )
+                        wordDao.updateWord(newEntityWord)
+                    }
+                    // word tags:
+                    outputSummaryActions.recognizeTags(
+                        newRecognizedTags = rawWord.tags - allWordsTags
+                    )
 
-            MDFileStrategy.Abort -> {
-                Log.d(TAG, "throw existed word exception due to abort existed word strategy")
-                throw IllegalArgumentException("Found an existed word while parsing the file, aborting whole transaction")
+                    // related words
+                    if (tagId != null) {
+                        val relatedWordsMap: MutableMap<Pair<String, String>, Long> = allRelatedWords.getOrPut(wordId) { mutableMapOf() }
+                        rawWord.wordTypeTag.relations.forEach { relation ->
+                            val relationIdentifier = relation.label.trim().lowercase()
+
+                            // relation
+                            val relationId: Long = allTypeTagsRelations.getOrPut(relationIdentifier) {
+                                mutableSetOf()
+                            }.let { tagsToRelations ->
+                                // the relation must be one per tag, so this check (does this relation is in the current tag
+                                // is enough to check if this relation is existed or not
+                                tagsToRelations.firstNotNullOfOrNull { (tId, rId) ->
+                                    if (tId == tagId) {
+                                        rId
+                                    } else {
+                                        null
+                                    }
+                                } ?: let {
+                                    // this relation is not existed in this tag so we insert it then we add it to the set
+                                    outputSummaryActions.recognizeNewTypeTagRelation()
+                                    val relationId = relationDao.insertRelation(
+                                        WordTypeTagRelationEntity(id = null, label = relation.label, tagId = tagId)
+                                    )
+                                    tagsToRelations.add(tagId to relationId)
+                                    relationId
+                                }
+                            }
+
+                            val relatedWordIdentifier = Pair(
+                                first = relationIdentifier,
+                                second = relation.relatedWord.trim().lowercase()
+                            )
+                            // if the relation of this word is not existed then we add it
+                            // maybe we don't need this related word
+                            val relatedWordId = relatedWordsMap.getOrPut(relatedWordIdentifier) {
+                                relatedDao.insertRelatedWord(
+                                    WordTypeTagRelatedWordEntity(
+                                        id = null,
+                                        relationId = relationId,
+                                        baseWordId = wordId,
+                                        word = relation.relatedWord
+                                    )
+                                )
+                            }
+                            // related
+                            relation.relatedWord
+                        }
+                    }
+                }
+                true
             }
         }
     }
 
-    private fun handleCorruptedRawWord(strategy: MDFileStrategy) {
-        if (strategy == MDFileStrategy.Abort) {
-            Log.d(TAG, "throw corrupted word exception due to abort corrupted word strategy")
-            throw IllegalArgumentException("Found a corrupted word while parsing the file, aborting whole transaction")
-        }
-    }
-
-    private suspend fun ensureAddingLanguage(code: String) {
-        languageDao.insertLanguage(LanguageEntity(code))
-    }
-
-
-    private suspend fun handleAddingRawWordTypeTag(
-        code: String,
-        tag: MDRawWordTypeTag,
-    ): TypeTagWithRelation {
-        return getSimilarTypeTagInDatabase(code, tag.name) ?: let {
-            ensureAddingLanguage(code)
-            val newTypeTag = WordTypeTagEntity(name = tag.name, language = code)
-            val id = tagDao.insertTagType(newTypeTag)
-            TypeTagWithRelation(
-                tag = WordTypeTagEntity(id = id, name = tag.name, language = code),
-                relations = emptyList()
+    private suspend fun initRelatedWordsOfLanguage(
+        allWords: MutableMap<Pair<String, String>, Long>,
+        allTypeTagsRelationsLabels: MutableMap<Long, String>,
+        allRelatedWords: MutableMap<Long, MutableMap<Pair<String, String>, Long>>,
+    ) {
+        relatedDao.getAllRelatedWordsOfWords(allWords.values.toSet()).first().forEach { relatedWord ->
+            val normalizedIdentifier: Pair<String, String> = Pair(
+                first = allTypeTagsRelationsLabels[relatedWord.relationId]!!.trim().lowercase(),
+                second = relatedWord.word.trim().lowercase()
             )
+            allRelatedWords.getOrPut(relatedWord.baseWordId) {
+                mutableMapOf()
+            }[normalizedIdentifier] = relatedWord.id!!
         }
     }
 
-    private suspend fun handleAddingRawWordRelations(wordId: Long, word: MDRawWord, tagWithRelation: TypeTagWithRelation) {
-        val existedRelations = tagWithRelation.relations
-        val tagId = tagWithRelation.tag.id!!
-        word.wordTypeTag?.relations?.map { (label, relatedWord) ->
-            val normalizedLabel = label.trim().lowercase()
-            val relation: WordTypeTagRelationEntity = existedRelations.firstOrNull { entity ->
-                entity.label.lowercase() == normalizedLabel
-            } ?: let {
-                val newRelation = WordTypeTagRelationEntity(id = null, label = label, tagId = tagId)
-                // insert and get new id
-                val newRelationId = relationDao.insertRelation(newRelation)
-                // return new relation value with the new id
-                newRelation.copy(id = newRelationId)
-            }
-            val newRelatedWord = WordTypeTagRelatedWordEntity(
-                id = null,
-                relationId = relation.id!!,
-                baseWordId = wordId,
-                word = relatedWord
+    private suspend fun initWordsOfLanguages(
+        language: Language,
+        allWords: MutableMap<Pair<String, String>, Long>,
+    ) {
+        wordDao.getWordsOfLanguage(language.code.code).first().forEach { word ->
+            // todo normalize normalization strategy
+            val normalizedWordIdentifier = Pair(
+                first = word.meaning.trim().lowercase(),
+                second = word.translation.trim().lowercase()
             )
-            relatedDao.insertRelatedWord(newRelatedWord)
+            allWords[normalizedWordIdentifier] = word.id!!
         }
     }
 
-    private suspend fun getSimilarTypeTagInDatabase(
-        code: String,
-        name: String,
-    ): TypeTagWithRelation? {
-        val normalizedName = name.trim().lowercase()
-        return tagDao.getTagTypesOfLanguage(code).first().firstOrNull {
-            it.tag.name.lowercase() == normalizedName
+    private suspend fun initTagsAndRelationsOfLanguage(
+        language: Language,
+        allTypeTags: MutableMap<String, Long>,
+        allTypeTagsRelations: MutableMap<String, MutableSet<Pair<Long, Long>>>,
+        allTypeTagsRelationsLabels: MutableMap<Long, String>,
+    ) {
+        tagDao.getTagTypesOfLanguage(language.code.code).first().forEach { tagWithRelation ->
+            allTypeTags[tagWithRelation.tag.name.trim().lowercase()] = tagWithRelation.tag.id!! // todo normalize normalization strategy
+            tagWithRelation.relations.forEach { relation ->
+                val normalizedLabel = relation.label.trim().lowercase()
+                allTypeTagsRelations.getOrPut(
+                    key = normalizedLabel
+                ) {
+                    mutableSetOf()
+                }.add(tagWithRelation.tag.id to relation.id!!)
+
+                allTypeTagsRelationsLabels[relation.id] = relation.label
+            }
         }
     }
 
-    private fun handleOverrideFields(
+    private inline fun splitInputFile(
+        allowedLanguages: Set<Language>,
+        fileData: MDFileData,
+        onRecognizeLanguage: (Language) -> Unit,
+    ): Map<String, MDFileData> {
+        val allowedLanguagesCodes = allowedLanguages.map { it.code.code }.toSet()
+
+        return rawWordCSVFileSplitter.splitFile(
+            file = fileData,
+            splitter = { word ->
+                word.language.code.also {
+                    onRecognizeLanguage(it.language)
+                }.code
+
+            },
+            filter = { word -> word.language in allowedLanguagesCodes },
+        )
+    }
+
+    private fun handleOverrideEntityWordsFromRawWord(
         rawWord: MDRawWord,
         dbWord: WordEntity,
         overrideAll: Boolean,
@@ -289,41 +377,4 @@ class MDImportFromFileRepoImpl(
     }
 }
 
-private class RawWordSummaryHolder {
-    val words = mutableSetOf<Pair<String, String>>() // meaning to translation
-    val languages = mutableSetOf<String>()
-    val tags = mutableSetOf<String>()
-    val wordTypeTags = mutableSetOf<String>()
-    val wordTypeTagRelation = mutableSetOf<String>()
-    var i = 0
-    fun getOnGoingSummary() = MDFileProcessingSummary(
-        wordsCount = words.count(),
-        languagesCount = languages.count(),
-        tagsCount = tags.count(),
-        wordTypeTagCount = wordTypeTags.count(),
-        wordTypeTagRelationCount = wordTypeTagRelation.count(),
-        totalEntriesRead = i++,
-        status = MDFileProcessingSummaryStatus.RUNNING,
-    )
 
-    fun getEndSummary() = MDFileProcessingSummary(
-        wordsCount = words.count(),
-        languagesCount = languages.count(),
-        tagsCount = tags.count(),
-        wordTypeTagCount = wordTypeTags.count(),
-        wordTypeTagRelationCount = wordTypeTagRelation.count(),
-        totalEntriesRead = i,
-        status = MDFileProcessingSummaryStatus.COMPLETED,
-    )
-
-    fun update(word: MDRawWord) {
-        // update summaries
-        words.add(word.meaning to word.translation)
-        languages.add(word.language)
-        tags.addAll(word.tags)
-        word.wordTypeTag?.let {
-            wordTypeTags.add(it.name)
-            wordTypeTagRelation.addAll(it.relations.map { it.label })
-        }
-    }
-}

@@ -10,6 +10,7 @@ val MDFileStrategy.label: String
     // TODO, string res
     get() = when (this) {
         MDFileStrategy.Ignore -> "Ignore Word"
-        MDFileStrategy.OverrideAll -> "Override Word"
+        MDFileStrategy.OverrideAll -> "Override All Properties"
+        MDFileStrategy.OverrideValid -> "Override Valid Properties"
         MDFileStrategy.Abort -> "Abort All Transaction"
     }

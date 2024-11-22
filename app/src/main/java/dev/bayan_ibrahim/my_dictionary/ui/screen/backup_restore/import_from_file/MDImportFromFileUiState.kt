@@ -5,10 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDMutableUiState
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.asFileSize
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileProcessingSummary
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileSize
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileType
 

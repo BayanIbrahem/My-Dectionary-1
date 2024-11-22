@@ -52,10 +52,10 @@ class MDWordsListViewModel @Inject constructor(
     val wordsList: StateFlow<List<Word>> = currentLanguageFlow.combine(viewPreferences) { language, viewPreferences ->
         language to viewPreferences
     }.flatMapConcat { (language, viewPreferences) ->
-        language?.let { repo.getWordsList(it.code, viewPreferences) } ?: flow<List<Word>> {
+        language?.let {
+            repo.getWordsList(it.code, viewPreferences)
+        } ?: flow {
             emit(emptyList())
-        }.also {
-            it
         }
     }.stateIn(
         scope = viewModelScope,

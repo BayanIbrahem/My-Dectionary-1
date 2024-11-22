@@ -14,6 +14,8 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,7 +55,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun MDWordListItem(
     word: Word,
@@ -141,23 +142,6 @@ fun MDWordListItem(
         Column(
             modifier = Modifier.align(Alignment.CenterStart),
         ) {
-            Row {
-                Text(
-                    text = word.translation,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    modifier = Modifier.graphicsLayer {
-                        alpha = additionalTranslationAlpha
-                    },
-                    text = word.additionalTranslations.joinToString(
-                        separator = ", ",
-                        prefix = if (word.additionalTranslations.isNotEmpty()) " | " else "",
-                    ),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
             val enterTransaction by remember(floatTween, intSizeTween) {
                 derivedStateOf {
                     fadeIn(animationSpec = floatTween) + expandVertically(animationSpec = intSizeTween)
@@ -167,6 +151,26 @@ fun MDWordListItem(
             val exitTransaction by remember(floatTween, intSizeTween) {
                 derivedStateOf {
                     fadeOut(animationSpec = floatTween) + shrinkVertically(animationSpec = intSizeTween)
+                }
+            }
+            FlowRow {
+                Text(
+                    text = word.translation,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                word.additionalTranslations.forEach { additionalTranslation ->
+                    AnimatedVisibility(
+                        visible = expanded,
+                        enter = enterTransaction,
+                        exit = exitTransaction,
+                    ) {
+                        Text(
+                            text = ", $additionalTranslation",
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
             AnimatedVisibility(

@@ -9,5 +9,11 @@ sealed class MDFileSize(
     data class MegaByte(override val bytes: Long, override val valueOfUnit: Double) : MDFileSize(bytes, valueOfUnit)
     data class GigaByte(override val bytes: Long, override val valueOfUnit: Double) : MDFileSize(bytes, valueOfUnit)
     data class TeraByte(override val bytes: Long, override val valueOfUnit: Double) : MDFileSize(bytes, valueOfUnit)
+    companion object {
+        val zero: MDFileSize = Byte(
+            bytes = 0L,
+            valueOfUnit = 0.0
+        )
+    }
 }
 

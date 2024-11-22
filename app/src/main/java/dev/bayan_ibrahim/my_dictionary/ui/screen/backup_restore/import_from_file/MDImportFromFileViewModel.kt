@@ -5,15 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileProcessingSummary
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileType
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingMutableSummary
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingMutableSummaryActionsImpl
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummary
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,9 +27,15 @@ class MDImportFromFileViewModel @Inject constructor(
         _uiState.onExecute { true }
     }
 
-    private val _importSummaryFlow: MutableStateFlow<MDFileProcessingSummary> = MutableStateFlow(MDFileProcessingSummary())
+//    private val _importSummaryFlow: MutableStateFlow<MDFileProcessingSummary> = MutableStateFlow(MDFileProcessingSummary())
+//
+//    val importSummary: StateFlow<MDFileProcessingSummary> = _importSummaryFlow.asStateFlow()
 
-    val importSummary: StateFlow<MDFileProcessingSummary> = _importSummaryFlow.asStateFlow()
+    private val _importSummary: MDFileProcessingMutableSummary = MDFileProcessingMutableSummary()
+    private val importSummaryActions = MDFileProcessingMutableSummaryActionsImpl(_importSummary)
+    val importSummary: MDFileProcessingSummary = _importSummary
+
+    private var fileProcessJob: Job? = null
 
     fun getUiActions(
         navActions: MDImportFromFileNavigationUiActions,
@@ -46,7 +52,7 @@ class MDImportFromFileViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 _uiState.fileValidationInProgress = true
 
-                _uiState.validFile = repo.checkFileIFValid(fileData)
+                _uiState.validFile = repo.checkFileIfValid(fileData)
 
                 _uiState.fileValidationInProgress = false
 
@@ -71,25 +77,37 @@ class MDImportFromFileViewModel @Inject constructor(
         }
 
         override fun onStartImportProcess() {
-
             if (uiState.validFile || uiState.fileValidationInProgress) {
-                viewModelScope.launch(Dispatchers.IO) {
+                fileProcessJob?.cancel()
+                fileProcessJob = viewModelScope.launch(Dispatchers.IO) {
                     uiState.selectedFileData?.let { data ->
                         repo.processFile(
                             fileData = data,
                             existedWordStrategy = uiState.existedWordStrategy,
                             corruptedWordStrategy = uiState.corruptedWordStrategy,
-                        ).collect {
-                            _importSummaryFlow.value = it
-                            Log.d("summary", "import summary updated ${it.totalEntriesRead}")
-                        }
+                            outputSummaryActions = importSummaryActions,
+                        )
                     }
                 }
+//                viewModelScope.launch(Dispatchers.IO) {
+//                    uiState.selectedFileData?.let { data ->
+//                        repo.processFile(
+//                            fileData = data,
+//                            existedWordStrategy = uiState.existedWordStrategy,
+//                            corruptedWordStrategy = uiState.corruptedWordStrategy,
+//                        ).collect {
+//                            _importSummaryFlow.value = it
+//                            Log.d("summary", "import summary updated ${it.totalParsedWords}")
+//                        }
+//                    }
+//                }
             }
         }
 
         override fun onCancelImportProcess() {
-            _importSummaryFlow.value = MDFileProcessingSummary()
+            fileProcessJob?.cancel()
+            importSummaryActions.reset()
+//            _importSummaryFlow.value = MDFileProcessingSummary()
         }
     }
 }

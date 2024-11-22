@@ -1,23 +1,21 @@
 package dev.bayan_ibrahim.my_dictionary.domain.repo
 
+import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileProcessingSummary
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
-import kotlinx.coroutines.flow.Flow
+import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingMutableSummaryActions
 
 interface MDImportFromFileRepo {
-    suspend fun checkFileIFValid(fileData: MDFileData): Boolean
+    suspend fun checkFileIfValid(fileData: MDFileData): Boolean
 
-    fun processFile(
+    suspend fun processFile(
         fileData: MDFileData,
-        existedWordStrategy: MDFileStrategy,
-        corruptedWordStrategy: MDFileStrategy,
-        onInvalidStream: () -> Unit = {},
-        onUnsupportedFile: () -> Unit = {},
-        onReadStreamError: (throwable: Throwable) -> Unit = {},
-        /** try get first wrapper that support the file type */
+        outputSummaryActions: MDFileProcessingMutableSummaryActions,
+        existedWordStrategy: MDFileStrategy = MDFileStrategy.OverrideValid,
+        corruptedWordStrategy: MDFileStrategy = MDFileStrategy.Ignore,
         tryGetReaderByMimeType: Boolean = true,
-        /** try get first wrapper that support the file header */
         tryGetReaderByFileHeader: Boolean = true,
-    ): Flow<MDFileProcessingSummary>
+        allowedLanguages: Set<Language> = allLanguages.values.toSet(),
+    )
 }

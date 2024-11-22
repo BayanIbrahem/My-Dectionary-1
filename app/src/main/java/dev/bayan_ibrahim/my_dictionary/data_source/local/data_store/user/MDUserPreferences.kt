@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.user
 
 import android.content.Context
+import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.UserPreferencesProto
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
 import dev.bayan_ibrahim.my_dictionary.domain.model.UserPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
@@ -20,7 +21,7 @@ class MDUserPreferencesImpl(
     context: Context,
 ) : MDUserPreferences {
     private val proto = context.userDaterStore
-    override fun getUserPreferencesStream(): Flow<UserPreferences> = proto.data.map {
+    override fun getUserPreferencesStream(): Flow<UserPreferences> = proto.data.map { it: UserPreferencesProto ->
         UserPreferences(
             selectedLanguagePage = if (it.hasSelectedLanguagePage()) {
                 it.selectedLanguagePage.code.language

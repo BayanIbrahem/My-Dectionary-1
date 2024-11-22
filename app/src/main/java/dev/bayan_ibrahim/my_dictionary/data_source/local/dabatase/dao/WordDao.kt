@@ -156,5 +156,12 @@ interface WordDao {
     )
     fun getTagsInLanguage(code: String): Flow<List<String>>
 
+    @Query(
+        """
+            SELECT $dbWordTags 
+            FROM $dbWordTable 
+        """
+    )
+    fun getAllTags(): Flow<List<String>>
 
 }
