@@ -11,7 +11,7 @@
       <SelectionState runConfigName="MDFileFileIdentifierPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ImportFromFileScreenPreview">
+      <SelectionState runConfigName="MDWordsListFilterDialogPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

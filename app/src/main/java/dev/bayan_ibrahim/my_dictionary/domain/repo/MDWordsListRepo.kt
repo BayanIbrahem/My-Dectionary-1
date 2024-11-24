@@ -4,13 +4,17 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.WordsListTrainPreferencesState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesState
 import kotlinx.coroutines.flow.Flow
 
 interface MDWordsListRepo {
     // view preferences
     fun getViewPreferences(): Flow<WordsListViewPreferences>
     suspend fun setViewPreferences(preferences: WordsListViewPreferences)
+    suspend fun setTrainPreferences(preferences: WordsListTrainPreferences)
     suspend fun setSelectedLanguagePage(code: LanguageCode)
     suspend fun getSelectedLanguagePage(): Language?
     fun getSelectedLanguagePageStream(): Flow<Language?>

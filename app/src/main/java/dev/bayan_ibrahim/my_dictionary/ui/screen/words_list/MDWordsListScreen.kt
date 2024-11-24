@@ -29,7 +29,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListLanguageSelectionPageDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListViewPreferencesDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.MDWordsListTrainPreferencesDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.MDWordsListViewPreferencesDialog
 
 @Composable
 fun MDWordsListScreen(
@@ -55,13 +56,14 @@ fun MDWordsListScreen(
                 selectedWordsCount = selectedWordsCount,
                 visibleWordsCount = wordsList.count(),
                 totalWordsCount = wordsList.count(), // TODO, pass total words count,
+                onTrainVisibleWords = uiActions::onShowTrainPreferencesDialog,
                 onAdjustFilterPreferences = uiActions::onShowViewPreferencesDialog,
                 onSelectLanguagePage = uiActions::onShowLanguageWordSpacesDialog,
                 onDeleteWordSpace = uiActions::onDeleteLanguageWordSpace,
                 onClearSelection = uiActions::onClearSelection,
                 onSelectAll = uiActions::onSelectAll,
                 onInvertSelection = uiActions::onInvertSelection,
-                onDeleteSelection = uiActions::onDeleteSelection
+                onDeleteSelection = uiActions::onDeleteSelection,
             )
         },
         floatingActionButton = {
@@ -95,7 +97,7 @@ fun MDWordsListScreen(
                     }
                 ) {
                     Text(
-                        text = if (uiState.preferencesState.effectiveFilter) {
+                        text = if (uiState.viewPreferencesState.effectiveFilter) {
                             "No words matches your filters..."
                         } else {
                             "No words yet, add some words first"
@@ -176,19 +178,15 @@ fun MDWordsListScreen(
     )
     // view preferences dialog:
     MDWordsListViewPreferencesDialog(
-        showDialog = uiState.isViewPreferencesDialogShown,
-        onDismissRequest = uiActions::onHideViewPreferencesDialog,
-        preferences = uiState.preferencesState,
-        onSearchQueryChange = uiActions::onSearchQueryChange,
-        onSelectSearchTarget = uiActions::onSelectSearchTarget,
+        state = uiState.viewPreferencesState,
         tagSearchQuery = uiState.tagSearchQuery,
         tagsSuggestions = uiState.tagsSuggestions,
-        onTagSearchQueryChange = uiActions::onTagSearchQueryChange,
-        onSelectTag = uiActions::onSelectTag,
-        onRemoveTag = uiActions::onRemoveTag,
-        onToggleSelectedTags = uiActions::onToggleIncludeSelectedTags,
-        onSelectLearningGroup = uiActions::onSelectLearningGroup,
-        onSelectSortBy = uiActions::onSelectWordsSortBy,
-        onSelectSortByOrder = uiActions::onSelectWordsSortByOrder
+        actions = uiActions,
+    )
+
+    // view preferences dialog:
+    MDWordsListTrainPreferencesDialog(
+        state = uiState.trainPreferencesState,
+        actions = uiActions,
     )
 }

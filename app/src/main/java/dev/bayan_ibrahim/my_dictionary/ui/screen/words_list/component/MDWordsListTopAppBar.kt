@@ -1,9 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.EaseOutExpo
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -12,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
@@ -54,6 +52,7 @@ fun MDWordsListTopAppBar(
     visibleWordsCount: Int,
     totalWordsCount: Int,
     // normal mode actions,
+    onTrainVisibleWords: () -> Unit,
     onAdjustFilterPreferences: () -> Unit,
     onSelectLanguagePage: () -> Unit,
     onDeleteWordSpace: () -> Unit,
@@ -72,6 +71,7 @@ fun MDWordsListTopAppBar(
                 language = language,
                 visibleWordsCount = visibleWordsCount,
                 totalWordsCount = totalWordsCount,
+                onTrainVisibleWords = onTrainVisibleWords,
                 onAdjustFilterPreferences = onAdjustFilterPreferences,
                 onSelectLanguagePage = onSelectLanguagePage,
                 onDeleteWordSpace = onDeleteWordSpace,
@@ -105,6 +105,7 @@ private fun WordsListTopAppBarNormalMode(
     language: Language,
     visibleWordsCount: Int,
     totalWordsCount: Int,
+    onTrainVisibleWords: () -> Unit,
     onAdjustFilterPreferences: () -> Unit,
     onSelectLanguagePage: () -> Unit,
     onDeleteWordSpace: () -> Unit,
@@ -134,6 +135,17 @@ private fun WordsListTopAppBarNormalMode(
         expandedHeight = topAppBarHeight,
         scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         actions = {
+            IconButton(
+                onClick = {
+                    onTrainVisibleWords()
+                    // adjust filter preferences
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Email, // TODO, string res
+                    contentDescription = null
+                )
+            }
             IconButton(
                 onClick = {
                     onAdjustFilterPreferences()
@@ -337,6 +349,7 @@ private fun WordsListTopAppBarPreview() {
                     onSelectAll = {},
                     onInvertSelection = {},
                     onDeleteSelection = {},
+                    onTrainVisibleWords = {},
                 )
 //                WordsListTopAppBar(
 //                    isSelectionModeOn = false,

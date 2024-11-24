@@ -6,7 +6,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferencesBuilder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -21,7 +21,7 @@ interface MDWordsListViewPreferences {
 class MDWordsListViewPreferencesImpl(
     context: Context,
 ) : MDWordsListViewPreferences {
-    private val proto = context.wordsListDataStore
+    private val proto = context.wordsListViewPreferencesDataStore
     override fun getWordsListViewPreferencesStream(): Flow<WordsListViewPreferences> = proto.data.map {
         WordsListViewPreferencesBuilder(
             searchQuery = it.searchQuery,
@@ -31,7 +31,7 @@ class MDWordsListViewPreferencesImpl(
             selectedLearningProgressGroups = it.selectedLearningProgressGroupsList.map { index ->
                 WordsListLearningProgressGroup.entries[index]
             }.toSet(),
-            sortBy = WordsListSortBy.entries[it.sortBy],
+            sortBy = WordsListViewPreferencesSortBy.entries[it.sortBy],
             sortByOrder = WordsListSortByOrder.entries[it.sortByOrder],
         )
     }

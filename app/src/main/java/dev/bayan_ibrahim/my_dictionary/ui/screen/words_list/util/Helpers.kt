@@ -1,16 +1,13 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.graphics.vector.ImageVector
+import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
+import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
-interface LabeledEnum {
-    val strLabel: String
-
-    val label: String
-        @Composable
-        @ReadOnlyComposable
-        get() = strLabel //TODO,string res
-}
 
 enum class WordsListSearchTarget(
     override val strLabel: String,
@@ -22,7 +19,7 @@ enum class WordsListSearchTarget(
     All(strLabel = "Meaning and translations", includeMeaning = true, includeTranslation = true);// TODO, string res
 }
 
-enum class WordsListSortBy(override val strLabel: String) : LabeledEnum {
+enum class WordsListViewPreferencesSortBy(override val strLabel: String) : LabeledEnum {
     Meaning("Meaning"),// TODO, string res
     Translation("Translation"),// TODO, string res
     LearningProgress("Learning Progress");// TODO, string res
@@ -30,10 +27,58 @@ enum class WordsListSortBy(override val strLabel: String) : LabeledEnum {
 //    UpdatedAt
 }
 
-enum class WordsListSortByOrder(override val strLabel: String) : LabeledEnum {
-    Asc("Asc"),
-    Desc("Desc"),
+enum class WordsListTrainPreferencesSortBy(
+    override val strLabel: String,
+    override val icon: ImageVector,
+) : LabeledEnum, IconedEnum {
+    LearningProgress("Learning Progress", Icons.Default.Star), // TODO, string res, TODO, icon res
+    TrainingTime("Training Time", Icons.Default.Star),// TODO, string res, icon res
+    CreateTime("Create Time", Icons.Default.Star),// TODO, string res, icon res
+    Random("Random", Icons.Default.Star);// TODO, string res, icon res
+
+    @Composable
+    fun orderLabel(order: WordsListSortByOrder): String = when (order) {
+        WordsListSortByOrder.Asc -> when (this) {
+            LearningProgress -> "Words with the fewest learning progress"
+            TrainingTime -> "Words trained by long time ago"
+            CreateTime -> "Words created long time ago"
+            Random -> "Random order"
+        }
+
+        WordsListSortByOrder.Desc -> when (this) {
+            LearningProgress -> "Words with the largest learning progress"
+            TrainingTime -> "Words trained by recently"
+            CreateTime -> "Words created recently"
+            Random -> "Random order"
+        }
+    }
 }
+
+@Suppress("EnumEntryName")
+enum class WordsListTrainPreferencesLimit(val count: Int) : LabeledEnum {
+    _5(5),
+    _10(10),
+    _20(20),
+    _25(25),
+    _50(50),
+    _75(75),
+    _100(100);
+
+    override val strLabel = "$count Words" // TODO, string res
+
+}
+
+enum class WordsListSortByOrder(override val strLabel: String, override val icon:ImageVector) : LabeledEnum, IconedEnum {
+    Asc(
+        strLabel = "Asc",
+        icon = Icons.Default.KeyboardArrowUp
+    ), // TODO, string res, icon res
+    Desc(
+        strLabel = "Desc",
+        icon = Icons.Default.KeyboardArrowUp
+    ), // TODO, string res, icon res
+}
+
 
 enum class WordsListLearningProgressGroup(override val strLabel: String, val learningRange: ClosedFloatingPointRange<Float>) : LabeledEnum {
     NotLearned("Not Learned", 0f..0.25f),

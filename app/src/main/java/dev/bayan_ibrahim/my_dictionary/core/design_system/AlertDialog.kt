@@ -48,7 +48,7 @@ fun MDAlertDialog(
     MDBasicDialog(
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
-        modifier = modifier.width(IntrinsicSize.Max),
+        modifier = modifier,
         shape = shape,
         colors = colors,
         textStyle = textStyle,

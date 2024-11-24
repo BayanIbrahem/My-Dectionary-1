@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -38,6 +39,19 @@ data object MDFieldDefaults {
     val horizontalDividerThickness: Dp = 1.dp
     val height: Dp = 42.dp
 
+
+    @Composable
+    fun colors(
+        containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor: Color = MaterialTheme.colorScheme.onSurface,
+        dividerColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    ) = MDFieldColors(
+        enabledContainerColor = containerColor,
+        enabledContentColor = contentColor,
+        disabledContainerColor = containerColor,
+        disabledContentColor = contentColor,
+        dividerColor = dividerColor,
+    )
     @Composable
     fun colors(
         enabledContainerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -80,8 +94,7 @@ fun MDField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
-    colors: MDFieldColors = MDFieldDefaults.colors(),
-    styles: MDFieldStyles = MDFieldDefaults.styles(),
+    theme: MDFieldsGroupTheme? = LocalMDFieldsGroupFieldTheme.current,
     bottomHorizontalDividerThickness: Dp = MDFieldDefaults.horizontalDividerThickness,
     /**
      * pass a height in the modifier to override this value
@@ -89,17 +102,30 @@ fun MDField(
     height: Dp = MDFieldDefaults.height,
     leadingIcon: @Composable () -> Unit = {},
     trailingIcon: @Composable () -> Unit = {
-        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
+//        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
     },
     title: @Composable RowScope.() -> Unit,
 ) {
+    val defaultColors = MDFieldsGroupDefaults.colors()
+    val fieldColors by remember(theme) {
+        derivedStateOf {
+            theme?.colors?.fieldColors ?: defaultColors.fieldColors
+        }
+    }
+
+    val defaultTheme = MDFieldsGroupDefaults.styles()
+    val fieldStyles by remember(theme) {
+        derivedStateOf {
+            theme?.style?.fieldStyles ?: defaultTheme.fieldStyles
+        }
+    }
     Column {
         val containerColor by remember(enabled) {
             derivedStateOf {
                 if (enabled) {
-                    colors.enabledContainerColor
+                    fieldColors.enabledContainerColor
                 } else {
-                    colors.disabledContainerColor
+                    fieldColors.disabledContainerColor
                 }
             }
         }
@@ -107,9 +133,9 @@ fun MDField(
         val contentColor by remember(enabled) {
             derivedStateOf {
                 if (enabled) {
-                    colors.enabledContentColor
+                    fieldColors.enabledContentColor
                 } else {
-                    colors.disabledContentColor
+                    fieldColors.disabledContentColor
                 }
             }
         }
@@ -132,7 +158,8 @@ fun MDField(
             ) {
                 leadingIcon()
                 CompositionLocalProvider(
-                    LocalTextStyle provides styles.titleStyle,
+                    LocalTextStyle provides fieldStyles.titleStyle,
+                    LocalContentColor provides contentColor
                 ) {
                     title()
                 }
@@ -142,7 +169,7 @@ fun MDField(
         }
         HorizontalDivider(
             modifier = Modifier.height(bottomHorizontalDividerThickness),
-            color = colors.dividerColor
+            color = fieldColors.dividerColor
         )
     }
 }

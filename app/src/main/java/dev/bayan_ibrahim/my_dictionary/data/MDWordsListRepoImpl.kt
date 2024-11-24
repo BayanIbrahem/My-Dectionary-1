@@ -15,6 +15,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.code
@@ -22,7 +23,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -38,6 +39,10 @@ class MDWordsListRepoImpl(
     override fun getViewPreferences(): Flow<WordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
 
     override suspend fun setViewPreferences(preferences: WordsListViewPreferences) = this.preferences.writeWordsListViewPreferences {
+        preferences
+    }
+
+    override suspend fun setTrainPreferences(preferences: WordsListTrainPreferences) = this.preferences.writeWordsListTrainPreferences {
         preferences
     }
 
@@ -140,21 +145,21 @@ class MDWordsListRepoImpl(
     }
 
     private fun List<Word>.sort(
-        sortBy: WordsListSortBy,
+        sortBy: WordsListViewPreferencesSortBy,
         order: WordsListSortByOrder,
     ): List<Word> {
         return when (sortBy) {
-            WordsListSortBy.Meaning -> when (order) {
+            WordsListViewPreferencesSortBy.Meaning -> when (order) {
                 WordsListSortByOrder.Asc -> sortedBy { it.meaning }
                 WordsListSortByOrder.Desc -> sortedByDescending { it.meaning }
             }
 
-            WordsListSortBy.Translation -> when (order) {
+            WordsListViewPreferencesSortBy.Translation -> when (order) {
                 WordsListSortByOrder.Asc -> sortedBy { it.translation }
                 WordsListSortByOrder.Desc -> sortedByDescending { it.translation }
             }
 
-            WordsListSortBy.LearningProgress -> when (order) {
+            WordsListViewPreferencesSortBy.LearningProgress -> when (order) {
                 WordsListSortByOrder.Asc -> sortedBy { it.learningProgress }
                 WordsListSortByOrder.Desc -> sortedByDescending { it.learningProgress }
             }

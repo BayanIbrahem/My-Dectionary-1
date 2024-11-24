@@ -8,14 +8,21 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.WordsListTrainPreferencesMutableState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesMutableState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesLimit
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainType
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
@@ -32,8 +39,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-private const val searchQueryDelay = 500L // 0.5 sec
 
 @HiltViewModel
 class MDWordsListViewModel @Inject constructor(
@@ -78,7 +83,7 @@ class MDWordsListViewModel @Inject constructor(
                 if (languageCode != null) {
                     _uiState.selectedWordSpace =
                         repo.getLanguagesWordSpaces(code = languageCode) ?: LanguageWordSpace(languageCode.language)
-                    _uiState.preferencesState.onApplyPreferences(viewPreferences.first())
+                    _uiState.viewPreferencesState.onApplyPreferences(viewPreferences.first())
                 } else {
                     _uiState.selectedWordSpace = LanguageWordSpace()
                     _uiState.validData = false
@@ -180,11 +185,11 @@ class MDWordsListViewModel @Inject constructor(
         }
 
         override fun onHideViewPreferencesDialog() {
-            _uiState.isViewPreferencesDialogShown = false
+            _uiState.viewPreferencesState.showDialog = false
         }
 
         override fun onShowViewPreferencesDialog() {
-            _uiState.isViewPreferencesDialogShown = true
+            _uiState.viewPreferencesState.showDialog = true
         }
 
         override fun onSearchQueryChange(query: String) = editViewByPreferences {
@@ -201,7 +206,7 @@ class MDWordsListViewModel @Inject constructor(
                 // todo normalize this search method
                 val queryRegex = query.lowercase().toCharArray().joinToString(".*", ".*", ".*").toRegex()
                 val newTags = repo.getLanguageTags(uiState.selectedWordSpace.language.code).first().filter { tag ->
-                    tag !in uiState.preferencesState.selectedTags && queryRegex.matches(tag.lowercase())
+                    tag !in uiState.viewPreferencesState.selectedTags && queryRegex.matches(tag.lowercase())
                 }
                 _uiState.tagsSuggestions.clear()
                 _uiState.tagsSuggestions.addAll(newTags)
@@ -239,7 +244,7 @@ class MDWordsListViewModel @Inject constructor(
             }
         }
 
-        override fun onSelectWordsSortBy(sortBy: WordsListSortBy) = editViewByPreferences {
+        override fun onSelectWordsSortBy(sortBy: WordsListViewPreferencesSortBy) = editViewByPreferences {
             this.sortBy = sortBy
         }
 
@@ -298,6 +303,42 @@ class MDWordsListViewModel @Inject constructor(
             _uiState.isSelectModeOn = false
             _uiState.selectedWords = persistentSetOf()
         }
+
+        override fun onShowTrainPreferencesDialog() {
+            _uiState.trainPreferencesState.showDialog = true
+        }
+
+        override fun onSelectTrainType(trainType: WordsListTrainType) = editTrainPreferences {
+            this.trainType = trainType
+        }
+
+        override fun onSelectTrainTarget(trainTarget: WordsListTrainTarget) = editTrainPreferences {
+            this.trainTarget = trainTarget
+        }
+
+        override fun onSelectLimit(limit: WordsListTrainPreferencesLimit) = editTrainPreferences {
+            this.limit = limit
+        }
+
+        override fun onSelectSortBy(sortBy: WordsListTrainPreferencesSortBy) = editTrainPreferences {
+            this.sortBy = sortBy
+        }
+
+        override fun onSelectSortByOrder(sortByOrder: WordsListSortByOrder) = editTrainPreferences {
+            this.sortByOrder = sortByOrder
+        }
+
+        override fun onHideTrainPreferencesDialog() {
+            _uiState.trainPreferencesState.showDialog = false
+        }
+
+        override fun onConfirmTrain() {
+            // TODO,
+        }
+
+        override fun onResetTrainPreferences() = editTrainPreferences {
+            this.onApplyPreferences(defaultWordsListTrainPreferences)
+        }
     }
 
     private fun allWordsIds() = wordsList.value.map { it.id }.toPersistentSet()
@@ -312,10 +353,19 @@ class MDWordsListViewModel @Inject constructor(
     }
 
     private fun editViewByPreferences(body: WordsListViewPreferencesMutableState.() -> Unit) {
-        _uiState.preferencesState.body()
+        _uiState.viewPreferencesState.body()
         viewModelScope.launch {
             launch {
-                repo.setViewPreferences(uiState.preferencesState)
+                repo.setViewPreferences(uiState.viewPreferencesState)
+            }
+        }
+    }
+
+    private fun editTrainPreferences(body: WordsListTrainPreferencesMutableState.() -> Unit) {
+        _uiState.trainPreferencesState.body()
+        viewModelScope.launch {
+            launch {
+                repo.setTrainPreferences(uiState.trainPreferencesState)
             }
         }
     }
