@@ -3,14 +3,16 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.Word
-import dev.bayan_ibrahim.my_dictionary.domain.model.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.WordsListTrainPreferencesMutableState
@@ -26,16 +28,17 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPr
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,35 +50,46 @@ class MDWordsListViewModel @Inject constructor(
     private val _uiState: MDWordsListMutableUiState = MDWordsListMutableUiState()
     val uiState: MDWordsListUiState = _uiState
 
-    private val currentLanguageFlow: Flow<Language?> = repo.getSelectedLanguagePageStream()
-
-    private val viewPreferences = repo.getViewPreferences().onStart {
-        this.emit(defaultWordsListViewPreferences)
+    private val currentLanguageFlow: Flow<Language?> = repo.getSelectedLanguagePageStream().map {
+        it.also {
+            _uiState.validData = it != null
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val wordsList: StateFlow<List<Word>> = currentLanguageFlow.combine(viewPreferences) { language, viewPreferences ->
-        language to viewPreferences
-    }.flatMapConcat { (language, viewPreferences) ->
-        language?.let {
-            repo.getWordsList(it.code, viewPreferences)
-        } ?: flow {
-            emit(emptyList())
-        }
-    }.stateIn(
+    private val viewPreferences = repo.getViewPreferences().stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = listOf()
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = defaultWordsListViewPreferences
     )
 
-    private val selectedLanguagePage = repo.getSelectedLanguagePageStream().onStart {
-        this.emit(null)
-    }.map {
-        _uiState.validData = it != null
-        it
+    private val _paginatedWordsList: MutableStateFlow<PagingData<Word>> = MutableStateFlow(PagingData.empty())
+    val paginatedWordsList: StateFlow<PagingData<Word>> = _paginatedWordsList.asStateFlow()
+
+    private var paginatedWordsListJob: Job? = null
+    private fun setPaginatedWordsListJob() {
+        viewModelScope.launch {
+            paginatedWordsListJob?.cancel()
+            viewPreferences.collectLatest { preferences ->
+                currentLanguageFlow.collectLatest { language ->
+                    paginatedWordsListJob = launch {
+                        val wordsIds = repo.getWordsIdsOfTagsAndProgressRange(preferences)
+                        repo.getPaginatedWordsList(
+                            code = language?.code ?: "".code,
+                            wordsIdsOfTagsAndProgressRange = wordsIds,
+                            viewPreferences = preferences,
+                        ).distinctUntilChanged()
+                            .cachedIn(viewModelScope)
+                            .collect { pagingData ->
+                                _paginatedWordsList.value = pagingData
+                            }
+                    }
+                }
+            }
+        }
     }
 
     fun initWithNavArgs(args: MDDestination.TopLevel.WordsList) {
+        setPaginatedWordsListJob()
         viewModelScope.launch {
             _uiState.onExecute {
                 val languageCode = args.languageCode?.code ?: repo.getSelectedLanguagePage()?.code
@@ -230,9 +244,9 @@ class MDWordsListViewModel @Inject constructor(
             group: WordsListLearningProgressGroup,
         ) = editViewByPreferences {
             if (group in selectedLearningProgressGroups) {
-                this.selectedLearningProgressGroups = this.selectedLearningProgressGroups.add(group)
-            } else {
                 this.selectedLearningProgressGroups = this.selectedLearningProgressGroups.remove(group)
+            } else {
+                this.selectedLearningProgressGroups = this.selectedLearningProgressGroups.add(group)
             }
         }
 
@@ -253,13 +267,13 @@ class MDWordsListViewModel @Inject constructor(
         }
 
 
-        override fun onSelectAll() {
-            viewModelScope.launch {
-                if (uiState.isSelectModeOn) {
-                    _uiState.selectedWords = allWordsIds()
-                }
-            }
-        }
+//        override fun onSelectAll() {
+//            viewModelScope.launch {
+//                if (uiState.isSelectModeOn) {
+//                    _uiState.selectedWords = allWordsIds()
+//                }
+//            }
+//        }
 
         override fun onDeselectAll() {
             if (uiState.isSelectModeOn) {
@@ -268,13 +282,13 @@ class MDWordsListViewModel @Inject constructor(
             }
         }
 
-        override fun onInvertSelection() {
-            if (uiState.isSelectModeOn) {
-                val allWordsIds = allWordsIds()
-                _uiState.selectedWords = allWordsIds.removeAll(uiState.selectedWords)
-            }
-        }
-
+        //        override fun onInvertSelection() {
+//            if (uiState.isSelectModeOn) {
+//                val allWordsIds = allWordsIds()
+//                _uiState.selectedWords = allWordsIds.removeAll(uiState.selectedWords)
+//            }
+//        }
+//
         override fun onDeleteSelection() {
             _uiState.isSelectedWordsDeleteDialogShown = true
         }
@@ -333,15 +347,14 @@ class MDWordsListViewModel @Inject constructor(
         }
 
         override fun onConfirmTrain() {
-            // TODO,
+            // TODO
+            
         }
 
         override fun onResetTrainPreferences() = editTrainPreferences {
             this.onApplyPreferences(defaultWordsListTrainPreferences)
         }
     }
-
-    private fun allWordsIds() = wordsList.value.map { it.id }.toPersistentSet()
 
     private fun onToggleSelectWord(id: Long) {
         val isSelected = id in uiState.selectedWords

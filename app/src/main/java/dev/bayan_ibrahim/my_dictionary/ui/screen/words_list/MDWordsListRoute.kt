@@ -7,8 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
+import androidx.paging.compose.collectAsLazyPagingItems
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
@@ -23,7 +23,7 @@ fun MDWordsListRoute(
     }
 
     val uiState = viewModel.uiState
-    val wordsList by viewModel.wordsList.collectAsStateWithLifecycle()
+    val wordsList = viewModel.paginatedWordsList.collectAsLazyPagingItems()
     val navActions by remember(uiState.selectedWordSpace.language.code) {
         derivedStateOf {
             object : MDWordsListNavigationUiActions {

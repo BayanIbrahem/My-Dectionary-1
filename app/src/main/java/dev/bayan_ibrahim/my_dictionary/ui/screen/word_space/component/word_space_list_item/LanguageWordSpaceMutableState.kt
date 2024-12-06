@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableField
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import kotlinx.coroutines.CoroutineScope
 

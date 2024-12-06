@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 
 class MDFileProcessingMutableSummary : MDFileProcessingSummary {
     override var status: MDFileProcessingSummaryStatus by mutableStateOf(MDFileProcessingSummaryStatus.IDLE)

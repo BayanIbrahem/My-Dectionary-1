@@ -1,12 +1,9 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import androidx.compose.runtime.Immutable
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.WordsListTrainPreferencesActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
 
 interface MDWordsListBusinessUiActions : WordsListViewPreferencesActions, WordsListTrainPreferencesActions {
     // work space
@@ -24,9 +21,9 @@ interface MDWordsListBusinessUiActions : WordsListViewPreferencesActions, WordsL
     fun onAddNewWord()
 
     // menu-actions
-    fun onSelectAll()
+//    fun onSelectAll(), invalid with pagination
     fun onDeselectAll()
-    fun onInvertSelection()
+//    fun onInvertSelection(), invalid with pagination
     fun onDeleteSelection()
     fun onConfirmDeleteSelection()
     fun onCancelDeleteSelection()

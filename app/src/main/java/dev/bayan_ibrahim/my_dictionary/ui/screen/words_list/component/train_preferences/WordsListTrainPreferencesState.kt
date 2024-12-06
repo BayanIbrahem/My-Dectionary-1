@@ -4,6 +4,5 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
 
 interface WordsListTrainPreferencesState : WordsListTrainPreferences {
     val showDialog: Boolean
-    val isLoading: Boolean
 }
 

@@ -68,7 +68,7 @@ enum class WordsListTrainPreferencesLimit(val count: Int) : LabeledEnum {
 
 }
 
-enum class WordsListSortByOrder(override val strLabel: String, override val icon:ImageVector) : LabeledEnum, IconedEnum {
+enum class WordsListSortByOrder(override val strLabel: String, override val icon: ImageVector) : LabeledEnum, IconedEnum {
     Asc(
         strLabel = "Asc",
         icon = Icons.Default.KeyboardArrowUp

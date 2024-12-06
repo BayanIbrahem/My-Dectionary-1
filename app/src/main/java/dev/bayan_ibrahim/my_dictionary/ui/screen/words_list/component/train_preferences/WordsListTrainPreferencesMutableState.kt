@@ -19,12 +19,13 @@ class WordsListTrainPreferencesMutableState(
     limit: WordsListTrainPreferencesLimit = defaultWordsListTrainPreferences.limit,
 ) : WordsListTrainPreferencesState {
     constructor(data: WordsListTrainPreferences) : this(
+        trainType = data.trainType,
+        trainTarget = data.trainTarget,
         sortBy = data.sortBy,
         sortByOrder = data.sortByOrder,
-        limit = data.limit
+        limit = data.limit,
     )
 
-    override var isLoading: Boolean by mutableStateOf(false)
     override var showDialog: Boolean by mutableStateOf(false)
     override var trainType: WordsListTrainType by mutableStateOf(trainType)
     override var trainTarget: WordsListTrainTarget by mutableStateOf(trainTarget)
@@ -33,6 +34,8 @@ class WordsListTrainPreferencesMutableState(
     override var limit: WordsListTrainPreferencesLimit by mutableStateOf(limit)
 
     fun onApplyPreferences(preferences: WordsListTrainPreferences) {
+        trainType = preferences.trainType
+        trainTarget = preferences.trainTarget
         sortBy = preferences.sortBy
         sortByOrder = preferences.sortByOrder
         limit = preferences.limit

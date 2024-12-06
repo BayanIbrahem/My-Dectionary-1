@@ -3,7 +3,6 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -39,19 +38,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.MDNormalizer
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalizer
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.safeSubList
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardDefaults
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
-import dev.bayan_ibrahim.my_dictionary.domain.model.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import kotlin.math.roundToInt
 
@@ -59,7 +66,13 @@ import kotlin.math.roundToInt
 @Composable
 fun MDWordListItem(
     word: Word,
+    /**
+     * first is the search query applied for meaning,
+     * second is the search query applied for translation
+     */
+    searchQuery: Pair<String?, String?>,
     modifier: Modifier = Modifier,
+    colors: MDCardColors = MDCardDefaults.colors(),
     expanded: Boolean = true,
     animationDuration: Int = 300,
     animationEasing: Easing = FastOutSlowInEasing,
@@ -78,11 +91,12 @@ fun MDWordListItem(
     val floatTween by remember(animationEasing, animationDuration) {
         derivedStateOf { tween<Float>(animationDuration, easing = animationEasing) }
     }
-    val additionalTranslationAlpha by animateFloatAsState(
-        targetValue = if (expanded) 1f else 0f,
-        animationSpec = floatTween,
-        label = "alpha"
-    )
+
+    val mayNotMatchMeaningOrTranslation: Boolean by remember(searchQuery) {
+        derivedStateOf {
+            searchQuery.first != null && searchQuery.second != null
+        }
+    }
     MDCard(
         modifier = modifier,
         headerClickable = headerClickable,
@@ -108,8 +122,14 @@ fun MDWordListItem(
                 )
                 Text(
                     text = buildAnnotatedString {
-                        pushStyle(MaterialTheme.typography.bodyLarge.toSpanStyle())
-                        append(word.meaning)
+                        val meaning = word.meaning.formatBySearchQuery(
+                            searchQuery = searchQuery.first,
+                            style = MaterialTheme.typography.bodyLarge.toSpanStyle(),
+                            mayNotMatch = mayNotMatchMeaningOrTranslation,
+                            textColor = colors.headerContentColor,
+                            backgroundColor = colors.headerContainerColor,
+                        )
+                        append(meaning)
                         pushStyle(MaterialTheme.typography.labelSmall.toSpanStyle())
                         append("  " + word.transcription)
                     },
@@ -155,9 +175,15 @@ fun MDWordListItem(
             }
             FlowRow {
                 Text(
-                    text = word.translation,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
+                    text = word.translation.formatBySearchQuery(
+                        searchQuery = searchQuery.second,
+                        style = MaterialTheme.typography.bodyMedium.toSpanStyle().copy(
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        mayNotMatch = mayNotMatchMeaningOrTranslation,
+                        textColor = colors.contentContentColor,
+                        backgroundColor = colors.contentContainerColor,
+                    ),
                 )
                 word.additionalTranslations.forEach { additionalTranslation ->
                     AnimatedVisibility(
@@ -200,6 +226,75 @@ fun MDWordListItem(
     }
 }
 
+private fun String.formatBySearchQuery(
+    searchQuery: String?,
+    style: SpanStyle,
+    textColor: Color,
+    backgroundColor: Color,
+    highlightedTextColor: Color = backgroundColor,
+    highlightBackgroundColor: Color = textColor,
+    textNormalizer: MDNormalizer = meaningSearchNormalizer,
+    queryNormalizer: MDNormalizer = searchQueryRegexNormalizer,
+    mayNotMatch: Boolean = false,
+): AnnotatedString {
+    if (mayNotMatch) {
+        if (searchQuery != null) {
+            val normalized = textNormalizer.normalize(this)
+            val query = queryNormalizer.normalize(searchQuery).toRegex()
+            if (!query.matches(normalized)) {
+                return this.toAnnotatedString()
+            }
+        }
+    }
+
+    val normalizedSearchRegex = searchQuery?.let {
+        queryNormalizer.normalize(it).toRegex()
+    } ?: return toAnnotatedString()
+
+    val reversedNormalizedSearchRegex = "[^(${normalizedSearchRegex.pattern})]".toRegex()
+
+    val nonMatchedCharsIndexes = textNormalizer.normalize(this).let {
+        reversedNormalizedSearchRegex.findAll(it).map {
+            it.range.toList()
+        }.flatten().toSet()
+    }
+    val normalTextStyle = style.copy(
+        color = textColor,
+        background = backgroundColor
+    )
+
+    val highlightedTextStyle = style.copy(
+        color = highlightedTextColor,
+        background = highlightBackgroundColor,
+    )
+
+    val len = length
+    var lastIsNormal: Boolean? = null
+
+    return buildAnnotatedString {
+        repeat(len) { i ->
+//            val textWithoutI = removeRange(i, i + 1)
+//            val normalizedTextWithoutI = textNormalizer.normalize(textWithoutI)
+//            val validWithoutI = normalizedSearchRegex.matches(normalizedTextWithoutI)
+//            if (validWithoutI) {
+            if (i in nonMatchedCharsIndexes) {
+                // this is normal char
+                if (lastIsNormal != true) {
+                    pushStyle(normalTextStyle)
+                    lastIsNormal = true
+                }
+            } else {
+                // this is highlighted char
+                if (lastIsNormal != false) {
+                    pushStyle(highlightedTextStyle)
+                    lastIsNormal = false
+                }
+            }
+            append(this@formatBySearchQuery[i])
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun MDWordListItemPreview() {
@@ -218,6 +313,7 @@ private fun MDWordListItemPreview() {
                     mutableStateOf(false)
                 }
                 MDWordListItem(
+                    searchQuery = "ugug" to "y",
                     word = Word(
                         id = 0,
                         meaning = "Auge",

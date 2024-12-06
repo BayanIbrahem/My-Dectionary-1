@@ -5,7 +5,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageDa
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.LanguageEntity
-import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelatedWords
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel

@@ -6,9 +6,8 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelationEntity
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
-import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
-import dev.bayan_ibrahim.my_dictionary.domain.model.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
 
 fun TypeTagWithRelation.asTagModel(): WordTypeTag = WordTypeTag(
     id = this.tag.id!!,

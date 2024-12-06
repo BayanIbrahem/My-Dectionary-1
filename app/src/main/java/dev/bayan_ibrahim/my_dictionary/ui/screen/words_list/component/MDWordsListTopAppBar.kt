@@ -37,8 +37,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 /**
@@ -50,7 +50,6 @@ fun MDWordsListTopAppBar(
     language: Language,
     selectedWordsCount: Int,
     visibleWordsCount: Int,
-    totalWordsCount: Int,
     // normal mode actions,
     onTrainVisibleWords: () -> Unit,
     onAdjustFilterPreferences: () -> Unit,
@@ -58,8 +57,6 @@ fun MDWordsListTopAppBar(
     onDeleteWordSpace: () -> Unit,
     // selection mode actions
     onClearSelection: () -> Unit,
-    onSelectAll: () -> Unit,
-    onInvertSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -70,7 +67,6 @@ fun MDWordsListTopAppBar(
             WordsListTopAppBarNormalMode(
                 language = language,
                 visibleWordsCount = visibleWordsCount,
-                totalWordsCount = totalWordsCount,
                 onTrainVisibleWords = onTrainVisibleWords,
                 onAdjustFilterPreferences = onAdjustFilterPreferences,
                 onSelectLanguagePage = onSelectLanguagePage,
@@ -83,8 +79,6 @@ fun MDWordsListTopAppBar(
                 selectedWordsCount = selectedWordsCount,
                 totalWordsCount = visibleWordsCount,
                 onClearSelection = onClearSelection,
-                onSelectAll = onSelectAll,
-                onInvertSelection = onInvertSelection,
                 onDeleteSelection = onDeleteSelection,
                 modifier = modifier
             )
@@ -104,16 +98,12 @@ private val menuOffset = defaultMenuOffset + DpOffset(-defaultMenuPadding, defau
 private fun WordsListTopAppBarNormalMode(
     language: Language,
     visibleWordsCount: Int,
-    totalWordsCount: Int,
     onTrainVisibleWords: () -> Unit,
     onAdjustFilterPreferences: () -> Unit,
     onSelectLanguagePage: () -> Unit,
     onDeleteWordSpace: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val activeFilter by remember(visibleWordsCount, totalWordsCount) {
-        derivedStateOf { visibleWordsCount < totalWordsCount }
-    }
     TopAppBar(
         title = {
             Row(
@@ -121,10 +111,10 @@ private fun WordsListTopAppBarNormalMode(
             ) {
                 Text("${language.localDisplayName} ") // has a trailing space
                 Text(
-                    text = if (activeFilter) "$visibleWordsCount of $totalWordsCount words" else "$totalWordsCount words",
+                    text = "$visibleWordsCount words", // TODO, string res
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
-                ) // TODO, string res
+                )
             }
         },
         modifier = modifier,
@@ -152,7 +142,7 @@ private fun WordsListTopAppBarNormalMode(
                     // adjust filter preferences
                 },
             ) {
-                Icon(if (activeFilter) Icons.Filled.Info else Icons.Default.Info, null)
+                Icon(Icons.Filled.Info, null) // TODO, icon res
             }
             var expanded by remember {
                 mutableStateOf(false)
@@ -203,8 +193,6 @@ private fun WordsListTopAppBarSelectionMode(
     selectedWordsCount: Int,
     totalWordsCount: Int,
     onClearSelection: () -> Unit,
-    onSelectAll: () -> Unit,
-    onInvertSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -253,26 +241,6 @@ private fun WordsListTopAppBarSelectionMode(
                         Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
                     }
                 ) {
-                    MenuItem(
-                        leadingIcon = Icons.Default.Home, // TODO, icon vector
-                        text = "Select All", // TODO, string res
-                        onClick = {
-                            dismiss()
-                            onSelectAll()
-                        },
-                        enabled = hasNotSelected,
-                    )
-
-                    MenuItem(
-                        leadingIcon = Icons.Default.Home, // TODO, icon vector
-                        text = "Inverse Selection", // TODO, string res
-                        onClick = {
-                            dismiss()
-                            onInvertSelection()
-                        },
-                        enabled = hasSelected && hasNotSelected
-                    )
-
                     MenuItem(
                         leadingIcon = Icons.Default.Delete,
                         text = "Delete Selection", // TODO, string res
@@ -337,7 +305,6 @@ private fun WordsListTopAppBarPreview() {
                     language = Language("ar".code, "العربية", "Arabic"),
                     selectedWordsCount = 5,
                     visibleWordsCount = 100,
-                    totalWordsCount = 200,
                     onAdjustFilterPreferences = {
                         selectionMode = true
                     },
@@ -346,8 +313,6 @@ private fun WordsListTopAppBarPreview() {
                     onClearSelection = {
                         selectionMode = false
                     },
-                    onSelectAll = {},
-                    onInvertSelection = {},
                     onDeleteSelection = {},
                     onTrainVisibleWords = {},
                 )

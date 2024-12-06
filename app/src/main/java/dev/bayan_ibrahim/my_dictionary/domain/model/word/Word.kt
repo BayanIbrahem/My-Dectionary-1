@@ -1,6 +1,9 @@
-package dev.bayan_ibrahim.my_dictionary.domain.model
+package dev.bayan_ibrahim.my_dictionary.domain.model.word
 
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
+import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 
 data class Word(
     val id: Long,

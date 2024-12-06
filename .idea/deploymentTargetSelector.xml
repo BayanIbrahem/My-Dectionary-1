@@ -8,10 +8,10 @@
       <SelectionState runConfigName="MDWordSpaceListItemPreview (1)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="MDFileFileIdentifierPreview">
+      <SelectionState runConfigName="MDWordsListFilterDialogPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="MDWordsListFilterDialogPreview">
+      <SelectionState runConfigName="MDWordListItemPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

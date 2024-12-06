@@ -76,14 +76,12 @@ fun MDScreen(
 
 @Composable
 private fun BoxScope.TitledMessage(titleMessage: String, bodyMessage: String) {
-    Dialog(onDismissRequest = {}) {
-        Column(
-            modifier = Modifier.Companion.align(Alignment.Center),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(titleMessage, style = MaterialTheme.typography.titleLarge)
-            Text(bodyMessage, style = MaterialTheme.typography.bodyLarge)
-        }
+    Column(
+        modifier = Modifier.Companion.align(Alignment.Center),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(titleMessage, style = MaterialTheme.typography.titleLarge)
+        Text(bodyMessage, style = MaterialTheme.typography.bodyLarge)
     }
 }

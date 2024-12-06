@@ -100,6 +100,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(platform(libs.androidx.compose.bom))
 
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
     implementation(libs.google.dagger.hilt.android)
     implementation(libs.google.dagger.hilt.core)
     ksp(libs.google.dagger.hilt.ext.compiler)

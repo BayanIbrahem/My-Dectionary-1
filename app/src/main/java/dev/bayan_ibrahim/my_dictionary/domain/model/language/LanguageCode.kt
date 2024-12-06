@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.domain.model
+package dev.bayan_ibrahim.my_dictionary.domain.model.language
 
 
 val String.code: LanguageCode get() = LanguageCode(code = this)

@@ -1,6 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.domain.repo
 
-import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import kotlinx.coroutines.flow.Flow
 

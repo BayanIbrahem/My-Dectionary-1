@@ -1,13 +1,12 @@
 package dev.bayan_ibrahim.my_dictionary.domain.repo
 
-import dev.bayan_ibrahim.my_dictionary.domain.model.Word
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import androidx.paging.PagingData
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.WordsListTrainPreferencesState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesState
 import kotlinx.coroutines.flow.Flow
 
 interface MDWordsListRepo {
@@ -21,10 +20,22 @@ interface MDWordsListRepo {
     fun getLanguageTags(code: LanguageCode): Flow<Set<String>>
 
     // words list
-    fun getWordsList(code: LanguageCode, viewPreferences: WordsListViewPreferences): Flow<List<Word>>
+    fun getWordsList(
+        code: LanguageCode,
+        viewPreferences: WordsListViewPreferences,
+    ): Flow<List<Word>>
+
+    // words list
+    fun getPaginatedWordsList(
+        code: LanguageCode,
+        wordsIdsOfTagsAndProgressRange: Set<Long>,
+        viewPreferences: WordsListViewPreferences,
+    ): Flow<PagingData<Word>>
+
     suspend fun deleteWords(ids: Collection<Long>)
 
     // WordSpaces
     fun getAllLanguagesWordSpaces(includeNotUsedLanguages: Boolean = true): Flow<List<LanguageWordSpace>>
     suspend fun getLanguagesWordSpaces(code: LanguageCode): LanguageWordSpace?
+    suspend fun getWordsIdsOfTagsAndProgressRange(viewPreferences: WordsListViewPreferences): Set<Long>
 }

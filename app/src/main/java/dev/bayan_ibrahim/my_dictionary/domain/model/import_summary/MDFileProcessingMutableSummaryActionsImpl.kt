@@ -1,6 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.import_summary
 
-import dev.bayan_ibrahim.my_dictionary.domain.model.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 
 class MDFileProcessingMutableSummaryActionsImpl(
     private val summary: MDFileProcessingMutableSummary,

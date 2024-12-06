@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.toMDEditableField
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.allLanguages
-import dev.bayan_ibrahim.my_dictionary.domain.model.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordSpaceRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.LanguageWordSpaceMutableState

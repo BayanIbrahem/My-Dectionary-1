@@ -3,7 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDLanguageSelectionDialog
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import kotlinx.collections.immutable.PersistentList
 
 @Composable

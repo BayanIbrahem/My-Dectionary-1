@@ -6,6 +6,8 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalize
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageCode
@@ -16,6 +18,8 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLearningProgress
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMeaning
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedMeaning
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTags
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranscription
@@ -37,13 +41,15 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTyp
             entity = LanguageEntity::class,
             parentColumns = [dbLanguageCode],
             childColumns = [dbWordLanguageCode],
-            onUpdate = ForeignKey.RESTRICT,
-            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE,
         ),
     ],
     indices = [
         Index(dbWordTypeTag),
         Index(dbWordLanguageCode),
+        Index(dbWordNormalizedMeaning),
+        Index(dbWordNormalizedTranslation),
     ]
 )
 @TypeConverters(StringListConverter::class)
@@ -53,8 +59,12 @@ data class WordEntity(
     val id: Long? = null,
     @ColumnInfo(dbWordMeaning)
     val meaning: String,
+    @ColumnInfo(dbWordNormalizedMeaning)
+    val normalizedMeaning: String = meaning.meaningSearchNormalize,
     @ColumnInfo(dbWordTranslation)
     val translation: String,
+    @ColumnInfo(dbWordNormalizedTranslation)
+    val normalizedTranslation: String = translation.meaningSearchNormalize,
     @ColumnInfo(dbWordLanguageCode)
     val languageCode: String,
     @ColumnInfo(dbWordAdditionalTranslations)

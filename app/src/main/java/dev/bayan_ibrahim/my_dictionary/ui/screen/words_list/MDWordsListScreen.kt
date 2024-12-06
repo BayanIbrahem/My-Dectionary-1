@@ -23,19 +23,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
+import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyGridListItems
+import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyPagingGridItems
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.domain.model.Word
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordListItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListLanguageSelectionPageDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.MDWordsListTrainPreferencesDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.MDWordsListViewPreferencesDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
 
 @Composable
 fun MDWordsListScreen(
     uiState: MDWordsListUiState,
-    wordsList: List<Word>,
+    wordsList: LazyPagingItems<Word>,
     uiActions: MDWordsListUiActions,
     modifier: Modifier = Modifier,
 ) {
@@ -54,16 +59,13 @@ fun MDWordsListScreen(
                 isSelectionModeOn = uiState.isSelectModeOn,
                 language = uiState.selectedWordSpace.language,
                 selectedWordsCount = selectedWordsCount,
-                visibleWordsCount = wordsList.count(),
-                totalWordsCount = wordsList.count(), // TODO, pass total words count,
+                visibleWordsCount = wordsList.itemCount,
                 onTrainVisibleWords = uiActions::onShowTrainPreferencesDialog,
                 onAdjustFilterPreferences = uiActions::onShowViewPreferencesDialog,
                 onSelectLanguagePage = uiActions::onShowLanguageWordSpacesDialog,
                 onDeleteWordSpace = uiActions::onDeleteLanguageWordSpace,
                 onClearSelection = uiActions::onClearSelection,
-                onSelectAll = uiActions::onSelectAll,
-                onInvertSelection = uiActions::onInvertSelection,
-                onDeleteSelection = uiActions::onDeleteSelection,
+                onDeleteSelection = uiActions::onDeleteSelection
             )
         },
         floatingActionButton = {
@@ -82,20 +84,17 @@ fun MDWordsListScreen(
             mutableStateOf(null)
         }
         LazyVerticalGrid(
-            modifier = Modifier.fillMaxSize(),
-            columns = GridCells.Adaptive(250.dp),
+            GridCells.Adaptive(250.dp), Modifier.fillMaxSize(),
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            if (wordsList.isEmpty()) {
-                item(
-                    key = -4,
-                    contentType = "placeholder",
-                    span = {
-                        GridItemSpan(this.maxLineSpan)
-                    }
-                ) {
+            lazyPagingGridItems(
+                items = wordsList,
+                key = {
+                    it.id
+                },
+                emptyItemsPlaceHolder = {
                     Text(
                         text = if (uiState.viewPreferencesState.effectiveFilter) {
                             "No words matches your filters..."
@@ -103,45 +102,49 @@ fun MDWordsListScreen(
                             "No words yet, add some words first"
                         }, // TODO, string res
                         style = MaterialTheme.typography.bodyLarge,
-                    )
+                    )                }
+            ) { i, word ->
+                val isSelected by remember {
+                    derivedStateOf { word.id in uiState.selectedWords }
                 }
-            } else {
-                items(
-                    items = wordsList,
-                    key = { it.id },
-                    contentType = { "word" }
-                ) { word ->
-                    val isSelected by remember {
-                        derivedStateOf { word.id in uiState.selectedWords }
-                    }
 
-                    val isExpanded by remember {
-                        derivedStateOf { expandedWordId == word.id }
-                    }
-
-                    MDWordListItem(
-                        word = word,
-                        expanded = isExpanded,
-                        primaryAction = {
-                            if (uiState.isSelectModeOn) {
-                                Checkbox(checked = isSelected, onCheckedChange = null)
-                            }
-                        },
-                        onClickHeader = {
-                            if (expandedWordId == word.id) {
-                                expandedWordId = null
-                            } else {
-                                expandedWordId = word.id
-                            }
-                        },
-                        onClick = {
-                            uiActions.onClickWord(word.id)
-                        },
-                        onLongClick = {
-                            uiActions.onLongClickWord(word.id)
-                        },
-                    )
+                val isExpanded by remember {
+                    derivedStateOf { expandedWordId == word.id }
                 }
+
+                val searchQuery by remember(uiState.viewPreferencesState) {
+                    derivedStateOf {
+                        val query = uiState.viewPreferencesState.searchQuery.nullIfInvalid()
+                        when(uiState.viewPreferencesState.searchTarget) {
+                            WordsListSearchTarget.Meaning -> query to null
+                            WordsListSearchTarget.Translation -> null to query
+                            WordsListSearchTarget.All -> query to query
+                        }
+                    }
+                }
+                MDWordListItem(
+                    word = word,
+                    searchQuery = searchQuery,
+                    expanded = isExpanded,
+                    primaryAction = {
+                        if (uiState.isSelectModeOn) {
+                            Checkbox(checked = isSelected, onCheckedChange = null)
+                        }
+                    },
+                    onClickHeader = {
+                        if (expandedWordId == word.id) {
+                            expandedWordId = null
+                        } else {
+                            expandedWordId = word.id
+                        }
+                    },
+                    onClick = {
+                        uiActions.onClickWord(word.id)
+                    },
+                    onLongClick = {
+                        uiActions.onLongClickWord(word.id)
+                    },
+                )
             }
         }
     }
@@ -184,7 +187,7 @@ fun MDWordsListScreen(
         actions = uiActions,
     )
 
-    // view preferences dialog:
+    // train preferences dialog:
     MDWordsListTrainPreferencesDialog(
         state = uiState.trainPreferencesState,
         actions = uiActions,

@@ -15,8 +15,8 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelatio
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModelWithCount
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordSpaceModel
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordSpaceRepo
 import kotlinx.coroutines.flow.Flow

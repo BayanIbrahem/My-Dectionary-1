@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -7,16 +8,41 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryDbNormalize
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.WordIdWithTagAndProgress
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordBaseWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLearningProgress
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMeaning
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedMeaning
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTags
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
 import kotlinx.coroutines.flow.Flow
+
+
+private const val getWordsWithRelatedQuery = """
+            SELECT * 
+            FROM $dbWordTable 
+            WHERE  
+                $dbWordId IN (:targetWords) AND
+                $dbWordLanguageCode = :languageCode AND
+                (
+                    (
+                        :includeMeaning AND $dbWordNormalizedMeaning LIKE :queryPattern
+                    ) OR 
+                    (
+                        :includeTranslation AND $dbWordNormalizedTranslation LIKE :queryPattern
+                    ) 
+                )
+        """
 
 @Dao
 interface WordDao {
@@ -138,6 +164,83 @@ interface WordDao {
         """
     )
     fun getWordsWithRelatedOfLanguage(languageCode: String): Flow<List<WordWithRelatedWords>>
+
+    @Query(
+        """
+        SELECT
+            $dbWordId,
+            $dbWordTags,
+            $dbWordLearningProgress
+        FROM
+            $dbWordTable
+        WHERE
+            (:includeEmptyTags OR LENGTH($dbWordTags) > 0) AND
+            $dbWordLearningProgress BETWEEN :minProgress AND :maxProgress
+    """
+    )
+    fun getWordsIdsWithTagsOfLearningProgressRange(
+        includeEmptyTags: Boolean = true,
+        minProgress: Float = 0f,
+        maxProgress: Float = 1f,
+    ): Flow<List<WordIdWithTagAndProgress>>
+
+
+    fun getSortByColumnName(sortBy: WordsListViewPreferencesSortBy): String {
+        return when (sortBy) {
+            WordsListViewPreferencesSortBy.Meaning -> dbWordMeaning
+            WordsListViewPreferencesSortBy.Translation -> dbWordTranslation
+            WordsListViewPreferencesSortBy.LearningProgress -> dbWordLearningProgress
+        }
+    }
+
+    fun getQueryPatternOfQuery(query: String): String {
+        if (query.isEmpty()) return query
+        return query.searchQueryDbNormalize
+    }
+
+    @Transaction
+    @Query("$getWordsWithRelatedQuery ORDER BY :sortBy DESC")
+    fun getPaginatedWordsWithRelatedDescOf(
+        languageCode: String,
+        targetWords: Set<Long>,
+        includeMeaning: Boolean,
+        includeTranslation: Boolean,
+        queryPattern: String,
+        sortBy: String,
+    ): PagingSource<Int, WordWithRelatedWords>
+
+    @Transaction
+    @Query("$getWordsWithRelatedQuery ORDER BY :sortBy ASC")
+    fun getPaginatedWordsWithRelatedAscOf(
+        languageCode: String,
+        targetWords: Set<Long>,
+        includeMeaning: Boolean,
+        includeTranslation: Boolean,
+        queryPattern: String,
+        sortBy: String,
+    ): PagingSource<Int, WordWithRelatedWords>
+
+    @Transaction
+    @Query("$getWordsWithRelatedQuery ORDER BY :sortBy DESC")
+    fun getWordsWithRelatedDescOf(
+        languageCode: String,
+        targetWords: Set<Long>,
+        includeMeaning: Boolean,
+        includeTranslation: Boolean,
+        queryPattern: String,
+        sortBy: String,
+    ): Flow<List<WordWithRelatedWords>>
+
+    @Transaction
+    @Query("$getWordsWithRelatedQuery ORDER BY :sortBy ASC")
+    fun getWordsWithRelatedAscOf(
+        languageCode: String,
+        targetWords: Set<Long>,
+        includeMeaning: Boolean,
+        includeTranslation: Boolean,
+        queryPattern: String,
+        sortBy: String,
+    ): Flow<List<WordWithRelatedWords>>
 
     @Transaction
     @Query(
