@@ -1,14 +1,14 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model
 
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainType
 
 
 interface WordsListTrainPreferences {
-    val trainType: WordsListTrainType
+    val trainType: TrainWordType
     val trainTarget: WordsListTrainTarget
     val sortBy: WordsListTrainPreferencesSortBy
     val sortByOrder: WordsListSortByOrder
@@ -16,7 +16,7 @@ interface WordsListTrainPreferences {
 }
 
 data class WordsListTrainPreferencesBuilder(
-    override val trainType: WordsListTrainType,
+    override val trainType: TrainWordType,
     override val trainTarget: WordsListTrainTarget,
     override val sortBy: WordsListTrainPreferencesSortBy,
     override val sortByOrder: WordsListSortByOrder,
@@ -25,7 +25,7 @@ data class WordsListTrainPreferencesBuilder(
 
 val defaultWordsListTrainPreferences by lazy {
     WordsListTrainPreferencesBuilder(
-        trainType = WordsListTrainType.SelectWordMeaning,
+        trainType = TrainWordType.SelectWordMeaning,
         trainTarget = WordsListTrainTarget.Translation,
         sortBy = WordsListTrainPreferencesSortBy.Random,
         sortByOrder = WordsListSortByOrder.Asc,

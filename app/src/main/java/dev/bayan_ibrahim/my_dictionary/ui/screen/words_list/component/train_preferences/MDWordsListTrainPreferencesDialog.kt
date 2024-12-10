@@ -47,7 +47,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainType
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
@@ -125,9 +125,9 @@ fun MDWordsListTrainPreferencesDialog(
 
 @Composable
 private fun TrainTypeBody(
-    selectedType: WordsListTrainType,
+    selectedType: TrainWordType,
     selectedTarget: WordsListTrainTarget,
-    onSelectType: (WordsListTrainType) -> Unit,
+    onSelectType: (TrainWordType) -> Unit,
     onSelectTarget: (WordsListTrainTarget) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -135,7 +135,7 @@ private fun TrainTypeBody(
         modifier = modifier
     ) {
         CheckableGroup(
-            data = WordsListTrainType.entries,
+            data = TrainWordType.entries,
             selected = selectedType,
             title = "Train Type",  // TODO, string res
             onClick = onSelectType,
@@ -319,7 +319,7 @@ private fun MDWordsListFilterDialogPreview() {
                     actions = object : WordsListTrainPreferencesActions {
                         override fun onHideTrainPreferencesDialog() {}
                         override fun onShowTrainPreferencesDialog() {}
-                        override fun onSelectTrainType(trainType: WordsListTrainType) {}
+                        override fun onSelectTrainType(trainType: TrainWordType) {}
                         override fun onSelectTrainTarget(trainTarget: WordsListTrainTarget) {}
                         override fun onSelectLimit(limit: WordsListTrainPreferencesLimit) {}
                         override fun onSelectSortBy(sortBy: WordsListTrainPreferencesSortBy) {}

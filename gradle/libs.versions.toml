@@ -27,6 +27,7 @@ protobufPlugin = "0.9.4"
 coil = "2.7.0"
 kotlinComposeCompiler = "1.5.15"
 desugaring = "2.1.2"
+storage = "1.5.0"
 
 [libraries]
 # json serialization
@@ -98,6 +99,7 @@ androidx-coroutines-test = {group = "org.jetbrains.kotlinx", name ="kotlinx-coro
 
 ## espresso
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
 # desugaring
 # ______
 

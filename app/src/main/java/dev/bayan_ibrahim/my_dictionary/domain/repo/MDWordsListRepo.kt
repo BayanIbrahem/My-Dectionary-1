@@ -9,8 +9,9 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import kotlinx.coroutines.flow.Flow
 
-interface MDWordsListRepo {
+interface MDWordsListRepo: MDTrainPreferencesRepo {
     // view preferences
+    // TODO ,get train preferences initial value
     fun getViewPreferences(): Flow<WordsListViewPreferences>
     suspend fun setViewPreferences(preferences: WordsListViewPreferences)
     suspend fun setTrainPreferences(preferences: WordsListTrainPreferences)
@@ -37,5 +38,4 @@ interface MDWordsListRepo {
     // WordSpaces
     fun getAllLanguagesWordSpaces(includeNotUsedLanguages: Boolean = true): Flow<List<LanguageWordSpace>>
     suspend fun getLanguagesWordSpaces(code: LanguageCode): LanguageWordSpace?
-    suspend fun getWordsIdsOfTagsAndProgressRange(viewPreferences: WordsListViewPreferences): Set<Long>
 }

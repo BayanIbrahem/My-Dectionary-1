@@ -194,7 +194,7 @@ interface WordDao {
     }
 
     fun getQueryPatternOfQuery(query: String): String {
-        if (query.isEmpty()) return query
+        if (query.isEmpty()) return "%"
         return query.searchQueryDbNormalize
     }
 

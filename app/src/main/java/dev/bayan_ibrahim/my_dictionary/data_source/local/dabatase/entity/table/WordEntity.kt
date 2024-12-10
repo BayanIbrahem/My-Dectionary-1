@@ -7,12 +7,12 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalize
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageCode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordAdditionalTranslations
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordCreatedAt
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordExamples
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
@@ -25,6 +25,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTag
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranscription
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTypeTag
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordUpdatedAt
 
 @Entity(
     tableName = dbWordTable,
@@ -59,6 +60,10 @@ data class WordEntity(
     val id: Long? = null,
     @ColumnInfo(dbWordMeaning)
     val meaning: String,
+    @ColumnInfo(dbWordCreatedAt)
+    val createdAt: Long,
+    @ColumnInfo(dbWordUpdatedAt)
+    val updatedAt: Long = System.currentTimeMillis(),
     @ColumnInfo(dbWordNormalizedMeaning)
     val normalizedMeaning: String = meaning.meaningSearchNormalize,
     @ColumnInfo(dbWordTranslation)

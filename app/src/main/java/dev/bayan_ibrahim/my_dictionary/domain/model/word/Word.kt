@@ -11,10 +11,12 @@ data class Word(
     val translation: String,
     val additionalTranslations: List<String>,
     val language: Language,
-    val tags: List<String> = emptyList(),
+    val tags: Set<String> = emptySet(),
     val transcription: String = INVALID_TEXT,
     val examples: List<String> = emptyList(),
     val wordTypeTag: WordTypeTag? = null,
     val relatedWords: List<RelatedWord> = emptyList(),
     val learningProgress: Float = 0f,
+    val createdAt: Long,
+    val updatedAt: Long,
 )

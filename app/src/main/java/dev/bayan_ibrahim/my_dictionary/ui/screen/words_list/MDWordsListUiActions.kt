@@ -32,6 +32,7 @@ interface MDWordsListBusinessUiActions : WordsListViewPreferencesActions, WordsL
 
 interface MDWordsListNavigationUiActions {
     fun navigateToWordDetails(wordId: Long?)
+    fun navigateToTrainScreen()
 }
 
 @Immutable

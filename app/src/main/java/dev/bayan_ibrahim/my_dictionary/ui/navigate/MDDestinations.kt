@@ -71,5 +71,8 @@ sealed interface MDDestination {
 
     @Serializable
     data object AutoBackup: MDDestination
+
+    @Serializable
+    data object Train: MDDestination
 }
 

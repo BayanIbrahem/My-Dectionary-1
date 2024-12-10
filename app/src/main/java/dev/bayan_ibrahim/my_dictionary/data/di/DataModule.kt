@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDRawWord
 import dev.bayan_ibrahim.my_dictionary.data.MDImportFromFileRepoImpl
+import dev.bayan_ibrahim.my_dictionary.data.MDTrainRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordDetailsRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordSpaceRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordsListRepoImpl
@@ -14,6 +15,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreference
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderDecorator
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.MDCSVFileSplitter
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordSpaceRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
@@ -60,5 +62,16 @@ class DataModule {
         db = db,
         rawWordReader = rawWordReader,
         rawWordCSVFileSplitter = rawWordCSVFileSplitter
+    )
+
+    @Singleton
+    @Provides
+    fun providesTrainRepo(
+        db: MDDataBase,
+        preferences: MDPreferences,
+    ): MDTrainRepo = MDTrainRepoImpl(
+        wordDao = db.getWordDao(),
+        trainHistoryDao = db.getWordTrainDao(),
+        preferences = preferences,
     )
 }

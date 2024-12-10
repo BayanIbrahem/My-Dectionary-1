@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.ui.navigate
 
+import dev.bayan_ibrahim.my_dictionary.ui.screen.train.MDTrainRoute
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -11,6 +12,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.Profil
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.Statistics
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordSpace
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordsList
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.Train
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.WordDetails
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.MDExportToFileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.import_from_file.MDImportFromFileRoute
@@ -36,6 +38,9 @@ fun MDNavHost(
                 navArgs = wordsList,
                 navigateToWordsDetails = { id, code ->
                     navController.navigate(WordDetails(id, code.code))
+                },
+                navigateToTrainScreen = {
+                    navController.navigate(Train)
                 }
             )
         }
@@ -68,6 +73,12 @@ fun MDNavHost(
         composable<ExportToFile> {
             val exportToFile: ExportToFile = it.toRoute()
             MDExportToFileRoute(exportToFile)
+        }
+
+        composable<Train> {
+            val train: Train = it.toRoute()
+            MDTrainRoute(train)
+
         }
     }
 }

@@ -28,7 +28,13 @@ val String.tagViewNormalize: String get() = tagViewNormalizer.normalize(this)
 val tagMatchNormalizer = MDNormalizerWrapper(
     MDLowercaseNormalizer,
     MDFilterNotNormalizer { it.isWhitespace() || it == '#' },
+)
+
+val tagRegexNormalizer = MDNormalizerWrapper(
+    MDLowercaseNormalizer,
+    MDFilterNotNormalizer { it.isWhitespace() || it == '#' },
     MDCharsSeparatorNormalizer(joinSeparator = ".*", prefix = ".*", suffix = ".*")
 )
 val String.tagMatchNormalize: String get() = tagMatchNormalizer.normalize(this)
+val String.tagRegexNormalize: String get() = tagRegexNormalizer.normalize(this)
 

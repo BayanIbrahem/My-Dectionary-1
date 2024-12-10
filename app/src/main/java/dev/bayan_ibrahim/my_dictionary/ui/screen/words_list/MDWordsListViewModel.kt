@@ -23,11 +23,12 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainType
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -322,7 +322,7 @@ class MDWordsListViewModel @Inject constructor(
             _uiState.trainPreferencesState.showDialog = true
         }
 
-        override fun onSelectTrainType(trainType: WordsListTrainType) = editTrainPreferences {
+        override fun onSelectTrainType(trainType: TrainWordType) = editTrainPreferences {
             this.trainType = trainType
         }
 
@@ -347,8 +347,8 @@ class MDWordsListViewModel @Inject constructor(
         }
 
         override fun onConfirmTrain() {
-            // TODO
-            
+            onHideViewPreferencesDialog()
+            navActions.navigateToTrainScreen()
         }
 
         override fun onResetTrainPreferences() = editTrainPreferences {

@@ -16,11 +16,11 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_LANGUAGE
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 
 interface WordDetailsUiState : MDUiState {
     val isEditModeOn: Boolean
@@ -37,6 +37,8 @@ interface WordDetailsUiState : MDUiState {
     val relatedWords: Map<Long, Pair<WordTypeTagRelation, String>> // Map<Label, List<Word>>, for each relation it may have more than one value
     val examples: Map<Long, String>
     val learningProgress: Float
+    val createdAt: Long?
+
     // todo add some statistics
 }
 
@@ -45,6 +47,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     override var valid: Boolean by mutableStateOf(false)
         private set
     override var id: Long by mutableLongStateOf(INVALID_ID)
+    override var createdAt: Long? by mutableStateOf(null)
     override var language: Language by mutableStateOf(INVALID_LANGUAGE)
     override var meaning: String by mutableStateOf(INVALID_TEXT)
     override var transcription: String by mutableStateOf(INVALID_TEXT)
@@ -123,6 +126,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
 
     fun loadWord(word: Word) {
         id = word.id
+        createdAt = word.createdAt
         meaning = word.meaning
         language = word.language
         transcription = word.transcription
@@ -141,25 +145,30 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         learningProgress = word.learningProgress
     }
 
-    fun toWord(): Word = Word(
-        id = this.id,
-        meaning = this.meaning,
-        language = this.language,
-        translation = this.translation,
-        transcription = this.transcription,
-        additionalTranslations = this.additionalTranslations.values.toList(),
-        tags = this.tags.values.toList(),
-        wordTypeTag = this.selectedTypeTag,
-        relatedWords = this.relatedWords.map { (_, word) ->
-            RelatedWord(
-                id = INVALID_ID,
-                baseWordId = this.id,
-                relationLabel = word.first.label,
-                value = word.second,
-                relationId = word.first.id,
-            )
-        },
-        examples = this.examples.values.toList(),
-        learningProgress = this.learningProgress
-    )
+    fun toWord(): Word {
+        val now = System.currentTimeMillis()
+        return Word(
+            id = this.id,
+            meaning = this.meaning,
+            language = this.language,
+            translation = this.translation,
+            transcription = this.transcription,
+            additionalTranslations = this.additionalTranslations.values.toList(),
+            tags = this.tags.values.toSet(),
+            wordTypeTag = this.selectedTypeTag,
+            relatedWords = this.relatedWords.map { (_, word) ->
+                RelatedWord(
+                    id = INVALID_ID,
+                    baseWordId = this.id,
+                    relationLabel = word.first.label,
+                    value = word.second,
+                    relationId = word.first.id,
+                )
+            },
+            examples = this.examples.values.toList(),
+            learningProgress = this.learningProgress,
+            createdAt = this.createdAt ?: now,
+            updatedAt = now
+        )
+    }
 }

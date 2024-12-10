@@ -146,7 +146,7 @@ fun MDWordListItem(
             if (word.tags.isNotEmpty()) {
                 Text(
                     modifier = Modifier.align(Alignment.BottomStart),
-                    text = word.tags.safeSubList(0, 3).joinToString(", #", "#"),
+                    text = word.tags.toList().safeSubList(0, 3).joinToString(", #", "#"),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -320,9 +320,11 @@ private fun MDWordListItemPreview() {
                         translation = "Eye",
                         additionalTranslations = listOf("Human Eye", "Human Eye 2"),
                         language = Language("de".code, "Deutsch", "German"),
-                        tags = listOf("Human body", "Organic"),
+                        tags = setOf("Human body", "Organic"),
                         transcription = "auge",
                         examples = listOf("I habe zwei auge", "some other example"),
+                        createdAt = 0,
+                        updatedAt = 0,
                         wordTypeTag = WordTypeTag(
                             id = 0,
                             name = "name",

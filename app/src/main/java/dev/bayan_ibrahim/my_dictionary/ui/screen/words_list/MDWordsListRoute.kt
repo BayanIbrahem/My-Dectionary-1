@@ -15,6 +15,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 fun MDWordsListRoute(
     navArgs: MDDestination.TopLevel.WordsList,
     navigateToWordsDetails: (wordId: Long?, code: LanguageCode) -> Unit,
+    navigateToTrainScreen: () -> Unit ,
     modifier: Modifier = Modifier,
     viewModel: MDWordsListViewModel = hiltViewModel(),
 ) {
@@ -28,6 +29,9 @@ fun MDWordsListRoute(
         derivedStateOf {
             object : MDWordsListNavigationUiActions {
                 override fun navigateToWordDetails(wordId: Long?) = navigateToWordsDetails(wordId, uiState.selectedWordSpace.language.code)
+                override fun navigateToTrainScreen() {
+                    navigateToTrainScreen()
+                }
             }
         }
     }

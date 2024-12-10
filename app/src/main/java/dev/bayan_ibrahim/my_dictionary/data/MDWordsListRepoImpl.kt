@@ -5,7 +5,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.map
-import dev.bayan_ibrahim.my_dictionary.core.util.invalidIfNull
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageWordSpaceDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
@@ -26,6 +25,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
@@ -41,7 +41,7 @@ class MDWordsListRepoImpl(
     private val tagDao: WordTypeTagDao,
     private val wordSpaceDao: LanguageWordSpaceDao,
     private val preferences: MDPreferences,
-) : MDWordsListRepo {
+) : MDWordsListRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordDao) {
     override fun getViewPreferences(): Flow<WordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
 
     override suspend fun setViewPreferences(preferences: WordsListViewPreferences) = this.preferences.writeWordsListViewPreferences {
@@ -133,41 +133,6 @@ class MDWordsListRepoImpl(
     }
 
 
-    private fun progressRangeOf(collection: Collection<WordsListLearningProgressGroup>): Pair<Float, Float> = collection.minOfOrNull {
-        it.learningRange.start
-    }.invalidIfNull(0f) to collection.maxOfOrNull {
-        it.learningRange.endInclusive
-    }.invalidIfNull(1f)
-
-    override suspend fun getWordsIdsOfTagsAndProgressRange(
-        viewPreferences: WordsListViewPreferences,
-    ): Set<Long> {
-        val (minProgress, maxProgress) = progressRangeOf(viewPreferences.selectedLearningProgressGroups)
-        val includeEmptyTags = viewPreferences.selectedTags.isEmpty()
-        return wordDao.getWordsIdsWithTagsOfLearningProgressRange(
-            includeEmptyTags = includeEmptyTags,
-            minProgress = minProgress,
-            maxProgress = maxProgress
-        ).map {
-            it.mapNotNull { (id, tags, progress) ->
-                val matchTags = checkMatchTagsOf(
-                    tags = StringListConverter.stringToListConverter(tags),
-                    filterTags = viewPreferences.selectedTags,
-                    includeFilterTags = viewPreferences.includeSelectedTags,
-                )
-                val matchProgress = checkMatchProgressOf(
-                    progress,
-                    viewPreferences.selectedLearningProgressGroups
-                )
-                if (matchTags && matchProgress) {
-                    id
-                } else {
-                    null
-                }
-            }.toSet()
-        }.first()
-    }
-
     override suspend fun deleteWords(ids: Collection<Long>) {
         wordDao.deleteWords(ids)
     }
@@ -219,26 +184,6 @@ class MDWordsListRepoImpl(
         return true
     }
 
-    private fun checkMatchTagsOf(
-        tags: List<String>,
-        filterTags: Set<String>,
-        includeFilterTags: Boolean,
-    ): Boolean {
-        if (filterTags.isEmpty()) return true
-
-        return if (includeFilterTags) {
-            tags.any { it in filterTags }
-        } else {
-            tags.none { it in filterTags }
-        }
-    }
-
-    private fun checkMatchProgressOf(
-        progress: Float,
-        filterProgressGroups: Set<WordsListLearningProgressGroup>,
-    ): Boolean = filterProgressGroups.isEmpty() || filterProgressGroups.any {
-        progress in it.learningRange
-    }
 
     private fun WordEntity.searchQueryOf(searchTarget: WordsListSearchTarget): Sequence<String> = sequence {
         if (searchTarget.includeMeaning) {

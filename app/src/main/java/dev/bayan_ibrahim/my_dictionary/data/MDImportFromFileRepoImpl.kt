@@ -204,7 +204,8 @@ class MDImportFromFileRepoImpl(
                                 wordTypeTagId = tagId,
                                 learningProgress = 0f,
                                 transcription = rawWord.transcription.ifBlank { "" },
-                                examples = rawWord.examples.filter { it.isNotBlank() }
+                                examples = rawWord.examples.filter { it.isNotBlank() },
+                                createdAt = System.currentTimeMillis()
                             )
                         )
                     }

@@ -9,10 +9,10 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainType
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 
 class WordsListTrainPreferencesMutableState(
-    trainType: WordsListTrainType = defaultWordsListTrainPreferences.trainType,
+    trainType: TrainWordType = defaultWordsListTrainPreferences.trainType,
     trainTarget: WordsListTrainTarget = defaultWordsListTrainPreferences.trainTarget,
     sortBy: WordsListTrainPreferencesSortBy = defaultWordsListTrainPreferences.sortBy,
     sortByOrder: WordsListSortByOrder = defaultWordsListTrainPreferences.sortByOrder,
@@ -27,7 +27,7 @@ class WordsListTrainPreferencesMutableState(
     )
 
     override var showDialog: Boolean by mutableStateOf(false)
-    override var trainType: WordsListTrainType by mutableStateOf(trainType)
+    override var trainType: TrainWordType by mutableStateOf(trainType)
     override var trainTarget: WordsListTrainTarget by mutableStateOf(trainTarget)
     override var sortBy: WordsListTrainPreferencesSortBy by mutableStateOf(sortBy)
     override var sortByOrder: WordsListSortByOrder by mutableStateOf(sortByOrder)

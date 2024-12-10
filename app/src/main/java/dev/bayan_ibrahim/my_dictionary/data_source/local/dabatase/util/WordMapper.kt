@@ -2,18 +2,20 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryDbNormalize
+import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.LanguageWordSpaceEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 
+@JvmName("WordWithRelatedWordsAsWordModel")
 fun WordWithRelatedWords.asWordModel(
     tag: WordTypeTag? = null,
 ): Word = Word(
@@ -22,7 +24,7 @@ fun WordWithRelatedWords.asWordModel(
     translation = this.word.translation.meaningViewNormalize,
     additionalTranslations = this.word.additionalTranslations,
     language = this.word.languageCode.code.language,
-    tags = this.word.tags,
+    tags = this.word.tags.toSet(),
     transcription = this.word.transcription,
     examples = this.word.examples,
     wordTypeTag = tag,
@@ -36,10 +38,31 @@ fun WordWithRelatedWords.asWordModel(
                 value = word.related.word,
             )
         }
-    } ?: emptyList()
+    } ?: emptyList(),
+    createdAt = this.word.createdAt,
+    updatedAt = this.word.updatedAt
 )
 
-fun Word.asWordEntity(): WordEntity = WordEntity(
+@JvmName("WordEntityAsWordModel")
+fun WordEntity.asWordModel(): Word = Word(
+    id = this.id ?: INVALID_ID,
+    meaning = this.meaning,
+    translation = this.translation,
+    additionalTranslations = this.additionalTranslations,
+    language = this.languageCode.code.language,
+    tags = this.tags.toSet(),
+    transcription = this.transcription,
+    examples = this.examples,
+    wordTypeTag = null,
+    relatedWords = emptyList(),
+    learningProgress = this.learningProgress,
+    createdAt = this.createdAt,
+    updatedAt = this.updatedAt
+)
+
+fun Word.asWordEntity(
+    setUpdateTimeToNow: Boolean = true,
+): WordEntity = WordEntity(
     id = this.id.nullIfInvalid(),
     meaning = this.meaning,
     normalizedMeaning = this.meaning.searchQueryDbNormalize,
@@ -47,11 +70,13 @@ fun Word.asWordEntity(): WordEntity = WordEntity(
     normalizedTranslation = this.translation.searchQueryDbNormalize,
     additionalTranslations = this.additionalTranslations,
     languageCode = this.language.code.code,
-    tags = this.tags,
+    tags = this.tags.toList(),
     transcription = this.transcription,
     examples = this.examples,
     wordTypeTagId = this.wordTypeTag?.id?.nullIfInvalid(),
     learningProgress = this.learningProgress,
+    createdAt = this.createdAt,
+    updatedAt = if (setUpdateTimeToNow) System.currentTimeMillis() else this.updatedAt
 )
 
 fun Word.asRelatedWords(): List<WordTypeTagRelatedWordEntity> = this.relatedWords.mapNotNull { word ->
