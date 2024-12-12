@@ -40,11 +40,17 @@ fun calculateYLabels(
     val rangeLength = range.let { it.last - it.first }.inc()
     if (labelsCount > rangeLength)
         return calculateYLabels(range = range, labelsCount = rangeLength)
-    val (min, max, step) = calculateYAxisStepsFields(range, labelsCount)
+    val (min, max, step) = calculateYAxisStepsFields(range, labelsCount.coerceAtLeast(2))
     val first = range.first - step
     return List(labelsCount + 2) { i ->
         (first + (i * step)).coerceIn(min, max)
-    }.reversed().distinct()
+    }.reversed().distinct().let {
+        if (it.count() == 1) {
+            it + it.first().inc()
+        } else {
+            it
+        }
+    }
 }
 
 fun calculateYAxisStepsFields(

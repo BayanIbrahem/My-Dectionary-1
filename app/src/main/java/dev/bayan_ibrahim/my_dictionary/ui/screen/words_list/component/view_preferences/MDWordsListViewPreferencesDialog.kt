@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -33,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
@@ -64,7 +68,7 @@ fun MDWordsListViewPreferencesDialog(
     MDBasicDialog(
         showDialog = state.showDialog,
         onDismissRequest = actions::onHideViewPreferencesDialog,
-        modifier = modifier,
+        modifier = modifier.widthIn(max = 325.dp),
         headerModifier = Modifier,
         title = {
             MDTabRow(
@@ -183,11 +187,12 @@ private fun FilterBody(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = modifier.verticalScroll(rememberScrollState()).fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         MDWordFieldTextField(
             value = tagSearchQuery,
+            modifier = Modifier.fillMaxWidth(),
             onValueChange = onTagSearchQueryChange,
             suggestions = tagsSuggestions,
             onSelectSuggestion = { _, tag ->
@@ -263,14 +268,14 @@ private fun SortBody(
     onSelectSortByOrder: (WordsListSortByOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Text("Sorted By", style = MaterialTheme.typography.labelLarge) // TODO, string res
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             WordsListViewPreferencesSortBy.entries.forEach { sortBy ->
                 CheckableListItem(
+                    modifier = Modifier,
                     headline = sortBy.label,
                     onClick = { onSelectSortBy(sortBy) }
                 ) {

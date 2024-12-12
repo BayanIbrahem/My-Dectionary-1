@@ -26,6 +26,7 @@ class MDWordSpaceViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
                 _uiState.onExecute {
                     repo.getLanguagesWordSpacesWithTags().forEach { (wordSpace, tags) ->
+                        _uiState.wordSpacesWithActions.clear()
                         _uiState.wordSpacesWithActions.add(
                             LanguageWordSpaceMutableState(
                                 wordSpace = wordSpace,

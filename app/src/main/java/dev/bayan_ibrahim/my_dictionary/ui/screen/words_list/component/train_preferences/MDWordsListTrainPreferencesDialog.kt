@@ -81,6 +81,8 @@ fun MDWordsListTrainPreferencesDialog(
         },
         actions = {
             MDAlertDialogActions(
+                onDismissRequest = actions::onHideTrainPreferencesDialog,
+
                 primaryActionLabel = "Train", // TODO string res
                 secondaryActionLabel = "Cancel", // TODO string res
                 tertiaryActionLabel = "Reset", // TODO string res
@@ -228,8 +230,7 @@ private fun <E> CheckableGroup(
             Text(title)
         },
         colors = MDFieldsGroupDefaults.colors(
-            fieldColors = MDFieldDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.primary,
+            fieldColors = MDFieldDefaults.colors(containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ),
         )

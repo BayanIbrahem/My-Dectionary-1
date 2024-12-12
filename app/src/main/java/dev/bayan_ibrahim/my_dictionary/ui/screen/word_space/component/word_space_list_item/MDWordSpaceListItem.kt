@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -106,6 +107,8 @@ fun MDWordSpaceListItem(
     MDCard(
         modifier = modifier,
         contentModifier = MDCardDefaults.contentModifier.padding(vertical = 8.dp),
+        headerClickable = false,
+        cardClickable = false,
         header = {
             Row(
                 modifier = Modifier.align(Alignment.CenterStart),
@@ -410,7 +413,7 @@ private fun WordsSpaceFieldEditDialog(
                 dismissOnSecondaryClick = true,
             )
         },
-        modifier = modifier,
+        modifier = modifier.width(250.dp),
         title = {
             Text(
                 text = if (isTag) {
@@ -424,6 +427,7 @@ private fun WordsSpaceFieldEditDialog(
         contentModifier = MDCardDefaults.contentModifier.padding(16.dp)
     ) {
         WordSpaceTagInputField(
+            modifier = Modifier.fillMaxWidth(),
             value = value,
             onChangeValue = { value = it },
             leadingIcon = if (isTag) Icons.Default.ThumbUp else Icons.Default.PlayArrow, // TODO, icon res

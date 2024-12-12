@@ -95,16 +95,16 @@ fun MDBarChart(
         innerMeshWidth = innerMeshWidth,
         outerMeshWidth = outerMeshWidth,
         xLabelRotationDegree = xLabelRotationDegree,
-        xLabelHorizontalPadding = { width, firstLabelWidth, lastLabelWidth ->
-            val padding = calculateBarChartXLabelHorizontalPaddingPx(
-                totalWidth = width,
-                barsCount = bars.count(),
-                gapPercent = barGapPercent
-            )
-            val fPadding = padding - firstLabelWidth.div(2)
-            val lPadding = padding - lastLabelWidth.div(2)
-            fPadding.coerceAtLeast(0f) to lPadding.coerceAtLeast(0f)
-        }
+//        xLabelHorizontalPadding = { width, firstLabelWidth, lastLabelWidth ->
+//            val padding = calculateBarChartXLabelHorizontalPaddingPx(
+//                totalWidth = width,
+//                barsCount = bars.count(),
+//                gapPercent = barGapPercent
+//            )
+//            val fPadding = padding - firstLabelWidth.div(2)
+//            val lPadding = padding - lastLabelWidth.div(2)
+//            fPadding.coerceAtLeast(0f) to lPadding.coerceAtLeast(0f)
+//        }
     ) {
         MDBarChartContent(
             bars = bars,

@@ -3,13 +3,16 @@ package dev.bayan_ibrahim.my_dictionary.core.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Clear
@@ -25,7 +28,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -233,13 +238,7 @@ private fun LanguagesContent(
     ) {
         if (primaryItemsCount > 0) {
             stickyHeader(contentType = "Label") {
-                Text(
-                    text = primaryListCountTitleBuilder(primaryItemsCount),
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
-                )
+                HeaderTitle(text = primaryListCountTitleBuilder(primaryItemsCount))
             }
         }
         items(primaryList) { wordSpace ->
@@ -259,12 +258,8 @@ private fun LanguagesContent(
                 HorizontalDivider(modifier = Modifier.padding(4.dp))
             }
             stickyHeader(contentType = "Label") {
-                Text(
+                HeaderTitle(
                     text = secondaryListCountTitleBuilder(secondaryItemsCount),
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
                 )
             }
         }
@@ -294,6 +289,25 @@ private fun LanguagesContent(
     }
 }
 
+@Composable
+private fun HeaderTitle(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = Modifier
+            .height(32.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleSmall,
+        )
+    }
+}
 
 @Preview
 @Composable

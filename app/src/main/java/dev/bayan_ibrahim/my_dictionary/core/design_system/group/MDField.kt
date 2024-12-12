@@ -49,7 +49,7 @@ data object MDFieldDefaults {
         enabledContainerColor = containerColor,
         enabledContentColor = contentColor,
         disabledContainerColor = containerColor,
-        disabledContentColor = contentColor,
+        disabledContentColor = contentColor.copy(alpha = 0.38f),
         dividerColor = dividerColor,
     )
 

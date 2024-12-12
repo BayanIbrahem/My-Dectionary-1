@@ -145,7 +145,7 @@ class MDTrainViewModel @Inject constructor(
                         )
                     }
                     val optionsWords =
-                        ((similarTags + similarWords).shuffled().safeSubList(0, TrainWordType.MAX_SELECTIONS_COUNT.dec()) + targetWord).shuffled()
+                        ((similarTags + similarWords).shuffled().distinct().safeSubList(0, TrainWordType.MAX_SELECTIONS_COUNT.dec()) + targetWord).shuffled()
                     val currentCorrectOption = optionsWords.indexOfFirst { it.id == targetWord.id }
                     TrainWord.SelectAnswer(
                         word = targetWord,

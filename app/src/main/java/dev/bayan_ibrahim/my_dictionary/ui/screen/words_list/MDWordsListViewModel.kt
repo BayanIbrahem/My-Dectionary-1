@@ -92,12 +92,14 @@ class MDWordsListViewModel @Inject constructor(
         setPaginatedWordsListJob()
         viewModelScope.launch {
             _uiState.onExecute {
+                repo.getViewPreferences()
                 val languageCode = args.languageCode?.code ?: repo.getSelectedLanguagePage()?.code
 
                 if (languageCode != null) {
                     _uiState.selectedWordSpace =
                         repo.getLanguagesWordSpaces(code = languageCode) ?: LanguageWordSpace(languageCode.language)
                     _uiState.viewPreferencesState.onApplyPreferences(viewPreferences.first())
+                    repo.setSelectedLanguagePage(languageCode)
                 } else {
                     _uiState.selectedWordSpace = LanguageWordSpace()
                     _uiState.validData = false
