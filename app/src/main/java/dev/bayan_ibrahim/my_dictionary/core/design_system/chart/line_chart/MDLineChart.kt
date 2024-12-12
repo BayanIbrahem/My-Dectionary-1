@@ -34,9 +34,11 @@ fun MDLineChart(
     // x
     xLabelRotationDegree: Float = 0f,
     xLabelTextStyle: TextStyle = MaterialTheme.typography.labelSmall,
+    xLabelColor: Color = MaterialTheme.colorScheme.onBackground,
     // y
     valueFormat: (Int) -> String = { it.asFormattedString() },
     yLabelTextStyle: TextStyle = MaterialTheme.typography.labelSmall,
+    yLabelColor: Color = MaterialTheme.colorScheme.onBackground,
     yLabelBlankEndPadding: Dp = 1.dp,
     // mesh
     outerMeshColor: Color = MaterialTheme.colorScheme.onBackground,
@@ -64,14 +66,14 @@ fun MDLineChart(
     val yLabelsText by remember(yLabelsValues) {
         derivedStateOf {
             yLabelsValues.map {
-                textMeasurer.measure(valueFormat(it), style = yLabelTextStyle)
+                textMeasurer.measure(valueFormat(it), style = yLabelTextStyle.copy(color = yLabelColor))
             }
         }
     }
     val xLabelsText by remember(xLabels) {
         derivedStateOf {
             xLabels.map {
-                textMeasurer.measure(it, style = xLabelTextStyle)
+                textMeasurer.measure(it, style = xLabelTextStyle.copy(color = yLabelColor))
             }
         }
     }

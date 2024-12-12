@@ -39,6 +39,10 @@ fun MDChartBackground(
     modifier: Modifier = Modifier,
     xLabelTextStyle: TextStyle = MaterialTheme.typography.labelSmall,
     yLabelTextStyle: TextStyle = MaterialTheme.typography.labelSmall,
+
+    xLabelColor: Color = xLabelTextStyle.color,
+    yLabelColor: Color = yLabelTextStyle.color,
+
     textMeasurer: TextMeasurer = rememberTextMeasurer(),
     xLabelRotationDegree: Float = DefaultRotationDegree,
     density: Density = LocalDensity.current,
@@ -68,10 +72,10 @@ fun MDChartBackground(
 ) {
     MDChartBackground(
         yLabels = yLabels.map {
-            textMeasurer.measure(text = it.asFormattedString(), style = yLabelTextStyle)
+            textMeasurer.measure(text = it.asFormattedString(), style = yLabelTextStyle.copy(color = yLabelColor))
         },
         xLabels = xLabels.map {
-            textMeasurer.measure(text = it, style = xLabelTextStyle)
+            textMeasurer.measure(text = it, style = xLabelTextStyle.copy(color = xLabelColor))
         },
         modifier = modifier,
         density = density,
