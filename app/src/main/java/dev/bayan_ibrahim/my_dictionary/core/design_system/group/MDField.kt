@@ -52,6 +52,7 @@ data object MDFieldDefaults {
         disabledContentColor = contentColor,
         dividerColor = dividerColor,
     )
+
     @Composable
     fun colors(
         enabledContainerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -90,7 +91,7 @@ data class MDFieldStyles(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MDField(
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
@@ -117,6 +118,19 @@ fun MDField(
     val fieldStyles by remember(theme) {
         derivedStateOf {
             theme?.style?.fieldStyles ?: defaultTheme.fieldStyles
+        }
+    }
+    val clickableModifier by remember(onClick, onLongClick) {
+        derivedStateOf {
+            if (onClick == null && onLongClick == null) {
+                Modifier
+            } else {
+                Modifier.combinedClickable(
+                    enabled = enabled,
+                    onClick = onClick ?: {},
+                    onLongClick = onLongClick
+                )
+            }
         }
     }
     Column {
@@ -147,11 +161,7 @@ fun MDField(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .combinedClickable(
-                        enabled = enabled,
-                        onClick = onClick,
-                        onLongClick = onLongClick
-                    )
+                    .then(clickableModifier)
                     .padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)

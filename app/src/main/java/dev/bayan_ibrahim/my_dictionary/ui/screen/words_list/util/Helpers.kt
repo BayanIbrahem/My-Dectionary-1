@@ -54,20 +54,6 @@ enum class WordsListTrainPreferencesSortBy(
     }
 }
 
-@Suppress("EnumEntryName")
-enum class WordsListTrainPreferencesLimit(val count: Int) : LabeledEnum {
-    _5(5),
-    _10(10),
-    _20(20),
-    _25(25),
-    _50(50),
-    _75(75),
-    _100(100);
-
-    override val strLabel = "$count Words" // TODO, string res
-
-}
-
 enum class WordsListSortByOrder(override val strLabel: String, override val icon: ImageVector) : LabeledEnum, IconedEnum {
     Asc(
         strLabel = "Asc",

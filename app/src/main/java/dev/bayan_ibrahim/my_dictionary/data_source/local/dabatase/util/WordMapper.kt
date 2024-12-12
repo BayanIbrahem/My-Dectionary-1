@@ -2,6 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryDbNormalize
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
@@ -14,6 +15,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import kotlinx.datetime.Clock
 
 @JvmName("WordWithRelatedWordsAsWordModel")
 fun WordWithRelatedWords.asWordModel(
@@ -39,8 +41,8 @@ fun WordWithRelatedWords.asWordModel(
             )
         }
     } ?: emptyList(),
-    createdAt = this.word.createdAt,
-    updatedAt = this.word.updatedAt
+    createdAt = this.word.createdAt.asEpochMillisecondsInstant(),
+    updatedAt = this.word.updatedAt.asEpochMillisecondsInstant()
 )
 
 @JvmName("WordEntityAsWordModel")
@@ -56,8 +58,8 @@ fun WordEntity.asWordModel(): Word = Word(
     wordTypeTag = null,
     relatedWords = emptyList(),
     learningProgress = this.learningProgress,
-    createdAt = this.createdAt,
-    updatedAt = this.updatedAt
+    createdAt = this.createdAt.asEpochMillisecondsInstant(),
+    updatedAt = this.updatedAt.asEpochMillisecondsInstant()
 )
 
 fun Word.asWordEntity(
@@ -75,8 +77,8 @@ fun Word.asWordEntity(
     examples = this.examples,
     wordTypeTagId = this.wordTypeTag?.id?.nullIfInvalid(),
     learningProgress = this.learningProgress,
-    createdAt = this.createdAt,
-    updatedAt = if (setUpdateTimeToNow) System.currentTimeMillis() else this.updatedAt
+    createdAt = this.createdAt.toEpochMilliseconds(),
+    updatedAt = (if (setUpdateTimeToNow) Clock.System.now() else this.updatedAt).toEpochMilliseconds()
 )
 
 fun Word.asRelatedWords(): List<WordTypeTagRelatedWordEntity> = this.relatedWords.mapNotNull { word ->

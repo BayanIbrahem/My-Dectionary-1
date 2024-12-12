@@ -4,9 +4,9 @@ import android.content.Context
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferencesBuilder
+import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType

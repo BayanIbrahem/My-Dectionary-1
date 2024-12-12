@@ -1,10 +1,13 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.language
 
+import kotlinx.serialization.Serializable
+
 
 val String.code: LanguageCode get() = LanguageCode(code = this)
 
 private val languageCodeRegex = "[a-z]{2,3}".toRegex()
 
+@Serializable(LanguageCodeSerializer::class)
 class LanguageCode(code: String) {
     val code: String = code.lowercase()
 

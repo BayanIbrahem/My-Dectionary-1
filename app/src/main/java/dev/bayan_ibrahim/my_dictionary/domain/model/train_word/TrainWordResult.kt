@@ -15,17 +15,32 @@ import kotlinx.serialization.encoding.encodeStructure
 sealed interface TrainWordResult {
 //    val key: Int
 
+    val type: TrainWordResultType
+        get() = when (this) {
+            is Fail -> Fail.type
+            Pass -> Pass.type
+            Timeout -> Timeout.type
+        }
+
     @Serializable
     data class Fail(
         val selectedAnswer: String,
         val currentAnswer: String,
-    ) : TrainWordResult
+    ) : TrainWordResult {
+        companion object Companion {
+            val type = TrainWordResultType.Fail
+        }
+    }
 
     @Serializable
-    data object Pass : TrainWordResult
+    data object Pass : TrainWordResult {
+        override val type = TrainWordResultType.Pass
+    }
 
     @Serializable
-    data object Timeout : TrainWordResult
+    data object Timeout : TrainWordResult {
+        override val type = TrainWordResultType.Timeout
+    }
 }
 
 data object TrainWordResultSerializer : KSerializer<TrainWordResult> {

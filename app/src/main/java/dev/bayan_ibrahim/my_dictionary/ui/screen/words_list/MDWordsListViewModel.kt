@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
@@ -20,7 +21,6 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_prefe
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType

@@ -13,6 +13,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 fun MDTrainRoute(
     args: MDDestination.Train,
     modifier: Modifier = Modifier,
+    navigateToStatisticsScreen: () -> Unit,
     viewModel: MDTrainViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(args) {
@@ -24,7 +25,7 @@ fun MDTrainRoute(
         derivedStateOf {
             object : MDTrainNavigationUiActions {
                 override fun onNavigateToResultsScreen() {
-//                    TODO("Not yet implemented")
+                    navigateToStatisticsScreen()
                 }
             }
         }

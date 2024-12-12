@@ -4,11 +4,14 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.TypeConverters
 import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryDbNormalize
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.WordIdWithTagAndProgress
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
@@ -24,6 +27,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNor
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTags
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTypeTag
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
 import kotlinx.coroutines.flow.Flow
 
@@ -125,6 +129,27 @@ interface WordDao {
         """
     )
     fun getWordsOfLanguage(languageCode: String): Flow<List<WordEntity>>
+
+    @Query(
+        """
+            SELECT $dbWordId FROM $dbWordTable WHERE $dbWordLanguageCode = :languageCode
+        """
+    )
+    fun getWordsIdsOfLanguage(languageCode: String): Flow<List<Long>>
+
+    @Query(
+        """
+            SELECT $dbWordId FROM $dbWordTable WHERE $dbWordTypeTag = :typeTag
+        """
+    )
+    fun getWordsIdsOfTypeTag(typeTag: Long): Flow<List<Long>>
+
+    @Query(
+        """
+            SELECT $dbWordId, $dbWordTags  FROM $dbWordTable
+        """
+    )
+    fun getWordsIdsWithTags(): Flow<Map<@MapColumn(dbWordId) Long, @MapColumn(dbWordTags) String>>
 
     @Query(
         """

@@ -4,6 +4,7 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import kotlinx.datetime.Instant
 
 data class Word(
     val id: Long,
@@ -17,6 +18,6 @@ data class Word(
     val wordTypeTag: WordTypeTag? = null,
     val relatedWords: List<RelatedWord> = emptyList(),
     val learningProgress: Float = 0f,
-    val createdAt: Long,
-    val updatedAt: Long,
+    val createdAt: Instant,
+    val updatedAt: Instant,
 )

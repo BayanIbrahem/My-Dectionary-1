@@ -54,6 +54,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
+import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
@@ -323,8 +324,8 @@ private fun MDWordListItemPreview() {
                         tags = setOf("Human body", "Organic"),
                         transcription = "auge",
                         examples = listOf("I habe zwei auge", "some other example"),
-                        createdAt = 0,
-                        updatedAt = 0,
+                        createdAt = INVALID_INSTANT,
+                        updatedAt = INVALID_INSTANT,
                         wordTypeTag = WordTypeTag(
                             id = 0,
                             name = "name",

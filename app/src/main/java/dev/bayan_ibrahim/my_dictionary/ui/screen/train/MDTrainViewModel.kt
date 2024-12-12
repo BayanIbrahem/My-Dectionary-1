@@ -28,6 +28,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.questionSelecto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 import javax.inject.Inject
 
 @HiltViewModel
@@ -80,7 +81,7 @@ class MDTrainViewModel @Inject constructor(
         sortBy: WordsListTrainPreferencesSortBy,
         sortByOrder: WordsListSortByOrder,
         validWords: Sequence<Word>,
-        getTrainHistory: () -> Map<Long, Long>,
+        getTrainHistory: () -> Map<Long, Instant>,
         limit: Int,
     ): List<Word> {
         if (sortBy == WordsListTrainPreferencesSortBy.Random) {
@@ -99,11 +100,11 @@ class MDTrainViewModel @Inject constructor(
             }
 
             WordsListTrainPreferencesSortBy.TrainingTime -> {
-                { it: Word -> trainHistory[it.id]?.toDouble() ?: 0.0 }
+                { it: Word -> trainHistory[it.id]?.epochSeconds?.toDouble() ?: 0.0 }
             }
 
             WordsListTrainPreferencesSortBy.CreateTime -> {
-                { it: Word -> it.createdAt.toDouble() }
+                { it: Word -> it.createdAt.epochSeconds.toDouble() }
             }
 
             WordsListTrainPreferencesSortBy.Random -> {
@@ -204,7 +205,7 @@ class MDTrainViewModel @Inject constructor(
             }
 
             WordsListTrainPreferencesSortBy.CreateTime -> {
-                var lastValue: Long? = null
+                var lastValue: Instant? = null
                 var distinctValuesCount = 0
                 words.indexOfFirst {
                     if (it.createdAt != lastValue) {
@@ -226,8 +227,8 @@ class MDTrainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getWordsLastTrainHistories(wordsIds: Set<Long>): MutableMap<Long, Long> {
-        val lastTrainHistories: MutableMap<Long, Long> = mutableMapOf()
+    private suspend fun getWordsLastTrainHistories(wordsIds: Set<Long>): MutableMap<Long, Instant> {
+        val lastTrainHistories: MutableMap<Long, Instant> = mutableMapOf()
         repo.getTrainHistoryOf(
             wordsIds = wordsIds,
             excludeSpecifiedWordsIds = false
@@ -272,9 +273,7 @@ class MDTrainViewModel @Inject constructor(
                 }
             )
             repo.submitTrainHistory(trainHistory)
-            launch(Dispatchers.Main) {
-                onSubmit()
-            }
+            onSubmit()
         }
     }
 

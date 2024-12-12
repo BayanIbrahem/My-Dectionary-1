@@ -30,7 +30,7 @@ fun MDScreen(
     contentAlignment: Alignment = Alignment.Center,
     showFloatingActionButtonOnLoading: Boolean = false,
     showFloatingActionButtonOnError: Boolean = false,
-    contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
+    contentWindowInsets: WindowInsets = WindowInsets(8.dp, 8.dp, 8.dp, 8.dp),
     topBar: @Composable () -> Unit = {},
     floatingActionButton: (@Composable () -> Unit) = {},
     content: @Composable BoxScope.() -> Unit,

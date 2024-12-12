@@ -18,9 +18,11 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.M
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.import_from_file.MDImportFromFileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.MDProfileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.MDStatisticsRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.WordDetailsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.MDWordSpaceRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.MDWordsListRoute
+import kotlinx.coroutines.flow.first
 
 @Composable
 fun MDNavHost(
@@ -52,8 +54,7 @@ fun MDNavHost(
             )
         }
         composable<Statistics> { backStackEntry ->
-            val statistics: Statistics = backStackEntry.toRoute()
-            MDStatisticsRoute(statistics = statistics)
+            MDStatisticsRoute(args = MDDestination.Statistics())
         }
         composable<WordDetails> {
             val wordDetails: WordDetails = it.toRoute()
@@ -77,8 +78,17 @@ fun MDNavHost(
 
         composable<Train> {
             val train: Train = it.toRoute()
-            MDTrainRoute(train)
-
+            MDTrainRoute(
+                args = train,
+                navigateToStatisticsScreen = {
+                    navController.popBackStack()
+                    navController.navigate(MDDestination.Statistics(MDStatisticsViewPreferences.Train()))
+                },
+            )
+        }
+        composable<MDDestination.Statistics> {
+            val statistics: MDDestination.Statistics = it.toRoute()
+            MDStatisticsRoute(statistics)
         }
     }
 }

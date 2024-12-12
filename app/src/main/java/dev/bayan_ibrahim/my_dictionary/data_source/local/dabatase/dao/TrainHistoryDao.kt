@@ -66,4 +66,13 @@ interface TrainHistoryDao {
         includeExcludedWordsIds: Boolean = false,
         excludedWordsIds: Set<Long> = emptySet(),
     ): Flow<List<TrainHistoryEntity>>
+
+    @Query(
+        """
+        SELECT COUNT(DISTINCT $dbTrainHistoryTime / :timeGroupByFactor) FROM $dbTrainHistoryTable
+    """
+    )
+    suspend fun getTotalTrainHistoryCount(
+        timeGroupByFactor: Long = 60_000,
+    ): Int
 }

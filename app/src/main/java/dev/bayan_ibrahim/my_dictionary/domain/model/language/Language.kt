@@ -1,7 +1,9 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.language
 
+import kotlinx.serialization.Serializable
 import java.util.Locale
 
+@Serializable(LanguageSerializer::class)
 data class Language(
     val code: LanguageCode,
     val selfDisplayName: String,

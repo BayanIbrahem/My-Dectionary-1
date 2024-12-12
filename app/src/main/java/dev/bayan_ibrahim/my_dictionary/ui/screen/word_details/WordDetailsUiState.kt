@@ -21,6 +21,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 interface WordDetailsUiState : MDUiState {
     val isEditModeOn: Boolean
@@ -37,7 +39,7 @@ interface WordDetailsUiState : MDUiState {
     val relatedWords: Map<Long, Pair<WordTypeTagRelation, String>> // Map<Label, List<Word>>, for each relation it may have more than one value
     val examples: Map<Long, String>
     val learningProgress: Float
-    val createdAt: Long?
+    val createdAt: Instant?
 
     // todo add some statistics
 }
@@ -47,7 +49,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     override var valid: Boolean by mutableStateOf(false)
         private set
     override var id: Long by mutableLongStateOf(INVALID_ID)
-    override var createdAt: Long? by mutableStateOf(null)
+    override var createdAt: Instant? by mutableStateOf(null)
     override var language: Language by mutableStateOf(INVALID_LANGUAGE)
     override var meaning: String by mutableStateOf(INVALID_TEXT)
     override var transcription: String by mutableStateOf(INVALID_TEXT)
@@ -146,7 +148,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     }
 
     fun toWord(): Word {
-        val now = System.currentTimeMillis()
+        val now = Clock.System.now()
         return Word(
             id = this.id,
             meaning = this.meaning,

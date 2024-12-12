@@ -2,7 +2,9 @@ package dev.bayan_ibrahim.my_dictionary.core.util
 
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
+import kotlinx.datetime.Instant
 
+val INVALID_INSTANT = Instant.fromEpochSeconds(0)
 const val INVALID_ID = -1L
 const val INVALID_TEXT = ""
 val INVALID_LANGUAGE = Language(

@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.TrainHistoryEntity
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.TrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.WordTrainHistory
@@ -15,7 +16,7 @@ fun Collection<TrainHistoryEntity>.toTrainHistoryModels(
     it.time / timeGroupByFactor
 }.map { (factoredTime, entities) ->
     TrainHistory(
-        time = factoredTime * timeGroupByFactor,
+        time = (factoredTime * timeGroupByFactor).asEpochMillisecondsInstant(),
         // entities is not empty cause it is from group by
         trainType = entities.first().trainType,
         words = entities.map {
@@ -34,7 +35,7 @@ fun TrainHistory.toTrainHistoryEntities(): List<TrainHistoryEntity> {
         TrainHistoryEntity(
             id = item.id,
             wordId = item.wordId,
-            time = time,
+            time = time.toEpochMilliseconds(),
             meaningSnapshot = item.meaningSnapshot,
             trainType = trainType,
             trainResult = item.trainResult

@@ -42,12 +42,12 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroupDefaults
+import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListTrainPreferencesTab
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum

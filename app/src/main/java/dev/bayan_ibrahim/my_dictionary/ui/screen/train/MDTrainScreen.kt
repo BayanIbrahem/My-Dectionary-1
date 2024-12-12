@@ -41,6 +41,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
@@ -61,7 +62,6 @@ fun MDTrainScreen(
     MDScreen(
         uiState = uiState,
         modifier = modifier,
-        contentWindowInsets = WindowInsets(8.dp, 8.dp, 8.dp, 8.dp),
         topBar = {
             MDTrainTopAppBar()
         },
@@ -329,8 +329,8 @@ private fun TrainScreenPreview() {
                     tags = setOf("Human body", "Organic"),
                     transcription = "auge",
                     examples = listOf("I habe zwei auge", "some other example"),
-                    createdAt = 0,
-                    updatedAt = 0,
+                    createdAt = INVALID_INSTANT,
+                    updatedAt = INVALID_INSTANT,
                     wordTypeTag = WordTypeTag(
                         id = 0,
                         name = "name",
