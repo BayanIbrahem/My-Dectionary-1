@@ -1,5 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.language
 
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalize
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalize
 import kotlinx.serialization.Serializable
 import java.util.Locale
 
@@ -32,16 +34,8 @@ private fun checkLanguagePartialMatchSearchQuery(
     language: Language,
     query: String,
 ): Boolean {
-    val queryRegex = queryRegexCacheMap.getOrPut(query.trim().lowercase()) {
-        query
-            .trim()
-            .lowercase()
-            .toCharArray()
-            .joinToString(
-                separator = ".*",
-                prefix = ".*",
-                postfix = ".*"
-            ).toRegex()
+    val queryRegex = queryRegexCacheMap.getOrPut(query.meaningSearchNormalize) {
+        query.searchQueryRegexNormalize.toRegex()
     }
     return sequenceOf(
         language.code.code,

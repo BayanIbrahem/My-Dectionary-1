@@ -14,9 +14,6 @@ import kotlinx.collections.immutable.persistentSetOf
 
 interface MDWordsListUiState : MDUiState {
     val selectedWordSpace: LanguageWordSpace
-    val activeLanguagesWordSpaces: PersistentList<LanguageWordSpace>
-    val inactiveLanguagesWordSpaces: PersistentList<LanguageWordSpace>
-    val languagesWordSpaceSearchQuery: String
     val isLanguagesWordSpacesDialogShown: Boolean
     val isLanguageWordSpaceDeleteDialogShown: Boolean
     val isLanguageWordSpaceDeleteProcessRunning: Boolean
@@ -42,9 +39,6 @@ interface MDWordsListUiState : MDUiState {
 
 class MDWordsListMutableUiState : MDWordsListUiState, MDMutableUiState() {
     override var selectedWordSpace: LanguageWordSpace by mutableStateOf(LanguageWordSpace())
-    override var activeLanguagesWordSpaces: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
-    override var inactiveLanguagesWordSpaces: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
-    override var languagesWordSpaceSearchQuery: String by mutableStateOf(INVALID_TEXT)
     override var isLanguagesWordSpacesDialogShown: Boolean by mutableStateOf(false)
     override var isLanguageWordSpaceDeleteDialogShown: Boolean by mutableStateOf(false)
     override var isLanguageWordSpaceDeleteProcessRunning: Boolean by mutableStateOf(false)

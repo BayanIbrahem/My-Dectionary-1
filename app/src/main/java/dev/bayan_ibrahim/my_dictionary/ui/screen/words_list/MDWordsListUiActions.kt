@@ -5,7 +5,6 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 
 interface MDWordsListBusinessUiActions {
     // work space
-    fun onLanguageWordSpaceSearchQueryChange(searchQuery: String)
     fun onShowLanguageWordSpacesDialog()
     fun onHideLanguageWordSpacesDialog()
     fun onSelectLanguageWordSpace(wordSpace: LanguageWordSpace)

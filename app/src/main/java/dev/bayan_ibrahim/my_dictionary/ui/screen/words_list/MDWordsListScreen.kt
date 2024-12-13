@@ -24,14 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyPagingGridItems
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordListItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListLanguageSelectionPageDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog.MDWordsListViewPreferencesDialog
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.language_selection_dialog.MDLanguageSelectionDialogRoute
 
 @Composable
 fun MDWordsListScreen(
@@ -98,7 +95,8 @@ fun MDWordsListScreen(
                             "No words yet, add some words first"
                         }, // TODO, string res
                         style = MaterialTheme.typography.bodyLarge,
-                    )                }
+                    )
+                }
             ) { i, word ->
                 val isSelected by remember {
                     derivedStateOf { word.id in uiState.selectedWords }
@@ -136,14 +134,9 @@ fun MDWordsListScreen(
     }
     //// Dialogs:
     // language page:
-    MDWordsListLanguageSelectionPageDialog(
+    MDLanguageSelectionDialogRoute(
         showDialog = uiState.isLanguagesWordSpacesDialogShown,
-        onDismissRequest = uiActions::onHideLanguageWordSpacesDialog,
-        query = uiState.languagesWordSpaceSearchQuery,
-        onQueryChange = uiActions::onLanguageWordSpaceSearchQueryChange,
-        languagesWithWords = uiState.activeLanguagesWordSpaces,
-        languagesWithoutWords = uiState.inactiveLanguagesWordSpaces,
-        onSelectWordSpace = uiActions::onSelectLanguageWordSpace
+        onDismissDialog = uiActions::onHideLanguageWordSpacesDialog,
     )
     // delete words confirm dialog:
     MDWordsListDeleteConfirmDialog(

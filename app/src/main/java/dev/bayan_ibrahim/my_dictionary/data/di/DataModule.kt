@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDRawWord
 import dev.bayan_ibrahim.my_dictionary.data.MDImportFromFileRepoImpl
+import dev.bayan_ibrahim.my_dictionary.data.MDLanguageSelectionDialogRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDStatisticsRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDTrainRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordDetailsRepoImpl
@@ -19,6 +20,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.words_list_f
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderDecorator
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.MDCSVFileSplitter
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDLanguageSelectionDialogRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDStatisticsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
@@ -43,14 +45,24 @@ class DataModule {
 
     @Singleton
     @Provides
+    fun providesLanguageSelectionDialogRepo(
+        db: MDDataBase,
+        preferences: MDPreferencesDataStore,
+    ): MDLanguageSelectionDialogRepo = MDLanguageSelectionDialogRepoImpl(
+        preferences = preferences,
+        wordSpaceDao = db.getLanguageWordSpaceDao(),
+    )
+    @Singleton
+    @Provides
     fun providesWordsListRepo(
         db: MDDataBase,
         preferences: MDPreferencesDataStore,
+        languageRepo: MDLanguageSelectionDialogRepo,
     ): MDWordsListRepo = MDWordsListRepoImpl(
         wordDao = db.getWordDao(),
         tagDao = db.getWordTypeTagDao(),
-        wordSpaceDao = db.getLanguageWordSpaceDao(),
         preferences = preferences,
+        languageRepo = languageRepo
     )
 
     @Singleton

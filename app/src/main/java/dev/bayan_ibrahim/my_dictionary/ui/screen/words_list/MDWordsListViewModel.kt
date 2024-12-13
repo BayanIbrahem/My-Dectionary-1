@@ -1,6 +1,5 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -18,7 +17,6 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -107,14 +104,12 @@ class MDWordsListViewModel @Inject constructor(
                 }
 
                 // init languages list
-                onLanguageWordSpaceSearchQueryChange("")
+//                onLanguageWordSpaceSearchQueryChange("")
 
                 true
             }
         }
     }
-
-    private val languagesWordSpacesFlow = repo.getAllLanguagesWordSpaces()
 
     fun getUiActions(
         navActions: MDWordsListNavigationUiActions,
@@ -123,27 +118,10 @@ class MDWordsListViewModel @Inject constructor(
         businessActions = getBusinessActions(navActions)
     )
 
-    private fun onLanguageWordSpaceSearchQueryChange(searchQuery: String) {
-        _uiState.languagesWordSpaceSearchQuery = searchQuery
-        viewModelScope.launch {
-            val searchQueryMatchedLanguages = languagesWordSpacesFlow.first().run {
-                if (searchQuery.isBlank()) this
-                else filter {
-                    it.language.hasMatchQuery(searchQuery)
-                }
-            }
-
-            _uiState.activeLanguagesWordSpaces = searchQueryMatchedLanguages.filter { it.wordsCount > 0 }.toPersistentList()
-            _uiState.inactiveLanguagesWordSpaces = searchQueryMatchedLanguages.filter { it.wordsCount == 0 }.toPersistentList()
-        }
-    }
 
     private fun getBusinessActions(
         navActions: MDWordsListNavigationUiActions,
     ): MDWordsListBusinessUiActions = object : MDWordsListBusinessUiActions {
-        override fun onLanguageWordSpaceSearchQueryChange(searchQuery: String) {
-            this@MDWordsListViewModel.onLanguageWordSpaceSearchQueryChange(searchQuery)
-        }
 
         override fun onShowLanguageWordSpacesDialog() {
             _uiState.isLanguagesWordSpacesDialogShown = true
