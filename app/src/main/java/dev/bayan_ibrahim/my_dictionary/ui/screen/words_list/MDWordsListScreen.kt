@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Checkbox
@@ -24,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
-import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyGridListItems
 import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyPagingGridItems
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
@@ -33,7 +30,6 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListLanguageSelectionPageDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.MDWordsListTrainPreferencesDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.MDWordsListViewPreferencesDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
 
@@ -60,7 +56,7 @@ fun MDWordsListScreen(
                 language = uiState.selectedWordSpace.language,
                 selectedWordsCount = selectedWordsCount,
                 visibleWordsCount = wordsList.itemCount,
-                onTrainVisibleWords = uiActions::onShowTrainPreferencesDialog,
+                onTrainVisibleWords = uiActions::onShowTrainDialog,
                 onAdjustFilterPreferences = uiActions::onShowViewPreferencesDialog,
                 onSelectLanguagePage = uiActions::onShowLanguageWordSpacesDialog,
                 onDeleteWordSpace = uiActions::onDeleteLanguageWordSpace,
@@ -187,9 +183,4 @@ fun MDWordsListScreen(
         actions = uiActions,
     )
 
-    // train preferences dialog:
-    MDWordsListTrainPreferencesDialog(
-        state = uiState.trainPreferencesState,
-        actions = uiActions,
-    )
 }

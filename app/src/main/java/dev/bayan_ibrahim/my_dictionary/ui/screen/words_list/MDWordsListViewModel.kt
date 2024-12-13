@@ -13,22 +13,21 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.WordsListTrainPreferencesMutableState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesMutableUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesMutableState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -320,41 +319,12 @@ class MDWordsListViewModel @Inject constructor(
             _uiState.selectedWords = persistentSetOf()
         }
 
-        override fun onShowTrainPreferencesDialog() {
-            _uiState.trainPreferencesState.showDialog = true
+        override fun onShowTrainDialog() {
+            _uiState.showTrainDialog = true
         }
 
-        override fun onSelectTrainType(trainType: TrainWordType) = editTrainPreferences {
-            this.trainType = trainType
-        }
-
-        override fun onSelectTrainTarget(trainTarget: WordsListTrainTarget) = editTrainPreferences {
-            this.trainTarget = trainTarget
-        }
-
-        override fun onSelectLimit(limit: WordsListTrainPreferencesLimit) = editTrainPreferences {
-            this.limit = limit
-        }
-
-        override fun onSelectSortBy(sortBy: WordsListTrainPreferencesSortBy) = editTrainPreferences {
-            this.sortBy = sortBy
-        }
-
-        override fun onSelectSortByOrder(sortByOrder: WordsListSortByOrder) = editTrainPreferences {
-            this.sortByOrder = sortByOrder
-        }
-
-        override fun onHideTrainPreferencesDialog() {
-            _uiState.trainPreferencesState.showDialog = false
-        }
-
-        override fun onConfirmTrain() {
-            onHideViewPreferencesDialog()
-            navActions.navigateToTrainScreen()
-        }
-
-        override fun onResetTrainPreferences() = editTrainPreferences {
-            this.onApplyPreferences(defaultWordsListTrainPreferences)
+        override fun onDismissTrainDialog() {
+            _uiState.showTrainDialog = false
         }
     }
 
@@ -372,15 +342,6 @@ class MDWordsListViewModel @Inject constructor(
         viewModelScope.launch {
             launch {
                 repo.setViewPreferences(uiState.viewPreferencesState)
-            }
-        }
-    }
-
-    private fun editTrainPreferences(body: WordsListTrainPreferencesMutableState.() -> Unit) {
-        _uiState.trainPreferencesState.body()
-        viewModelScope.launch {
-            launch {
-                repo.setTrainPreferences(uiState.trainPreferencesState)
             }
         }
     }

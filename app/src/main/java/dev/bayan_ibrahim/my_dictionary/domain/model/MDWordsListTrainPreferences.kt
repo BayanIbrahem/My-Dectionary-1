@@ -7,7 +7,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainP
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 
 
-interface WordsListTrainPreferences {
+interface MDWordsListTrainPreferences {
     val trainType: TrainWordType
     val trainTarget: WordsListTrainTarget
     val sortBy: WordsListTrainPreferencesSortBy
@@ -15,16 +15,16 @@ interface WordsListTrainPreferences {
     val limit: WordsListTrainPreferencesLimit
 }
 
-data class WordsListTrainPreferencesBuilder(
+data class MDWordsListTrainPreferencesBuilder(
     override val trainType: TrainWordType,
     override val trainTarget: WordsListTrainTarget,
     override val sortBy: WordsListTrainPreferencesSortBy,
     override val sortByOrder: WordsListSortByOrder,
     override val limit: WordsListTrainPreferencesLimit,
-) : WordsListTrainPreferences
+) : MDWordsListTrainPreferences
 
 val defaultWordsListTrainPreferences by lazy {
-    WordsListTrainPreferencesBuilder(
+    MDWordsListTrainPreferencesBuilder(
         trainType = TrainWordType.SelectWordMeaning,
         trainTarget = WordsListTrainTarget.Translation,
         sortBy = WordsListTrainPreferencesSortBy.Random,

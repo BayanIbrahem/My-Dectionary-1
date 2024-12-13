@@ -295,7 +295,7 @@ private fun HeaderTitle(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(32.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))

@@ -15,8 +15,8 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordSpaceModel
-import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
+import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
@@ -36,19 +36,16 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
+
 class MDWordsListRepoImpl(
     private val wordDao: WordDao,
     private val tagDao: WordTypeTagDao,
     private val wordSpaceDao: LanguageWordSpaceDao,
-    private val preferences: MDPreferences,
+    private val preferences: MDPreferencesDataStore,
 ) : MDWordsListRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordDao) {
     override fun getViewPreferences(): Flow<WordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
 
     override suspend fun setViewPreferences(preferences: WordsListViewPreferences) = this.preferences.writeWordsListViewPreferences {
-        preferences
-    }
-
-    override suspend fun setTrainPreferences(preferences: WordsListTrainPreferences) = this.preferences.writeWordsListTrainPreferences {
         preferences
     }
 

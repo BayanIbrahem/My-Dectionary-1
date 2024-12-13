@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences
+package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -54,8 +54,9 @@ import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 @Composable
 fun MDWordsListTrainPreferencesDialog(
-    state: WordsListTrainPreferencesState,
-    actions: WordsListTrainPreferencesActions,
+    showDialog: Boolean,
+    uiState: MDWordsListTrainPreferencesUiState,
+    uiActions: MDWordsListTrainPreferencesUiActions,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember {
@@ -66,8 +67,8 @@ fun MDWordsListTrainPreferencesDialog(
         pagerState.animateScrollToPage(selectedTab.ordinal)
     }
     MDAlertDialog(
-        showDialog = state.showDialog,
-        onDismissRequest = actions::onHideTrainPreferencesDialog,
+        showDialog = showDialog,
+        onDismissRequest = uiActions::onDismissDialog,
         modifier = modifier.width(IntrinsicSize.Max),
         headerModifier = Modifier,
         title = {
@@ -81,17 +82,16 @@ fun MDWordsListTrainPreferencesDialog(
         },
         actions = {
             MDAlertDialogActions(
-                onDismissRequest = actions::onHideTrainPreferencesDialog,
-
+                onDismissRequest = uiActions::onDismissDialog,
                 primaryActionLabel = "Train", // TODO string res
                 secondaryActionLabel = "Cancel", // TODO string res
                 tertiaryActionLabel = "Reset", // TODO string res
                 colors = MDDialogDefaults.colors(
                     tertiaryActionColor = MaterialTheme.colorScheme.error
                 ),
-                onPrimaryClick = actions::onConfirmTrain,
-                onSecondaryClick = actions::onHideTrainPreferencesDialog,
-                onTertiaryClick = actions::onResetTrainPreferences,
+                onPrimaryClick = uiActions::onConfirmTrain,
+                onSecondaryClick = uiActions::onDismissDialog,
+                onTertiaryClick = uiActions::onResetTrainPreferences,
                 hasTertiaryAction = true,
             )
         }
@@ -106,19 +106,19 @@ fun MDWordsListTrainPreferencesDialog(
         ) { i ->
             when (MDWordsListTrainPreferencesTab.entries[i]) {
                 MDWordsListTrainPreferencesTab.TrainType -> TrainTypeBody(
-                    selectedType = state.trainType,
-                    selectedTarget = state.trainTarget,
-                    onSelectType = actions::onSelectTrainType,
-                    onSelectTarget = actions::onSelectTrainTarget,
+                    selectedType = uiState.trainType,
+                    selectedTarget = uiState.trainTarget,
+                    onSelectType = uiActions::onSelectTrainType,
+                    onSelectTarget = uiActions::onSelectTrainTarget,
                 )
 
                 MDWordsListTrainPreferencesTab.WordsOrder -> WordsOrderBody(
-                    selectedLimit = state.limit,
-                    selectedSortBy = state.sortBy,
-                    selectedSortByOrder = state.sortByOrder,
-                    onSelectLimit = actions::onSelectLimit,
-                    onSelectSortBy = actions::onSelectSortBy,
-                    onSelectSortByOrder = actions::onSelectSortByOrder,
+                    selectedLimit = uiState.limit,
+                    selectedSortBy = uiState.sortBy,
+                    selectedSortByOrder = uiState.sortByOrder,
+                    onSelectLimit = uiActions::onSelectLimit,
+                    onSelectSortBy = uiActions::onSelectSortBy,
+                    onSelectSortByOrder = uiActions::onSelectSortByOrder,
                 )
             }
         }
@@ -306,7 +306,7 @@ private fun <E> CheckableGroupField(
 private fun MDWordsListFilterDialogPreview() {
     MyDictionaryTheme() {
         val preferences by remember {
-            mutableStateOf(WordsListTrainPreferencesMutableState().apply { showDialog = true })
+            mutableStateOf(MDWordsListTrainPreferencesMutableUiState())
         }
         Surface(
             color = MaterialTheme.colorScheme.background
@@ -316,10 +316,9 @@ private fun MDWordsListFilterDialogPreview() {
                 contentAlignment = Alignment.Center,
             ) {
                 MDWordsListTrainPreferencesDialog(
-                    state = preferences,
-                    actions = object : WordsListTrainPreferencesActions {
-                        override fun onHideTrainPreferencesDialog() {}
-                        override fun onShowTrainPreferencesDialog() {}
+                    showDialog = true,
+                    uiState = preferences,
+                    uiActions = object : MDWordsListTrainPreferencesBusinessUiActions, MDWordsListTrainPreferencesNavigationUiActions{
                         override fun onSelectTrainType(trainType: TrainWordType) {}
                         override fun onSelectTrainTarget(trainTarget: WordsListTrainTarget) {}
                         override fun onSelectLimit(limit: WordsListTrainPreferencesLimit) {}
@@ -327,6 +326,10 @@ private fun MDWordsListFilterDialogPreview() {
                         override fun onSelectSortByOrder(sortByOrder: WordsListSortByOrder) {}
                         override fun onConfirmTrain() {}
                         override fun onResetTrainPreferences() {}
+                        override fun onDismissDialog() {}
+                        override fun navigateToTrainScreen() {}
+                    }.let {
+                        MDWordsListTrainPreferencesUiActions(it, it)
                     }
                 )
             }

@@ -11,8 +11,10 @@ import dev.bayan_ibrahim.my_dictionary.data.MDTrainRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordDetailsRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordSpaceRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordsListRepoImpl
+import dev.bayan_ibrahim.my_dictionary.data.MDWordsListTrainDialogRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
-import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferences
+import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
+import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.words_list_filter.MDWordsListTrainPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderDecorator
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.MDCSVFileSplitter
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
@@ -21,6 +23,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordSpaceRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListTrainDialogRepo
 import javax.inject.Singleton
 
 @Module
@@ -40,12 +43,20 @@ class DataModule {
     @Provides
     fun providesWordsListRepo(
         db: MDDataBase,
-        preferences: MDPreferences,
+        preferences: MDPreferencesDataStore,
     ): MDWordsListRepo = MDWordsListRepoImpl(
         wordDao = db.getWordDao(),
         tagDao = db.getWordTypeTagDao(),
         wordSpaceDao = db.getLanguageWordSpaceDao(),
         preferences = preferences,
+    )
+
+    @Singleton
+    @Provides
+    fun providesWordsListTrainDialogRepo(
+        preferences: MDPreferencesDataStore,
+    ): MDWordsListTrainDialogRepo= MDWordsListTrainDialogRepoImpl(
+        dataStore = preferences
     )
 
     @Singleton
@@ -70,7 +81,7 @@ class DataModule {
     @Provides
     fun providesTrainRepo(
         db: MDDataBase,
-        preferences: MDPreferences,
+        preferences: MDPreferencesDataStore,
     ): MDTrainRepo = MDTrainRepoImpl(
         wordDao = db.getWordDao(),
         trainHistoryDao = db.getWordTrainDao(),

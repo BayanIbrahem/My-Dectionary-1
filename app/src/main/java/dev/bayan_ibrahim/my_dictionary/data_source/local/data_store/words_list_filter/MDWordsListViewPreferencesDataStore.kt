@@ -12,15 +12,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-interface MDWordsListViewPreferences {
+interface MDWordsListViewPreferencesDataStore {
     fun getWordsListViewPreferencesStream(): Flow<WordsListViewPreferences>
     suspend fun getWordsListViewPreferences() = getWordsListViewPreferencesStream().first()
     suspend fun writeWordsListViewPreferences(getWordsList: (WordsListViewPreferences) -> WordsListViewPreferences)
 }
 
-class MDWordsListViewPreferencesImpl(
+class MDWordsListDataStoreViewPreferencesImpl(
     context: Context,
-) : MDWordsListViewPreferences {
+) : MDWordsListViewPreferencesDataStore {
     private val proto = context.wordsListViewPreferencesDataStore
     override fun getWordsListViewPreferencesStream(): Flow<WordsListViewPreferences> = proto.data.map {
         WordsListViewPreferencesBuilder(

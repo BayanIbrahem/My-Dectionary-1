@@ -6,7 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferences
+import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
 import javax.inject.Singleton
 
 @Module
@@ -17,5 +17,5 @@ object DataStoreModule {
     fun provideMDDataStore(
         @ApplicationContext
         context: Context,
-    ): MDPreferences = MDPreferences(context)
+    ): MDPreferencesDataStore = MDPreferencesDataStore(context)
 }

@@ -2,10 +2,10 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import androidx.compose.runtime.Immutable
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.WordsListTrainPreferencesActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesActions
 
-interface MDWordsListBusinessUiActions : WordsListViewPreferencesActions, WordsListTrainPreferencesActions {
+interface MDWordsListBusinessUiActions : WordsListViewPreferencesActions {
     // work space
     fun onLanguageWordSpaceSearchQueryChange(searchQuery: String)
     fun onShowLanguageWordSpacesDialog()
@@ -28,11 +28,13 @@ interface MDWordsListBusinessUiActions : WordsListViewPreferencesActions, WordsL
     fun onConfirmDeleteSelection()
     fun onCancelDeleteSelection()
     fun onClearSelection()
+
+    fun onShowTrainDialog()
+    fun onDismissTrainDialog()
 }
 
 interface MDWordsListNavigationUiActions {
     fun navigateToWordDetails(wordId: Long?)
-    fun navigateToTrainScreen()
 }
 
 @Immutable

@@ -9,12 +9,12 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDMutableUiSta
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.WordsListTrainPreferencesMutableState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.train_preferences.WordsListTrainPreferencesState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesMutableUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesMutableState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesState
 import kotlinx.collections.immutable.PersistentList
@@ -41,13 +41,11 @@ interface MDWordsListUiState : MDUiState {
     val tagSearchQuery: String
     val tagsSuggestions: List<String>
 
-    // train preferences
-    val trainPreferencesState: WordsListTrainPreferencesState
+    val showTrainDialog: Boolean
 }
 
 class MDWordsListMutableUiState(
     defaultViewPreferences: WordsListViewPreferences = defaultWordsListViewPreferences,
-    defaultTrainPreferences: WordsListTrainPreferences = defaultWordsListTrainPreferences,
 ) : MDWordsListUiState, MDMutableUiState() {
     override var selectedWordSpace: LanguageWordSpace by mutableStateOf(LanguageWordSpace())
     override var activeLanguagesWordSpaces: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
@@ -68,5 +66,5 @@ class MDWordsListMutableUiState(
     override val tagsSuggestions: SnapshotStateList<String> = mutableStateListOf()
 
     // train preferences preferences:
-    override val trainPreferencesState: WordsListTrainPreferencesMutableState = WordsListTrainPreferencesMutableState(defaultTrainPreferences)
+    override var showTrainDialog: Boolean by mutableStateOf(false)
 }

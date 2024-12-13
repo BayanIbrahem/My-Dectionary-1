@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesDialogRoute
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -15,7 +16,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 fun MDWordsListRoute(
     navArgs: MDDestination.TopLevel.WordsList,
     navigateToWordsDetails: (wordId: Long?, code: LanguageCode) -> Unit,
-    navigateToTrainScreen: () -> Unit ,
+    navigateToTrainScreen: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MDWordsListViewModel = hiltViewModel(),
 ) {
@@ -29,12 +30,10 @@ fun MDWordsListRoute(
         derivedStateOf {
             object : MDWordsListNavigationUiActions {
                 override fun navigateToWordDetails(wordId: Long?) = navigateToWordsDetails(wordId, uiState.selectedWordSpace.language.code)
-                override fun navigateToTrainScreen() {
-                    navigateToTrainScreen()
-                }
             }
         }
     }
+
     val uiActions by remember {
         derivedStateOf {
             viewModel.getUiActions(navActions)
@@ -46,5 +45,12 @@ fun MDWordsListRoute(
         uiActions = uiActions,
         wordsList = wordsList,
         modifier = modifier,
+    )
+    // Dialog:
+    // train preferences dialog:
+    MDWordsListTrainPreferencesDialogRoute(
+        onNavigateToTrainScreen = navigateToTrainScreen,
+        onDismissDialog = uiActions::onDismissTrainDialog,
+        showDialog = uiState.showTrainDialog
     )
 }

@@ -10,7 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.minN.minNBy
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.minN.subList
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.safeSubList
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.TrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.WordTrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWord
@@ -43,7 +43,7 @@ class MDTrainViewModel @Inject constructor(
     fun initWithNavArgs(args: MDDestination.Train) {
         viewModelScope.launch {
             _uiState.onExecute {
-                val trainPreferences: WordsListTrainPreferences = repo.getTrainPreferences()
+                val trainPreferences: MDWordsListTrainPreferences = repo.getTrainPreferences()
                 val viewPreferences = repo.getViewPreferences()
                 val idsOfAllowedTagsAndProgressRange: Set<Long> = repo.getWordsIdsOfTagsAndProgressRange(viewPreferences)
                 val allWords: Sequence<Word> = repo.getAllSelectedLanguageWords()
@@ -145,7 +145,8 @@ class MDTrainViewModel @Inject constructor(
                         )
                     }
                     val optionsWords =
-                        ((similarTags + similarWords).shuffled().distinct().safeSubList(0, TrainWordType.MAX_SELECTIONS_COUNT.dec()) + targetWord).shuffled()
+                        ((similarTags + similarWords).shuffled().distinct()
+                            .safeSubList(0, TrainWordType.MAX_SELECTIONS_COUNT.dec()) + targetWord).shuffled()
                     val currentCorrectOption = optionsWords.indexOfFirst { it.id == targetWord.id }
                     TrainWord.SelectAnswer(
                         word = targetWord,

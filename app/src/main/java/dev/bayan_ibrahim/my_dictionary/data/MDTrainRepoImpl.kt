@@ -7,8 +7,8 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.toTrainHistoryEntities
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.toTrainHistoryModels
-import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListTrainPreferences
+import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.TrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
@@ -22,9 +22,9 @@ import kotlinx.coroutines.flow.map
 class MDTrainRepoImpl(
     private val wordDao: WordDao,
     private val trainHistoryDao: TrainHistoryDao,
-    private val preferences: MDPreferences,
+    private val preferences: MDPreferencesDataStore,
 ) : MDTrainRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordDao) {
-    override suspend fun getTrainPreferences(): WordsListTrainPreferences = preferences.getWordsListTrainPreferences()
+    override suspend fun getTrainPreferences(): MDWordsListTrainPreferences = preferences.getWordsListTrainPreferences()
     override suspend fun getViewPreferences(): WordsListViewPreferences = preferences.getWordsListViewPreferences()
     override suspend fun getAllSelectedLanguageWords(): Sequence<Word> {
         val currentLanguage = preferences.getUserPreferences().selectedLanguagePage ?: return sequenceOf()
