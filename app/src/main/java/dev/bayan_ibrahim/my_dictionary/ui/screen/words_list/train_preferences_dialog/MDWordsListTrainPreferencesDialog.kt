@@ -219,14 +219,7 @@ private fun <E> CheckableGroup(
     modifier: Modifier = Modifier,
     getLabel: @Composable (E) -> String = { it.label },
 ) where E : LabeledEnum, E : IconedEnum {
-    val colors = MDHorizontalCardGroupDefaults.colors(
-        fieldColors = MDHorizontalCardDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleColor = MaterialTheme.colorScheme.onPrimary,
-            leadingIconColor = MaterialTheme.colorScheme.onPrimary,
-            trailingIconColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-    )
+    val colors = MDHorizontalCardGroupDefaults.primaryColors()
     MDHorizontalCardGroup(
         modifier = modifier,
         title = { Text(title) },

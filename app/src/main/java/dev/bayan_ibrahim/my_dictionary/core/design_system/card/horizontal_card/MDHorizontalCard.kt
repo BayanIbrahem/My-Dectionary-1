@@ -5,10 +5,11 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -22,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,6 +37,9 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 data object MDHorizontalCardDefaults {
+    val combatHeight: Dp = 42.dp
+    val mediumHeight: Dp = 48.dp
+
     @Composable
     fun colors(
         containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -57,6 +62,7 @@ data object MDHorizontalCardDefaults {
         disabledTrailingIconColor = trailingIconColor.copy(alpha = disabledAlpha),
         dividerColor = dividerColor,
     )
+
 
     @Composable
     fun colors(
@@ -84,6 +90,23 @@ data object MDHorizontalCardDefaults {
         disabledTrailingIconColor = disabledTrailingIconColor,
         dividerColor = dividerColor,
     )
+
+    val primaryColors: MDHorizontalCardColors
+        @Composable
+        @ReadOnlyComposable
+        get() = MDHorizontalCardColors(
+            enabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            enabledTitleColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            enabledSubtitleColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f),
+            enabledLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            enabledTrailingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            disabledTitleColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            disabledSubtitleColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f),
+            disabledLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            dividerColor = MaterialTheme.colorScheme.outlineVariant,
+        )
 
     @Composable
     fun styles(
@@ -164,7 +187,9 @@ fun MDHorizontalCard(
         }
 
         Surface(
-            modifier = modifier.height(42.dp),
+            modifier = modifier
+                .heightIn(42.dp, 60.dp)
+                .height(IntrinsicSize.Min),
             color = containerColor,
         ) {
             Row(
@@ -195,7 +220,11 @@ fun MDHorizontalCard(
                     LocalTextStyle provides styles.titleStyle,
                     LocalContentColor provides titleColor
                 ) {
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(vertical = 4.dp)
+                    ) {
                         title()
                         subtitle?.let {
                             val subtitleColor by remember(enabled) {
@@ -215,7 +244,6 @@ fun MDHorizontalCard(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.weight(1f))
                 trailingIcon?.let {
                     val trailingIconColor by remember(enabled) {
                         derivedStateOf {

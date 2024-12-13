@@ -1,12 +1,11 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.widthIn
@@ -18,9 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,12 +31,16 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesTab
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesTab
 import kotlin.math.roundToInt
 
 @Composable
@@ -122,12 +123,7 @@ fun MDWordsListViewPreferencesDialog(
         }
     }
 }
-/*
-    val searchQuery: String
-    val searchTarget: WordsListSearchTarget
- */
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SearchBody(
     searchQuery: String,
@@ -136,6 +132,7 @@ private fun SearchBody(
     onSelectSearchTarget: (MDWordsListSearchTarget) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colors = MDHorizontalCardDefaults.primaryColors
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -149,18 +146,14 @@ private fun SearchBody(
             label = "Search Query", // TODO, string res
             placeholder = "Eg. Car" // TODO, string res
         )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
+        MDHorizontalCardGroup {
             MDWordsListSearchTarget.entries.forEach { target ->
-                CheckableListItem(
-                    headline = target.label,
-                    onClick = {
-                        onSelectSearchTarget(target)
-                    }
+                radioItem(
+                    selected = target == selectedSearchTarget,
+                    colors = colors,
+                    onClick = { onSelectSearchTarget(target) }
                 ) {
-                    RadioButton(selected = target == selectedSearchTarget, onClick = null)
+                    Text(target.label)
                 }
             }
         }
@@ -189,6 +182,7 @@ private fun FilterBody(
     onSelectLearningGroup: (MDWordsListLearningProgressGroup) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colors = MDHorizontalCardDefaults.primaryColors
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -222,50 +216,62 @@ private fun FilterBody(
             }
 
         }
-        CheckableListItem(
-            headline = "Include Selected Tabs",
-            supportingText = if (includeSelectedTags) {
-                // TODO, string res
-                "any result should contains at least one of the selected tags"
-            } else {
-                // TODO, string res
-                "all results should NOT contain any one of the selected tags"
-            },
-            onClick = {
-                onToggleSelectedTags(!includeSelectedTags)
+        MDHorizontalCardGroup {
+            checkboxItem(
+                checked = includeSelectedTags,
+                colors = colors,
+                onClick = {
+                    onToggleSelectedTags(!includeSelectedTags)
+                },
+                subtitle = {
+                    // TODO, string res
+                    val text = if (includeSelectedTags) {
+                        "any result should contains at least one of the selected tags"
+                    } else {
+                        "all results should NOT contain any one of the selected tags"
+                    }
+                    Text(
+                        text = text,
+                        maxLines = 1,
+                        modifier = Modifier.basicMarquee(Int.MAX_VALUE)
+                    )
+                },
+            ) {
+                Text(text = "Include Selected Tabs")
             }
-        ) {
-            Checkbox(checked = includeSelectedTags, onCheckedChange = null)
         }
-        Text("Learning groups", style = MaterialTheme.typography.labelLarge) // TODO, string res
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+
+        MDHorizontalCardGroup(
+            title = { Text("Learning groups") }
         ) {
             MDWordsListLearningProgressGroup.entries.forEach { group ->
-                CheckableListItem(
-                    headline = group.label,
-                    supportingText = "from ${
-                        group.learningRange.start.times(100).roundToInt()
-                    }% to ${
-                        group.learningRange.endInclusive.times(100).roundToInt()
-                    }%",// TODO, string res
+                checkboxItem(
+                    checked = group in selectedLearningProgressGroups,
+                    colors = colors,
                     onClick = {
                         onSelectLearningGroup(group)
-                    }
+                    },
+                    subtitle = {
+                        // TODO, string res
+                        val text = "from ${
+                            group.learningRange.start.times(100).roundToInt()
+                        }% to ${
+                            group.learningRange.endInclusive.times(100).roundToInt()
+                        }%"
+                        Text(
+                            text = text,
+                            maxLines = 1,
+                            modifier = Modifier.basicMarquee(Int.MAX_VALUE)
+                        )
+                    },
                 ) {
-                    Checkbox(checked = group in selectedLearningProgressGroups, onCheckedChange = null)
+                    Text(text = group.label)
                 }
             }
         }
     }
 }
 
-/*
-    val sortBy: WordsListSortBy
-    val sortByOrder: WordsListSortByOrder
- */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SortBody(
     selectedSortBy: MDWordsListViewPreferencesSortBy,
@@ -274,62 +280,35 @@ private fun SortBody(
     onSelectSortByOrder: (MDWordsListSortByOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colors = MDHorizontalCardDefaults.primaryColors
     Column(modifier = modifier.fillMaxWidth()) {
-        Text("Sorted By", style = MaterialTheme.typography.labelLarge) // TODO, string res
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+        MDHorizontalCardGroup(
+            // TODO, string res
+            title = { Text("Sorted By") }
         ) {
             MDWordsListViewPreferencesSortBy.entries.forEach { sortBy ->
-                CheckableListItem(
-                    modifier = Modifier,
-                    headline = sortBy.label,
-                    onClick = { onSelectSortBy(sortBy) }
+                radioItem(
+                    selected = sortBy == selectedSortBy,
+                    colors = colors,
+                    onClick = { onSelectSortBy(sortBy) },
                 ) {
-                    RadioButton(selected = sortBy == selectedSortBy, onClick = null)
+                    Text(text = sortBy.label)
                 }
             }
         }
-        Text("Sorted By Order", style = MaterialTheme.typography.labelLarge) // TODO, string res
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+
+        MDHorizontalCardGroup(
+            // TODO, string res
+            title = { Text("Sorted By Order") }
         ) {
             MDWordsListSortByOrder.entries.forEach { sortByOrder ->
-                CheckableListItem(
-                    headline = sortByOrder.label,
-                    onClick = { onSelectSortByOrder(sortByOrder) }
+                radioItem(
+                    colors = colors,
+                    selected = sortByOrder == selectedSortByOrder,
+                    onClick = { onSelectSortByOrder(sortByOrder) },
                 ) {
-                    RadioButton(selected = sortByOrder == selectedSortByOrder, onClick = null)
+                    Text(text = sortByOrder.label)
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CheckableListItem(
-    headline: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    supportingText: String? = null,
-    content: @Composable () -> Unit,
-) {
-    Row(
-        modifier = modifier
-            .height(48.dp)
-            .clickable(onClick = onClick),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        content()
-        Column {
-            Text(text = headline, style = MaterialTheme.typography.bodyMedium)
-            supportingText?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
             }
         }
     }
