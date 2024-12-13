@@ -32,7 +32,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDFieldDefaults.height
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 data object MDHorizontalCardDefaults {
@@ -165,7 +164,7 @@ fun MDHorizontalCard(
         }
 
         Surface(
-            modifier = modifier.height(height),
+            modifier = modifier.height(42.dp),
             color = containerColor,
         ) {
             Row(

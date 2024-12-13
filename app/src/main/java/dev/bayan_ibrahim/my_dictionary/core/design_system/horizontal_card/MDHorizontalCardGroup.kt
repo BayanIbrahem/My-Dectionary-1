@@ -118,8 +118,8 @@ fun MDHorizontalCardGroup(
                         }
                     }
                     MDHorizontalCard(
-                        colors = colors.cardColors,
-                        styles = styles.cardStyles,
+                        colors = item.colors ?: colors.cardColors,
+                        styles = item.styles ?: styles.cardStyles,
                         bottomHorizontalDividerThickness = dividerThickness,
                         onClick = item.onClick,
                         modifier = item.modifier,
