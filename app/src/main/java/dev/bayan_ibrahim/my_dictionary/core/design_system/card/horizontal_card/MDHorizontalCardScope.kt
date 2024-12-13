@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card
+package dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State

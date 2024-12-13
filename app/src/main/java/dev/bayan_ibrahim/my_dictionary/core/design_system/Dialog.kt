@@ -20,6 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardTextStyle
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 data object MDDialogDefaults {
@@ -70,7 +74,7 @@ fun MDBasicDialog(
         Dialog(
             onDismissRequest = onDismissRequest,
         ) {
-            MDCard(
+            MDVerticalCard(
                 modifier = modifier,
                 shape = shape,
                 colors = colors.cardColors,

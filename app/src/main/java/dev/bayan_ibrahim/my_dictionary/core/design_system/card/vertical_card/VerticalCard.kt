@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.core.design_system
+package dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -113,7 +113,7 @@ data class MDCardTextStyle(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MDCard(
+fun MDVerticalCard(
     modifier: Modifier = Modifier,
     shape: CornerBasedShape = MDCardDefaults.shape,
     colors: MDCardColors = MDCardDefaults.colors(),
@@ -208,7 +208,7 @@ private fun MDCardPreview() {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                MDCard(
+                MDVerticalCard(
                     header = { Text("Header") },
                     footer = { Text("Footer") }
                 ) { Text("Content") }

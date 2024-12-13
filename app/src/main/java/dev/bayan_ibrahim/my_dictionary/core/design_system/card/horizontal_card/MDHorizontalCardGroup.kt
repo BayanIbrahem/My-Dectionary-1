@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card
+package dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +25,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 data object MDHorizontalCardGroupDefaults {
@@ -97,7 +97,7 @@ fun MDHorizontalCardGroup(
             )
         }
 
-        MDCard(
+        MDVerticalCard(
             shape = shape,
             headerClickable = false,
             cardClickable = false,

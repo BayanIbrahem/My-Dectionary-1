@@ -50,9 +50,9 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.MDN
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.safeSubList
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCard
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardColors
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
@@ -98,7 +98,7 @@ fun MDWordListItem(
             searchQuery.first != null && searchQuery.second != null
         }
     }
-    MDCard(
+    MDVerticalCard(
         modifier = modifier,
         headerClickable = headerClickable,
         cardClickable = cardClickable,

@@ -55,8 +55,8 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableFiel
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCard
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
@@ -104,7 +104,7 @@ fun MDWordSpaceListItem(
             editingTextFieldInitialValue
         }
     )
-    MDCard(
+    MDVerticalCard(
         modifier = modifier,
         contentModifier = MDCardDefaults.contentModifier.padding(vertical = 8.dp),
         headerClickable = false,

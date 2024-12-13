@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDHorizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.radioItem
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.util.label
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
