@@ -34,7 +34,9 @@ class MDHorizontalCardScopeImpl : MDUiScopeImpl<MDHorizontalCardScopeItem>() {
 fun rememberHorizontalCardStateOfItems(
     items: MDUiScope<MDHorizontalCardScopeItem>.() -> Unit,
 ): State<MDUiScopeProvider<MDHorizontalCardScopeItem>> = rememberStateOfItems(
-    impl = MDHorizontalCardScopeImpl(),
+    impl = {
+        MDHorizontalCardScopeImpl()
+    },
     content = items
 )
 

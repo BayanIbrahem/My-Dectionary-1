@@ -219,23 +219,22 @@ private fun <E> CheckableGroup(
     modifier: Modifier = Modifier,
     getLabel: @Composable (E) -> String = { it.label },
 ) where E : LabeledEnum, E : IconedEnum {
+    val colors = MDHorizontalCardGroupDefaults.colors(
+        fieldColors = MDHorizontalCardDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleColor = MaterialTheme.colorScheme.onPrimary,
+            leadingIconColor = MaterialTheme.colorScheme.onPrimary,
+            trailingIconColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+    )
     MDHorizontalCardGroup(
         modifier = modifier,
-        title = {
-            Text(title)
-        },
-        colors = MDHorizontalCardGroupDefaults.colors(
-            fieldColors = MDHorizontalCardDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                titleColor = MaterialTheme.colorScheme.onPrimary,
-                leadingIconColor = MaterialTheme.colorScheme.onPrimary,
-                trailingIconColor = MaterialTheme.colorScheme.onPrimary,
-            ),
-        )
+        title = { Text(title) },
     ) {
         data.forEach { item ->
             checkboxItem(
-                selected == item,
+                checked = selected == item,
+                colors = colors.cardColors,
                 onClick = {
                     onClick(item)
                 }

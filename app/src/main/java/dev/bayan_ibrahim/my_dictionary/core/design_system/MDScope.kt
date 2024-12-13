@@ -40,9 +40,13 @@ abstract class MDUiScopeImpl<Item : MDUiScopeItem> : MDUiScope<Item>, MDUiScopeP
 
 @Composable
 fun <Item : MDUiScopeItem> rememberStateOfItems(
-    impl: MDUiScopeImpl<Item>,
+    impl: () -> MDUiScopeImpl<Item>,
     content: MDUiScope<Item>.() -> Unit,
 ): State<MDUiScopeProvider<Item>> {
     val latestContent = rememberUpdatedState(content)
-    return remember { derivedStateOf { impl.apply(latestContent.value) } }
+    return remember() {
+        derivedStateOf {
+            impl().apply(latestContent.value)
+        }
+    }
 }

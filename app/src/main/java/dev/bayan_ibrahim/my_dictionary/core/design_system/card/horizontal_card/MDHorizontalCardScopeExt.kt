@@ -3,6 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDUiScope
@@ -52,7 +53,19 @@ fun MDUiScope<MDHorizontalCardScopeItem>.radioItem(
         colors = colors,
         styles = styles,
         leadingIcon = {
-            RadioButton(selected = selected, onClick = null)
+            RadioButton(
+                selected = selected,
+                onClick = null,
+                colors = colors?.let {
+                    RadioButtonDefaults.colors(
+                        unselectedColor = if (enabled) {
+                            it.enabledTrailingIconColor
+                        } else {
+                            it.disabledTrailingIconColor
+                        },
+                    )
+                } ?: RadioButtonDefaults.colors()
+            )
         },
         trailingIcon = trailingIcon,
         subtitle = subtitle,
@@ -83,9 +96,15 @@ fun MDUiScope<MDHorizontalCardScopeItem>.checkboxItem(
             Checkbox(
                 checked = checked,
                 onCheckedChange = null,
-                colors = CheckboxDefaults.colors(
-//                    checkedColor = contentColor,
-                )
+                colors = colors?.let {
+                    CheckboxDefaults.colors(
+                        uncheckedColor = if (enabled) {
+                            it.enabledTrailingIconColor
+                        } else {
+                            it.disabledTrailingIconColor
+                        },
+                    )
+                } ?: CheckboxDefaults.colors()
             )
         },
         subtitle = subtitle,
