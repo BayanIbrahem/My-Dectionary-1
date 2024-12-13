@@ -63,7 +63,7 @@ private fun MDIconDropDownMenuPreview() {
                 ) {
                     repeat(3) {
                         DropdownMenuItem(
-                            text = { Text("item") },
+                            text = { Text("dev.bayan_ibrahim.my_dictionary.core.design_system.group.item") },
                             onClick = {}
                         )
                     }

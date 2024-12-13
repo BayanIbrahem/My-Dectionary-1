@@ -66,7 +66,7 @@ abstract class MDFileReaderDecorator<Data : Any>(
     /**
      * try to read this file with this reader or any of its wrappers,
      * at first it try to get first wrapper that support the file type starting from root
-     * @param onReadItem passing each new item read in the file return false to stop reading
+     * @param onReadItem passing each new dev.bayan_ibrahim.my_dictionary.core.design_system.group.item read in the file return false to stop reading
      * @param onInvalidStream callback if failed to open the input stream
      * @param onUnsupportedFile if this reader can't read this file, nor its wrappers
      * @param onReadStreamError callback if caught an error while reading  the input stream
@@ -130,7 +130,7 @@ abstract class MDFileReaderDecorator<Data : Any>(
     protected abstract suspend fun tryParseFileHeader(stream: InputStream)
 
     /**
-     * how to parse the input stream and call the [onReadItem] every time a new item is read
+     * how to parse the input stream and call the [onReadItem] every time a new dev.bayan_ibrahim.my_dictionary.core.design_system.group.item is read
      * @param stream will be closed automatically
      */
     protected abstract suspend fun parseInputStream(

@@ -40,12 +40,12 @@ enum class TrainWordType(
         const val MIN_SELECTIONS_COUNT: Int = 4
 
         /**
-         * number of items that we pick according to tags similarity before taking an [MAX_SELECTIONS_COUNT] random item
+         * number of items that we pick according to tags similarity before taking an [MAX_SELECTIONS_COUNT] random dev.bayan_ibrahim.my_dictionary.core.design_system.group.item
          */
         const val SELECTION_TAGS_GROUP_COUNT: Int = MAX_SELECTIONS_COUNT * 5
 
         /**
-         * number of items that we pick according to words similarity before taking an [MAX_SELECTIONS_COUNT] random item
+         * number of items that we pick according to words similarity before taking an [MAX_SELECTIONS_COUNT] random dev.bayan_ibrahim.my_dictionary.core.design_system.group.item
          */
         const val SELECTION_LEVENSHTEIN_GROUP_COUNT: Int = MAX_SELECTIONS_COUNT * 5
     }

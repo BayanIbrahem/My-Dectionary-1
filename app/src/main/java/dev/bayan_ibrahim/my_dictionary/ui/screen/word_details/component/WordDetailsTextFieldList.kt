@@ -24,8 +24,8 @@ fun LazyListScope.wordDetailsTextFieldList(
     leadingIcon: ImageVector,
     groupLabel: String,
     itemModifier: Modifier = Modifier,
-    itemsPlaceholder: String = "Add item (leave blank to delete)",// TODO, string res
-    lastItemPlaceholder: String = "Add new item",// TODO, string res
+    itemsPlaceholder: String = "Add dev.bayan_ibrahim.my_dictionary.core.design_system.group.item (leave blank to delete)",// TODO, string res
+    lastItemPlaceholder: String = "Add new dev.bayan_ibrahim.my_dictionary.core.design_system.group.item",// TODO, string res
     onGroupFocusChanged: (Long?) -> Unit = {},
 ) {
     val focusState = mutableStateMapOf<Long, Boolean>()
@@ -76,8 +76,8 @@ fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
     groupLabel: String,
     itemModifier: Modifier = Modifier,
     relationPlaceholder: String = "Relation",// TODO, string res
-    valuePlaceholder: String = "Add item (leave blank to delete)",// TODO, string res
-    lastValuePlaceholder: String = "Add new item",// TODO, string res
+    valuePlaceholder: String = "Add dev.bayan_ibrahim.my_dictionary.core.design_system.group.item (leave blank to delete)",// TODO, string res
+    lastValuePlaceholder: String = "Add new dev.bayan_ibrahim.my_dictionary.core.design_system.group.item",// TODO, string res
     onGroupFocusChanged: (Long?) -> Unit = {},
 ) {
     val focusState = mutableStateMapOf<Long, Boolean>()

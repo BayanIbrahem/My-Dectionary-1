@@ -27,8 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDField
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDHorizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.util.removePadding
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.MDStatisticsMostResentHistoryCount
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
@@ -140,10 +140,10 @@ private fun MDMostRecentTrainHistoryActions(
             }
         }
     }
-    MDFieldsGroup(
+    MDHorizontalCardGroup(
         modifier = modifier,
     ) {
-        MDField(
+        item(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Add, // TODO, icon res
@@ -154,12 +154,14 @@ private fun MDMostRecentTrainHistoryActions(
             Text("View Preferences")
         }
         availableOptions.forEach { count ->
-            MDField(
+            item(
                 onClick = {
                     onSelectTrainHistoryCount(count)
                 },
-                trailingIcon = {
-                    if (selectedTrainHistoryCount == count) {
+                trailingIcon = selectedTrainHistoryCount.takeIf {
+                    it == count
+                }?.let {
+                    {
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = null
@@ -179,10 +181,10 @@ private fun MDDateUnitActions(
     onSelectDateUnit: (MDDateUnit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MDFieldsGroup(
+    MDHorizontalCardGroup(
         modifier = modifier,
     ) {
-        MDField(
+        item(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.DateRange, // TODO, icon res
@@ -193,12 +195,12 @@ private fun MDDateUnitActions(
             Text("View Preferences")
         }
         MDDateUnit.entries.forEach { unit ->
-            MDField(
+            item(
                 onClick = {
                     onSelectDateUnit(unit)
                 },
-                trailingIcon = {
-                    if (dateUnit == unit) {
+                trailingIcon = unit.takeIf { it == dateUnit }?.let {
+                    {
                         Icon(Icons.Default.Check, null)
                     }
                 }

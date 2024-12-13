@@ -41,10 +41,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDImeAction
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDField
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroupColors
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroupDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDFieldsGroupDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDHorizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDHorizontalCardGroupColors
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDHorizontalCardGroupDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
@@ -60,9 +61,9 @@ data object MDDropDownMenuDefaults {
     val menuShape: CornerBasedShape
         @Composable
         get() = MDFieldsGroupDefaults.shape
-    val menuColors: MDFieldsGroupColors
+    val menuColors: MDHorizontalCardGroupColors
         @Composable
-        get() = MDFieldsGroupDefaults.colors()
+        get() = MDHorizontalCardGroupDefaults.colors()
 }
 
 
@@ -92,7 +93,7 @@ fun <Data : Any> MDBasicDropDownMenu(
     focusManager: FocusManager = LocalFocusManager.current,
     fieldColors: TextFieldColors = MDDropDownMenuDefaults.fieldColors,
     fieldShape: CornerBasedShape = MDDropDownMenuDefaults.fieldShape,
-    menuColors: MDFieldsGroupColors = MDDropDownMenuDefaults.menuColors,
+    menuColors: MDHorizontalCardGroupColors = MDDropDownMenuDefaults.menuColors,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     labelStyle: TextStyle = MDTextFieldDefaults.labelStyle,
     hasBottomHorizontalDivider: Boolean = false,
@@ -167,7 +168,7 @@ fun <Data : Any> MDBasicDropDownMenu(
     focusManager: FocusManager = LocalFocusManager.current,
     fieldColors: TextFieldColors = MDDropDownMenuDefaults.fieldColors,
     fieldShape: CornerBasedShape = MDDropDownMenuDefaults.fieldShape,
-    menuColors: MDFieldsGroupColors = MDDropDownMenuDefaults.menuColors,
+    menuColors: MDHorizontalCardGroupColors = MDDropDownMenuDefaults.menuColors,
     menuShape: CornerBasedShape = MDDropDownMenuDefaults.menuShape,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     labelStyle: TextStyle = MDTextFieldDefaults.labelStyle,
@@ -228,14 +229,20 @@ fun <Data : Any> MDBasicDropDownMenu(
             matchTextFieldWidth = menuMatchFieldWidth,
         ) {
             Box {
-                MDFieldsGroup(
+                val labledSuggestions = suggestions.map {
+                    Triple(
+                        first = it,
+                        second = it.suggestionAnnotatedTitle(),
+                        third = it.suggestionAnnotatedSubtitle(),
+                    )
+                }
+                MDHorizontalCardGroup(
                     modifier = modifier.width(IntrinsicSize.Max),
                     colors = menuColors,
                     shape = menuShape,
                 ) {
                     if (allowCancelSelection) {
-                        MDField(
-                            trailingIcon = {},
+                        item(
                             onClick = {
                                 onSelectSuggestion(0, null)
                                 onValueChange(INVALID_TEXT)
@@ -249,20 +256,18 @@ fun <Data : Any> MDBasicDropDownMenu(
                             )
                         }
                     }
-                    suggestions.forEachIndexed { i, suggestion ->
-                        val title = suggestion.suggestionAnnotatedTitle()
-                        val subtitle = suggestion.suggestionAnnotatedSubtitle()
-                        MDField(
+                    labledSuggestions.forEachIndexed { i, (suggestion, title, subtitle) ->
+                        item(
                             onClick = {
                                 onSelectSuggestion(i, suggestion)
                                 onValueChange(title.text)
                                 showDropDownMenu = false
+                            },
+                            subtitle = subtitle?.let {
+                                { Text(it) }
                             }
                         ) {
-                            Column {
-                                Text(title)
-                                subtitle?.let { Text(it) }
-                            }
+                            Text(title)
                         }
                     }
                 }
@@ -332,7 +337,7 @@ private fun MDBasicDropDownPreview() {
                     fieldReadOnly = true,
                     placeholder = "placeholder, large read only",
                     suggestions = List(3) {
-                        "item $it"
+                        "dev.bayan_ibrahim.my_dictionary.core.design_system.group.item $it"
                     },
                     onSelectSuggestion = { i, suggestion -> },
                     suggestionTitle = { this },
@@ -344,7 +349,7 @@ private fun MDBasicDropDownPreview() {
                 MDBasicDropDownMenu(
                     value = value2,
                     onValueChange = { value2 = it },
-                    suggestions = List(3) { "item $it" },
+                    suggestions = List(3) { "dev.bayan_ibrahim.my_dictionary.core.design_system.group.item $it" },
                     suggestionTitle = { this },
                     fieldReadOnly = false,
                     placeholder = "placeholder, editable medium",

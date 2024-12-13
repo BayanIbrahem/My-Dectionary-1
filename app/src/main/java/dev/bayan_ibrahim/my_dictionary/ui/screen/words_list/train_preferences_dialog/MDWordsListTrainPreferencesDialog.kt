@@ -15,22 +15,17 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
@@ -38,14 +33,14 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDField
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroupDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDHorizontalCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDHorizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.MDHorizontalCardGroupDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListTrainPreferencesTab
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListTrainPreferencesTab
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -224,81 +219,32 @@ private fun <E> CheckableGroup(
     modifier: Modifier = Modifier,
     getLabel: @Composable (E) -> String = { it.label },
 ) where E : LabeledEnum, E : IconedEnum {
-    MDFieldsGroup(
+    MDHorizontalCardGroup(
         modifier = modifier,
         title = {
             Text(title)
         },
-        colors = MDFieldsGroupDefaults.colors(
-            fieldColors = MDFieldDefaults.colors(containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+        colors = MDHorizontalCardGroupDefaults.colors(
+            fieldColors = MDHorizontalCardDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleColor = MaterialTheme.colorScheme.onPrimary,
+                leadingIconColor = MaterialTheme.colorScheme.onPrimary,
+                trailingIconColor = MaterialTheme.colorScheme.onPrimary,
             ),
         )
     ) {
-        data.forEachIndexed { i, item ->
-            val isSelected by remember(selected) {
-                derivedStateOf {
-                    selected == item
+        data.forEach { item ->
+            checkboxItem(
+                selected == item,
+                onClick = {
+                    onClick(item)
                 }
+            ) {
+                Text(getLabel(item))
             }
-
-            val isLast by remember {
-                derivedStateOf { i == data.size - 1 }
-            }
-            CheckableGroupField(
-                data = item,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                isSelected = isSelected,
-                onClick = onClick,
-                getLabel = getLabel,
-                isLast = isLast,
-            )
         }
     }
 
-}
-
-@Composable
-private fun <E> CheckableGroupField(
-    data: E,
-    isSelected: Boolean,
-    contentColor: Color,
-    onClick: (E) -> Unit,
-    modifier: Modifier = Modifier,
-    getLabel: @Composable (E) -> String = { data.label },
-    isLast: Boolean = false,
-) where E : LabeledEnum, E : IconedEnum {
-    val bottomDivider by remember {
-        derivedStateOf {
-            if (isLast) 0.dp else MDFieldDefaults.horizontalDividerThickness
-        }
-    }
-    MDField(
-        bottomHorizontalDividerThickness = bottomDivider,
-        modifier = modifier,
-        leadingIcon = {
-            Icon(
-                imageVector = data.icon,
-                contentDescription = null,
-            )
-        },
-        trailingIcon = {
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = null,
-                colors = CheckboxDefaults.colors(
-//                    checkedColor = contentColor,
-                    uncheckedColor = contentColor,
-                    checkmarkColor = contentColor,
-                )
-            )
-        },
-        onClick = {
-            onClick(data)
-        }
-    ) {
-        Text(getLabel(data))
-    }
 }
 
 @Preview
@@ -318,7 +264,7 @@ private fun MDWordsListFilterDialogPreview() {
                 MDWordsListTrainPreferencesDialog(
                     showDialog = true,
                     uiState = preferences,
-                    uiActions = object : MDWordsListTrainPreferencesBusinessUiActions, MDWordsListTrainPreferencesNavigationUiActions{
+                    uiActions = object : MDWordsListTrainPreferencesBusinessUiActions, MDWordsListTrainPreferencesNavigationUiActions {
                         override fun onSelectTrainType(trainType: TrainWordType) {}
                         override fun onSelectTrainTarget(trainTarget: WordsListTrainTarget) {}
                         override fun onSelectLimit(limit: WordsListTrainPreferencesLimit) {}

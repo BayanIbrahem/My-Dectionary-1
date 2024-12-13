@@ -58,7 +58,7 @@ private fun DrawScope.drawXLabels(
     val (startPadding, endPadding) = horizontalPadding
     val horizontalEmptySpace = size.width - labels.sumOf { it.size.width }
     val spacedBy = (horizontalEmptySpace - startPadding - endPadding) / count.dec()
-    var prevEnd: Float = startPadding - spacedBy // we subtract spacedBy because it would be added for first item
+    var prevEnd: Float = startPadding - spacedBy // we subtract spacedBy because it would be added for first dev.bayan_ibrahim.my_dictionary.core.design_system.group.item
     labels.forEachIndexed { i, label ->
         val halfWidth = label.size.width / 2
         val center = prevEnd + spacedBy + halfWidth
