@@ -11,12 +11,14 @@ import kotlinx.collections.immutable.persistentListOf
 
 
 interface MDLanguageSelectionDialogUiState : MDUiState {
+    val selectedWordSpace: LanguageWordSpace
     val query: String
     val languagesWithWords: PersistentList<LanguageWordSpace>
     val languagesWithoutWords: PersistentList<LanguageWordSpace>
 }
 
 class MDLanguageSelectionDialogMutableUiState : MDLanguageSelectionDialogUiState, MDMutableUiState() {
+    override var selectedWordSpace by mutableStateOf(LanguageWordSpace())
     override var query: String by mutableStateOf("")
     override var languagesWithWords: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
     override var languagesWithoutWords: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())

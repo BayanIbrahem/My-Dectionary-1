@@ -18,7 +18,12 @@ class MDLanguageSelectionDialogViewModel @Inject constructor(
     private val _uiState: MDLanguageSelectionDialogMutableUiState = MDLanguageSelectionDialogMutableUiState()
     val uiState: MDLanguageSelectionDialogUiState = _uiState
     fun initWithNavArgs() {
-        onQueryChange("")
+        viewModelScope.launch {
+            val currentLanguage = repo.getSelectedLanguagePage() ?: return@launch
+            val currentWordSpace = repo.getLanguagesWordSpaces(currentLanguage.code) ?: return@launch
+            _uiState.selectedWordSpace = currentWordSpace
+            onLanguageQueryChange("")
+        }
     }
 
     fun getUiActions(
@@ -33,15 +38,18 @@ class MDLanguageSelectionDialogViewModel @Inject constructor(
         navActions: MDLanguageSelectionDialogNavigationUiActions,
     ): MDLanguageSelectionDialogBusinessUiActions = object : MDLanguageSelectionDialogBusinessUiActions {
         override fun onSelectWordSpace(languageWordSpace: LanguageWordSpace) {
-            TODO("Not yet implemented")
+            _uiState.selectedWordSpace = languageWordSpace
+            viewModelScope.launch {
+                repo.setSelectedLanguagePage(languageWordSpace.language.code)
+            }
         }
 
         override fun onQueryChange(query: String) {
-            onQueryChange(query)
+            onLanguageQueryChange(query)
         }
     }
 
-    private fun onQueryChange(query: String) {
+    private fun onLanguageQueryChange(query: String) {
         _uiState.query = query
         viewModelScope.launch {
             val searchQueryMatchedLanguages = repo.getAllLanguagesWordSpaces().first().run {
