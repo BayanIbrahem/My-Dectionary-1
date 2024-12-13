@@ -24,8 +24,8 @@ fun LazyListScope.wordDetailsTextFieldList(
     leadingIcon: ImageVector,
     groupLabel: String,
     itemModifier: Modifier = Modifier,
-    itemsPlaceholder: String = "Add dev.bayan_ibrahim.my_dictionary.core.design_system.group.item (leave blank to delete)",// TODO, string res
-    lastItemPlaceholder: String = "Add new dev.bayan_ibrahim.my_dictionary.core.design_system.group.item",// TODO, string res
+    itemsPlaceholder: String = "Add (leave blank to delete)",// TODO, string res
+    lastItemPlaceholder: String = "Add new",// TODO, string res
     onGroupFocusChanged: (Long?) -> Unit = {},
 ) {
     val focusState = mutableStateMapOf<Long, Boolean>()
