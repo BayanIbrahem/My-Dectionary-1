@@ -1,11 +1,13 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.migration.AutoMigrationSpec
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageWordSpaceDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.TrainHistoryDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagRelatedWordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagRelationWordsDao
@@ -25,8 +27,15 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
         WordTypeTagRelationEntity::class,
         LanguageEntity::class,
     ],
-    version = 1,
-    exportSchema = false,
+    version = 3,
+    autoMigrations = [
+        AutoMigration(
+            from = 1,
+            to = 2,
+            spec = MDDataBase.MigrationSpec1_2::class
+        ),
+    ],
+    exportSchema = true,
 )
 abstract class MDDataBase : RoomDatabase() {
     abstract fun getLanguageWordSpaceDao(): LanguageWordSpaceDao
@@ -36,4 +45,8 @@ abstract class MDDataBase : RoomDatabase() {
     abstract fun getWordTypeTagDao(): WordTypeTagDao
     abstract fun getWordTypeTagRelatedWordDao(): WordTypeTagRelatedWordDao
     abstract fun getWordTypeTagRelationDao(): WordTypeTagRelationWordsDao
+
+    class MigrationSpec1_2:AutoMigrationSpec
+    class MigrationSpec2_3:AutoMigrationSpec
 }
+

@@ -235,9 +235,11 @@ class MDTrainViewModel @Inject constructor(
             excludeSpecifiedWordsIds = false
         ).firstOrNull().let { it ?: emptyList() }.forEach { history ->
             history.words.forEach { wordHistory ->
-                val currentTrainHistory = lastTrainHistories[wordHistory.wordId]
-                if (currentTrainHistory == null || currentTrainHistory < history.time) {
-                    lastTrainHistories[wordHistory.wordId] = history.time
+                if (wordHistory.wordId != null) {
+                    val currentTrainHistory = lastTrainHistories[wordHistory.wordId]
+                    if (currentTrainHistory == null || currentTrainHistory < history.time) {
+                        lastTrainHistories[wordHistory.wordId] = history.time
+                    }
                 }
             }
         }

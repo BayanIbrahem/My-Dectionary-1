@@ -22,6 +22,8 @@ class DatabaseModule {
         context = context,
         klass = MDDataBase::class.java,
         name = "my_dictionary_db"
-    ).build()
+    )
+        .fallbackToDestructiveMigrationFrom(1, 2, 3)
+        .build()
 
 }

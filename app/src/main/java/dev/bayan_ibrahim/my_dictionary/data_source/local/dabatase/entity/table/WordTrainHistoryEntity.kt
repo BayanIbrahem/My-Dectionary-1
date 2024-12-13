@@ -35,16 +35,16 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
         )
     ],
     // TODO, add train history to index
-//    indices = [
-//        Index(dbTrainHistoryWordId)
-//    ]
+    indices = [
+        Index(dbTrainHistoryWordId)
+    ]
 )
 data class TrainHistoryEntity(
     @ColumnInfo(dbTrainHistoryId)
     @PrimaryKey(autoGenerate = true)
     val id: Long? = null,
     @ColumnInfo(dbTrainHistoryWordId)
-    val wordId: Long,
+    val wordId: Long?,
     @ColumnInfo(dbTrainHistoryTime)
     val time: Long,
     @ColumnInfo(dbTrainHistoryMeaningSnapshot)
