@@ -37,9 +37,12 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
@@ -92,6 +95,7 @@ fun <K : Any> MDTabRow(
     selectedTabIndex: Int,
     onClickTab: (i: Int, key: K?) -> Unit,
     modifier: Modifier = Modifier,
+    layoutDirection: LayoutDirection = LocalLayoutDirection.current,
     leadingEdgeAnimation: FiniteAnimationSpec<Float> = MDTabRowDefaults.leadingEdgeAnimation,
     trailingEdgeAnimation: FiniteAnimationSpec<Float> = MDTabRowDefaults.trailingEdgeAnimation,
     colors: MDTabRowColors = MDTabRowDefaults.colors(),
@@ -142,13 +146,19 @@ fun <K : Any> MDTabRow(
         modifier = modifier
             .fillMaxWidth()
             .drawBehind {
-                drawRect(colors.containerColor)
-                val width = (indicatorEndOffset - indicatorStartOffset) * size.width
-                drawRect(
-                    colors.indicatorColor,
-                    topLeft = Offset(indicatorStartOffset * size.width, 0f),
-                    size = Size(width, size.height)
-                )
+                val scale = when (layoutDirection) {
+                    LayoutDirection.Ltr -> 1f
+                    LayoutDirection.Rtl -> -1f
+                }
+                scale(scale) {
+                    drawRect(colors.containerColor)
+                    val width = (indicatorEndOffset - indicatorStartOffset) * size.width
+                    drawRect(
+                        colors.indicatorColor,
+                        topLeft = Offset(indicatorStartOffset * size.width, 0f),
+                        size = Size(width, size.height)
+                    )
+                }
             }
     ) {
         tabs.forEachIndexed { i, data ->
