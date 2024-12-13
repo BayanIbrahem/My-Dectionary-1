@@ -20,7 +20,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.answerSelector
@@ -79,7 +79,7 @@ class MDTrainViewModel @Inject constructor(
 
     private inline fun sortWordsByPreferences(
         sortBy: WordsListTrainPreferencesSortBy,
-        sortByOrder: WordsListSortByOrder,
+        sortByOrder: MDWordsListSortByOrder,
         validWords: Sequence<Word>,
         getTrainHistory: () -> Map<Long, Instant>,
         limit: Int,
@@ -112,8 +112,8 @@ class MDTrainViewModel @Inject constructor(
             }
         }
         return when (sortByOrder) {
-            WordsListSortByOrder.Asc -> validWords.minNBy(maxCount = limit, selector)
-            WordsListSortByOrder.Desc -> validWords.maxNBy(maxCount = limit, selector)
+            MDWordsListSortByOrder.Asc -> validWords.minNBy(maxCount = limit, selector)
+            MDWordsListSortByOrder.Desc -> validWords.maxNBy(maxCount = limit, selector)
         }
     }
 

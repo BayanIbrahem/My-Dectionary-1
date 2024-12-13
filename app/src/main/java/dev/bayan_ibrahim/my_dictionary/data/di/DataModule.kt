@@ -12,6 +12,7 @@ import dev.bayan_ibrahim.my_dictionary.data.MDWordDetailsRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordSpaceRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordsListRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordsListTrainDialogRepoImpl
+import dev.bayan_ibrahim.my_dictionary.data.MDWordsListViewPreferencesRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.words_list_filter.MDWordsListTrainPreferencesDataStore
@@ -24,6 +25,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordSpaceRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListTrainDialogRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListViewPreferencesRepo
 import javax.inject.Singleton
 
 @Module
@@ -57,6 +59,17 @@ class DataModule {
         preferences: MDPreferencesDataStore,
     ): MDWordsListTrainDialogRepo= MDWordsListTrainDialogRepoImpl(
         dataStore = preferences
+    )
+
+    @Singleton
+    @Provides
+    fun providesWordsListViewDialogRepo(
+        db: MDDataBase,
+        preferences: MDPreferencesDataStore,
+    ): MDWordsListViewPreferencesRepo = MDWordsListViewPreferencesRepoImpl(
+        wordDao = db.getWordDao(),
+        dataStore = preferences,
+        userPreferences = preferences,
     )
 
     @Singleton

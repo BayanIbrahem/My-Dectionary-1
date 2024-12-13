@@ -6,25 +6,25 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tag
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagRegexNormalize
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 
 
-interface WordsListViewPreferences {
+interface MDWordsListViewPreferences {
     val searchQuery: String
-    val searchTarget: WordsListSearchTarget
+    val searchTarget: MDWordsListSearchTarget
     val selectedTags: Set<String>
     val includeSelectedTags: Boolean
-    val selectedLearningProgressGroups: Set<WordsListLearningProgressGroup>
-    val sortBy: WordsListViewPreferencesSortBy
-    val sortByOrder: WordsListSortByOrder
+    val selectedLearningProgressGroups: Set<MDWordsListLearningProgressGroup>
+    val sortBy: MDWordsListViewPreferencesSortBy
+    val sortByOrder: MDWordsListSortByOrder
 
     val effectiveFilter: Boolean
         get() = searchQuery.isNotBlank()
                 || selectedTags.isNotEmpty()
-                || (selectedLearningProgressGroups.count() in 1..(WordsListLearningProgressGroup.entries.count()))
+                || (selectedLearningProgressGroups.count() in 1..(MDWordsListLearningProgressGroup.entries.count()))
 
     fun matches(word: Word): Boolean = matchesSearch(word)
             && matchesTags(word)
@@ -52,7 +52,7 @@ interface WordsListViewPreferences {
 
     private fun matchesLearningGroup(word: Word): Boolean {
         if (selectedLearningProgressGroups.isEmpty()) return true
-        if (selectedLearningProgressGroups.count() == WordsListLearningProgressGroup.entries.count()) return true
+        if (selectedLearningProgressGroups.count() == MDWordsListLearningProgressGroup.entries.count()) return true
         return selectedLearningProgressGroups.any { group ->
             word.learningProgress in group.learningRange
         }
@@ -61,22 +61,22 @@ interface WordsListViewPreferences {
 
 data class WordsListViewPreferencesBuilder(
     override val searchQuery: String,
-    override val searchTarget: WordsListSearchTarget,
+    override val searchTarget: MDWordsListSearchTarget,
     override val selectedTags: Set<String>,
     override val includeSelectedTags: Boolean,
-    override val selectedLearningProgressGroups: Set<WordsListLearningProgressGroup>,
-    override val sortBy: WordsListViewPreferencesSortBy,
-    override val sortByOrder: WordsListSortByOrder,
-) : WordsListViewPreferences
+    override val selectedLearningProgressGroups: Set<MDWordsListLearningProgressGroup>,
+    override val sortBy: MDWordsListViewPreferencesSortBy,
+    override val sortByOrder: MDWordsListSortByOrder,
+) : MDWordsListViewPreferences
 
 val defaultWordsListViewPreferences by lazy {
     WordsListViewPreferencesBuilder(
         searchQuery = INVALID_TEXT,
-        searchTarget = WordsListSearchTarget.All,
+        searchTarget = MDWordsListSearchTarget.All,
         selectedTags = emptySet(),
         includeSelectedTags = true,
         selectedLearningProgressGroups = emptySet(),
-        sortBy = WordsListViewPreferencesSortBy.Meaning,
-        sortByOrder = WordsListSortByOrder.Asc,
+        sortBy = MDWordsListViewPreferencesSortBy.Meaning,
+        sortByOrder = MDWordsListSortByOrder.Asc,
     )
 }

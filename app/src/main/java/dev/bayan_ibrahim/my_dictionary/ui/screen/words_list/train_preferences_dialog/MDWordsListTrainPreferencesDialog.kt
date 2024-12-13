@@ -45,7 +45,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.group.MDFieldsGroupDef
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListTrainPreferencesTab
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -156,10 +156,10 @@ private fun TrainTypeBody(
 private fun WordsOrderBody(
     selectedLimit: WordsListTrainPreferencesLimit,
     selectedSortBy: WordsListTrainPreferencesSortBy,
-    selectedSortByOrder: WordsListSortByOrder,
+    selectedSortByOrder: MDWordsListSortByOrder,
     onSelectLimit: (WordsListTrainPreferencesLimit) -> Unit,
     onSelectSortBy: (WordsListTrainPreferencesSortBy) -> Unit,
-    onSelectSortByOrder: (WordsListSortByOrder) -> Unit,
+    onSelectSortByOrder: (MDWordsListSortByOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     PageColumn(
@@ -191,7 +191,7 @@ private fun WordsOrderBody(
             visible = selectedSortBy != WordsListTrainPreferencesSortBy.Random,
         ) {
             CheckableGroup(
-                data = WordsListSortByOrder.entries,
+                data = MDWordsListSortByOrder.entries,
                 selected = selectedSortByOrder,
                 title = "Show first", // TODO, string res
                 onClick = onSelectSortByOrder,
@@ -323,7 +323,7 @@ private fun MDWordsListFilterDialogPreview() {
                         override fun onSelectTrainTarget(trainTarget: WordsListTrainTarget) {}
                         override fun onSelectLimit(limit: WordsListTrainPreferencesLimit) {}
                         override fun onSelectSortBy(sortBy: WordsListTrainPreferencesSortBy) {}
-                        override fun onSelectSortByOrder(sortByOrder: WordsListSortByOrder) {}
+                        override fun onSelectSortByOrder(sortByOrder: MDWordsListSortByOrder) {}
                         override fun onConfirmTrain() {}
                         override fun onResetTrainPreferences() {}
                         override fun onDismissDialog() {}

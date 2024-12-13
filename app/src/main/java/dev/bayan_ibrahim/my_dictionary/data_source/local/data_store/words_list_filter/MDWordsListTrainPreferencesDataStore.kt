@@ -7,7 +7,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferencesB
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +30,7 @@ class MDWordsListDataStoreTrainPreferencesImpl(
             trainTarget = WordsListTrainTarget.entries[it.trainTarget],
             limit = WordsListTrainPreferencesLimit.entries[it.limit],
             sortBy = WordsListTrainPreferencesSortBy.entries[it.sortBy],
-            sortByOrder = WordsListSortByOrder.entries[it.sortByOrder],
+            sortByOrder = MDWordsListSortByOrder.entries[it.sortByOrder],
         )
     }
 

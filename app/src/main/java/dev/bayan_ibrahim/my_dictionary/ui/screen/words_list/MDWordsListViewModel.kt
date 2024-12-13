@@ -6,28 +6,19 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
-import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesMutableUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesMutableState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,6 +60,7 @@ class MDWordsListViewModel @Inject constructor(
         viewModelScope.launch {
             paginatedWordsListJob?.cancel()
             viewPreferences.collectLatest { preferences ->
+                updateUiStateFromViewPreferences(preferences)
                 currentLanguageFlow.collectLatest { language ->
                     paginatedWordsListJob = launch {
                         val wordsIds = repo.getWordsIdsOfTagsAndProgressRange(preferences)
@@ -87,6 +79,17 @@ class MDWordsListViewModel @Inject constructor(
         }
     }
 
+    private fun updateUiStateFromViewPreferences(viewPreferences: MDWordsListViewPreferences) {
+        _uiState.isViewPreferencesEffectiveFilter = viewPreferences.effectiveFilter
+
+        val query = viewPreferences.searchQuery.nullIfInvalid()
+        _uiState.viewPreferencesQuery = when (viewPreferences.searchTarget) {
+            MDWordsListSearchTarget.Meaning -> query to null
+            MDWordsListSearchTarget.Translation -> null to query
+            MDWordsListSearchTarget.All -> query to query
+        }
+    }
+
     fun initWithNavArgs(args: MDDestination.TopLevel.WordsList) {
         setPaginatedWordsListJob()
         viewModelScope.launch {
@@ -97,7 +100,6 @@ class MDWordsListViewModel @Inject constructor(
                 if (languageCode != null) {
                     _uiState.selectedWordSpace =
                         repo.getLanguagesWordSpaces(code = languageCode) ?: LanguageWordSpace(languageCode.language)
-                    _uiState.viewPreferencesState.onApplyPreferences(viewPreferences.first())
                     repo.setSelectedLanguagePage(languageCode)
                 } else {
                     _uiState.selectedWordSpace = LanguageWordSpace()
@@ -125,14 +127,12 @@ class MDWordsListViewModel @Inject constructor(
         _uiState.languagesWordSpaceSearchQuery = searchQuery
         viewModelScope.launch {
             val searchQueryMatchedLanguages = languagesWordSpacesFlow.first().run {
-                Log.d("language", "all word spaces $this")
                 if (searchQuery.isBlank()) this
                 else filter {
                     it.language.hasMatchQuery(searchQuery)
                 }
             }
 
-            Log.d("language", "all word spaces matches ($searchQuery) $searchQueryMatchedLanguages")
             _uiState.activeLanguagesWordSpaces = searchQueryMatchedLanguages.filter { it.wordsCount > 0 }.toPersistentList()
             _uiState.inactiveLanguagesWordSpaces = searchQueryMatchedLanguages.filter { it.wordsCount == 0 }.toPersistentList()
         }
@@ -195,78 +195,6 @@ class MDWordsListViewModel @Inject constructor(
             navActions.navigateToWordDetails(null)
         }
 
-        override fun onClearViewPreferences() = editViewByPreferences {
-            this.onApplyPreferences(defaultWordsListViewPreferences)
-        }
-
-        override fun onHideViewPreferencesDialog() {
-            _uiState.viewPreferencesState.showDialog = false
-        }
-
-        override fun onShowViewPreferencesDialog() {
-            _uiState.viewPreferencesState.showDialog = true
-        }
-
-        override fun onSearchQueryChange(query: String) = editViewByPreferences {
-            this.searchQuery = query
-        }
-
-        override fun onSelectSearchTarget(searchTarget: WordsListSearchTarget) = editViewByPreferences {
-            this.searchTarget = searchTarget
-        }
-
-        override fun onTagSearchQueryChange(query: String) {
-            _uiState.tagSearchQuery = query
-            viewModelScope.launch {
-                // todo normalize this search method
-                val queryRegex = query.lowercase().toCharArray().joinToString(".*", ".*", ".*").toRegex()
-                val newTags = repo.getLanguageTags(uiState.selectedWordSpace.language.code).first().filter { tag ->
-                    tag !in uiState.viewPreferencesState.selectedTags && queryRegex.matches(tag.lowercase())
-                }
-                _uiState.tagsSuggestions.clear()
-                _uiState.tagsSuggestions.addAll(newTags)
-            }
-        }
-
-        override fun onSelectTag(tag: String) = editViewByPreferences {
-            this.selectedTags.add(tag)
-            _uiState.tagSearchQuery = ""
-        }
-
-        override fun onRemoveTag(tag: String) = editViewByPreferences {
-            this.selectedTags.remove(tag)
-        }
-
-        override fun onToggleIncludeSelectedTags(includeSelectedTags: Boolean) = editViewByPreferences {
-            this.includeSelectedTags = includeSelectedTags
-        }
-
-        override fun onSelectLearningGroup(
-            group: WordsListLearningProgressGroup,
-        ) = editViewByPreferences {
-            if (group in selectedLearningProgressGroups) {
-                this.selectedLearningProgressGroups = this.selectedLearningProgressGroups.remove(group)
-            } else {
-                this.selectedLearningProgressGroups = this.selectedLearningProgressGroups.add(group)
-            }
-        }
-
-        override fun onToggleAllLearningProgressGroups(selected: Boolean) = editViewByPreferences {
-            if (selected) {
-                this.selectedLearningProgressGroups = WordsListLearningProgressGroup.entries.toPersistentSet()
-            } else {
-                this.selectedLearningProgressGroups = persistentSetOf()
-            }
-        }
-
-        override fun onSelectWordsSortBy(sortBy: WordsListViewPreferencesSortBy) = editViewByPreferences {
-            this.sortBy = sortBy
-        }
-
-        override fun onSelectWordsSortByOrder(order: WordsListSortByOrder) = editViewByPreferences {
-            this.sortByOrder = order
-        }
-
 
 //        override fun onSelectAll() {
 //            viewModelScope.launch {
@@ -320,11 +248,19 @@ class MDWordsListViewModel @Inject constructor(
         }
 
         override fun onShowTrainDialog() {
-            _uiState.showTrainDialog = true
+            _uiState.showTrainPreferencesDialog = true
         }
 
         override fun onDismissTrainDialog() {
-            _uiState.showTrainDialog = false
+            _uiState.showTrainPreferencesDialog = false
+        }
+
+        override fun onShowViewPreferencesDialog() {
+            _uiState.showViewPreferencesDialog = true
+        }
+
+        override fun onDismissViewPreferencesDialog() {
+            _uiState.showViewPreferencesDialog = false
         }
     }
 
@@ -337,12 +273,4 @@ class MDWordsListViewModel @Inject constructor(
         }
     }
 
-    private fun editViewByPreferences(body: WordsListViewPreferencesMutableState.() -> Unit) {
-        _uiState.viewPreferencesState.body()
-        viewModelScope.launch {
-            launch {
-                repo.setViewPreferences(uiState.viewPreferencesState)
-            }
-        }
-    }
 }

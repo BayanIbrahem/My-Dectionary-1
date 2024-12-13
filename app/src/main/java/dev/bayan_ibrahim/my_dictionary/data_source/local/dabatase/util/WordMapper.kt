@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryDbNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
@@ -67,9 +68,9 @@ fun Word.asWordEntity(
 ): WordEntity = WordEntity(
     id = this.id.nullIfInvalid(),
     meaning = this.meaning,
-    normalizedMeaning = this.meaning.searchQueryDbNormalize,
+    normalizedMeaning = this.meaning.meaningSearchNormalize,
     translation = this.translation,
-    normalizedTranslation = this.translation.searchQueryDbNormalize,
+    normalizedTranslation = this.translation.meaningSearchNormalize,
     additionalTranslations = this.additionalTranslations,
     languageCode = this.language.code.code,
     tags = this.tags.toList(),

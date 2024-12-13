@@ -2,41 +2,41 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.words_list_
 
 import android.content.Context
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferencesBuilder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 interface MDWordsListViewPreferencesDataStore {
-    fun getWordsListViewPreferencesStream(): Flow<WordsListViewPreferences>
+    fun getWordsListViewPreferencesStream(): Flow<MDWordsListViewPreferences>
     suspend fun getWordsListViewPreferences() = getWordsListViewPreferencesStream().first()
-    suspend fun writeWordsListViewPreferences(getWordsList: (WordsListViewPreferences) -> WordsListViewPreferences)
+    suspend fun writeWordsListViewPreferences(getWordsList: (MDWordsListViewPreferences) -> MDWordsListViewPreferences)
 }
 
 class MDWordsListDataStoreViewPreferencesImpl(
     context: Context,
 ) : MDWordsListViewPreferencesDataStore {
     private val proto = context.wordsListViewPreferencesDataStore
-    override fun getWordsListViewPreferencesStream(): Flow<WordsListViewPreferences> = proto.data.map {
+    override fun getWordsListViewPreferencesStream(): Flow<MDWordsListViewPreferences> = proto.data.map {
         WordsListViewPreferencesBuilder(
             searchQuery = it.searchQuery,
-            searchTarget = WordsListSearchTarget.entries[it.searchTargetIndex],
+            searchTarget = MDWordsListSearchTarget.entries[it.searchTargetIndex],
             selectedTags = it.selectedTagsList.toSet(),
             includeSelectedTags = it.includeSelectTags,
             selectedLearningProgressGroups = it.selectedLearningProgressGroupsList.map { index ->
-                WordsListLearningProgressGroup.entries[index]
+                MDWordsListLearningProgressGroup.entries[index]
             }.toSet(),
-            sortBy = WordsListViewPreferencesSortBy.entries[it.sortBy],
-            sortByOrder = WordsListSortByOrder.entries[it.sortByOrder],
+            sortBy = MDWordsListViewPreferencesSortBy.entries[it.sortBy],
+            sortByOrder = MDWordsListSortByOrder.entries[it.sortByOrder],
         )
     }
 
-    override suspend fun writeWordsListViewPreferences(getWordsList: (WordsListViewPreferences) -> WordsListViewPreferences) {
+    override suspend fun writeWordsListViewPreferences(getWordsList: (MDWordsListViewPreferences) -> MDWordsListViewPreferences) {
         proto.updateData {
             it.copy {
                 val wordsList = getWordsList(getWordsListViewPreferences())

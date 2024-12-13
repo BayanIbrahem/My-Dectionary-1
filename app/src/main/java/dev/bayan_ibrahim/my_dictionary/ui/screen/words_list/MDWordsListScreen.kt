@@ -30,8 +30,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListLanguageSelectionPageDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.MDWordsListViewPreferencesDialog
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog.MDWordsListViewPreferencesDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 
 @Composable
 fun MDWordsListScreen(
@@ -92,7 +92,7 @@ fun MDWordsListScreen(
                 },
                 emptyItemsPlaceHolder = {
                     Text(
-                        text = if (uiState.viewPreferencesState.effectiveFilter) {
+                        text = if (uiState.isViewPreferencesEffectiveFilter) {
                             "No words matches your filters..."
                         } else {
                             "No words yet, add some words first"
@@ -108,19 +108,9 @@ fun MDWordsListScreen(
                     derivedStateOf { expandedWordId == word.id }
                 }
 
-                val searchQuery by remember(uiState.viewPreferencesState) {
-                    derivedStateOf {
-                        val query = uiState.viewPreferencesState.searchQuery.nullIfInvalid()
-                        when(uiState.viewPreferencesState.searchTarget) {
-                            WordsListSearchTarget.Meaning -> query to null
-                            WordsListSearchTarget.Translation -> null to query
-                            WordsListSearchTarget.All -> query to query
-                        }
-                    }
-                }
                 MDWordListItem(
                     word = word,
-                    searchQuery = searchQuery,
+                    searchQuery = uiState.viewPreferencesQuery,
                     expanded = isExpanded,
                     primaryAction = {
                         if (uiState.isSelectModeOn) {
@@ -175,12 +165,4 @@ fun MDWordsListScreen(
         runningDeleteMessage = "Deletion process is running please wait...",// TODO, string res
         confirmDeleteMessage = "Are you sure you want to delete ${uiState.selectedWordSpace.language.fullDisplayName} (${uiState.selectedWordSpace.wordsCount} words)?\n\n this action can not be undone."
     )
-    // view preferences dialog:
-    MDWordsListViewPreferencesDialog(
-        state = uiState.viewPreferencesState,
-        tagSearchQuery = uiState.tagSearchQuery,
-        tagsSuggestions = uiState.tagsSuggestions,
-        actions = uiActions,
-    )
-
 }

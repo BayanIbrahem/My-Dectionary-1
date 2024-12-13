@@ -7,7 +7,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDMutableUiSta
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
@@ -16,7 +16,7 @@ class MDWordsListTrainPreferencesMutableUiState(
     trainType: TrainWordType = defaultWordsListTrainPreferences.trainType,
     trainTarget: WordsListTrainTarget = defaultWordsListTrainPreferences.trainTarget,
     sortBy: WordsListTrainPreferencesSortBy = defaultWordsListTrainPreferences.sortBy,
-    sortByOrder: WordsListSortByOrder = defaultWordsListTrainPreferences.sortByOrder,
+    sortByOrder: MDWordsListSortByOrder = defaultWordsListTrainPreferences.sortByOrder,
     limit: WordsListTrainPreferencesLimit = defaultWordsListTrainPreferences.limit,
 ) : MDWordsListTrainPreferencesUiState, MDMutableUiState() {
     constructor(data: MDWordsListTrainPreferences) : this(
@@ -30,7 +30,7 @@ class MDWordsListTrainPreferencesMutableUiState(
     override var trainType: TrainWordType by mutableStateOf(trainType)
     override var trainTarget: WordsListTrainTarget by mutableStateOf(trainTarget)
     override var sortBy: WordsListTrainPreferencesSortBy by mutableStateOf(sortBy)
-    override var sortByOrder: WordsListSortByOrder by mutableStateOf(sortByOrder)
+    override var sortByOrder: MDWordsListSortByOrder by mutableStateOf(sortByOrder)
     override var limit: WordsListTrainPreferencesLimit by mutableStateOf(limit)
 
     fun onApplyPreferences(preferences: MDWordsListTrainPreferences) {

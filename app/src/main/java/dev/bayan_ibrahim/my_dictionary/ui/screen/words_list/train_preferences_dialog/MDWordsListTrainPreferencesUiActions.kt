@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_d
 
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 
@@ -11,7 +11,7 @@ interface MDWordsListTrainPreferencesBusinessUiActions {
     fun onSelectTrainTarget(trainTarget: WordsListTrainTarget)
     fun onSelectLimit(limit: WordsListTrainPreferencesLimit)
     fun onSelectSortBy(sortBy: WordsListTrainPreferencesSortBy)
-    fun onSelectSortByOrder(sortByOrder: WordsListSortByOrder)
+    fun onSelectSortByOrder(sortByOrder: MDWordsListSortByOrder)
     fun onConfirmTrain()
     fun onResetTrainPreferences()
 }

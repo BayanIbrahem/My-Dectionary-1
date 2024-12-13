@@ -9,7 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.toTrainHi
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.toTrainHistoryModels
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.TrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -25,7 +25,7 @@ class MDTrainRepoImpl(
     private val preferences: MDPreferencesDataStore,
 ) : MDTrainRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordDao) {
     override suspend fun getTrainPreferences(): MDWordsListTrainPreferences = preferences.getWordsListTrainPreferences()
-    override suspend fun getViewPreferences(): WordsListViewPreferences = preferences.getWordsListViewPreferences()
+    override suspend fun getViewPreferences(): MDWordsListViewPreferences = preferences.getWordsListViewPreferences()
     override suspend fun getAllSelectedLanguageWords(): Sequence<Word> {
         val currentLanguage = preferences.getUserPreferences().selectedLanguagePage ?: return sequenceOf()
         return wordDao.getWordsOfLanguage(currentLanguage.code.code)

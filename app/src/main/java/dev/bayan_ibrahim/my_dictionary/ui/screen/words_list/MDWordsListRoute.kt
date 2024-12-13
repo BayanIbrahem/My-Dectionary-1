@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
+import MDWordsListViewPreferencesDialogRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesDialogRoute
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,6 +52,10 @@ fun MDWordsListRoute(
     MDWordsListTrainPreferencesDialogRoute(
         onNavigateToTrainScreen = navigateToTrainScreen,
         onDismissDialog = uiActions::onDismissTrainDialog,
-        showDialog = uiState.showTrainDialog
+        showDialog = uiState.showTrainPreferencesDialog
+    )
+    MDWordsListViewPreferencesDialogRoute(
+        uiState.showViewPreferencesDialog,
+        onDismissDialog = uiActions::onDismissViewPreferencesDialog
     )
 }

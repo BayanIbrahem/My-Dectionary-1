@@ -7,12 +7,10 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPre
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListTrainDialogRepo
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
 import kotlinx.coroutines.launch
-import java.io.Closeable
-import java.lang.AutoCloseable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,7 +57,7 @@ class MDWordsListTrainPreferencesViewModel @Inject constructor(
             this.sortBy = sortBy
         }
 
-        override fun onSelectSortByOrder(sortByOrder: WordsListSortByOrder) = editPreferences {
+        override fun onSelectSortByOrder(sortByOrder: MDWordsListSortByOrder) = editPreferences {
             this.sortByOrder = sortByOrder
         }
 

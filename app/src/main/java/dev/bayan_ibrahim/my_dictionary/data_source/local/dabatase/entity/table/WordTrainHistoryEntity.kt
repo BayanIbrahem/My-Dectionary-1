@@ -3,6 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.TrainWordResultConverter
@@ -32,8 +33,11 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
             onUpdate = ForeignKey.SET_NULL,
             onDelete = ForeignKey.SET_NULL,
         )
-    ]
-
+    ],
+    // TODO, add train history to index
+//    indices = [
+//        Index(dbTrainHistoryWordId)
+//    ]
 )
 data class TrainHistoryEntity(
     @ColumnInfo(dbTrainHistoryId)

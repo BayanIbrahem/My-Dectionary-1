@@ -16,8 +16,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagMode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordSpaceModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
@@ -27,10 +26,10 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -43,11 +42,7 @@ class MDWordsListRepoImpl(
     private val wordSpaceDao: LanguageWordSpaceDao,
     private val preferences: MDPreferencesDataStore,
 ) : MDWordsListRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordDao) {
-    override fun getViewPreferences(): Flow<WordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
-
-    override suspend fun setViewPreferences(preferences: WordsListViewPreferences) = this.preferences.writeWordsListViewPreferences {
-        preferences
-    }
+    override fun getViewPreferences(): Flow<MDWordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
 
     override suspend fun setSelectedLanguagePage(code: LanguageCode) {
         preferences.writeUserPreferences {
@@ -69,7 +64,7 @@ class MDWordsListRepoImpl(
 
     override fun getWordsList(
         code: LanguageCode,
-        viewPreferences: WordsListViewPreferences,
+        viewPreferences: MDWordsListViewPreferences,
     ): Flow<List<Word>> = wordDao.getWordsWithRelatedOfLanguage(code.code).map {
         it.mapNotNull { wordWithRelation ->
             if (wordWithRelation.checkMatchViewPreferences(viewPreferences)) {
@@ -86,7 +81,7 @@ class MDWordsListRepoImpl(
     override fun getPaginatedWordsList(
         code: LanguageCode,
         wordsIdsOfTagsAndProgressRange: Set<Long>,
-        viewPreferences: WordsListViewPreferences,
+        viewPreferences: MDWordsListViewPreferences,
     ): Flow<PagingData<Word>> = pagingDataOf(
         mapper = { wordWithRelation ->
             val wordTypeTag = wordWithRelation.word.wordTypeTagId?.let { typeTagId ->
@@ -96,7 +91,7 @@ class MDWordsListRepoImpl(
         }
     ) {
         when (viewPreferences.sortByOrder) {
-            WordsListSortByOrder.Asc -> wordDao.getPaginatedWordsWithRelatedAscOf(
+            MDWordsListSortByOrder.Asc -> wordDao.getPaginatedWordsWithRelatedAscOf(
                 languageCode = code.code,
                 targetWords = wordsIdsOfTagsAndProgressRange,
                 includeMeaning = viewPreferences.searchTarget.includeMeaning,
@@ -105,7 +100,7 @@ class MDWordsListRepoImpl(
                 sortBy = wordDao.getSortByColumnName(viewPreferences.sortBy)
             )
 
-            WordsListSortByOrder.Desc -> wordDao.getPaginatedWordsWithRelatedDescOf(
+            MDWordsListSortByOrder.Desc -> wordDao.getPaginatedWordsWithRelatedDescOf(
                 languageCode = code.code,
                 targetWords = wordsIdsOfTagsAndProgressRange,
                 includeMeaning = viewPreferences.searchTarget.includeMeaning,
@@ -154,7 +149,7 @@ class MDWordsListRepoImpl(
     override suspend fun getLanguagesWordSpaces(code: LanguageCode): LanguageWordSpace? =
         wordSpaceDao.getLanguagesWordSpace(code.code)?.asWordSpaceModel()
 
-    private fun WordWithRelatedWords.checkMatchViewPreferences(preferences: WordsListViewPreferences): Boolean {
+    private fun WordWithRelatedWords.checkMatchViewPreferences(preferences: MDWordsListViewPreferences): Boolean {
         // search
         val normalizedSearchQuery = preferences.searchQuery.trim().lowercase()
         val matchSearch = this.word.searchQueryOf(preferences.searchTarget).any { value ->
@@ -171,7 +166,7 @@ class MDWordsListRepoImpl(
         if (!matchTags) return false
 
         // learning group
-        val wordLearningGroup = WordsListLearningProgressGroup.of(this.word.learningProgress)
+        val wordLearningGroup = MDWordsListLearningProgressGroup.of(this.word.learningProgress)
 
         val matchLearningGroup =
             wordLearningGroup in preferences.selectedLearningProgressGroups || preferences.selectedLearningProgressGroups.isEmpty()
@@ -182,7 +177,7 @@ class MDWordsListRepoImpl(
     }
 
 
-    private fun WordEntity.searchQueryOf(searchTarget: WordsListSearchTarget): Sequence<String> = sequence {
+    private fun WordEntity.searchQueryOf(searchTarget: MDWordsListSearchTarget): Sequence<String> = sequence {
         if (searchTarget.includeMeaning) {
             yield(this@searchQueryOf.meaning)
         }
@@ -193,23 +188,23 @@ class MDWordsListRepoImpl(
     }
 
     private fun List<Word>.sort(
-        sortBy: WordsListViewPreferencesSortBy,
-        order: WordsListSortByOrder,
+        sortBy: MDWordsListViewPreferencesSortBy,
+        order: MDWordsListSortByOrder,
     ): List<Word> {
         return when (sortBy) {
-            WordsListViewPreferencesSortBy.Meaning -> when (order) {
-                WordsListSortByOrder.Asc -> sortedBy { it.meaning }
-                WordsListSortByOrder.Desc -> sortedByDescending { it.meaning }
+            MDWordsListViewPreferencesSortBy.Meaning -> when (order) {
+                MDWordsListSortByOrder.Asc -> sortedBy { it.meaning }
+                MDWordsListSortByOrder.Desc -> sortedByDescending { it.meaning }
             }
 
-            WordsListViewPreferencesSortBy.Translation -> when (order) {
-                WordsListSortByOrder.Asc -> sortedBy { it.translation }
-                WordsListSortByOrder.Desc -> sortedByDescending { it.translation }
+            MDWordsListViewPreferencesSortBy.Translation -> when (order) {
+                MDWordsListSortByOrder.Asc -> sortedBy { it.translation }
+                MDWordsListSortByOrder.Desc -> sortedByDescending { it.translation }
             }
 
-            WordsListViewPreferencesSortBy.LearningProgress -> when (order) {
-                WordsListSortByOrder.Asc -> sortedBy { it.learningProgress }
-                WordsListSortByOrder.Desc -> sortedByDescending { it.learningProgress }
+            MDWordsListViewPreferencesSortBy.LearningProgress -> when (order) {
+                MDWordsListSortByOrder.Asc -> sortedBy { it.learningProgress }
+                MDWordsListSortByOrder.Desc -> sortedByDescending { it.learningProgress }
             }
         }
     }

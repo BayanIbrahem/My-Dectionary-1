@@ -1,22 +1,12 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDMutableUiState
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesMutableUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesMutableState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences.WordsListViewPreferencesState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
@@ -37,16 +27,20 @@ interface MDWordsListUiState : MDUiState {
     val isSelectedWordsDeleteProcessRunning: Boolean
 
     // view preferences
-    val viewPreferencesState: WordsListViewPreferencesState
-    val tagSearchQuery: String
-    val tagsSuggestions: List<String>
+    val showViewPreferencesDialog: Boolean
+    val viewPreferencesQuery: Pair<String?, String?>
 
-    val showTrainDialog: Boolean
+    /**
+     * if the view preferences affects the words list or not, this is used to display placeholder message
+     * when no words are displayed in the list screen
+     */
+    val isViewPreferencesEffectiveFilter: Boolean
+
+    // train preferences
+    val showTrainPreferencesDialog: Boolean
 }
 
-class MDWordsListMutableUiState(
-    defaultViewPreferences: WordsListViewPreferences = defaultWordsListViewPreferences,
-) : MDWordsListUiState, MDMutableUiState() {
+class MDWordsListMutableUiState : MDWordsListUiState, MDMutableUiState() {
     override var selectedWordSpace: LanguageWordSpace by mutableStateOf(LanguageWordSpace())
     override var activeLanguagesWordSpaces: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
     override var inactiveLanguagesWordSpaces: PersistentList<LanguageWordSpace> by mutableStateOf(persistentListOf())
@@ -61,10 +55,10 @@ class MDWordsListMutableUiState(
     override var isSelectedWordsDeleteProcessRunning: Boolean by mutableStateOf(false)
 
     // view preferences:
-    override val viewPreferencesState: WordsListViewPreferencesMutableState = WordsListViewPreferencesMutableState(defaultViewPreferences)
-    override var tagSearchQuery: String by mutableStateOf(INVALID_TEXT)
-    override val tagsSuggestions: SnapshotStateList<String> = mutableStateListOf()
+    override var showViewPreferencesDialog: Boolean by mutableStateOf(false)
+    override var isViewPreferencesEffectiveFilter: Boolean by mutableStateOf(false)
+    override var viewPreferencesQuery: Pair<String?, String?> by mutableStateOf(null to null)
 
-    // train preferences preferences:
-    override var showTrainDialog: Boolean by mutableStateOf(false)
+    // train preferences
+    override var showTrainPreferencesDialog: Boolean by mutableStateOf(false)
 }

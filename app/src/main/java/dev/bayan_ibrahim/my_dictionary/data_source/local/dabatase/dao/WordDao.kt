@@ -8,10 +8,8 @@ import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.TypeConverters
 import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryDbNormalize
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.WordIdWithTagAndProgress
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
@@ -28,7 +26,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTab
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTags
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTypeTag
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import kotlinx.coroutines.flow.Flow
 
 
@@ -210,11 +208,11 @@ interface WordDao {
     ): Flow<List<WordIdWithTagAndProgress>>
 
 
-    fun getSortByColumnName(sortBy: WordsListViewPreferencesSortBy): String {
+    fun getSortByColumnName(sortBy: MDWordsListViewPreferencesSortBy): String {
         return when (sortBy) {
-            WordsListViewPreferencesSortBy.Meaning -> dbWordMeaning
-            WordsListViewPreferencesSortBy.Translation -> dbWordTranslation
-            WordsListViewPreferencesSortBy.LearningProgress -> dbWordLearningProgress
+            MDWordsListViewPreferencesSortBy.Meaning -> dbWordMeaning
+            MDWordsListViewPreferencesSortBy.Translation -> dbWordTranslation
+            MDWordsListViewPreferencesSortBy.LearningProgress -> dbWordLearningProgress
         }
     }
 

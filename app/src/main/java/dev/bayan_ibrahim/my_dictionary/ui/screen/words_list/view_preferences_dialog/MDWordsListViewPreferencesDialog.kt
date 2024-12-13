@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.view_preferences
+package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,22 +31,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesTab
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListLearningProgressGroup
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSearchTarget
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListSortByOrder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListViewPreferencesSortBy
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import kotlin.math.roundToInt
 
 @Composable
 fun MDWordsListViewPreferencesDialog(
-    state: WordsListViewPreferencesState,
-    actions: WordsListViewPreferencesActions,
-    tagSearchQuery: String,
-    tagsSuggestions: List<String>,
+    showDialog: Boolean,
+    uiState: MDWordsListViewPreferencesUiState,
+    uiActions: MDWordsListViewPreferencesUiActions,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember {
@@ -57,8 +57,8 @@ fun MDWordsListViewPreferencesDialog(
         pagerState.animateScrollToPage(selectedTab.ordinal)
     }
     MDBasicDialog(
-        showDialog = state.showDialog,
-        onDismissRequest = actions::onHideViewPreferencesDialog,
+        showDialog = showDialog,
+        onDismissRequest = uiActions::onDismissDialog,
         modifier = modifier.widthIn(max = 325.dp),
         headerModifier = Modifier,
         title = {
@@ -68,6 +68,18 @@ fun MDWordsListViewPreferencesDialog(
                 onClickTab = { i, _ ->
                     selectedTab = MDWordsListViewPreferencesTab.entries[i]
                 },
+            )
+        },
+
+        actions = {
+            MDAlertDialogActions(
+                onDismissRequest = uiActions::onDismissDialog,
+                hasPrimaryAction = false,
+                hasSecondaryAction = false,
+                hasTertiaryAction = true,
+                tertiaryActionLabel = "Reset",
+                onTertiaryClick = uiActions::onClearViewPreferences
+
             )
         }
     ) {
@@ -81,30 +93,30 @@ fun MDWordsListViewPreferencesDialog(
         ) { i ->
             when (MDWordsListViewPreferencesTab.entries[i]) {
                 MDWordsListViewPreferencesTab.Search -> SearchBody(
-                    searchQuery = state.searchQuery,
-                    onSearchQueryChange = actions::onSearchQueryChange,
-                    selectedSearchTarget = state.searchTarget,
-                    onSelectSearchTarget = actions::onSelectSearchTarget,
+                    searchQuery = uiState.searchQuery,
+                    onSearchQueryChange = uiActions::onSearchQueryChange,
+                    selectedSearchTarget = uiState.searchTarget,
+                    onSelectSearchTarget = uiActions::onSelectSearchTarget,
                 )
 
                 MDWordsListViewPreferencesTab.Filter -> FilterBody(
-                    selectedTags = state.selectedTags,
-                    tagSearchQuery = tagSearchQuery,
-                    tagsSuggestions = tagsSuggestions,
-                    includeSelectedTags = state.includeSelectedTags,
-                    selectedLearningProgressGroups = state.selectedLearningProgressGroups,
-                    onTagSearchQueryChange = actions::onTagSearchQueryChange,
-                    onSelectTag = actions::onSelectTag,
-                    onRemoveTag = actions::onRemoveTag,
-                    onToggleSelectedTags = actions::onToggleIncludeSelectedTags,
-                    onSelectLearningGroup = actions::onSelectLearningGroup,
+                    selectedTags = uiState.selectedTags,
+                    tagSearchQuery = uiState.tagSearchQuery,
+                    tagsSuggestions = uiState.tagsSuggestions,
+                    includeSelectedTags = uiState.includeSelectedTags,
+                    selectedLearningProgressGroups = uiState.selectedLearningProgressGroups,
+                    onTagSearchQueryChange = uiActions::onTagSearchQueryChange,
+                    onSelectTag = uiActions::onSelectTag,
+                    onRemoveTag = uiActions::onRemoveTag,
+                    onToggleSelectedTags = uiActions::onToggleIncludeSelectedTags,
+                    onSelectLearningGroup = uiActions::onSelectLearningGroup,
                 )
 
                 MDWordsListViewPreferencesTab.Sort -> SortBody(
-                    selectedSortBy = state.sortBy,
-                    selectedSortByOrder = state.sortByOrder,
-                    onSelectSortBy = actions::onSelectWordsSortBy,
-                    onSelectSortByOrder = actions::onSelectWordsSortByOrder,
+                    selectedSortBy = uiState.sortBy,
+                    selectedSortByOrder = uiState.sortByOrder,
+                    onSelectSortBy = uiActions::onSelectWordsSortBy,
+                    onSelectSortByOrder = uiActions::onSelectWordsSortByOrder,
                 )
             }
         }
@@ -120,8 +132,8 @@ fun MDWordsListViewPreferencesDialog(
 private fun SearchBody(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    selectedSearchTarget: WordsListSearchTarget,
-    onSelectSearchTarget: (WordsListSearchTarget) -> Unit,
+    selectedSearchTarget: MDWordsListSearchTarget,
+    onSelectSearchTarget: (MDWordsListSearchTarget) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -141,7 +153,7 @@ private fun SearchBody(
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            WordsListSearchTarget.entries.forEach { target ->
+            MDWordsListSearchTarget.entries.forEach { target ->
                 CheckableListItem(
                     headline = target.label,
                     onClick = {
@@ -169,12 +181,12 @@ private fun FilterBody(
     tagSearchQuery: String,
     tagsSuggestions: List<String>,
     includeSelectedTags: Boolean,
-    selectedLearningProgressGroups: Set<WordsListLearningProgressGroup>,
+    selectedLearningProgressGroups: Set<MDWordsListLearningProgressGroup>,
     onTagSearchQueryChange: (String) -> Unit,
     onSelectTag: (String) -> Unit,
     onRemoveTag: (String) -> Unit,
     onToggleSelectedTags: (Boolean) -> Unit,
-    onSelectLearningGroup: (WordsListLearningProgressGroup) -> Unit,
+    onSelectLearningGroup: (MDWordsListLearningProgressGroup) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -191,6 +203,7 @@ private fun FilterBody(
             onSelectSuggestion = { _, tag ->
                 tag?.let(onSelectTag)
             },
+            allowCancelSelection = false,
             suggestionTitle = { this },
             leadingIcon = Icons.Default.Add, // TODO, icon res
             label = "Tag Query", // TODO, string res
@@ -229,7 +242,7 @@ private fun FilterBody(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            WordsListLearningProgressGroup.entries.forEach { group ->
+            MDWordsListLearningProgressGroup.entries.forEach { group ->
                 CheckableListItem(
                     headline = group.label,
                     supportingText = "from ${
@@ -255,10 +268,10 @@ private fun FilterBody(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SortBody(
-    selectedSortBy: WordsListViewPreferencesSortBy,
-    selectedSortByOrder: WordsListSortByOrder,
-    onSelectSortBy: (WordsListViewPreferencesSortBy) -> Unit,
-    onSelectSortByOrder: (WordsListSortByOrder) -> Unit,
+    selectedSortBy: MDWordsListViewPreferencesSortBy,
+    selectedSortByOrder: MDWordsListSortByOrder,
+    onSelectSortBy: (MDWordsListViewPreferencesSortBy) -> Unit,
+    onSelectSortByOrder: (MDWordsListSortByOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -266,7 +279,7 @@ private fun SortBody(
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            WordsListViewPreferencesSortBy.entries.forEach { sortBy ->
+            MDWordsListViewPreferencesSortBy.entries.forEach { sortBy ->
                 CheckableListItem(
                     modifier = Modifier,
                     headline = sortBy.label,
@@ -281,7 +294,7 @@ private fun SortBody(
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            WordsListSortByOrder.entries.forEach { sortByOrder ->
+            MDWordsListSortByOrder.entries.forEach { sortByOrder ->
                 CheckableListItem(
                     headline = sortByOrder.label,
                     onClick = { onSelectSortByOrder(sortByOrder) }
