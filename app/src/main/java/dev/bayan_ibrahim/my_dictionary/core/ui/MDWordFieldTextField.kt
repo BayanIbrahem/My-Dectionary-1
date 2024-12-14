@@ -40,7 +40,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDImeAction
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 
 @Composable
 fun MDWordFieldTextField(

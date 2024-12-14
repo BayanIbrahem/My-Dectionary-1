@@ -29,7 +29,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.drawC
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.drawXLabels
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.drawYLabels
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.drawBars
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 import kotlin.random.Random
 
 @Composable

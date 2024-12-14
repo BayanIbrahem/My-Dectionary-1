@@ -46,7 +46,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 
 @Stable
 data object MDDropDownMenuDefaults {

@@ -5,4 +5,19 @@ option java_multiple_files = true;
 
 message UserPreferencesProto {
   optional string selected_language_page = 1;
+  string themeKey = 2;
+  UserPreferencesTheme theme = 3;
+  UserPreferencesThemeContrast contrast = 4;
+}
+
+enum UserPreferencesTheme {
+  System = 0;
+  Light = 1;
+  Dark = 2;
+}
+
+enum UserPreferencesThemeContrast {
+  Normal = 0;
+  Medium = 1;
+  High = 2;
 }

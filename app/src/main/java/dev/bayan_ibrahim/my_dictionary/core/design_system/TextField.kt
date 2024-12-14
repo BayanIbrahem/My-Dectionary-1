@@ -1,7 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.core.design_system
 
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDImeAction
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 
 object MDTextFieldDefaults {
     val shape: CornerBasedShape

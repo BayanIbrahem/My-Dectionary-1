@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data
 
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.user.MDUserPreferences
+import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.user.MDUserPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.words_list_filter.MDWordsListViewPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListViewPreferencesRepo
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 class MDWordsListViewPreferencesRepoImpl(
     private val wordDao: WordDao,
     private val dataStore: MDWordsListViewPreferencesDataStore,
-    userPreferences: MDUserPreferences,
+    userPreferences: MDUserPreferencesDataStore,
 ) : MDWordsListViewPreferencesRepo {
     private val languageFlow = userPreferences.getUserPreferencesStream().map {
         it.selectedLanguagePage

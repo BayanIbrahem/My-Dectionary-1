@@ -3,7 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.data
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageWordSpaceDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.LanguageWordSpaceEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordSpaceModel
-import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.user.MDUserPreferences
+import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.user.MDUserPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class MDLanguageSelectionDialogRepoImpl(
-    private val preferences: MDUserPreferences,
+    private val preferences: MDUserPreferencesDataStore,
     private val wordSpaceDao: LanguageWordSpaceDao,
 ) : MDLanguageSelectionDialogRepo {
     override suspend fun setSelectedLanguagePage(code: LanguageCode) {

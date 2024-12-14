@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.background.MDChartBackground
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.defaultColors
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.drawLines
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 
 @Composable
 fun MDLineChartContent(

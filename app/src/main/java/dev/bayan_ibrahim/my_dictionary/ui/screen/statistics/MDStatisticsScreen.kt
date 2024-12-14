@@ -34,7 +34,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.MDBarC
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.line_chart.MDLineChart
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsChartTypeTab
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 
 @Composable
 fun MDStatisticsScreen(

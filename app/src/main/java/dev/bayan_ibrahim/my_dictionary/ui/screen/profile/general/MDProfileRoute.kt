@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.profile
+package dev.bayan_ibrahim.my_dictionary.ui.screen.profile.general
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +34,10 @@ fun MDProfileRoute(
 
                 override fun navigateToAutoBackup() {
                     navigateToScreen(MDDestination.AutoBackup)
+                }
+
+                override fun navigateToAppTheme() {
+                    navigateToScreen(MDDestination.AppTheme)
                 }
             }
         }

@@ -16,13 +16,13 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.Train
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.WordDetails
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.MDExportToFileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.import_from_file.MDImportFromFileRoute
-import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.MDProfileRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.general.MDProfileRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.MDAppThemeRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.MDStatisticsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.WordDetailsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.MDWordSpaceRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.MDWordsListRoute
-import kotlinx.coroutines.flow.first
 
 @Composable
 fun MDNavHost(
@@ -89,6 +89,11 @@ fun MDNavHost(
         composable<MDDestination.Statistics> {
             val statistics: MDDestination.Statistics = it.toRoute()
             MDStatisticsRoute(statistics)
+        }
+
+        composable<MDDestination.AppTheme> {
+            val theme: MDDestination.AppTheme = it.toRoute()
+            MDAppThemeRoute(theme)
         }
     }
 }

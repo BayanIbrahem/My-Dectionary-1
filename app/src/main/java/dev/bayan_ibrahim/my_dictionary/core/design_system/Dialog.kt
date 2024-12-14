@@ -24,7 +24,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDV
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardTextStyle
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 
 data object MDDialogDefaults {
     @Composable

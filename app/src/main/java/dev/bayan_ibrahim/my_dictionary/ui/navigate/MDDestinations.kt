@@ -105,5 +105,8 @@ sealed interface MDDestination {
             )
         )
     }
+
+    @Serializable
+    data object AppTheme: MDDestination
 }
 

@@ -4,13 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDApp
-import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
-import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.WordDetailsRoute
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryDynamicTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -18,21 +24,26 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyDictionaryTheme {
-                MDApp()
-//                WordDetailsRoute(
-//                    pop = {},
-//                    wordDetails = MDDestination.WordDetails(null, "en")
-//                )
+            val mainViewModel: MainActivityViewModel = hiltViewModel()
+            val uiState by mainViewModel.userPreferences.collectAsStateWithLifecycle()
+            if (uiState.initialized) {
+                MyDictionaryDynamicTheme(
+                    themeVariant = uiState.themeVariant,
+                    darkColorScheme = uiState.darkColorScheme,
+                    lightColorScheme = uiState.lightColorScheme
+                ) {
+                    MDApp()
+                }
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // TODO, set better loading screen
+                    CircularProgressIndicator(modifier = Modifier.size(40.dp))
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyDictionaryTheme {
-        MDApp()
-    }
-}

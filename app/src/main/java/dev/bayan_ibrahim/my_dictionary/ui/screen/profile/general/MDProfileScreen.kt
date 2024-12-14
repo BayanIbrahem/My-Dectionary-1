@@ -1,9 +1,14 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.profile
+package dev.bayan_ibrahim.my_dictionary.ui.screen.profile.general
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -12,11 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.component.MDProfileTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 
 @Composable
 fun MDProfileScreen(
@@ -31,11 +37,17 @@ fun MDProfileScreen(
             MDProfileTopAppBar()
         },
     ) {
-        BackupAndRestoreGroup(
-            onClickImportFromFile = uiActions::navigateToImportFromFile,
-            onClickExportToFile = uiActions::navigateToExportToFile,
-            onCLickAutoImport = uiActions::navigateToAutoBackup,
-        )
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            BackupAndRestoreGroup(
+                onClickImportFromFile = uiActions::navigateToImportFromFile,
+                onClickExportToFile = uiActions::navigateToExportToFile,
+                onCLickAutoImport = uiActions::navigateToAutoBackup,
+            )
+            ThemeGroup(uiActions::navigateToAppTheme)
+        }
     }
 }
 
@@ -83,6 +95,28 @@ private fun BackupAndRestoreGroup(
     }
 }
 
+@Composable
+private fun ThemeGroup(
+    onClickAppTheme: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    MDHorizontalCardGroup(
+        title = {
+            // TODO, string resource
+            Text("App Theme")
+        }
+    ) {
+        item (
+            onClick = onClickAppTheme,
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.Star, contentDescription = null) // TODO, icon res
+            }
+        ) {
+            Text("Theme")
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun MDProfileScreenPreview() {
@@ -103,6 +137,7 @@ private fun MDProfileScreenPreview() {
                             override fun navigateToImportFromFile() {}
                             override fun navigateToExportToFile() {}
                             override fun navigateToAutoBackup() {}
+                            override fun navigateToAppTheme() {}
                         },
                         object : MDProfileBusinessUiActions {},
                     )

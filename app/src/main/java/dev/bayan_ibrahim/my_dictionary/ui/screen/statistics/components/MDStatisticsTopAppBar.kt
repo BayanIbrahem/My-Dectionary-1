@@ -34,7 +34,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.MDStatisticsMostR
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.label
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

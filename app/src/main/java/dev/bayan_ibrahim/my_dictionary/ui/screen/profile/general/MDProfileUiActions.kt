@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.profile
+package dev.bayan_ibrahim.my_dictionary.ui.screen.profile.general
 
 import androidx.compose.runtime.Immutable
 
@@ -9,6 +9,7 @@ interface MDProfileNavigationUiActions {
     fun navigateToImportFromFile()
     fun navigateToExportToFile()
     fun navigateToAutoBackup()
+    fun navigateToAppTheme()
 }
 
 @Immutable

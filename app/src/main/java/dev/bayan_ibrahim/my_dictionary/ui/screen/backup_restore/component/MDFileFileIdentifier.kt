@@ -29,7 +29,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.internal.enableLiveLiterals
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +45,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDropDownMenuDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileType
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.endOnly
 import dev.bayan_ibrahim.my_dictionary.ui.theme.startOnly
 
