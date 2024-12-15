@@ -3,7 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.maxN
 import kotlin.math.log
 
 /**
- * getting n max dev.bayan_ibrahim.my_dictionary.core.design_system.group.item of this collection either by building new sub list using [maxNByIterativeMax], or
+ * getting n max item of this collection either by building new sub list using [maxNByIterativeMax], or
  * sorting the large list then take a sublist in it using [maxNBySorting]
  */
 inline fun <T, R : Comparable<R>> Collection<T>.maxNBy(

@@ -15,6 +15,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,6 +46,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainT
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
+import dev.bayan_ibrahim.my_dictionary.ui.util.currentPainter
 
 @Composable
 fun MDWordsListTrainPreferencesDialog(
@@ -227,6 +229,9 @@ private fun <E> CheckableGroup(
             checkboxItem(
                 checked = selected == item,
                 colors = colors.cardColors,
+                leadingIcon = {
+                    Icon(item.currentPainter, null)
+                },
                 onClick = {
                     onClick(item)
                 }

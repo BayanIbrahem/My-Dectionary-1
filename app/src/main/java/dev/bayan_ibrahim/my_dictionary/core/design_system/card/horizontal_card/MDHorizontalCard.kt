@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -35,6 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 data object MDHorizontalCardDefaults {
     val combatHeight: Dp = 42.dp
@@ -282,10 +281,10 @@ private fun MDHorizontalCardsPreview() {
                 MDHorizontalCard(
                     onClick = {},
                     leadingIcon = {
-                        Icon(Icons.Default.Face, null)
+                        Icon(MDIconsSet.Verified.currentOutlinedPainter, null)
                     },
                     trailingIcon = {
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
+                        Icon(MDIconsSet.Verified.currentOutlinedPainter, null)
                     }
                 ) {
                     Text("this is a field")

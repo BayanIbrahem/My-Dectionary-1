@@ -13,9 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +41,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -194,7 +193,10 @@ private fun LanguageSearchBar(
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         ),
         leadingIcons = {
-            Icon(Icons.Default.Search, null)
+            Icon(
+                painter = MDIconsSet.Search.currentOutlinedPainter,
+                contentDescription = null
+            )
         },
         trailingIcons = {
             IconButton(
@@ -202,7 +204,10 @@ private fun LanguageSearchBar(
                     onQueryChange("")
                 }
             ) {
-                Icon(Icons.Rounded.Clear, null)
+                Icon(
+                    painter = MDIconsSet.Close.currentOutlinedPainter,
+                    contentDescription = null
+                )
             }
         }
     )

@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,9 +48,9 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.MDN
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.safeSubList
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
@@ -61,6 +59,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
@@ -339,7 +339,10 @@ private fun MDWordListItemPreview() {
                         IconButton(onClick = {
                             expanded = !expanded
                         }) {
-                            Icon(Icons.Default.Build, null)
+                            Icon(
+                                painter = MDIconsSet.Close.currentOutlinedPainter,
+                                contentDescription = null
+                            )
                         }
                     },
                     secondaryAction = {

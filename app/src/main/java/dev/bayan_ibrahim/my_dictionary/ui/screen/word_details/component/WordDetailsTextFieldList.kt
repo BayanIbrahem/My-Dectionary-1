@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -12,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
@@ -21,7 +23,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 fun LazyListScope.wordDetailsTextFieldList(
     items: Map<Long, String>,
     onItemValueChange: (Long, String) -> Unit,
-    leadingIcon: ImageVector,
+    leadingIcon: @Composable () -> Painter,
     groupLabel: String,
     itemModifier: Modifier = Modifier,
     itemsPlaceholder: String = "Add (leave blank to delete)",// TODO, string res
@@ -47,7 +49,7 @@ fun LazyListScope.wordDetailsTextFieldList(
         MDWordFieldTextField(
             value = value,
             onValueChange = onValueChange,
-            leadingIcon = leadingIcon,
+            leadingIcon = leadingIcon(),
             modifier = itemModifier
                 .fillMaxWidth()
                 .animateItem(),
@@ -72,12 +74,12 @@ fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
     onItemValueChange: (Long, String) -> Unit,
     typeRelations: List<WordTypeTagRelation>?,
     onSelectRelation: (Long, WordTypeTagRelation) -> Unit,
-    leadingIcon: ImageVector,
+    leadingIcon: @Composable () -> Painter,
     groupLabel: String,
     itemModifier: Modifier = Modifier,
     relationPlaceholder: String = "Relation",// TODO, string res
-    valuePlaceholder: String = "Add dev.bayan_ibrahim.my_dictionary.core.design_system.group.item (leave blank to delete)",// TODO, string res
-    lastValuePlaceholder: String = "Add new dev.bayan_ibrahim.my_dictionary.core.design_system.group.item",// TODO, string res
+    valuePlaceholder: String = "Add Item (leave blank to delete)",// TODO, string res
+    lastValuePlaceholder: String = "Add Item",// TODO, string res
     onGroupFocusChanged: (Long?) -> Unit = {},
 ) {
     val focusState = mutableStateMapOf<Long, Boolean>()
@@ -125,7 +127,7 @@ fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
                     suggestionTitle = {
                         this.label
                     },
-                    leadingIcon = leadingIcon,
+                    leadingIcon = leadingIcon(),
                     label = label,
                     modifier = Modifier.weight(1f),
                     showLabelOnPreviewMode = isFirst,

@@ -2,6 +2,8 @@ package dev.bayan_ibrahim.my_dictionary.data
 
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDRawWord
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalize
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagMatchNormalize
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.LanguageEntity
@@ -301,10 +303,9 @@ class MDImportFromFileRepoImpl(
         allWords: MutableMap<Pair<String, String>, Long>,
     ) {
         wordDao.getWordsOfLanguage(language.code.code).first().forEach { word ->
-            // todo normalize normalization strategy
             val normalizedWordIdentifier = Pair(
-                first = word.meaning.trim().lowercase(),
-                second = word.translation.trim().lowercase()
+                first = word.meaning.meaningSearchNormalize,
+                second = word.translation.meaningSearchNormalize
             )
             allWords[normalizedWordIdentifier] = word.id!!
         }
@@ -317,7 +318,7 @@ class MDImportFromFileRepoImpl(
         allTypeTagsRelationsLabels: MutableMap<Long, String>,
     ) {
         tagDao.getTagTypesOfLanguage(language.code.code).first().forEach { tagWithRelation ->
-            allTypeTags[tagWithRelation.tag.name.trim().lowercase()] = tagWithRelation.tag.id!! // todo normalize normalization strategy
+            allTypeTags[tagWithRelation.tag.name.tagMatchNormalize] = tagWithRelation.tag.id!!
             tagWithRelation.relations.forEach { relation ->
                 val normalizedLabel = relation.label.trim().lowercase()
                 allTypeTagsRelations.getOrPut(

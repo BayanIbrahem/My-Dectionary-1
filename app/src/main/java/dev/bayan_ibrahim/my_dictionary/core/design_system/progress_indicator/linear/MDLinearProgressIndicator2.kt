@@ -39,11 +39,11 @@ import kotlin.time.Duration.Companion.seconds
 
 /**
  * @param progress the index represent the progress if [markLastProgressedItemAsDone] then the part
- * at index [progress] would be marked as progressed otherwise the last progressed dev.bayan_ibrahim.my_dictionary.core.design_system.group.item would be
+ * at index [progress] would be marked as progressed otherwise the last progressed item would be
  * the previous at index [progress] - 1
  * @param total total number of parts
- * @param markLastProgressedItemAsDone if true then the dev.bayan_ibrahim.my_dictionary.core.design_system.group.item with index [progress] would be treated as
- * progressed dev.bayan_ibrahim.my_dictionary.core.design_system.group.item, if true valid range is -1 until [total] (executive) and any value not in this range
+ * @param markLastProgressedItemAsDone if true then the item with index [progress] would be treated as
+ * progressed item, if true valid range is -1 until [total] (executive) and any value not in this range
  * would be coersedIn that range
  * @param gapSize space between two parts
  * @param shape shape of the single part

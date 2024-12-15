@@ -8,6 +8,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsPack
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrastType
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeVariant
@@ -42,7 +43,12 @@ class MDUserPreferencesDataStoreImpl(
                 UserPreferencesThemeContrast.Medium -> MDThemeContrastType.Medium
                 UserPreferencesThemeContrast.High -> MDThemeContrastType.High
                 null, UserPreferencesThemeContrast.UNRECOGNIZED, UserPreferencesThemeContrast.Normal -> MDThemeContrastType.Normal
-            }
+            },
+            iconsPack = it.iconsSet.takeIf {
+                it in 0..<MDIconsPack.entries.count()
+            }?.let {
+                MDIconsPack.entries[it]
+            } ?: MDIconsPack.Default
         )
     }
 
@@ -67,6 +73,7 @@ class MDUserPreferencesDataStoreImpl(
                     MDThemeContrastType.Medium -> UserPreferencesThemeContrast.Medium
                     MDThemeContrastType.High -> UserPreferencesThemeContrast.High
                 }
+                this.iconsSet = user.iconsPack.ordinal
             }
         }
     }

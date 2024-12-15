@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 
 /**
- * object data of the dev.bayan_ibrahim.my_dictionary.core.design_system.group.item
+ * object data of the item
  */
 interface MDUiScopeItem
 

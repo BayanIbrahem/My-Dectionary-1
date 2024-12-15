@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,7 +29,7 @@ fun MDScreen(
     uiState: MDUiState,
     modifier: Modifier = Modifier,
     invalidDataMessage: String = "Invalid Data", // TODO, string res
-    contentAlignment: Alignment = Alignment.Center,
+    contentAlignment: Alignment = Alignment.TopCenter,
     showFloatingActionButtonOnLoading: Boolean = false,
     showFloatingActionButtonOnError: Boolean = false,
     contentWindowInsets: WindowInsets = WindowInsets(8.dp, 8.dp, 8.dp, 8.dp),
@@ -56,7 +58,7 @@ fun MDScreen(
         },
     ) {
         Box(
-            modifier = Modifier.padding(it),
+            modifier = Modifier.padding(it).fillMaxSize(),
             contentAlignment = contentAlignment
         ) {
             if (uiState.isLoading) {
@@ -68,7 +70,10 @@ fun MDScreen(
             } else if (uiState.validData) {
                 content()
             } else { // invalid data
-                TitledMessage(titleMessage = "Invalid Data", bodyMessage = invalidDataMessage) // TODO, string res
+                TitledMessage(
+                    titleMessage = "Invalid Data",
+                    bodyMessage = invalidDataMessage
+                ) // TODO, string res
             }
         }
     }
@@ -77,7 +82,7 @@ fun MDScreen(
 @Composable
 private fun BoxScope.TitledMessage(titleMessage: String, bodyMessage: String) {
     Column(
-        modifier = Modifier.Companion.align(Alignment.Center),
+        modifier = Modifier.align(Alignment.Center),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

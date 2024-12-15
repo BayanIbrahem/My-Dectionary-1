@@ -8,6 +8,7 @@ message UserPreferencesProto {
   string themeKey = 2;
   UserPreferencesTheme theme = 3;
   UserPreferencesThemeContrast contrast = 4;
+  int32 iconsSet =5;
 }
 
 enum UserPreferencesTheme {

@@ -336,7 +336,7 @@ private fun MDBasicDropDownPreview() {
                     fieldReadOnly = true,
                     placeholder = "placeholder, large read only",
                     suggestions = List(3) {
-                        "dev.bayan_ibrahim.my_dictionary.core.design_system.group.item $it"
+                        "suggestion $it"
                     },
                     onSelectSuggestion = { i, suggestion -> },
                     suggestionTitle = { this },
@@ -348,7 +348,7 @@ private fun MDBasicDropDownPreview() {
                 MDBasicDropDownMenu(
                     value = value2,
                     onValueChange = { value2 = it },
-                    suggestions = List(3) { "dev.bayan_ibrahim.my_dictionary.core.design_system.group.item $it" },
+                    suggestions = List(3) { "Item $it" },
                     suggestionTitle = { this },
                     fieldReadOnly = false,
                     placeholder = "placeholder, editable medium",

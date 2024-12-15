@@ -3,7 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.minN
 import kotlin.math.log
 
 /**
- * getting n min dev.bayan_ibrahim.my_dictionary.core.design_system.group.item of this collection either by building new sub list using [minNByIterativeMin], or
+ * getting n min item of this collection either by building new sub list using [minNByIterativeMin], or
  * sorting the large list then take a sublist in it using [minNBySorting]
  */
 inline fun <T, R : Comparable<R>> Collection<T>.minNBy(

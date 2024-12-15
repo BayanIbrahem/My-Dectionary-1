@@ -18,13 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,7 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,15 +48,17 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableFiel
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -140,21 +135,21 @@ fun MDWordSpaceListItem(
                         onClick = actions::onCancel,
                         enabled = isEditable,
                     ) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                        Icon(painter = MDIconsSet.Close.currentOutlinedPainter, contentDescription = null)
                     }
 
                     IconButton(
                         onClick = actions::onSubmit,
                         enabled = isEditable,
                     ) {
-                        Icon(imageVector = Icons.Default.Star, contentDescription = null) // TODO, string res
+                        Icon(painter = MDIconsSet.Check.currentOutlinedPainter, contentDescription = null) // TODO, string res
                     }
                 } else {
                     IconButton(
                         onClick = actions::onEnableEditMode,
                         enabled = isEditable,
                     ) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                        Icon(painter = MDIconsSet.Edit.currentOutlinedPainter, contentDescription = null)
                     }
                 }
             }
@@ -364,15 +359,15 @@ private fun WordSpaceEditableTagListItem(
                     if (showOnDelete) {
                         IconButton(onDelete, modifier = Modifier.size(36.dp)) {
                             Icon(
-                                imageVector = Icons.Default.Close,
+                                painter = MDIconsSet.Delete.currentOutlinedPainter,
                                 contentDescription = null
-                            ) // TODO, icon res
+                            )
                         }
                     }
                     if (showOnReset) {
                         IconButton(onReset, modifier = Modifier.size(36.dp)) {
                             Icon(
-                                imageVector = Icons.Default.Refresh,
+                                painter = MDIconsSet.Reset.currentOutlinedPainter,
                                 contentDescription = null
                             )
                         }
@@ -430,8 +425,12 @@ private fun WordsSpaceFieldEditDialog(
             modifier = Modifier.fillMaxWidth(),
             value = value,
             onChangeValue = { value = it },
-            leadingIcon = if (isTag) Icons.Default.ThumbUp else Icons.Default.PlayArrow, // TODO, icon res
-            placeholder = if (isTag) "Word Type Tag name" else "Word Type Tag Relation label",
+            leadingIcon = if (isTag) {
+                MDIconsSet.WordTypeTag.currentOutlinedPainter
+            } else {
+                MDIconsSet.WordRelatedWords.currentOutlinedPainter
+            },
+            placeholder = if (isTag) "Word Type Tag name" else "Word Type Tag Relation label", // TODO, string res
         )
     }
 }
@@ -440,7 +439,7 @@ private fun WordsSpaceFieldEditDialog(
 private fun WordSpaceTagInputField(
     value: String,
     onChangeValue: (String) -> Unit,
-    leadingIcon: ImageVector,
+    leadingIcon: Painter,
     placeholder: String,
     modifier: Modifier = Modifier,
 ) {
@@ -451,7 +450,7 @@ private fun WordSpaceTagInputField(
         placeholder = placeholder,
         maxLines = 1,
         leadingIcons = {
-            Icon(imageVector = leadingIcon, contentDescription = null) // TODO, icon res
+            Icon(painter = leadingIcon, contentDescription = null)
         }
     )
 }

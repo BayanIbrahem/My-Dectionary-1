@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,6 +20,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.i
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.component.MDProfileTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @Composable
 fun MDProfileScreen(
@@ -44,7 +43,7 @@ fun MDProfileScreen(
             BackupAndRestoreGroup(
                 onClickImportFromFile = uiActions::navigateToImportFromFile,
                 onClickExportToFile = uiActions::navigateToExportToFile,
-                onCLickAutoImport = uiActions::navigateToAutoBackup,
+                onClickSync = uiActions::navigateToSync,
             )
             ThemeGroup(uiActions::navigateToAppTheme)
         }
@@ -55,19 +54,19 @@ fun MDProfileScreen(
 private fun BackupAndRestoreGroup(
     onClickImportFromFile: () -> Unit,
     onClickExportToFile: () -> Unit,
-    onCLickAutoImport: () -> Unit,
+    onClickSync: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     MDHorizontalCardGroup(
         modifier = modifier,
         title = {
-            Text("Backup & Restore") // TODO,
+            Text("Backup & Restore") // TODO, string res
         }
     ) {
         item(
             onClick = onClickImportFromFile,
             leadingIcon = {
-                Icon(Icons.Default.Face, null) // TODO, icon res
+                Icon(MDIconsSet.ImportFromFile.currentOutlinedPainter, null)
             }
         ) {
             Text("Import from file")// TODO, string res
@@ -77,20 +76,20 @@ private fun BackupAndRestoreGroup(
             onClick = onClickExportToFile,
             enabled = false, // TODO, not implemented yet
             leadingIcon = {
-                Icon(Icons.Default.Face, null) // TODO, icon res
+                Icon(MDIconsSet.ExportToFile.currentOutlinedPainter, null)
             }
         ) {
             Text("Export to file")// TODO, string res
         }
 
         item(
-            onClick = onCLickAutoImport,
+            onClick = onClickSync,
             enabled = false, // TODO, not implemented yet
             leadingIcon = {
-                Icon(Icons.Default.Face, null) // TODO, icon res
+                Icon(MDIconsSet.Sync.currentOutlinedPainter, null)
             },
         ) {
-            Text("Auto Import")// TODO, string res
+            Text("Sync")// TODO, string res
         }
     }
 }
@@ -101,17 +100,19 @@ private fun ThemeGroup(
     modifier: Modifier = Modifier,
 ) {
     MDHorizontalCardGroup(
+        modifier = modifier,
         title = {
             // TODO, string resource
             Text("App Theme")
         }
     ) {
-        item (
+        item(
             onClick = onClickAppTheme,
             leadingIcon = {
-                Icon(imageVector = Icons.Default.Star, contentDescription = null) // TODO, icon res
+                Icon(MDIconsSet.Colors.currentOutlinedPainter, contentDescription = null)
             }
         ) {
+            // TODO, string resource
             Text("Theme")
         }
     }
@@ -136,7 +137,7 @@ private fun MDProfileScreenPreview() {
                         object : MDProfileNavigationUiActions {
                             override fun navigateToImportFromFile() {}
                             override fun navigateToExportToFile() {}
-                            override fun navigateToAutoBackup() {}
+                            override fun navigateToSync() {}
                             override fun navigateToAppTheme() {}
                         },
                         object : MDProfileBusinessUiActions {},

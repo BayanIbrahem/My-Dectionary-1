@@ -2,12 +2,9 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,6 +26,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.language_selection_dialog.MDLanguageSelectionDialogRoute
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @Composable
 fun MDWordsListScreen(
@@ -46,7 +45,6 @@ fun MDWordsListScreen(
         uiState = uiState,
         modifier = modifier,
         invalidDataMessage = "Select a language to start", // TODO, string res
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             MDWordsListTopAppBar(
                 isSelectionModeOn = uiState.isSelectModeOn,
@@ -68,7 +66,7 @@ fun MDWordsListScreen(
                         uiActions.navigateToWordDetails(null)
                     }
                 ) {
-                    Icon(Icons.Default.Add, null)
+                    Icon(MDIconsSet.Add.currentOutlinedPainter, null)
                 }
             }
         }

@@ -10,10 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActionScope
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +27,7 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,12 +37,14 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @Composable
 fun MDWordFieldTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    leadingIcon: ImageVector?,
+    leadingIcon: Painter?,
     modifier: Modifier = Modifier,
     label: String = "",
     placeholder: String = label,
@@ -121,7 +119,7 @@ fun <Data : Any> MDWordFieldTextField(
     suggestions: List<Data>,
     suggestionTitle: @Composable Data.() -> String,
     onSelectSuggestion: (Int, Data?) -> Unit,
-    leadingIcon: ImageVector,
+    leadingIcon: Painter,
     modifier: Modifier = Modifier,
     suggestionSubtitle: @Composable Data.() -> String? = { null },
     fieldModifier: Modifier = Modifier,
@@ -140,7 +138,7 @@ fun <Data : Any> MDWordFieldTextField(
     indexFormat: (Int) -> String = { "$it. " },
     imeAction: MDImeAction = MDImeAction.Done,
     onKeyboardAction: KeyboardActionScope.() -> Unit = {},
-    allowCancelSelection: Boolean = true
+    allowCancelSelection: Boolean = true,
 ) {
     var isFocused by remember {
         mutableStateOf(false)
@@ -227,7 +225,10 @@ private fun fieldTrailingIcons(
                 },
                 modifier = Modifier.size(36.dp),
             ) {
-                Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                Icon(
+                    painter = MDIconsSet.Close.currentOutlinedPainter,
+                    contentDescription = null
+                )
             }
             IconButton(
                 onClick = {
@@ -235,15 +236,18 @@ private fun fieldTrailingIcons(
                 },
                 modifier = Modifier.size(36.dp),
             ) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                Icon(
+                    painter = MDIconsSet.Check.currentOutlinedPainter,
+                    contentDescription = null
+                )
             }
         }
     } else null
 }
 
 @Composable
-private fun FieldLeadingIcons(leadingIcon: ImageVector) {
-    Icon(imageVector = leadingIcon, contentDescription = null)
+private fun FieldLeadingIcons(leadingIcon: Painter) {
+    Icon(painter = leadingIcon, contentDescription = null)
 }
 
 @Preview
@@ -254,16 +258,18 @@ private fun MDWordFieldTextFieldPreview() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
-            Box(modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize()
+            ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     MDWordFieldTextField(
                         value = value,
                         onValueChange = { value = it },
-                        leadingIcon = Icons.Default.Info,
+                        leadingIcon = MDIconsSet.WordMeaning.currentOutlinedPainter,
                         placeholder = "Normal Field",
                         index = 1,
                         modifier = Modifier.fillMaxWidth(),
@@ -279,7 +285,7 @@ private fun MDWordFieldTextFieldPreview() {
 
                         },
                         suggestionTitle = { this },
-                        leadingIcon = Icons.Default.Info,
+                        leadingIcon = MDIconsSet.WordMeaning.currentOutlinedPainter,
                         placeholder = "Field With suggestions",
                         index = 1,
                         fieldModifier = Modifier.fillMaxWidth(),

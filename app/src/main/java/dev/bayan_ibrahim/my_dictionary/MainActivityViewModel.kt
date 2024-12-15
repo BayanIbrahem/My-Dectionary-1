@@ -10,6 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.getSelectedThemeIdentifier
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.DefaultDarkColorScheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.DefaultLightColorScheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsPack
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeVariant
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChangedBy
@@ -29,12 +30,13 @@ class MainActivityViewModel @Inject constructor(
             MDUserPreferences()
         }.distinctUntilChangedBy {
             it.getSelectedThemeIdentifier(false) to it.getSelectedThemeIdentifier(true)
-        }.map { (_, theme, themeVariantType, themeContrastVariantType) ->
+        }.map { (_, theme, themeVariantType, themeContrastVariantType, iconsSet) ->
             val currentVariant = theme.getContrastVariance(themeContrastVariantType)
             MainActivityUiState(
                 themeVariant = themeVariantType,
                 lightColorScheme = currentVariant.first.buildColorScheme(context).toColorScheme(),
                 darkColorScheme = currentVariant.second.buildColorScheme(context).toColorScheme(),
+                iconsPack = iconsSet,
                 initialized = true,
             )
         }.stateIn(
@@ -45,6 +47,7 @@ class MainActivityViewModel @Inject constructor(
                     themeVariant = MDThemeVariant.System,
                     lightColorScheme = DefaultLightColorScheme,
                     darkColorScheme = DefaultDarkColorScheme,
+                    iconsPack = MDIconsPack.Default,
                     initialized = false,
                 )
             }

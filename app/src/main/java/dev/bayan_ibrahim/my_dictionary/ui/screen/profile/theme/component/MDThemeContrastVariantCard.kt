@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,6 +34,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 
 @Suppress("InfiniteTransitionLabel", "InfinitePropertiesLabel", "AnimateAsStateLabel")
@@ -107,6 +107,8 @@ fun MDThemeContrastVariantCard(
         }
         val sizeScale by animateFloatAsState(if (selected) 1f else 0f)
         Icon(
+            painter = MDIconsSet.Verified.currentOutlinedPainter,
+            contentDescription = null,
             modifier = Modifier
                 .size(16.dp)
                 .graphicsLayer {
@@ -115,8 +117,6 @@ fun MDThemeContrastVariantCard(
                     scaleX = sizeScale
                     scaleY = sizeScale
                 },
-            imageVector = Icons.Default.CheckCircle,
-            contentDescription = null,
             tint = primaryColor
         )
     }

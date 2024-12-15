@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -39,12 +37,14 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentFilledPainter
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 
 data object MDTabRowDefaults {
@@ -208,7 +208,15 @@ fun <K : Any> RowScope.MDTab(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         data.icon?.let { icon ->
-            Icon(imageVector = icon, contentDescription = null, tint = color)
+            Icon(
+                painter = if (data.outlinedIcon) {
+                    icon.currentOutlinedPainter
+                } else {
+                    icon.currentFilledPainter
+                },
+                contentDescription = null,
+                tint = color
+            )
         }
         data.label?.let { label ->
             Text(text = label, style = MaterialTheme.typography.labelMedium, color = color)
@@ -218,18 +226,21 @@ fun <K : Any> RowScope.MDTab(
 
 sealed interface MDTabData<K : Any> {
     val label: String?
-    val icon: ImageVector?
+    val icon: MDIconsSet?
+    val outlinedIcon: Boolean
+        get() = true
     val key: K?
 
     data class Label<K : Any>(
         override val label: String,
         override val key: K? = null,
     ) : MDTabData<K> {
-        override val icon: ImageVector? = null
+        override val icon: MDIconsSet? = null
     }
 
     data class Icon<K : Any>(
-        override val icon: ImageVector,
+        override val icon: MDIconsSet,
+        override val outlinedIcon: Boolean = true,
         override val key: K? = null,
     ) : MDTabData<K> {
         override val label: String? = null
@@ -237,7 +248,8 @@ sealed interface MDTabData<K : Any> {
 
     data class LabelWithIcon<K : Any>(
         override val label: String,
-        override val icon: ImageVector,
+        override val icon: MDIconsSet,
+        override val outlinedIcon: Boolean = true,
         override val key: K? = null,
     ) : MDTabData<K>
 }
@@ -259,8 +271,8 @@ private fun MDTabRowPreview() {
                 MDTabRow(
                     tabs = listOf(
                         MDTabData.Label("label only"),
-                        MDTabData.Icon(Icons.Default.Home),
-                        MDTabData.LabelWithIcon("label with icon", Icons.Default.Home),
+                        MDTabData.Icon(MDIconsSet.WordsList),
+                        MDTabData.LabelWithIcon("label with icon", MDIconsSet.WordsList),
                     ),
                     selectedTabIndex = selectedTabIndex,
                     onClickTab = { i, _ ->

@@ -8,7 +8,7 @@ interface MDProfileBusinessUiActions {
 interface MDProfileNavigationUiActions {
     fun navigateToImportFromFile()
     fun navigateToExportToFile()
-    fun navigateToAutoBackup()
+    fun navigateToSync()
     fun navigateToAppTheme()
 }
 

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDApp
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryDynamicTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.LocalIconsPack
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -32,7 +34,11 @@ class MainActivity : ComponentActivity() {
                     darkColorScheme = uiState.darkColorScheme,
                     lightColorScheme = uiState.lightColorScheme
                 ) {
-                    MDApp()
+                    CompositionLocalProvider(
+                        value = LocalIconsPack provides uiState.iconsPack
+                    ) {
+                        MDApp()
+                    }
                 }
             } else {
                 Box(

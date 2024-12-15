@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +25,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 data object MDHorizontalCardGroupDefaults {
     val shape: CornerBasedShape
@@ -42,6 +42,7 @@ data object MDHorizontalCardGroupDefaults {
         cardColors = fieldColors,
         titleColor = titleColor
     )
+
     @Composable
     fun primaryColors(
         titleColor: Color = MaterialTheme.colorScheme.onSurface,
@@ -156,8 +157,8 @@ private fun MDHorizontalCardGroupPreview() {
             ) {
                 MDHorizontalCardGroup {
                     item(
-                        leadingIcon = { Icon(Icons.Default.Face, null) },
-                        trailingIcon = { Icon(Icons.Default.Face, null) },
+                        leadingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
+                        trailingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
                         enabled = true,
                         subtitle = {
                             Text("subtitle")
@@ -166,8 +167,8 @@ private fun MDHorizontalCardGroupPreview() {
                         Text("title")
                     }
                     item(
-                        leadingIcon = { Icon(Icons.Default.Face, null) },
-                        trailingIcon = { Icon(Icons.Default.Face, null) },
+                        leadingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
+                        trailingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
                         enabled = false,
                         subtitle = {
                             Text("subtitle")
@@ -177,7 +178,7 @@ private fun MDHorizontalCardGroupPreview() {
                     }
                     item(
                         leadingIcon = {},
-                        trailingIcon = { Icon(Icons.Default.Face, null) },
+                        trailingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
                         enabled = true,
                         subtitle = {
                             Text("subtitle")
@@ -186,7 +187,7 @@ private fun MDHorizontalCardGroupPreview() {
                         Text("title")
                     }
                     item(
-                        leadingIcon = { Icon(Icons.Default.Face, null) },
+                        leadingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
                         trailingIcon = {},
                         enabled = true,
                         subtitle = {
@@ -197,8 +198,8 @@ private fun MDHorizontalCardGroupPreview() {
                     }
 
                     item(
-                        leadingIcon = { Icon(Icons.Default.Face, null) },
-                        trailingIcon = { Icon(Icons.Default.Face, null) },
+                        leadingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
+                        trailingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
                         enabled = true,
                     ) {
                         Text("title")

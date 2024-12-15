@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -30,6 +28,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.WordDeta
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.wordDetailsRelatedWordsTextFieldsList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.wordDetailsTextFieldList
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -77,7 +77,7 @@ fun WordDetailsScreen(
                 MDWordFieldTextField(
                     value = uiState.meaning,
                     onValueChange = uiActions::onMeaningChange,
-                    leadingIcon = Icons.Default.Person, // TODO, icon vector
+                    leadingIcon = MDIconsSet.WordMeaning.currentOutlinedPainter,
                     modifier = Modifier.fillMaxWidth(),
                     label = "Meaning", // TODO, string res
                     readOnly = !uiState.isEditModeOn,
@@ -87,7 +87,7 @@ fun WordDetailsScreen(
                 MDWordFieldTextField(
                     value = uiState.translation,
                     onValueChange = uiActions::onTranslationChange,
-                    leadingIcon = Icons.Default.Person,// TODO, icon vector
+                    leadingIcon = MDIconsSet.WordTranslation.currentOutlinedPainter,
                     modifier = Modifier.fillMaxWidth(),
                     label = "Translation", // TODO, string res
                     readOnly = !uiState.isEditModeOn,
@@ -97,13 +97,40 @@ fun WordDetailsScreen(
                 MDWordFieldTextField(
                     value = uiState.transcription,
                     onValueChange = uiActions::onTranscriptionChange,
-                    leadingIcon = Icons.Default.Person,// TODO, icon vector
+                    leadingIcon = MDIconsSet.WordTranscription.currentOutlinedPainter,
                     modifier = Modifier.fillMaxWidth(),
                     label = "Transcription", // TODO, string res
                     readOnly = !uiState.isEditModeOn,
                     hasBottomHorizontalDivider = true
                 )
             }
+            wordDetailsTextFieldList(
+                items = uiState.additionalTranslations,
+                onItemValueChange = uiActions::onEditAdditionalTranslation,
+                leadingIcon = {
+                    MDIconsSet.WordAdditionalTranslation.currentOutlinedPainter
+                },
+                groupLabel = "Additional Translations", // TODO, string res
+                onGroupFocusChanged = uiActions::onValidateAdditionalTranslations
+            )
+            wordDetailsTextFieldList(
+                items = uiState.tags,
+                onItemValueChange = uiActions::onEditTag,
+                leadingIcon = {
+                    MDIconsSet.WordTag.currentOutlinedPainter
+                },
+                groupLabel = "Tags", // TODO, string res
+                onGroupFocusChanged = uiActions::onValidateTags
+            )
+            wordDetailsTextFieldList(
+                items = uiState.examples,
+                onItemValueChange = uiActions::onEditExample,
+                leadingIcon = {
+                    MDIconsSet.WordExample.currentOutlinedPainter
+                },
+                groupLabel = "Examples", // TODO, string res
+                onGroupFocusChanged = uiActions::onValidateExamples
+            )
             item {
                 if (uiState.typeTags.isNotEmpty()) {
                     MDWordFieldTextField(
@@ -114,7 +141,7 @@ fun WordDetailsScreen(
                             uiActions.onChangeTypeTag(type)
                         },
                         suggestionTitle = { this.name },
-                        leadingIcon = Icons.Default.Person,// TODO, icon vector
+                        leadingIcon = MDIconsSet.WordTypeTag.currentOutlinedPainter,
                         fieldModifier = Modifier.fillMaxWidth(),
                         label = "Word Type", // TODO, string res
                         fieldReadOnly = true,
@@ -127,27 +154,6 @@ fun WordDetailsScreen(
                     ) // TODO, string res
                 }
             }
-            wordDetailsTextFieldList(
-                items = uiState.additionalTranslations,
-                onItemValueChange = uiActions::onEditAdditionalTranslation,
-                leadingIcon = Icons.Default.Person, // TODO, icon vector
-                groupLabel = "Additional Translations", // TODO, string res
-                onGroupFocusChanged = uiActions::onValidateAdditionalTranslations
-            )
-            wordDetailsTextFieldList(
-                items = uiState.tags,
-                onItemValueChange = uiActions::onEditTag,
-                leadingIcon = Icons.Default.Person, // TODO, icon vector
-                groupLabel = "Tags", // TODO, string res
-                onGroupFocusChanged = uiActions::onValidateTags
-            )
-            wordDetailsTextFieldList(
-                items = uiState.examples,
-                onItemValueChange = uiActions::onEditExample,
-                leadingIcon = Icons.Default.Person, // TODO, icon vector
-                groupLabel = "Examples", // TODO, string res
-                onGroupFocusChanged = uiActions::onValidateExamples
-            )
             wordDetailsRelatedWordsTextFieldsList(
                 items = uiState.relatedWords,
                 onItemValueChange = uiActions::onEditRelatedWordValue,
@@ -155,7 +161,9 @@ fun WordDetailsScreen(
                 onSelectRelation = { id, relation ->
                     uiActions.onEditRelatedWordRelation(id, relation)
                 },
-                leadingIcon = Icons.Default.Person, // TODO, icon vector
+                leadingIcon = {
+                    MDIconsSet.WordRelatedWords.currentOutlinedPainter
+                },
                 groupLabel = "Word Relations", // TODO, string res
                 onGroupFocusChanged = uiActions::onValidateRelatedWords
             )

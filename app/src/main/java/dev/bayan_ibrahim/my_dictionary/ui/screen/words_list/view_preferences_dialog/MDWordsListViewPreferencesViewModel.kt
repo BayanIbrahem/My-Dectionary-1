@@ -59,7 +59,6 @@ class MDWordsListViewPreferencesViewModel @Inject constructor(
         override fun onTagSearchQueryChange(query: String) {
             _uiState.tagSearchQuery = query
             viewModelScope.launch {
-                // todo normalize this search method
                 val queryRegex = query.tagRegexNormalize.toRegex()
                 val newTags = repo.getSelectedLanguageTags().mapNotNull { tag ->
                     if (tag !in uiState.selectedTags && queryRegex.matches(tag.lowercase())) {

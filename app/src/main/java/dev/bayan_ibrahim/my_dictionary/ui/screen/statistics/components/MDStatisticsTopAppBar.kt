@@ -4,11 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +30,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.label
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +73,7 @@ fun MDStatisticsTopAppBar(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.MoreVert,
+                                MDIconsSet.MoreVert.currentOutlinedPainter,
                                 contentDescription = null
                             )
                         }
@@ -146,7 +143,7 @@ private fun MDMostRecentTrainHistoryActions(
         item(
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Add, // TODO, icon res
+                    painter = MDIconsSet.LatestTrainsCount.currentOutlinedPainter,
                     contentDescription = null
                 )
             }
@@ -163,8 +160,8 @@ private fun MDMostRecentTrainHistoryActions(
                 }?.let {
                     {
                         Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null
+                            painter = MDIconsSet.Check.currentOutlinedPainter,
+                            contentDescription = null,
                         )
                     }
                 }
@@ -187,7 +184,7 @@ private fun MDDateUnitActions(
         item(
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.DateRange, // TODO, icon res
+                    painter = MDIconsSet.TrainHistoryDateGroup.currentOutlinedPainter,
                     contentDescription = null
                 )
             }
@@ -201,7 +198,10 @@ private fun MDDateUnitActions(
                 },
                 trailingIcon = unit.takeIf { it == dateUnit }?.let {
                     {
-                        Icon(Icons.Default.Check, null)
+                        Icon(
+                            painter = MDIconsSet.Check.currentOutlinedPainter,
+                            contentDescription = null
+                        )
                     }
                 }
             ) {

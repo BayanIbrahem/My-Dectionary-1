@@ -36,7 +36,7 @@ data class MDRawWordCSVSerializer(
 
     init {
         require(separator.trim() != listItemsSeparator.trim()) {
-            "Duplicated nested separators not allowed column separator: $separator with list dev.bayan_ibrahim.my_dictionary.core.design_system.group.item separator: $listItemsSeparator"
+            "Duplicated nested separators not allowed column separator: $separator with list item separator: $listItemsSeparator"
         }
 
         require(separator.trim() != typeTagSerializer.descriptor.separator.trim()) {

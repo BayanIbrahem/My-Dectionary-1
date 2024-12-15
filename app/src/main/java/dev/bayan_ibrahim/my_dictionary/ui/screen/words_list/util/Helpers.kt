@@ -1,10 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
@@ -29,15 +26,16 @@ enum class MDWordsListViewPreferencesSortBy(override val strLabel: String) : Lab
 
 enum class WordsListTrainPreferencesSortBy(
     override val strLabel: String,
-    override val icon: ImageVector,
+    override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
-    LearningProgress("Learning Progress", Icons.Default.Star), // TODO, string res, TODO, icon res
-    TrainingTime("Training Time", Icons.Default.Star),// TODO, string res, icon res
-    CreateTime("Create Time", Icons.Default.Star),// TODO, string res, icon res
-    Random("Random", Icons.Default.Star);// TODO, string res, icon res
+    LearningProgress("Learning Progress", MDIconsSet.LearningProgress),
+    TrainingTime("Training Time", MDIconsSet.TrainTime),
+    CreateTime("Create Time", MDIconsSet.CreateTime),
+    Random("Random", MDIconsSet.Random);
 
     @Composable
     fun orderLabel(order: MDWordsListSortByOrder): String = when (order) {
+        // TODO, string res
         MDWordsListSortByOrder.Asc -> when (this) {
             LearningProgress -> "Words with the fewest learning progress"
             TrainingTime -> "Words trained by long time ago"
@@ -45,6 +43,7 @@ enum class WordsListTrainPreferencesSortBy(
             Random -> "Random order"
         }
 
+        // TODO, string res
         MDWordsListSortByOrder.Desc -> when (this) {
             LearningProgress -> "Words with the largest learning progress"
             TrainingTime -> "Words trained by recently"
@@ -54,15 +53,18 @@ enum class WordsListTrainPreferencesSortBy(
     }
 }
 
-enum class MDWordsListSortByOrder(override val strLabel: String, override val icon: ImageVector) : LabeledEnum, IconedEnum {
+enum class MDWordsListSortByOrder(
+    override val strLabel: String,
+    override val icon: MDIconsSet,
+) : LabeledEnum, IconedEnum {
     Asc(
         strLabel = "Asc",
-        icon = Icons.Default.KeyboardArrowUp
-    ), // TODO, string res, icon res
+        icon = MDIconsSet.AscSort
+    ), // TODO, string res
     Desc(
         strLabel = "Desc",
-        icon = Icons.Default.KeyboardArrowUp
-    ), // TODO, string res, icon res
+        icon = MDIconsSet.DescSort
+    ), // TODO, string res
 }
 
 

@@ -6,13 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,7 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
@@ -40,6 +33,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMen
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 /**
  * this require checking for the value [isSelectionModeOn] before executing functions to prevent rapid clicks during animation
@@ -132,7 +127,7 @@ private fun WordsListTopAppBarNormalMode(
                 },
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Email, // TODO, string res
+                    painter = MDIconsSet.Train.currentOutlinedPainter,
                     contentDescription = null
                 )
             }
@@ -142,7 +137,7 @@ private fun WordsListTopAppBarNormalMode(
                     // adjust filter preferences
                 },
             ) {
-                Icon(Icons.Filled.Info, null) // TODO, icon res
+                Icon(MDIconsSet.Filter.currentOutlinedPainter, null)
             }
             var expanded by remember {
                 mutableStateOf(false)
@@ -160,11 +155,14 @@ private fun WordsListTopAppBarNormalMode(
                     onDismissRequest = dismiss,
                     menuOffset = menuOffset,
                     icon = {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+                        Icon(
+                            painter = MDIconsSet.MoreVert.currentOutlinedPainter,
+                            contentDescription = null
+                        )
                     }
                 ) {
                     MenuItem(
-                        leadingIcon = Icons.Default.Home, // TODO, icon vector
+                        leadingIcon = MDIconsSet.LanguageWordSpace.currentOutlinedPainter,
                         text = "Select language page", // TODO, string res
                         onClick = {
                             dismiss()
@@ -173,7 +171,7 @@ private fun WordsListTopAppBarNormalMode(
                     )
 
                     MenuItem(
-                        leadingIcon = Icons.Default.Delete, // TODO, icon vector
+                        leadingIcon = MDIconsSet.DeletePermanent.currentOutlinedPainter,
                         text = "Delete word space", // TODO, string res
                         onClick = {
                             dismiss()
@@ -212,7 +210,10 @@ private fun WordsListTopAppBarSelectionMode(
             IconButton(
                 onClick = onClearSelection
             ) {
-                Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                Icon(
+                    painter = MDIconsSet.Close.currentOutlinedPainter,
+                    contentDescription = null
+                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -238,11 +239,14 @@ private fun WordsListTopAppBarSelectionMode(
                     onDismissRequest = dismiss,
                     menuOffset = menuOffset,
                     icon = {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+                        Icon(
+                            painter = MDIconsSet.MoreVert.currentOutlinedPainter,
+                            contentDescription = null
+                        )
                     }
                 ) {
                     MenuItem(
-                        leadingIcon = Icons.Default.Delete,
+                        leadingIcon = MDIconsSet.Delete.currentOutlinedPainter,
                         text = "Delete Selection", // TODO, string res
                         onClick = {
                             dismiss()
@@ -260,7 +264,7 @@ private fun WordsListTopAppBarSelectionMode(
 @Composable
 private fun ColumnScope.MenuItem(
     text: String,
-    leadingIcon: ImageVector,
+    leadingIcon: Painter,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -273,7 +277,7 @@ private fun ColumnScope.MenuItem(
         onClick = onClick,
         modifier = modifier,
         leadingIcon = {
-            Icon(imageVector = leadingIcon, contentDescription = null)
+            Icon(leadingIcon, contentDescription = null)
         },
         enabled = enabled,
         colors = if (important) {

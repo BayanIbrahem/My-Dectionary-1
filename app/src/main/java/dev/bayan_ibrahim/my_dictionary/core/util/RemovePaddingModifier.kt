@@ -25,6 +25,10 @@ fun Modifier.removePadding(
     layoutDirection = layoutDirection
 )
 
+/**
+ * reduce width and height by vertical and horizontal padding,
+ * place top left on (-startPadding, -topPadding) instead of (0, 0)
+ */
 fun Modifier.removePadding(
     paddingValues: PaddingValues,
     layoutDirection: LayoutDirection,

@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -47,6 +45,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileType
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.endOnly
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import dev.bayan_ibrahim.my_dictionary.ui.theme.startOnly
 
 @Composable
@@ -247,7 +247,10 @@ private fun FileTypeDropDown(
         modifier = modifier,
         fieldModifier = Modifier.requiredWidth(120.dp),
         trailingIcons = {
-            Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
+            Icon(
+                MDIconsSet.ArrowDropdown.currentOutlinedPainter,
+                contentDescription = null
+            )
         },
         menuMatchFieldWidth = false,
         fieldReadOnly = true,

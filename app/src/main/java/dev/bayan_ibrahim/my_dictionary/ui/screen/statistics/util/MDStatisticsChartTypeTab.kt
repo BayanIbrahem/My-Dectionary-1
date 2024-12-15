@@ -1,10 +1,9 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabData
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
 enum class MDStatisticsChartTypeTab {
     LINE,
@@ -16,13 +15,13 @@ enum class MDStatisticsChartTypeTab {
         get() = when (this) {
             LINE -> MDTabData.LabelWithIcon(
                 label = "Line chart",
-                icon = Icons.Default.Face,
+                icon = MDIconsSet.LineChart,
                 key = this
             )
 
             BAR -> MDTabData.LabelWithIcon(
                 label = "Bar chart",
-                icon = Icons.Default.Face,
+                icon = MDIconsSet.LineChart,
                 key = this
             )
         }

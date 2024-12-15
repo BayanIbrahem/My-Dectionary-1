@@ -2,7 +2,10 @@ package dev.bayan_ibrahim.my_dictionary.ui.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentFilledPainter
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 interface LabeledEnum {
     val strLabel: String
@@ -15,5 +18,15 @@ interface LabeledEnum {
 
 @Suppress("unused")
 interface IconedEnum {
-    val icon: ImageVector
+    val icon: MDIconsSet
+    val outlined: Boolean
+        get() = true
 }
+
+val IconedEnum.currentPainter: Painter
+    @Composable
+    get() = if (outlined) {
+        icon.currentOutlinedPainter
+    } else {
+        icon.currentFilledPainter
+    }

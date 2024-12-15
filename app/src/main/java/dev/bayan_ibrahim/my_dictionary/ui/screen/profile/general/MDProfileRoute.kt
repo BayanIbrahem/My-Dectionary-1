@@ -32,8 +32,8 @@ fun MDProfileRoute(
                     navigateToScreen(MDDestination.ExportToFile)
                 }
 
-                override fun navigateToAutoBackup() {
-                    navigateToScreen(MDDestination.AutoBackup)
+                override fun navigateToSync() {
+                    navigateToScreen(MDDestination.Sync)
                 }
 
                 override fun navigateToAppTheme() {

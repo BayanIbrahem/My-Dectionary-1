@@ -47,4 +47,6 @@
 -keep class dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.** {
 *;
 }
+# delete everything from compose material
+-assumenosideeffects class androidx.compose.material.Icons.** { *; }
 

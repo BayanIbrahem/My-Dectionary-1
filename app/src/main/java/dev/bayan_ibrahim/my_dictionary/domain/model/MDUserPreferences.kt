@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model
 
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsPack
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrastType
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeVariant
@@ -10,6 +11,7 @@ data class MDUserPreferences(
     val theme: MDTheme = MDTheme.Default,
     val themeVariant: MDThemeVariant = MDThemeVariant.System,
     val themeContrastType: MDThemeContrastType = MDThemeContrastType.Normal,
+    val iconsPack: MDIconsPack = MDIconsPack.Default,
 )
 
 /**

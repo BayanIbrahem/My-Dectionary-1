@@ -1,13 +1,9 @@
 package dev.bayan_ibrahim.my_dictionary.ui.navigate
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.ui.graphics.vector.ImageVector
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordsList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -28,30 +24,16 @@ sealed interface MDDestination {
         data object WordSpace : TopLevel
 
         enum class Enum(
-            val selectedIcon: ImageVector, // TODO, icon res
-            val unselectedIcon: ImageVector, // TODO, icon res
-        ) {
-            WordsList(
-                selectedIcon = Icons.AutoMirrored.Filled.List,
-                unselectedIcon = Icons.AutoMirrored.Default.List
-            ),
+            override val icon: MDIconsSet,
+        ) : IconedEnum {
+            WordsList(MDIconsSet.WordsList),
 
             /**
              * same of [MDDestination.Statistics] but this take the [MDStatisticsViewPreferences.Date] preferences
              */
-            Statistics(
-                selectedIcon = Icons.Filled.Check,
-                unselectedIcon = Icons.Default.Check
-            ),
-            Profile(
-                selectedIcon = Icons.Filled.Person,
-                unselectedIcon = Icons.Default.Person
-            ),
-            WordSpace(
-                selectedIcon = Icons.Filled.Face,
-                unselectedIcon = Icons.Default.Face
-            ),
-            ;
+            Statistics(MDIconsSet.Statistics),
+            Profile(MDIconsSet.Profile),
+            WordSpace(MDIconsSet.LanguageWordSpace);
 
             val route
                 get() = when (this) {
@@ -76,7 +58,7 @@ sealed interface MDDestination {
     data object ExportToFile : MDDestination
 
     @Serializable
-    data object AutoBackup : MDDestination
+    data object Sync : MDDestination
 
     @Serializable
     data object Train : MDDestination
@@ -107,6 +89,6 @@ sealed interface MDDestination {
     }
 
     @Serializable
-    data object AppTheme: MDDestination
+    data object AppTheme : MDDestination
 }
 

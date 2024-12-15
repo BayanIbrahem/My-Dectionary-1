@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -51,6 +48,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.toAnswer
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.train.component.MDTrainTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @Composable
 fun MDTrainScreen(
@@ -184,7 +183,7 @@ private fun WordSelectAnswerTrainPage(
                     leadingContent = {
                         if (selected) {
                             Icon(
-                                imageVector = Icons.Default.Check,
+                                MDIconsSet.Check.currentOutlinedPainter,
                                 contentDescription = null
                             )
                         } else {
@@ -302,7 +301,10 @@ private fun QuestionPagePart(
                 Text("Submit answer") // TODO, string res
             },
             trailingIcon = {
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, null)
+                Icon(
+                    painter = MDIconsSet.ArrowForward.currentOutlinedPainter,
+                    contentDescription = null
+                )
             }
         )
     }

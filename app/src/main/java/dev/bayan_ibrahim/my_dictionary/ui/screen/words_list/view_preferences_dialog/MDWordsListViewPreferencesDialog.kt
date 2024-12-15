@@ -13,9 +13,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,6 +38,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSear
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesTab
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import kotlin.math.roundToInt
 
 @Composable
@@ -140,7 +139,7 @@ private fun SearchBody(
         MDWordFieldTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            leadingIcon = Icons.Default.Search,
+            leadingIcon = MDIconsSet.SearchList.currentOutlinedPainter,
             modifier = Modifier.fillMaxWidth(),
             showLabelOnEditMode = true,
             label = "Search Query", // TODO, string res
@@ -199,7 +198,7 @@ private fun FilterBody(
             },
             allowCancelSelection = false,
             suggestionTitle = { this },
-            leadingIcon = Icons.Default.Add, // TODO, icon res
+            leadingIcon = MDIconsSet.WordTag.currentOutlinedPainter,
             label = "Tag Query", // TODO, string res
             placeholder = "Eg. Food" // TODO, string res
         )

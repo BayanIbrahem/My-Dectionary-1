@@ -30,7 +30,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * @param state lazy list state of the scrollable dev.bayan_ibrahim.my_dictionary.core.design_system.group.item
+ * @param state lazy list state of the scrollable item
  * @param crossDirectionBarValue width of the bar for vertical scrolling, or height of the bar for horizontal scrolling,
  * orientation is taken from `state.layoutInfo.orientation`
  * @param minMainBarDimensionValue the min height (for vertical scrolling) or width (for horizontal scrolling) of the bar,
@@ -41,7 +41,7 @@ import kotlin.math.min
  * @param inactiveScrollingDuration duration of animation while scroll is not in progress `state.isScrollInProgress`
  * @param defaultColor this param will be ignored if [drawScrollbar] is overwritten
  * @param stickHeadersContentType pass the content type for the sticky headers to be filtered from the list, using sticky headers without passing the
- * correct value to this param makes the scrollbar at the first dev.bayan_ibrahim.my_dictionary.core.design_system.group.item position (which is the last sticky header)
+ * correct value to this param makes the scrollbar at the first item position (which is the last sticky header)
  * @param drawScrollbar this is the lambda to draw the bar, if it is overridden  the [defaultColor] value will be ignored,
  * the bar will be clipped according to the `topLeft` and `barSize`, and `alpha` is the animated value of visibility
  */
@@ -109,7 +109,7 @@ private fun ContentDrawScope.onDrawScrollbar(
             val isFirstItemIsAStickyHeader = it.first().contentType == stickHeadersContentType
             val firstItemInItsNormalPosition = it.first().index.inc() == it[1].index
             if (isFirstItemIsAStickyHeader && !firstItemInItsNormalPosition) {
-                // the for example if the visible sticky header index is 0 and the first visible dev.bayan_ibrahim.my_dictionary.core.design_system.group.item is 2 then we must filter the sticky header
+                // the for example if the visible sticky header index is 0 and the first visible item is 2 then we must filter the sticky header
                 return@let it.subList(1, it.size)
             } else {
                 return@let it
@@ -170,7 +170,7 @@ private fun VerticalScrollbarPreview() {
                 state = lazyListState,
             ) {
                 items(1000) { i ->
-                    Text("dev.bayan_ibrahim.my_dictionary.core.design_system.group.item $i", modifier = Modifier.height(20.dp))
+                    Text("Item $i", modifier = Modifier.height(20.dp))
                 }
             }
         }
@@ -194,7 +194,7 @@ private fun HorizontalScrollbarPreview() {
                 state = lazyListState,
             ) {
                 items(100) { i ->
-                    Text("dev.bayan_ibrahim.my_dictionary.core.design_system.group.item $i", modifier = Modifier.height(20.dp))
+                    Text("Item $i", modifier = Modifier.height(20.dp))
                 }
             }
         }

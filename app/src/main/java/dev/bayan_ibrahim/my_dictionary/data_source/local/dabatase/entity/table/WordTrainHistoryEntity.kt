@@ -34,7 +34,6 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
             onDelete = ForeignKey.SET_NULL,
         )
     ],
-    // TODO, add train history to index
     indices = [
         Index(dbTrainHistoryWordId)
     ]
