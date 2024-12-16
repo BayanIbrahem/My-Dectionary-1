@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -16,9 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @Composable
 fun MDBasicIconDropDownMenu(
@@ -56,10 +54,7 @@ private fun MDIconDropDownMenuPreview() {
                     expanded = true,
                     onDismissRequest = {},
                     icon = {
-                        Icon(
-                            painter = MDIconsSet.Menu.currentOutlinedPainter,
-                            contentDescription = null
-                        )
+                        MDIcon(MDIconsSet.Menu) // checked
                     },
                 ) {
                     repeat(3) {

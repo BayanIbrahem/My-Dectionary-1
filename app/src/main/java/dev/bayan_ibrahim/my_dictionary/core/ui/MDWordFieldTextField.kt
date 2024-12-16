@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActionScope
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,7 +26,6 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,16 +33,16 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDImeAction
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @Composable
 fun MDWordFieldTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    leadingIcon: Painter?,
+    leadingIcon: MDIconsSet?,
     modifier: Modifier = Modifier,
     label: String = "",
     placeholder: String = label,
@@ -119,7 +117,7 @@ fun <Data : Any> MDWordFieldTextField(
     suggestions: List<Data>,
     suggestionTitle: @Composable Data.() -> String,
     onSelectSuggestion: (Int, Data?) -> Unit,
-    leadingIcon: Painter,
+    leadingIcon: MDIconsSet,
     modifier: Modifier = Modifier,
     suggestionSubtitle: @Composable Data.() -> String? = { null },
     fieldModifier: Modifier = Modifier,
@@ -225,10 +223,7 @@ private fun fieldTrailingIcons(
                 },
                 modifier = Modifier.size(36.dp),
             ) {
-                Icon(
-                    painter = MDIconsSet.Close.currentOutlinedPainter,
-                    contentDescription = null
-                )
+                MDIcon(MDIconsSet.Close) // checked
             }
             IconButton(
                 onClick = {
@@ -236,18 +231,15 @@ private fun fieldTrailingIcons(
                 },
                 modifier = Modifier.size(36.dp),
             ) {
-                Icon(
-                    painter = MDIconsSet.Check.currentOutlinedPainter,
-                    contentDescription = null
-                )
+                MDIcon(MDIconsSet.Check) // checked
             }
         }
     } else null
 }
 
 @Composable
-private fun FieldLeadingIcons(leadingIcon: Painter) {
-    Icon(painter = leadingIcon, contentDescription = null)
+private fun FieldLeadingIcons(leadingIcon: MDIconsSet) {
+    MDIcon(leadingIcon, contentDescription = null)
 }
 
 @Preview
@@ -269,7 +261,7 @@ private fun MDWordFieldTextFieldPreview() {
                     MDWordFieldTextField(
                         value = value,
                         onValueChange = { value = it },
-                        leadingIcon = MDIconsSet.WordMeaning.currentOutlinedPainter,
+                        leadingIcon = MDIconsSet.WordMeaning, // checked
                         placeholder = "Normal Field",
                         index = 1,
                         modifier = Modifier.fillMaxWidth(),
@@ -285,7 +277,7 @@ private fun MDWordFieldTextFieldPreview() {
 
                         },
                         suggestionTitle = { this },
-                        leadingIcon = MDIconsSet.WordMeaning.currentOutlinedPainter,
+                        leadingIcon = MDIconsSet.WordMeaning, // checked
                         placeholder = "Field With suggestions",
                         index = 1,
                         fieldModifier = Modifier.fillMaxWidth(),

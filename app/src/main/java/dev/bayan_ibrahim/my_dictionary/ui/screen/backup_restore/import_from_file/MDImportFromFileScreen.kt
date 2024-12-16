@@ -56,7 +56,6 @@ fun MDImportFromFileScreen(
     MDScreen(
         uiState = uiState,
         modifier = modifier,
-        contentWindowInsets = WindowInsets(8.dp, 8.dp, 8.dp, 8.dp),
         topBar = {
             ImportFromFileTopAppBar()
         },

@@ -15,13 +15,13 @@ enum class MDStatisticsChartTypeTab {
         get() = when (this) {
             LINE -> MDTabData.LabelWithIcon(
                 label = "Line chart",
-                icon = MDIconsSet.LineChart,
+                icon = MDIconsSet.LineChart, // checked
                 key = this
             )
 
             BAR -> MDTabData.LabelWithIcon(
                 label = "Bar chart",
-                icon = MDIconsSet.LineChart,
+                icon = MDIconsSet.LineChart, // checked
                 key = this
             )
         }

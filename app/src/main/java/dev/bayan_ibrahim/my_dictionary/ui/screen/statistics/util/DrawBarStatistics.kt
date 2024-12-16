@@ -63,6 +63,7 @@ fun DrawScope.drawBars(
     valuePadding: Dp = 2.dp,
     radius: Dp = 4.dp,
     valueFormat: (Int) -> String = { it.asFormattedString() },
+    pointsValuesHeight: Map<Int, Float> = emptyMap(),
 ) {
     drawBars(
         values = values,
@@ -75,6 +76,7 @@ fun DrawScope.drawBars(
         gapPercent = gapPercent,
         valuePadding = valuePadding.toPx(),
         cornerRadius = CornerRadius(radius.toPx()),
+        pointsValuesHeight =  pointsValuesHeight,
     )
 }
 
@@ -99,20 +101,22 @@ private fun DrawScope.drawBars(
     gapPercent: Float = 0.5f,
     valuePadding: Float = 2.dp.toPx(),
     cornerRadius: CornerRadius = CornerRadius(4.dp.toPx()),
+
+    pointsValuesHeight: Map<Int, Float> = emptyMap(),
 ) {
     val count = values.count()
     if (count == 0) return
     val barWidth = calculateBarWidth(size.width, values.count(), gapPercent)
-    val (min, max, _) = calculateYAxisStepsFields(
-        valueRange = values.min()..values.max(),
-        labelsCount = yLabelsCount
-    )
+//    val (min, max, _) = calculateYAxisStepsFields(
+//        valueRange = values.min()..values.max(),
+//        labelsCount = yLabelsCount
+//    )
     values.mapIndexed { i, value ->
         Bar(
             length = calculateOutput(
-                input = value.toFloat(),
-                inputRangeStart = min?.toFloat() ?: values.min().toFloat(),
-                inputRangeEnd = max.toFloat(),
+                input = pointsValuesHeight[value] ?: 0f,
+                inputRangeStart = 0f,
+                inputRangeEnd = 1f,
                 outputRangeEnd = size.height,
                 outputRangeStart = 0f,
             ),

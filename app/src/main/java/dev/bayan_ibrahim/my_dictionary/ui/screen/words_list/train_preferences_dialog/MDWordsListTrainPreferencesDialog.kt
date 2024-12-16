@@ -15,7 +15,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,20 +32,21 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
+import dev.bayan_ibrahim.my_dictionary.core.util.removePadding
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListTrainPreferencesTab
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
-import dev.bayan_ibrahim.my_dictionary.ui.util.currentPainter
 
 @Composable
 fun MDWordsListTrainPreferencesDialog(
@@ -162,10 +162,12 @@ private fun WordsOrderBody(
         modifier = modifier,
     ) {
         MDBasicDropDownMenu(
+            modifier = Modifier,
             value = selectedLimit,
-            fieldModifier = Modifier.fillMaxWidth(),
+            fieldModifier = Modifier,
             onValueChange = {},
             fieldReadOnly = true,
+            menuMatchFieldWidth = false,
             allowCancelSelection = false,
             label = "Words Count limit", // TODO, string res
             onSelectSuggestion = { i, limit ->
@@ -230,7 +232,11 @@ private fun <E> CheckableGroup(
                 checked = selected == item,
                 colors = colors.cardColors,
                 leadingIcon = {
-                    Icon(item.currentPainter, null)
+                    MDIcon(
+                        icon = item.icon,
+                        outline = item.outline,
+                        contentDescription = null // the checkable group has a label itself
+                    )
                 },
                 onClick = {
                     onClick(item)

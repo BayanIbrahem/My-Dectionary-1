@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,11 +19,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @Composable
 fun WordDetailsTopAppBar(
@@ -148,18 +147,18 @@ private fun RowScope.EditModeTrailingActions(
     IconButton(
         onClick = onCancel,
     ) {
-        Icon(
-            painter = MDIconsSet.Close.currentOutlinedPainter,
-            contentDescription = "cancel changes"
+        MDIcon(
+            icon = MDIconsSet.Close,
+            contentDescription = "cancel changes" // checked
         ) // TODO, string res
     }
     IconButton(
         onClick = onSave,
         enabled = validWord,
     ) {
-        Icon(
-            painter = MDIconsSet.Save.currentOutlinedPainter,
-            contentDescription = "save word"
+        MDIcon(
+            icon = MDIconsSet.Save,
+            contentDescription = "save word", // checked
         ) // TODO, string res
     }
 
@@ -170,17 +169,17 @@ private fun PreviewModeTrailingActions(onShare: () -> Unit, onEdit: () -> Unit) 
     IconButton(
         onClick = onShare
     ) {
-        Icon(
-            painter = MDIconsSet.Share.currentOutlinedPainter,
-            contentDescription = "share word"
+        MDIcon(
+            icon = MDIconsSet.Share,
+            contentDescription = "share word",// checked
         ) // TODO, string res
     }
     IconButton(
         onClick = onEdit
     ) {
-        Icon(
-            painter = MDIconsSet.Edit.currentOutlinedPainter,
-            contentDescription = "edit word"
+        MDIcon(
+            icon = MDIconsSet.Edit,
+            contentDescription = "edit word",// checked
         ) // TODO, string res
     }
 }

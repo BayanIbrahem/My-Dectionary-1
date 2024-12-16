@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.CompositionLocalProvider
@@ -17,7 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDApp
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryDynamicTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryDynamicTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.LocalIconsPack
 
 @AndroidEntryPoint
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 }
             } else {
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     // TODO, set better loading screen

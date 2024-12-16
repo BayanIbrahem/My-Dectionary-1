@@ -43,6 +43,7 @@ fun Modifier.drawLines(
     lineWidth: Dp = 1.dp,
     calculateHorizontalPadding: (width: Float) -> Pair<Float, Float> = { Pair(0f, 0f) },
     calculateVerticalPadding: (height: Float) -> Pair<Float, Float> = { Pair(0f, 0f) },
+    pointsValuesHeight: Map<Int, Float> = emptyMap(),
 ) = drawWithCache {
     // specs
     val count = charts.requireMatrix() ?: return@drawWithCache onDrawBehind {} // empty list of charts
@@ -54,7 +55,15 @@ fun Modifier.drawLines(
     val vPaddingPx = calculateVerticalPadding(size.height)
     val pointSizePx = pointSize.toPx()
     val lineWidthPx = lineWidth.toPx()
-    val chartsPoints = generateValuesPoints(charts, fcount, hPaddingPx, fmin, fmax, vPaddingPx)
+    val chartsPoints = generateValuesPoints(
+        values = charts,
+        count = fcount,
+        hPaddingPx = hPaddingPx,
+        min = fmin,
+        max = fmax,
+        vPaddingPx = vPaddingPx,
+        pointsValuesHeight = pointsValuesHeight
+    )
 
     val inputIndex = inputPoint?.let { input ->
         calculateOutput(
@@ -135,6 +144,7 @@ private fun CacheDrawScope.generateValuesPoints(
     min: Float,
     max: Float,
     vPaddingPx: Pair<Float, Float>,
+    pointsValuesHeight: Map<Int, Float> = emptyMap(),
 ): List<List<Offset>> {
     val xOutputEnd = size.width - hPaddingPx.second
     val yOutputStart = size.height - vPaddingPx.second
@@ -148,7 +158,15 @@ private fun CacheDrawScope.generateValuesPoints(
                     outputRangeStart = hPaddingPx.first,
                     outputRangeEnd = xOutputEnd
                 ),
-                y = calculateOutput(
+                y = pointsValuesHeight[value]?.let {
+                    calculateOutput(
+                        input = it,
+                        inputRangeStart = 0f,
+                        inputRangeEnd = 1f,
+                        outputRangeStart = yOutputStart,
+                        outputRangeEnd = vPaddingPx.second,
+                    )
+                } ?: calculateOutput(
                     input = value.toFloat(),
                     inputRangeStart = min,
                     inputRangeEnd = max,

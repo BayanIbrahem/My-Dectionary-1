@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
@@ -39,7 +40,6 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSort
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesTab
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import kotlin.math.roundToInt
 
 @Composable
@@ -139,7 +139,7 @@ private fun SearchBody(
         MDWordFieldTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            leadingIcon = MDIconsSet.SearchList.currentOutlinedPainter,
+            leadingIcon = MDIconsSet.SearchList,
             modifier = Modifier.fillMaxWidth(),
             showLabelOnEditMode = true,
             label = "Search Query", // TODO, string res
@@ -198,7 +198,7 @@ private fun FilterBody(
             },
             allowCancelSelection = false,
             suggestionTitle = { this },
-            leadingIcon = MDIconsSet.WordTag.currentOutlinedPainter,
+            leadingIcon = MDIconsSet.WordTag,
             label = "Tag Query", // TODO, string res
             placeholder = "Eg. Food" // TODO, string res
         )
@@ -290,6 +290,10 @@ private fun SortBody(
                     selected = sortBy == selectedSortBy,
                     colors = colors,
                     onClick = { onSelectSortBy(sortBy) },
+                    trailingIcon = {
+                        // item has a label so no need for content description
+                        MDIcon(icon = sortBy.icon, contentDescription = null)
+                    }
                 ) {
                     Text(text = sortBy.label)
                 }
@@ -305,6 +309,10 @@ private fun SortBody(
                     colors = colors,
                     selected = sortByOrder == selectedSortByOrder,
                     onClick = { onSelectSortByOrder(sortByOrder) },
+                    trailingIcon = {
+                        // item has a label so no need for content description
+                        MDIcon(icon = sortByOrder.icon, contentDescription = null)
+                    }
                 ) {
                     Text(text = sortByOrder.label)
                 }

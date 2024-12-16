@@ -18,6 +18,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.asFormattedStr
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.background.MDChartBackground
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.calculateYLabels
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.calculateYOutput
+import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.calculateYPositionsForValues
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.calculateBarChartXLabelHorizontalPaddingPx
 import kotlin.math.abs
 
@@ -82,6 +83,15 @@ fun MDBarChart(
         }
     }
 
+    val pointsValuesHeight by remember(bars, yLabelsValues) {
+        derivedStateOf {
+            calculateYPositionsForValues(
+                values = bars,
+                yLabelsValues = yLabelsValues,
+            )
+        }
+    }
+
     MDChartBackground(
         yLabels = yLabelsText,
         xLabels = xLabelsText,
@@ -115,7 +125,8 @@ fun MDBarChart(
             gapPercent = barGapPercent,
             valuePadding = barValuePadding,
             radius = barCornerRadius,
-            valueFormat = valueFormat
+            valueFormat = valueFormat,
+            pointsValuesHeight = pointsValuesHeight,
         )
     }
 }

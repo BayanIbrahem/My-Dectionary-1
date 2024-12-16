@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -33,9 +32,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 
 @Suppress("InfiniteTransitionLabel", "InfinitePropertiesLabel", "AnimateAsStateLabel")
@@ -106,9 +105,8 @@ fun MDThemeContrastVariantCard(
             )
         }
         val sizeScale by animateFloatAsState(if (selected) 1f else 0f)
-        Icon(
-            painter = MDIconsSet.Verified.currentOutlinedPainter,
-            contentDescription = null,
+        MDIcon(
+            icon = MDIconsSet.Verified, // checked
             modifier = Modifier
                 .size(16.dp)
                 .graphicsLayer {

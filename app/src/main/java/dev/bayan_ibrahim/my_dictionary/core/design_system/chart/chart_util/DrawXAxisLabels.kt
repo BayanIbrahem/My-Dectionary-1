@@ -3,6 +3,8 @@ package dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
@@ -13,6 +15,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.toOffset
+import kotlin.math.cos
+import kotlin.math.sin
 
 const val DefaultRotationDegree = 60f
 fun Modifier.drawXLabels(
@@ -79,7 +83,7 @@ fun DrawScope.drawXLabel(
     val centerOffset = label.calculateCenter(center, size.height)
     translate(
         left = centerOffset.x - label.size.width / 2,
-        top = centerOffset.y + label.size.height
+        top = centerOffset.y + label.size.height / 2
     ) {
         rotate(rotationDegree, label.size.center.toOffset()) {
             drawText(textLayoutResult = label)
@@ -91,3 +95,65 @@ private fun TextLayoutResult.calculateCenter(center: Float, height: Float): Offs
     x = center,
     y = height - size.height / 2,
 )
+
+/**
+ *
+ */
+private fun calculateRotatedRectOf(
+    size: Size,
+    center: Offset,
+    rotationAngle: Float,
+): Rect {
+    // Convert rotation angle to radians
+    val angleRadians = Math.toRadians(rotationAngle.toDouble()).toFloat()
+
+    // Calculate the coordinates of the four corners of the box in its initial orientation
+    val w = size.width / 2
+    val h = size.height / 2
+
+    val topLeft = Offset(center.x - w, center.y - h)
+    val topRight = Offset(center.x + w, center.y - h)
+    val bottomLeft = Offset(center.x - w, center.y + h)
+    val bottomRight = Offset(center.x + w, center.y + h)
+
+    // Function to rotate a point around the origin
+    fun rotatePoint(
+        offset: Offset,
+        angle: Float,
+    ): Offset {
+        val cosTheta = cos(angle)
+        val sinTheta = sin(angle)
+        return Offset(
+            x = offset.x * cosTheta - offset.y * sinTheta,
+            y = offset.x * sinTheta + offset.y * cosTheta
+        )
+    }
+
+    // Rotate each corner of the box
+    val rotatedTopLeft = rotatePoint(topLeft - center, angleRadians) + center
+    val rotatedTopRight = rotatePoint(topRight - center, angleRadians) + center
+    val rotatedBottomLeft = rotatePoint(bottomLeft - center, angleRadians) + center
+    val rotatedBottomRight = rotatePoint(bottomRight - center, angleRadians) + center
+
+    val rotatedXCoords = listOf(
+        rotatedTopLeft.x,
+        rotatedTopRight.x,
+        rotatedBottomLeft.x,
+        rotatedBottomRight.x,
+
+        )
+    val rotatedYCoords = listOf(
+        rotatedTopLeft.y,
+        rotatedTopRight.y,
+        rotatedBottomLeft.y,
+        rotatedBottomRight.y,
+
+        )
+
+    return Rect(
+        top = rotatedYCoords.min(),
+        bottom = rotatedYCoords.max(),
+        left = rotatedXCoords.min(),
+        right = rotatedXCoords.max(),
+    )
+}

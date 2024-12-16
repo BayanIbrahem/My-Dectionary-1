@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -24,17 +22,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 /**
  * this require checking for the value [isSelectionModeOn] before executing functions to prevent rapid clicks during animation
@@ -99,7 +97,7 @@ private fun WordsListTopAppBarNormalMode(
     onDeleteWordSpace: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TopAppBar(
+    MDTopAppBar(
         title = {
             Row(
                 verticalAlignment = Alignment.Bottom,
@@ -126,10 +124,7 @@ private fun WordsListTopAppBarNormalMode(
                     // adjust filter preferences
                 },
             ) {
-                Icon(
-                    painter = MDIconsSet.Train.currentOutlinedPainter,
-                    contentDescription = null
-                )
+                MDIcon(MDIconsSet.Train) // checked
             }
             IconButton(
                 onClick = {
@@ -137,7 +132,7 @@ private fun WordsListTopAppBarNormalMode(
                     // adjust filter preferences
                 },
             ) {
-                Icon(MDIconsSet.Filter.currentOutlinedPainter, null)
+                MDIcon(MDIconsSet.Filter) // checked
             }
             var expanded by remember {
                 mutableStateOf(false)
@@ -155,14 +150,11 @@ private fun WordsListTopAppBarNormalMode(
                     onDismissRequest = dismiss,
                     menuOffset = menuOffset,
                     icon = {
-                        Icon(
-                            painter = MDIconsSet.MoreVert.currentOutlinedPainter,
-                            contentDescription = null
-                        )
+                        MDIcon(MDIconsSet.MoreVert) // checked
                     }
                 ) {
                     MenuItem(
-                        leadingIcon = MDIconsSet.LanguageWordSpace.currentOutlinedPainter,
+                        leadingIcon = MDIconsSet.LanguageWordSpace,
                         text = "Select language page", // TODO, string res
                         onClick = {
                             dismiss()
@@ -171,7 +163,7 @@ private fun WordsListTopAppBarNormalMode(
                     )
 
                     MenuItem(
-                        leadingIcon = MDIconsSet.DeletePermanent.currentOutlinedPainter,
+                        leadingIcon = MDIconsSet.DeletePermanent,
                         text = "Delete word space", // TODO, string res
                         onClick = {
                             dismiss()
@@ -198,10 +190,10 @@ private fun WordsListTopAppBarSelectionMode(
         derivedStateOf { selectedWordsCount > 0 }
     }
 
-    val hasNotSelected by remember(totalWordsCount, selectedWordsCount) {
-        derivedStateOf { totalWordsCount > selectedWordsCount }
-    }
-    TopAppBar(
+//    val hasNotSelected by remember(totalWordsCount, selectedWordsCount) {
+//        derivedStateOf { totalWordsCount > selectedWordsCount }
+//    }
+    MDTopAppBar(
         title = {
             Text("$selectedWordsCount selected of $totalWordsCount") // TODO, string res
         },
@@ -210,10 +202,7 @@ private fun WordsListTopAppBarSelectionMode(
             IconButton(
                 onClick = onClearSelection
             ) {
-                Icon(
-                    painter = MDIconsSet.Close.currentOutlinedPainter,
-                    contentDescription = null
-                )
+                MDIcon(MDIconsSet.Close)
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -239,14 +228,11 @@ private fun WordsListTopAppBarSelectionMode(
                     onDismissRequest = dismiss,
                     menuOffset = menuOffset,
                     icon = {
-                        Icon(
-                            painter = MDIconsSet.MoreVert.currentOutlinedPainter,
-                            contentDescription = null
-                        )
+                        MDIcon(MDIconsSet.MoreVert)
                     }
                 ) {
                     MenuItem(
-                        leadingIcon = MDIconsSet.Delete.currentOutlinedPainter,
+                        leadingIcon = MDIconsSet.Delete,
                         text = "Delete Selection", // TODO, string res
                         onClick = {
                             dismiss()
@@ -264,7 +250,7 @@ private fun WordsListTopAppBarSelectionMode(
 @Composable
 private fun ColumnScope.MenuItem(
     text: String,
-    leadingIcon: Painter,
+    leadingIcon: MDIconsSet,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -277,7 +263,7 @@ private fun ColumnScope.MenuItem(
         onClick = onClick,
         modifier = modifier,
         leadingIcon = {
-            Icon(leadingIcon, contentDescription = null)
+            MDIcon(leadingIcon, contentDescription = null)
         },
         enabled = enabled,
         colors = if (important) {

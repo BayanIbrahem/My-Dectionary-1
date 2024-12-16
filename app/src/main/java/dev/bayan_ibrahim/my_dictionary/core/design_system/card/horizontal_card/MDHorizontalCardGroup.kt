@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,10 +22,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 data object MDHorizontalCardGroupDefaults {
     val shape: CornerBasedShape
@@ -157,8 +156,8 @@ private fun MDHorizontalCardGroupPreview() {
             ) {
                 MDHorizontalCardGroup {
                     item(
-                        leadingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
-                        trailingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
+                        leadingIcon = { MDIcon(MDIconsSet.Check) }, // checked
+                        trailingIcon = { MDIcon(MDIconsSet.Check) }, // checked
                         enabled = true,
                         subtitle = {
                             Text("subtitle")
@@ -167,8 +166,8 @@ private fun MDHorizontalCardGroupPreview() {
                         Text("title")
                     }
                     item(
-                        leadingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
-                        trailingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
+                        leadingIcon = { MDIcon(MDIconsSet.Check) }, // checked
+                        trailingIcon = { MDIcon(MDIconsSet.Check) }, // checked
                         enabled = false,
                         subtitle = {
                             Text("subtitle")
@@ -178,7 +177,7 @@ private fun MDHorizontalCardGroupPreview() {
                     }
                     item(
                         leadingIcon = {},
-                        trailingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
+                        trailingIcon = { MDIcon(MDIconsSet.Check) }, // checked
                         enabled = true,
                         subtitle = {
                             Text("subtitle")
@@ -187,7 +186,7 @@ private fun MDHorizontalCardGroupPreview() {
                         Text("title")
                     }
                     item(
-                        leadingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
+                        leadingIcon = { MDIcon(MDIconsSet.Check) }, // checked
                         trailingIcon = {},
                         enabled = true,
                         subtitle = {
@@ -198,8 +197,8 @@ private fun MDHorizontalCardGroupPreview() {
                     }
 
                     item(
-                        leadingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
-                        trailingIcon = { Icon(MDIconsSet.Check.currentOutlinedPainter, null) },
+                        leadingIcon = { MDIcon(MDIconsSet.Check) }, // checked
+                        trailingIcon = { MDIcon(MDIconsSet.Check) }, // checked
                         enabled = true,
                     ) {
                         Text("title")

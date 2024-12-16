@@ -3,7 +3,6 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -18,7 +17,7 @@ import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component.MDAppThemeTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component.MDThemeCard
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component.MDThemeCardDefaults
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrast
 
@@ -31,7 +30,6 @@ fun MDAppThemeScreen(
     MDScreen(
         uiState = uiState,
         modifier = modifier,
-        contentWindowInsets = WindowInsets(8.dp, 8.dp, 8.dp, 8.dp),
         topBar = {
             MDAppThemeTopAppBar()
         },

@@ -29,7 +29,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.drawC
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.drawXLabels
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.drawYLabels
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.drawBars
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import kotlin.random.Random
 
 @Composable
@@ -128,8 +128,16 @@ fun MDChartBackground(
             yLabels.maxOf { it.size.width }.div(density.density).dp + yLabelBlankEndPadding
         }
     }
+    val bottomPadding by remember(xLabels) {
+        derivedStateOf {
+            xLabels.maxOf {
+                it.size.height.div(density.density).dp
+            }
+        }
+    }
     Box(
         modifier = modifier
+            .padding(bottom = bottomPadding)
             .drawYLabels(
                 values = yLabels,
                 bottomPadding = 0.dp // TODO, calculate correct value

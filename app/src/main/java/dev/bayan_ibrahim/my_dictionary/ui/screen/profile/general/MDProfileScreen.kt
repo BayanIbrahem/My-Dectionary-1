@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -15,13 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.component.MDProfileTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @Composable
 fun MDProfileScreen(
@@ -66,7 +65,7 @@ private fun BackupAndRestoreGroup(
         item(
             onClick = onClickImportFromFile,
             leadingIcon = {
-                Icon(MDIconsSet.ImportFromFile.currentOutlinedPainter, null)
+                MDIcon(MDIconsSet.ImportFromFile, contentDescription = null) // checked
             }
         ) {
             Text("Import from file")// TODO, string res
@@ -76,7 +75,7 @@ private fun BackupAndRestoreGroup(
             onClick = onClickExportToFile,
             enabled = false, // TODO, not implemented yet
             leadingIcon = {
-                Icon(MDIconsSet.ExportToFile.currentOutlinedPainter, null)
+                MDIcon(MDIconsSet.ExportToFile, contentDescription = null) // checked
             }
         ) {
             Text("Export to file")// TODO, string res
@@ -86,7 +85,7 @@ private fun BackupAndRestoreGroup(
             onClick = onClickSync,
             enabled = false, // TODO, not implemented yet
             leadingIcon = {
-                Icon(MDIconsSet.Sync.currentOutlinedPainter, null)
+                MDIcon(MDIconsSet.Sync, contentDescription = null) // checked
             },
         ) {
             Text("Sync")// TODO, string res
@@ -109,7 +108,7 @@ private fun ThemeGroup(
         item(
             onClick = onClickAppTheme,
             leadingIcon = {
-                Icon(MDIconsSet.Colors.currentOutlinedPainter, contentDescription = null)
+                MDIcon(icon = MDIconsSet.Colors, contentDescription = null) // checked
             }
         ) {
             // TODO, string resource

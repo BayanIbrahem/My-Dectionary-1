@@ -26,14 +26,14 @@ sealed interface MDDestination {
         enum class Enum(
             override val icon: MDIconsSet,
         ) : IconedEnum {
-            WordsList(MDIconsSet.WordsList),
+            WordsList(MDIconsSet.WordsList), // checked
 
             /**
              * same of [MDDestination.Statistics] but this take the [MDStatisticsViewPreferences.Date] preferences
              */
-            Statistics(MDIconsSet.Statistics),
-            Profile(MDIconsSet.Profile),
-            WordSpace(MDIconsSet.LanguageWordSpace);
+            Statistics(MDIconsSet.Statistics), // checked
+            Profile(MDIconsSet.Profile), // checked
+            WordSpace(MDIconsSet.LanguageWordSpace); // checked
 
             val route
                 get() = when (this) {

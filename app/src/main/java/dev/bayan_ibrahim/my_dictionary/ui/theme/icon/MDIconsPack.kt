@@ -3,7 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.theme.icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.icon_set.geDefaultIcon
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.icon_set.getDefaultIcon
 
 val LocalIconsPack: ProvidableCompositionLocal<MDIconsPack> = compositionLocalOf { MDIconsPack.Default }
 
@@ -15,6 +15,6 @@ enum class MDIconsPack {
 
     @Composable
     fun getIcon(icon: MDIconsSet): MDIcon = when(this) {
-        Default -> icon.geDefaultIcon()
+        Default -> icon.getDefaultIcon()
     }
 }

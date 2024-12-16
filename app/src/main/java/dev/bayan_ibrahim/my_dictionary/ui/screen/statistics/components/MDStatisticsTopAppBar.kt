@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -22,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.util.removePadding
@@ -29,9 +29,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.MDStatisticsMostR
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.label
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +51,7 @@ fun MDStatisticsTopAppBar(
             true
         }
     }
-    TopAppBar(
+    MDTopAppBar(
         title = {
             Text("Train Statistics")
         },
@@ -72,10 +71,7 @@ fun MDStatisticsTopAppBar(
                                 expandDropDownMenu = true
                             }
                         ) {
-                            Icon(
-                                MDIconsSet.MoreVert.currentOutlinedPainter,
-                                contentDescription = null
-                            )
+                            MDIcon(MDIconsSet.MoreVert) // checked
                         }
                     }
                 ) {
@@ -142,10 +138,7 @@ private fun MDMostRecentTrainHistoryActions(
     ) {
         item(
             leadingIcon = {
-                Icon(
-                    painter = MDIconsSet.LatestTrainsCount.currentOutlinedPainter,
-                    contentDescription = null
-                )
+                MDIcon(MDIconsSet.LatestTrainsCount, contentDescription = null) // checked
             }
         ) {
             Text("View Preferences")
@@ -159,10 +152,7 @@ private fun MDMostRecentTrainHistoryActions(
                     it == count
                 }?.let {
                     {
-                        Icon(
-                            painter = MDIconsSet.Check.currentOutlinedPainter,
-                            contentDescription = null,
-                        )
+                        MDIcon(MDIconsSet.Check, contentDescription = null) // checked
                     }
                 }
             ) {
@@ -183,10 +173,7 @@ private fun MDDateUnitActions(
     ) {
         item(
             leadingIcon = {
-                Icon(
-                    painter = MDIconsSet.TrainHistoryDateGroup.currentOutlinedPainter,
-                    contentDescription = null
-                )
+                MDIcon(MDIconsSet.TrainHistoryDateGroup, contentDescription = null) // checked
             }
         ) {
             Text("View Preferences")
@@ -198,10 +185,7 @@ private fun MDDateUnitActions(
                 },
                 trailingIcon = unit.takeIf { it == dateUnit }?.let {
                     {
-                        Icon(
-                            painter = MDIconsSet.Check.currentOutlinedPainter,
-                            contentDescription = null
-                        )
+                        MDIcon(MDIconsSet.Check, contentDescription = null) //checked
                     }
                 }
             ) {

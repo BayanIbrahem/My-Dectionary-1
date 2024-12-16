@@ -16,10 +16,12 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.asFormattedString
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutput
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.background.MDChartBackground
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.defaultColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.calculateYLabels
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.calculateYOutput
+import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.calculateYPositionsForValues
 import kotlin.math.abs
 
 @Composable
@@ -73,27 +75,27 @@ fun MDLineChart(
     val xLabelsText by remember(xLabels) {
         derivedStateOf {
             xLabels.map {
-                textMeasurer.measure(it, style = xLabelTextStyle.copy(color = yLabelColor))
+                textMeasurer.measure(it, style = xLabelTextStyle.copy(color = xLabelColor))
             }
         }
     }
-    val calculateVerticalPadding: (height: Float) -> Pair<Float, Float> by remember(yLabelsValues, chartsMinValue, chartsMaxValue) {
-        derivedStateOf {
-            with(density) {
-                { height ->
-                    val yLabelHeight = yLabelTextStyle.lineHeight.toPx()
-
-                    calculateChartContentVerticalPadding(
-                        yLabelHeight = yLabelHeight,
-                        yLabels = yLabelsValues,
-                        min = chartsMinValue,
-                        max = chartsMaxValue,
-                        height = height
-                    )
-                }
-            }
-        }
-    }
+//    val calculateVerticalPadding: (height: Float) -> Pair<Float, Float> by remember(yLabelsValues, chartsMinValue, chartsMaxValue) {
+//        derivedStateOf {
+//            with(density) {
+//                { height ->
+//                    val yLabelHeight = yLabelTextStyle.lineHeight.toPx()
+//
+//                    calculateChartContentVerticalPadding(
+//                        yLabelHeight = yLabelHeight,
+//                        yLabels = yLabelsValues,
+//                        min = chartsMinValue,
+//                        max = chartsMaxValue,
+//                        height = height
+//                    )
+//                }
+//            }
+//        }
+//    }
     val edgedXLabels by remember(xLabelsText) {
         derivedStateOf {
             xLabelsText.takeIf {
@@ -113,6 +115,14 @@ fun MDLineChart(
                     )
                 } ?: Pair(0f, 0f)
             }
+        }
+    }
+    val pointsValuesHeight by remember(charts, yLabelsValues) {
+        derivedStateOf {
+            calculateYPositionsForValues(
+                values = charts.flatten(),
+                yLabelsValues = yLabelsValues
+            )
         }
     }
 
@@ -142,7 +152,8 @@ fun MDLineChart(
             pointSize = pointSize,
             lineWidth = chartLineWidth,
             calculateHorizontalPadding = horizontalPadding,
-            calculateVerticalPadding = calculateVerticalPadding
+//            calculateVerticalPadding = calculateVerticalPadding,
+            pointsValuesHeight = pointsValuesHeight,
         )
     }
 }

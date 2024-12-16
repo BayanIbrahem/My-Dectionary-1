@@ -11,12 +11,12 @@ enum class WordsListTrainTarget(
 ) : LabeledEnum, IconedEnum {
     Meaning(
         strLabel = "On Meaning",
-        icon = MDIconsSet.WordMeaning
+        icon = MDIconsSet.WordMeaning // checked
     ), // TODO, string res
 
     Translation(
         strLabel = "On Translation",
-        icon = MDIconsSet.WordTranslation
+        icon = MDIconsSet.WordTranslation // checked
     ),// TODO, string res
 }
 

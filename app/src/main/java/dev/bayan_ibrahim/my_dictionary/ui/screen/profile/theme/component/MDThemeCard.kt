@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.MDThemeCardData
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrast
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrastType

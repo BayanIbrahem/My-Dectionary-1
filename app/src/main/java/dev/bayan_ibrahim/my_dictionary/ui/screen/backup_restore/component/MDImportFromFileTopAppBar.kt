@@ -5,13 +5,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImportFromFileTopAppBar(
     modifier: Modifier = Modifier,
 ) {
-    TopAppBar(
+    MDTopAppBar(
         modifier = modifier,
         title = {
             Text("Import From file")

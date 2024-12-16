@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import kotlin.math.max
 import kotlin.math.min
 

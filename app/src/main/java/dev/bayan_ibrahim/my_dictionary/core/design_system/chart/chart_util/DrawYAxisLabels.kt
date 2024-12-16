@@ -113,7 +113,7 @@ fun DrawScope.drawLabelsForIntRangeOnXAxis(
     bottomPadding: Float = 15.dp.toPx(),
 ) {
     val top = 0f
-    val bottom = size.height - bottomPadding
+    val bottom = size.height
     val count = values.count()
     // 0..5 ->
     // 0 - 1 - 3 - 5 - 7 - 8
@@ -123,7 +123,7 @@ fun DrawScope.drawLabelsForIntRangeOnXAxis(
             textLayoutResult = value,
             topLeft = Offset(
                 x = 0f,
-                y = calculateYOutput(index, count, top, bottom)
+                y = calculateYOutput(index, count, top, bottom) - value.size.height / 2f
             ),
         )
     }

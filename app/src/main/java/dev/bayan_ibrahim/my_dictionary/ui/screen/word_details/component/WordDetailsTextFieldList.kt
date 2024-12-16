@@ -19,11 +19,12 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.core.ui.UnavailableComponentHint
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
 fun LazyListScope.wordDetailsTextFieldList(
     items: Map<Long, String>,
     onItemValueChange: (Long, String) -> Unit,
-    leadingIcon: @Composable () -> Painter,
+    leadingIcon: MDIconsSet,
     groupLabel: String,
     itemModifier: Modifier = Modifier,
     itemsPlaceholder: String = "Add (leave blank to delete)",// TODO, string res
@@ -49,7 +50,7 @@ fun LazyListScope.wordDetailsTextFieldList(
         MDWordFieldTextField(
             value = value,
             onValueChange = onValueChange,
-            leadingIcon = leadingIcon(),
+            leadingIcon = leadingIcon,
             modifier = itemModifier
                 .fillMaxWidth()
                 .animateItem(),
@@ -74,7 +75,7 @@ fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
     onItemValueChange: (Long, String) -> Unit,
     typeRelations: List<WordTypeTagRelation>?,
     onSelectRelation: (Long, WordTypeTagRelation) -> Unit,
-    leadingIcon: @Composable () -> Painter,
+    leadingIcon: MDIconsSet,
     groupLabel: String,
     itemModifier: Modifier = Modifier,
     relationPlaceholder: String = "Relation",// TODO, string res
@@ -127,7 +128,7 @@ fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
                     suggestionTitle = {
                         this.label
                     },
-                    leadingIcon = leadingIcon(),
+                    leadingIcon = leadingIcon,
                     label = label,
                     modifier = Modifier.weight(1f),
                     showLabelOnPreviewMode = isFirst,

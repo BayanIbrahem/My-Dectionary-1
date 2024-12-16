@@ -16,7 +16,6 @@ import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -40,9 +39,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDImeAction
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 object MDTextFieldDefaults {
     val shape: CornerBasedShape
@@ -268,13 +266,13 @@ private fun MDTextFieldPreview() {
                             onClick = {},
                             modifier = Modifier.size(36.dp)
                         ) {
-                            Icon(MDIconsSet.Share.currentOutlinedPainter, null)
+                            MDIcon(MDIconsSet.Share) // checked
                         }
                         IconButton(
                             onClick = {},
                             modifier = Modifier.size(36.dp)
                         ) {
-                            Icon(MDIconsSet.Share.currentOutlinedPainter, null)
+                            MDIcon(MDIconsSet.Share) // checked
                         }
                     },
                     trailingIcons = {
@@ -282,17 +280,16 @@ private fun MDTextFieldPreview() {
                             onClick = {},
                             modifier = Modifier.size(36.dp)
                         ) {
-                            Icon(MDIconsSet.Share.currentOutlinedPainter, null)
+                            MDIcon(MDIconsSet.Share) // checked
                         }
                         IconButton(
                             onClick = {},
                             modifier = Modifier.size(36.dp)
                         ) {
-                            Icon(MDIconsSet.Share.currentOutlinedPainter, null)
+                            MDIcon(MDIconsSet.Share) // checked
                         }
                     },
-
-                    )
+                )
             }
         }
     }

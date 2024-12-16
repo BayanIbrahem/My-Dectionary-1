@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardTextStyle
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Composable
 fun MDAlertDialog(

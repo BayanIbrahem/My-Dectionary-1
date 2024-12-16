@@ -1,6 +1,9 @@
-package dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors
+package dev.bayan_ibrahim.my_dictionary.ui.theme
 
 import android.os.Build
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -9,11 +12,12 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import dev.bayan_ibrahim.my_dictionary.ui.theme.Typography
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeVariant
 
 val DefaultDarkColorScheme = darkColorScheme(
@@ -80,7 +84,30 @@ fun MyDictionaryDynamicTheme(
             if (isDark) darkColorScheme else lightColorScheme
         }
     }
+    val context = LocalContext.current as ComponentActivity
+    DisposableEffect(isDark, colorScheme) {
+        val lightStyle = SystemBarStyle.light(
+            colorScheme.surface.toArgb(),
+            colorScheme.surface.toArgb(),
+        )
+        val darkStyle = SystemBarStyle.dark(
+            colorScheme.surfaceContainer.toArgb(),
+        )
+        context.enableEdgeToEdge(
+            statusBarStyle = if (!isDark) {
+                lightStyle
+            } else {
+                darkStyle
+            },
+            navigationBarStyle = if (!isDark) {
+                lightStyle
+            } else {
+                darkStyle
+            }
+        )
 
+        onDispose { }
+    }
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,

@@ -19,13 +19,13 @@ interface LabeledEnum {
 @Suppress("unused")
 interface IconedEnum {
     val icon: MDIconsSet
-    val outlined: Boolean
+    val outline: Boolean
         get() = true
 }
 
 val IconedEnum.currentPainter: Painter
     @Composable
-    get() = if (outlined) {
+    get() = if (outline) {
         icon.currentOutlinedPainter
     } else {
         icon.currentFilledPainter

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,10 +40,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentFilledPainter
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 
 data object MDTabRowDefaults {
@@ -142,6 +139,7 @@ fun <K : Any> MDTabRow(
     ) {
         it.inc().toFloat().div(tabsCount)
     }
+    // TODO, fix animation
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -208,14 +206,12 @@ fun <K : Any> RowScope.MDTab(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         data.icon?.let { icon ->
-            Icon(
-                painter = if (data.outlinedIcon) {
-                    icon.currentOutlinedPainter
-                } else {
-                    icon.currentFilledPainter
-                },
-                contentDescription = null,
-                tint = color
+            MDIcon(
+                icon = icon,
+                outline = data.outlinedIcon,
+                tint = color,
+                // if the tab has label then there is no need for icon content description
+                contentDescription = if (data.label == null) "" else null
             )
         }
         data.label?.let { label ->
@@ -271,8 +267,8 @@ private fun MDTabRowPreview() {
                 MDTabRow(
                     tabs = listOf(
                         MDTabData.Label("label only"),
-                        MDTabData.Icon(MDIconsSet.WordsList),
-                        MDTabData.LabelWithIcon("label with icon", MDIconsSet.WordsList),
+                        MDTabData.Icon(MDIconsSet.WordsList), // checked
+                        MDTabData.LabelWithIcon("label with icon", MDIconsSet.WordsList), // checked
                     ),
                     selectedTabIndex = selectedTabIndex,
                     onClickTab = { i, _ ->

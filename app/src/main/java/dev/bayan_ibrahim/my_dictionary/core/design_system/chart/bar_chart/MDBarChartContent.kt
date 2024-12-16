@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.asFormattedString
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.background.MDChartBackground
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.drawBars
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import kotlin.random.Random
 
 val defaultColors = listOf(
@@ -43,6 +43,7 @@ fun MDBarChartContent(
     valuePadding: Dp = 2.dp,
     radius: Dp = 4.dp,
     valueFormat: (Int) -> String = { it.asFormattedString() },
+    pointsValuesHeight: Map<Int, Float> = emptyMap(),
 ) {
     Canvas(modifier = modifier.fillMaxSize()) {
         drawBars(
@@ -55,6 +56,7 @@ fun MDBarChartContent(
             valuePadding = valuePadding,
             radius = radius,
             valueFormat = valueFormat,
+            pointsValuesHeight = pointsValuesHeight,
         )
     }
 }

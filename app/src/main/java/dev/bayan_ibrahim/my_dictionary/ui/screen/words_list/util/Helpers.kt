@@ -16,10 +16,13 @@ enum class MDWordsListSearchTarget(
     All(strLabel = "Meaning and translations", includeMeaning = true, includeTranslation = true);// TODO, string res
 }
 
-enum class MDWordsListViewPreferencesSortBy(override val strLabel: String) : LabeledEnum {
-    Meaning("Meaning"),// TODO, string res
-    Translation("Translation"),// TODO, string res
-    LearningProgress("Learning Progress");// TODO, string res
+enum class MDWordsListViewPreferencesSortBy(
+    override val strLabel: String,
+    override val icon: MDIconsSet,
+) : LabeledEnum, IconedEnum {
+    Meaning("Meaning", MDIconsSet.WordMeaning),// TODO, string res // checked
+    Translation("Translation", MDIconsSet.WordTranslation),// TODO, string res // checked
+    LearningProgress("Learning Progress", MDIconsSet.LearningProgress);// TODO, string res // checked
 //    CreatedAt, // TODO, coming soon
 //    UpdatedAt
 }
@@ -28,10 +31,10 @@ enum class WordsListTrainPreferencesSortBy(
     override val strLabel: String,
     override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
-    LearningProgress("Learning Progress", MDIconsSet.LearningProgress),
-    TrainingTime("Training Time", MDIconsSet.TrainTime),
-    CreateTime("Create Time", MDIconsSet.CreateTime),
-    Random("Random", MDIconsSet.Random);
+    LearningProgress("Learning Progress", MDIconsSet.LearningProgress), // checked
+    TrainingTime("Training Time", MDIconsSet.TrainTime),// checked
+    CreateTime("Create Time", MDIconsSet.CreateTime),// checked
+    Random("Random", MDIconsSet.Random);// checked
 
     @Composable
     fun orderLabel(order: MDWordsListSortByOrder): String = when (order) {
@@ -59,11 +62,11 @@ enum class MDWordsListSortByOrder(
 ) : LabeledEnum, IconedEnum {
     Asc(
         strLabel = "Asc",
-        icon = MDIconsSet.AscSort
+        icon = MDIconsSet.AscSort // checked
     ), // TODO, string res
     Desc(
         strLabel = "Desc",
-        icon = MDIconsSet.DescSort
+        icon = MDIconsSet.DescSort // checked
     ), // TODO, string res
 }
 

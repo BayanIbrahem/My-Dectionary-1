@@ -21,6 +21,7 @@ import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDSimpleLanguageSelectionDialog
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
+import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.MDWordSpaceTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.MDWordSpaceListItem
 
 @Composable
@@ -61,6 +62,9 @@ fun MDWordSpaceScreen(
     MDScreen(
         uiState = uiState,
         modifier = modifier,
+        topBar = {
+            MDWordSpaceTopAppBar()
+        }
     ) {
         LazyVerticalGrid(
             verticalArrangement = Arrangement.spacedBy(16.dp),

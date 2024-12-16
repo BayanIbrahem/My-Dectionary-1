@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,8 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyPagingGridItems
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -47,6 +50,7 @@ fun MDWordsListScreen(
         invalidDataMessage = "Select a language to start", // TODO, string res
         topBar = {
             MDWordsListTopAppBar(
+                modifier = Modifier.background(Color.Green),
                 isSelectionModeOn = uiState.isSelectModeOn,
                 language = uiState.selectedWordSpace.language,
                 selectedWordsCount = selectedWordsCount,
@@ -66,7 +70,7 @@ fun MDWordsListScreen(
                         uiActions.navigateToWordDetails(null)
                     }
                 ) {
-                    Icon(MDIconsSet.Add.currentOutlinedPainter, null)
+                    MDIcon(MDIconsSet.Add) // checked
                 }
             }
         }

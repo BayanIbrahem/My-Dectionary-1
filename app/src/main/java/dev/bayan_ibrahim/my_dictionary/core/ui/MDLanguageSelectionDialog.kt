@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,15 +33,15 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -193,10 +192,7 @@ private fun LanguageSearchBar(
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         ),
         leadingIcons = {
-            Icon(
-                painter = MDIconsSet.Search.currentOutlinedPainter,
-                contentDescription = null
-            )
+            MDIcon(MDIconsSet.Search, contentDescription = null)  // field has already label // checked
         },
         trailingIcons = {
             IconButton(
@@ -204,10 +200,7 @@ private fun LanguageSearchBar(
                     onQueryChange("")
                 }
             ) {
-                Icon(
-                    painter = MDIconsSet.Close.currentOutlinedPainter,
-                    contentDescription = null
-                )
+                MDIcon(MDIconsSet.Close) // checked
             }
         }
     )

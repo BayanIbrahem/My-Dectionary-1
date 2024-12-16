@@ -8,8 +8,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.getSelectedThemeIdentifier
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.DefaultDarkColorScheme
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.DefaultLightColorScheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.DefaultDarkColorScheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.DefaultLightColorScheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsPack
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeVariant
 import kotlinx.coroutines.flow.SharingStarted

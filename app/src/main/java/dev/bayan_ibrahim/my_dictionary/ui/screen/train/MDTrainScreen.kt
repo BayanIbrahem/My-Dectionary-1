@@ -11,7 +11,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
@@ -47,9 +47,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordAnswer
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.toAnswer
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.train.component.MDTrainTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 @Composable
 fun MDTrainScreen(
@@ -182,10 +181,7 @@ private fun WordSelectAnswerTrainPage(
                     },
                     leadingContent = {
                         if (selected) {
-                            Icon(
-                                MDIconsSet.Check.currentOutlinedPainter,
-                                contentDescription = null
-                            )
+                            MDIcon(MDIconsSet.Check) // checked
                         } else {
                             Box(modifier = Modifier.width(24.dp))
                         }
@@ -301,10 +297,7 @@ private fun QuestionPagePart(
                 Text("Submit answer") // TODO, string res
             },
             trailingIcon = {
-                Icon(
-                    painter = MDIconsSet.ArrowForward.currentOutlinedPainter,
-                    contentDescription = null
-                )
+                MDIcon(MDIconsSet.ArrowForward, contentDescription = null) // checked
             }
         )
     }

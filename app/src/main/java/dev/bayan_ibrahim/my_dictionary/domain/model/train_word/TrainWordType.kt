@@ -14,13 +14,13 @@ enum class TrainWordType(
 ) : LabeledEnum, IconedEnum {
     SelectWordMeaning(
         strLabel = "Select Word",
-        icon = MDIconsSet.WordTrainSelectType,
+        icon = MDIconsSet.WordTrainSelectType, // checked
         key = 0
     ), // TODO, string res
 
     WriteWord(
         strLabel = "Write Word",
-        icon = MDIconsSet.WordTrainWriteType,
+        icon = MDIconsSet.WordTrainWriteType, // checked
         key = 2,
     ); // TODO, string res
 

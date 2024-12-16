@@ -21,7 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +46,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableFiel
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
@@ -56,9 +55,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -89,7 +87,11 @@ fun MDWordSpaceListItem(
     var editingTextFieldInitialValue by remember {
         mutableStateOf("")
     }
+    var isTagEditField by remember {
+        mutableStateOf(true)
+    }
     WordsSpaceFieldEditDialog(
+        isTag = isTagEditField,
         showDialog = state.isEditDialogShown,
         onDismiss = actions::onHideDialog,
         onConfirm = { newValue ->
@@ -135,21 +137,21 @@ fun MDWordSpaceListItem(
                         onClick = actions::onCancel,
                         enabled = isEditable,
                     ) {
-                        Icon(painter = MDIconsSet.Close.currentOutlinedPainter, contentDescription = null)
+                        MDIcon(MDIconsSet.Close) // checked
                     }
 
                     IconButton(
                         onClick = actions::onSubmit,
                         enabled = isEditable,
                     ) {
-                        Icon(painter = MDIconsSet.Check.currentOutlinedPainter, contentDescription = null) // TODO, string res
+                        MDIcon(MDIconsSet.Check) // checked
                     }
                 } else {
                     IconButton(
                         onClick = actions::onEnableEditMode,
                         enabled = isEditable,
                     ) {
-                        Icon(painter = MDIconsSet.Edit.currentOutlinedPainter, contentDescription = null)
+                        MDIcon(MDIconsSet.Edit) // checked
                     }
                 }
             }
@@ -185,6 +187,7 @@ fun MDWordSpaceListItem(
                             actions.onEditTag(tagIndex, newValue)
                         }
                         editingTextFieldInitialValue = tag.current.name
+                        isTagEditField = true
                         actions.onShowDialog()
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -218,6 +221,7 @@ fun MDWordSpaceListItem(
                                 onConfirmEditField = { newValue ->
                                     actions.onEditTagRelation(tagIndex, relationIndex, newValue)
                                 }
+                                isTagEditField = false
                                 editingTextFieldInitialValue = relation.label
                                 actions.onShowDialog()
                             },
@@ -250,6 +254,7 @@ fun MDWordSpaceListItem(
                                 actions.onAddTagRelation(tagIndex, newValue)
                             }
                             editingTextFieldInitialValue = ""
+                            isTagEditField = false
                             actions.onShowDialog()
                         },
                         modifier = Modifier
@@ -279,6 +284,7 @@ fun MDWordSpaceListItem(
                         onConfirmEditField = { newValue ->
                             actions.onAddTag(newValue)
                         }
+                        isTagEditField = true
                         editingTextFieldInitialValue = ""
                         actions.onShowDialog()
                     },
@@ -358,18 +364,12 @@ private fun WordSpaceEditableTagListItem(
                 Row {
                     if (showOnDelete) {
                         IconButton(onDelete, modifier = Modifier.size(36.dp)) {
-                            Icon(
-                                painter = MDIconsSet.Delete.currentOutlinedPainter,
-                                contentDescription = null
-                            )
+                            MDIcon(MDIconsSet.Delete) // checked
                         }
                     }
                     if (showOnReset) {
                         IconButton(onReset, modifier = Modifier.size(36.dp)) {
-                            Icon(
-                                painter = MDIconsSet.Reset.currentOutlinedPainter,
-                                contentDescription = null
-                            )
+                            MDIcon(MDIconsSet.Reset) // checked
                         }
                     }
                 }
@@ -426,9 +426,9 @@ private fun WordsSpaceFieldEditDialog(
             value = value,
             onChangeValue = { value = it },
             leadingIcon = if (isTag) {
-                MDIconsSet.WordTypeTag.currentOutlinedPainter
+                MDIconsSet.WordTypeTag // checked
             } else {
-                MDIconsSet.WordRelatedWords.currentOutlinedPainter
+                MDIconsSet.WordRelatedWords // checked
             },
             placeholder = if (isTag) "Word Type Tag name" else "Word Type Tag Relation label", // TODO, string res
         )
@@ -439,7 +439,7 @@ private fun WordsSpaceFieldEditDialog(
 private fun WordSpaceTagInputField(
     value: String,
     onChangeValue: (String) -> Unit,
-    leadingIcon: Painter,
+    leadingIcon: MDIconsSet,
     placeholder: String,
     modifier: Modifier = Modifier,
 ) {
@@ -450,7 +450,7 @@ private fun WordSpaceTagInputField(
         placeholder = placeholder,
         maxLines = 1,
         leadingIcons = {
-            Icon(painter = leadingIcon, contentDescription = null)
+            MDIcon(leadingIcon, contentDescription = null)
         }
     )
 }

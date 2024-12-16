@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,13 +39,13 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDropDownMenuDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileType
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.endOnly
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import dev.bayan_ibrahim.my_dictionary.ui.theme.startOnly
 
 @Composable
@@ -247,10 +246,7 @@ private fun FileTypeDropDown(
         modifier = modifier,
         fieldModifier = Modifier.requiredWidth(120.dp),
         trailingIcons = {
-            Icon(
-                MDIconsSet.ArrowDropdown.currentOutlinedPainter,
-                contentDescription = null
-            )
+            MDIcon(MDIconsSet.ArrowDropdown, contentDescription = null) // checked
         },
         menuMatchFieldWidth = false,
         fieldReadOnly = true,

@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors
+package dev.bayan_ibrahim.my_dictionary.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

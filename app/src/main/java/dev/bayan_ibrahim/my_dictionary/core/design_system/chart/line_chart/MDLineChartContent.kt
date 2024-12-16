@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.background.MDChartBackground
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.defaultColors
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.drawLines
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Composable
 fun MDLineChartContent(
@@ -42,6 +42,7 @@ fun MDLineChartContent(
     lineWidth: Dp = 1.dp,
     calculateHorizontalPadding: (width: Float) -> Pair<Float, Float> = { Pair(0f, 0f) },
     calculateVerticalPadding: (Float) -> Pair<Float, Float> = { Pair(0f, 0f) },
+    pointsValuesHeight: Map<Int, Float> = emptyMap(),
 ) {
     var inputPoint: Offset? by remember {
         mutableStateOf(null)
@@ -67,7 +68,8 @@ fun MDLineChartContent(
                 pointSize = pointSize,
                 lineWidth = lineWidth,
                 calculateHorizontalPadding = calculateHorizontalPadding,
-                calculateVerticalPadding = calculateVerticalPadding
+                calculateVerticalPadding = calculateVerticalPadding,
+                pointsValuesHeight = pointsValuesHeight,
             )
     )
 }

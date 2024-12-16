@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -48,6 +47,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.MDN
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.safeSubList
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
@@ -58,9 +58,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
@@ -339,10 +338,7 @@ private fun MDWordListItemPreview() {
                         IconButton(onClick = {
                             expanded = !expanded
                         }) {
-                            Icon(
-                                painter = MDIconsSet.Close.currentOutlinedPainter,
-                                contentDescription = null
-                            )
+                            MDIcon(MDIconsSet.Close) // checked
                         }
                     },
                     secondaryAction = {

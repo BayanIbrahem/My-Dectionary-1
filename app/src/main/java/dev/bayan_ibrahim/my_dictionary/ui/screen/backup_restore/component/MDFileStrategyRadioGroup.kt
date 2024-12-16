@@ -13,7 +13,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.util.label
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Composable
 fun MDFileStrategyRadioGroup(

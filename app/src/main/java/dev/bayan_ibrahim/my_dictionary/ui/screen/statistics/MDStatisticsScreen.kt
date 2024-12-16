@@ -24,17 +24,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.MDBarChart
+import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.line_chart.MDLineChart
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.MDStatisticsMostResentHistoryCount
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.labelOfIdentifier
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordResultType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.components.MDStatisticsTopAppBar
-import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.MDBarChart
-import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.line_chart.MDLineChart
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsChartTypeTab
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
-import dev.bayan_ibrahim.my_dictionary.ui.theme.default_colors.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Composable
 fun MDStatisticsScreen(
@@ -72,7 +72,7 @@ fun MDStatisticsScreen(
             }
         }
 
-        Column (
+        Column(
             modifier = Modifier.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -86,6 +86,7 @@ fun MDStatisticsScreen(
             )
 
             HorizontalPager(
+                modifier = Modifier,
                 state = pagerState
             ) {
                 when (selectedChart) {
