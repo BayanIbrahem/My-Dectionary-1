@@ -18,8 +18,9 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTag
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLearningProgress
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLastTrain
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMeaning
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMemoryDecayFactor
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedMeaning
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
@@ -64,6 +65,17 @@ interface WordDao {
 
     @Update
     suspend fun updateWord(word: WordEntity)
+
+    @Query(
+        """
+            UPDATE $dbWordTable 
+            SET 
+                $dbWordLastTrain = :lastTrainTime, 
+                $dbWordMemoryDecayFactor = :newDecay
+            WHERE $dbWordId  = :id
+        """
+    )
+    suspend fun updateLastTrainHistoryAndMemoryDecay(id: Long, lastTrainTime: Long, newDecay: Float)
 
     @Transaction
     suspend fun updateWordWithRelations(word: WordEntity, relatedWords: List<WordTypeTagRelatedWordEntity>) {
@@ -193,12 +205,12 @@ interface WordDao {
         SELECT
             $dbWordId,
             $dbWordTags,
-            $dbWordLearningProgress
+            $dbWordMemoryDecayFactor
         FROM
             $dbWordTable
         WHERE
             (:includeEmptyTags OR LENGTH($dbWordTags) > 0) AND
-            $dbWordLearningProgress BETWEEN :minProgress AND :maxProgress
+            $dbWordMemoryDecayFactor BETWEEN :minProgress AND :maxProgress
     """
     )
     fun getWordsIdsWithTagsOfLearningProgressRange(
@@ -212,7 +224,7 @@ interface WordDao {
         return when (sortBy) {
             MDWordsListViewPreferencesSortBy.Meaning -> dbWordMeaning
             MDWordsListViewPreferencesSortBy.Translation -> dbWordTranslation
-            MDWordsListViewPreferencesSortBy.LearningProgress -> dbWordLearningProgress
+            MDWordsListViewPreferencesSortBy.LearningProgress -> dbWordMemoryDecayFactor
         }
     }
 

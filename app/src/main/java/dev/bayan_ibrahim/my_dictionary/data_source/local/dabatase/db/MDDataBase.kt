@@ -27,7 +27,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
         WordTypeTagRelationEntity::class,
         LanguageEntity::class,
     ],
-    version = 3,
+    version = 5,
     autoMigrations = [
         AutoMigration(
             from = 1,
@@ -47,6 +47,5 @@ abstract class MDDataBase : RoomDatabase() {
     abstract fun getWordTypeTagRelationDao(): WordTypeTagRelationWordsDao
 
     class MigrationSpec1_2:AutoMigrationSpec
-    class MigrationSpec2_3:AutoMigrationSpec
 }
 

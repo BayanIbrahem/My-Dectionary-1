@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
@@ -20,7 +21,8 @@ fun MDTrainRoute(
         viewModel.initWithNavArgs(args)
     }
 
-    val uiState = viewModel.uiState
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val remainingTime by viewModel.wordRemainingTimeDataSource.collectAsStateWithLifecycle()
     val navActions by remember {
         derivedStateOf {
             object : MDTrainNavigationUiActions {
@@ -37,6 +39,7 @@ fun MDTrainRoute(
     }
     MDTrainScreen(
         uiState = uiState,
+        remainingTime = remainingTime,
         uiActions = uiActions,
         modifier = modifier,
     )

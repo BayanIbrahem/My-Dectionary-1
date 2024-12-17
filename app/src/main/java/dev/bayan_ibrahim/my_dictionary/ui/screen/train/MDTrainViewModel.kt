@@ -9,14 +9,18 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.maxN.maxNBy
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.minN.minNBy
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.minN.subList
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.safeSubList
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
+import dev.bayan_ibrahim.my_dictionary.data_source.local.timer.MDTimerDataSource
+import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
+import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainMemoryDecayFactorAnswerDurationBasedDataSource
+import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainMemoryDecayFactorDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.TrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.WordTrainHistory
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordAnswer
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordResult
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordAnswer
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordQuestion
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.asResult
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.toAnswer
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
@@ -26,81 +30,104 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainT
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.answerSelector
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.questionSelector
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MDTrainViewModel @Inject constructor(
     private val repo: MDTrainRepo,
+    private val timer: MDTimerDataSource,
 ) : ViewModel() {
-    private val _uiState: MDTrainMutableUiState = MDTrainMutableUiState()
-    val uiState: MDTrainUiState = _uiState
+    private val trainDataSource = MDTrainDataSource.Default
+    private val defaultAnswerTime = 30.seconds
+    private val maxAvailableAnswerTime = 60.seconds
+    private val timeSourceStep = 100.milliseconds
+    private val decayFactorDataSource: MDTrainMemoryDecayFactorDataSource = MDTrainMemoryDecayFactorAnswerDurationBasedDataSource(
+        defaultAnswerDuration = defaultAnswerTime,
+        maxAnswerDuration = maxAvailableAnswerTime
+    )
 
-    private val answersList: MutableList<TrainWordAnswer> = mutableListOf()
+    private val _uiState: MutableStateFlow<MDTrainUiState> = MutableStateFlow(MDTrainUiState.Loading)
+    val uiState: StateFlow<MDTrainUiState> = _uiState.asStateFlow()
+    private var _wordRemainingTimeDataSource = MutableStateFlow(MDTrainWordAnswerTime(maxAvailableAnswerTime))
+    val wordRemainingTimeDataSource = _wordRemainingTimeDataSource.asStateFlow()
 
-    fun initWithNavArgs(args: MDDestination.Train) {
-        viewModelScope.launch {
-            _uiState.onExecute {
-                val trainPreferences: MDWordsListTrainPreferences = repo.getTrainPreferences()
-                val viewPreferences = repo.getViewPreferences()
-                val idsOfAllowedTagsAndProgressRange: Set<Long> = repo.getWordsIdsOfTagsAndProgressRange(viewPreferences)
-                val allWords: Sequence<Word> = repo.getAllSelectedLanguageWords()
+    private val answers: MutableMap<MDTrainWordQuestion, MDTrainWordAnswer> = mutableMapOf()
 
-                val validWords = allWords.filter { word ->
-                    word.id in idsOfAllowedTagsAndProgressRange && viewPreferences.matches(word)
+    private var wordRemainingTimeDataSourceJob: Job? = null
+    private fun initWordRemainingTimeDataSource() {
+        wordRemainingTimeDataSourceJob?.cancel()
+        wordRemainingTimeDataSourceJob = viewModelScope.launch {
+            timer.assignFixedRateTimer(
+                maxAvailableAnswerTime,
+                timeSourceStep,
+            ).collect {
+                if (it.completed) { // timeout
+                    onTimeOut()
                 }
-                val wordsList = sortWordsByPreferences(
-                    sortBy = trainPreferences.sortBy,
-                    sortByOrder = trainPreferences.sortByOrder,
-                    validWords = validWords,
-                    getTrainHistory = {
-                        getWordsLastTrainHistories(idsOfAllowedTagsAndProgressRange)
-                    },
-                    limit = trainPreferences.limit.count
-                )
-
-                val trainWords = generateTrainWords(
-                    allWords = validWords,
-                    targetWords = wordsList,
-                    trainType = trainPreferences.trainType,
-                    trainTarget = trainPreferences.trainTarget
-                )
-
-                answersList.clear()
-                _uiState.trainWordsList.setAll(trainWords)
-                _uiState.trainType = trainPreferences.trainType
-
-                wordsList.isNotEmpty()
+                val time = MDTrainWordAnswerTime(it.duration - it.passedDuration, it.duration)
+                _wordRemainingTimeDataSource.emit(time)
             }
         }
     }
 
-    private inline fun sortWordsByPreferences(
+
+    fun initWithNavArgs(args: MDDestination.Train) {
+        viewModelScope.launch {
+            _uiState.emit(MDTrainUiState.Loading)
+            val trainPreferences: MDWordsListTrainPreferences = repo.getTrainPreferences()
+            val viewPreferences = repo.getViewPreferences()
+            val idsOfAllowedTagsAndProgressRange: Set<Long> = repo.getWordsIdsOfTagsAndProgressRange(viewPreferences)
+            val allWords: Sequence<Word> = repo.getAllSelectedLanguageWords()
+
+            val validWords = allWords.filter { word ->
+                word.id in idsOfAllowedTagsAndProgressRange && viewPreferences.matches(word)
+            }
+            val wordsList = sortWordsByPreferences(
+                sortBy = trainPreferences.sortBy,
+                sortByOrder = trainPreferences.sortByOrder,
+                validWords = validWords,
+                limit = trainPreferences.limit.count
+            )
+
+            val trainWords = generateTrainWords(
+                allWords = validWords,
+                targetWords = wordsList,
+                trainType = trainPreferences.trainType,
+                trainTarget = trainPreferences.trainTarget
+            )
+
+            answers.clear()
+            _uiState.value = MDTrainUiState.AnswerWord(trainWords, 0)
+
+            initWordRemainingTimeDataSource()
+        }
+    }
+
+    private fun sortWordsByPreferences(
         sortBy: WordsListTrainPreferencesSortBy,
         sortByOrder: MDWordsListSortByOrder,
         validWords: Sequence<Word>,
-        getTrainHistory: () -> Map<Long, Instant>,
         limit: Int,
     ): List<Word> {
         if (sortBy == WordsListTrainPreferencesSortBy.Random) {
             return validWords.shuffled().iterator().subList(limit)
         }
-        val trainHistory = if (sortBy == WordsListTrainPreferencesSortBy.TrainingTime) {
-            getTrainHistory()
-        } else {
-            emptyMap()
-        }
-
         @Suppress("KotlinConstantConditions")
         val selector = when (sortBy) {
-            WordsListTrainPreferencesSortBy.LearningProgress -> {
-                { word: Word -> word.learningProgress.toDouble() }
+            WordsListTrainPreferencesSortBy.MemorizingProbability -> {
+                { it: Word -> trainDataSource.memoryDecayFormula(it).toDouble() }
+//                { word: Word -> word.memoryDecayFactor.toDouble() }
             }
 
             WordsListTrainPreferencesSortBy.TrainingTime -> {
-                { it: Word -> trainHistory[it.id]?.epochSeconds?.toDouble() ?: 0.0 }
+                { it: Word -> it.lastTrainTime?.epochSeconds?.toDouble() ?: 0.0 }
             }
 
             WordsListTrainPreferencesSortBy.CreateTime -> {
@@ -122,7 +149,7 @@ class MDTrainViewModel @Inject constructor(
         targetWords: List<Word>,
         trainType: TrainWordType,
         trainTarget: WordsListTrainTarget,
-    ): List<TrainWord> {
+    ): List<MDTrainWordQuestion> {
         val questionSelector = trainTarget.questionSelector
         val answerSelector = trainTarget.answerSelector
         return when (trainType) {
@@ -148,7 +175,7 @@ class MDTrainViewModel @Inject constructor(
                         ((similarTags + similarWords).shuffled().distinct()
                             .safeSubList(0, TrainWordType.MAX_SELECTIONS_COUNT.dec()) + targetWord).shuffled()
                     val currentCorrectOption = optionsWords.indexOfFirst { it.id == targetWord.id }
-                    TrainWord.SelectAnswer(
+                    MDTrainWordQuestion.SelectAnswer(
                         word = targetWord,
                         questionSelector = questionSelector,
                         options = optionsWords.map(answerSelector),
@@ -159,7 +186,7 @@ class MDTrainViewModel @Inject constructor(
 
             TrainWordType.WriteWord -> {
                 return targetWords.map { word ->
-                    TrainWord.WriteWord(
+                    MDTrainWordQuestion.WriteWord(
                         word = word,
                         questionSelector = questionSelector,
                         answerSelector = answerSelector
@@ -169,83 +196,6 @@ class MDTrainViewModel @Inject constructor(
         }
     }
 
-    /**
-     * @param lastTrainHistory used when [sortBy] is [WordsListTrainPreferencesSortBy.TrainingTime]
-     * @return a shuffled sublist with size [limit] from first [limit] unique value according to [sortBy]
-     */
-    private fun limitedSubWords(
-        limit: Int,
-        words: Sequence<Word>,
-        lastTrainHistory: Map<Long, Long>,
-        sortBy: WordsListTrainPreferencesSortBy,
-    ): List<Word> {
-        val lastIndex: Int? = when (sortBy) {
-            WordsListTrainPreferencesSortBy.LearningProgress -> {
-                var lastValue: Float? = null
-                var distinctValuesCount = 0
-                words.indexOfFirst {
-                    if (it.learningProgress != lastValue) {
-                        distinctValuesCount++
-                        lastValue = it.learningProgress
-                    }
-                    distinctValuesCount == limit
-                }
-            }
-
-            WordsListTrainPreferencesSortBy.TrainingTime -> {
-                var lastValue: Long? = null
-                var distinctValuesCount = 0
-                words.indexOfFirst {
-                    val trainHistory = lastTrainHistory[it.id] ?: 0
-                    if (trainHistory != lastValue) {
-                        distinctValuesCount++
-                        lastValue = trainHistory
-                    }
-                    distinctValuesCount == limit
-                }
-            }
-
-            WordsListTrainPreferencesSortBy.CreateTime -> {
-                var lastValue: Instant? = null
-                var distinctValuesCount = 0
-                words.indexOfFirst {
-                    if (it.createdAt != lastValue) {
-                        distinctValuesCount++
-                        lastValue = it.createdAt
-                    }
-                    distinctValuesCount == limit
-                }
-            }
-
-            WordsListTrainPreferencesSortBy.Random -> {
-                return words.shuffled().toList().subList(0, minOf(words.count(), limit.inc()))
-            }
-        }.takeUnless { it < 0 }
-        return if (lastIndex == null) {
-            words.toList().shuffled()
-        } else {
-            words.toList().subList(0, lastIndex.inc()).shuffled().subList(0, limit)
-        }
-    }
-
-    private suspend fun getWordsLastTrainHistories(wordsIds: Set<Long>): MutableMap<Long, Instant> {
-        val lastTrainHistories: MutableMap<Long, Instant> = mutableMapOf()
-        repo.getTrainHistoryOf(
-            wordsIds = wordsIds,
-            excludeSpecifiedWordsIds = false
-        ).firstOrNull().let { it ?: emptyList() }.forEach { history ->
-            history.words.forEach { wordHistory ->
-                if (wordHistory.wordId != null) {
-                    val currentTrainHistory = lastTrainHistories[wordHistory.wordId]
-                    if (currentTrainHistory == null || currentTrainHistory < history.time) {
-                        lastTrainHistories[wordHistory.wordId] = history.time
-                    }
-                }
-            }
-        }
-        return lastTrainHistories
-    }
-
     fun getUiActions(
         navActions: MDTrainNavigationUiActions,
     ): MDTrainUiActions = MDTrainUiActions(
@@ -253,46 +203,112 @@ class MDTrainViewModel @Inject constructor(
         businessActions = getBusinessUiActions(navActions)
     )
 
-    private fun onEndTrain(onSubmit: () -> Unit) {
+    private fun MDTrainUiState.AnswerWord.onEndTrain() {
+        _uiState.value = MDTrainUiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
-            val trainHistory = TrainHistory(
-                trainType = uiState.trainType,
-                words = answersList.map { answer ->
-                    WordTrainHistory(
-                        id = null,
-                        wordId = answer.word.id,
-                        meaningSnapshot = answer.correctAnswer,
-                        trainResult = if (answer.isTimeout) {
-                            TrainWordResult.Timeout
-                        } else if (answer.isPass) {
-                            TrainWordResult.Pass
-                        } else {
-                            TrainWordResult.Fail(
-                                selectedAnswer = answer.selectedAnswer ?: "",
-                                currentAnswer = answer.correctAnswer
-                            )
-                        }
-                    )
-                }
+            val trainHistory = generateTrainHistoryOfAnswers()
+            val wordsMemoryDecay = answers.map { (ques, ans) ->
+                val newDecayFactor = decayFactorDataSource.calculateDecayOf(ques.word, ans.asResult())
+                ques.word.id to newDecayFactor
+            }.toMap()
+            repo.submitTrainHistory(trainHistory, wordsMemoryDecay)
+            _uiState.value = MDTrainUiState.Finish
+        }
+    }
+
+    private fun generateTrainHistoryOfAnswers() = TrainHistory(
+        words = answers.map { (train, answer) ->
+            WordTrainHistory(
+                id = null,
+                wordId = answer.word.id,
+                meaningSnapshot = answer.correctAnswer,
+                trainResult = answer.asResult(),
+                trainType = train.type
             )
-            repo.submitTrainHistory(trainHistory)
-            onSubmit()
+        }
+    )
+
+    private fun onTimeOut() {
+        val state = uiState.value
+        if (state is MDTrainUiState.AnswerWord) {
+            val index = state.currentIndex
+            val question = state.trainWordsListQuestion[index]
+            val answer = when (question) {
+                is MDTrainWordQuestion.SelectAnswer -> question.toAnswer(
+                    selectedIndex = null,
+                    consumedDuration = maxAvailableAnswerTime,
+                    maximumAllowedDuration = maxAvailableAnswerTime
+                )
+
+                is MDTrainWordQuestion.WriteWord -> question.toAnswer(
+                    answer = null,
+                    consumedDuration = maxAvailableAnswerTime,
+                    maximumAllowedDuration = maxAvailableAnswerTime
+                )
+            }
+            state.onAnswerQuestion(question, answer)
+        }
+    }
+
+    private fun MDTrainUiState.AnswerWord.onAnswerQuestion(train: MDTrainWordQuestion, answer: MDTrainWordAnswer) {
+        answers[train] = answer
+        val index = this.currentIndex
+        val isLast = index == this.trainWordsListQuestion.count().dec()
+        if (isLast) {
+            onEndTrain()
+        } else {
+            _uiState.value = this.copy(currentIndex = index.inc())
+            initWordRemainingTimeDataSource()
         }
     }
 
     private fun getBusinessUiActions(
         navActions: MDTrainNavigationUiActions,
     ): MDTrainBusinessUiActions = object : MDTrainBusinessUiActions {
-        override fun onSelectAnswer(answer: TrainWordAnswer) {
-            answersList.add(answer)
-            if (uiState.isLast) {
-                onEndTrain {
-                    viewModelScope.launch(Dispatchers.Main.immediate) {
-                        navActions.onNavigateToResultsScreen()
-                    }
+        override fun onSelectAnswer(answer: MDTrainWordAnswer) {
+            val state = uiState.value
+            if (state is MDTrainUiState.AnswerWord) {
+                val index = state.currentIndex
+                val question = state.trainWordsListQuestion[index]
+                state.onAnswerQuestion(question, answer)
+            }
+        }
+
+        override fun onSelectAnswerSubmit(index: Int?) {
+            val state = uiState.value
+            val time = wordRemainingTimeDataSource.value
+            if (state is MDTrainUiState.AnswerWord) {
+                val currentIndex = state.currentIndex
+                val question = state.trainWordsListQuestion[currentIndex]
+                if (question is MDTrainWordQuestion.SelectAnswer) {
+                    state.onAnswerQuestion(
+                        train = question,
+                        answer = question.toAnswer(
+                            selectedIndex = index,
+                            consumedDuration = time.remainingTime,
+                            maximumAllowedDuration = time.totalTime
+                        )
+                    )
                 }
-            } else {
-                _uiState.currentWordIndex++
+            }
+        }
+
+        override fun onWriteWordSubmit(answer: String?) {
+            val state = uiState.value
+            val time = wordRemainingTimeDataSource.value
+            if (state is MDTrainUiState.AnswerWord) {
+                val currentIndex = state.currentIndex
+                val question = state.trainWordsListQuestion[currentIndex]
+                if (question is MDTrainWordQuestion.WriteWord) {
+                    state.onAnswerQuestion(
+                        train = question,
+                        answer = question.toAnswer(
+                            answer = answer,
+                            consumedDuration = time.remainingTime,
+                            maximumAllowedDuration = time.totalTime
+                        )
+                    )
+                }
             }
         }
     }

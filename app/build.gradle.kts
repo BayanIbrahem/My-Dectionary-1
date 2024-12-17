@@ -112,6 +112,9 @@ dependencies {
 
     implementation(libs.google.dagger.hilt.android)
     implementation(libs.google.dagger.hilt.core)
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.ui.test.junit4)
     ksp(libs.google.dagger.hilt.ext.compiler)
     ksp(libs.google.dagger.hilt.compiler)
 

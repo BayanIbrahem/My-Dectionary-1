@@ -29,6 +29,7 @@ kotlinComposeCompiler = "1.5.15"
 desugaring = "2.1.2"
 storage = "1.5.0"
 kotlinxDatetime = "0.6.1"
+junitJunit = "4.12"
 
 [libraries]
 # json serialization

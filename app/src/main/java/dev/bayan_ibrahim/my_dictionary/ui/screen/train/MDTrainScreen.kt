@@ -1,18 +1,26 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.train
 
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,37 +33,38 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordAnswer
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.toAnswer
-import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordQuestion
 import dev.bayan_ibrahim.my_dictionary.ui.screen.train.component.MDTrainTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
 @Composable
 fun MDTrainScreen(
     uiState: MDTrainUiState,
+    remainingTime: MDTrainWordAnswerTime,
     uiActions: MDTrainUiActions,
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(uiState) {
+        if (uiState is MDTrainUiState.Finish) {
+            uiActions.onNavigateToResultsScreen()
+        }
+    }
     MDScreen(
         uiState = uiState,
         modifier = modifier,
@@ -63,22 +72,39 @@ fun MDTrainScreen(
             MDTrainTopAppBar()
         },
     ) {
-        val pagerState = rememberPagerState { uiState.trainWordsList.size }
-        LaunchedEffect(uiState.currentWordIndex) {
-            pagerState.animateScrollToPage(uiState.currentWordIndex)
-        }
-        Column {
-            ScreenHeader(
-                currentIndex = uiState.currentWordIndex,
-                totalCount = uiState.trainWordsList.count(),
-                trainType = uiState.trainType.label
-            )
-            HorizontalPager(
-                modifier = Modifier.weight(1f),
-                state = pagerState,
-                userScrollEnabled = false,
-            ) { i ->
-                WordTrainPage(uiState.trainWordsList[i], onSubmit = uiActions::onSelectAnswer)
+        if (uiState is MDTrainUiState.AnswerWord) {
+            val totalCount by remember {
+                derivedStateOf {
+                    uiState.trainWordsListQuestion.size
+                }
+            }
+            val pagerState = rememberPagerState { totalCount }
+            LaunchedEffect(uiState.currentIndex) {
+                pagerState.animateScrollToPage(uiState.currentIndex)
+            }
+            val currentTrainType by remember(uiState) {
+                derivedStateOf {
+                    uiState.trainWordsListQuestion[uiState.currentIndex].type
+                }
+            }
+            Column {
+                ScreenHeader(
+                    currentIndex = uiState.currentIndex,
+                    totalCount = totalCount,
+                    trainType = currentTrainType.label,
+                    remainingTime = remainingTime,
+                )
+                HorizontalPager(
+                    modifier = Modifier.weight(1f),
+                    state = pagerState,
+                    userScrollEnabled = false,
+                ) { i ->
+                    WordTrainPage(
+                        train = uiState.trainWordsListQuestion[i],
+                        onSelectAnswerSubmit = uiActions::onSelectAnswerSubmit,
+                        onWriteWordSubmit = uiActions::onWriteWordSubmit,
+                    )
+                }
             }
         }
     }
@@ -89,6 +115,7 @@ private fun ScreenHeader(
     currentIndex: Int,
     totalCount: Int,
     trainType: String,
+    remainingTime: MDTrainWordAnswerTime,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -104,31 +131,104 @@ private fun ScreenHeader(
             total = totalCount,
             markLastProgressedItemAsDone = false
         )
-        Text(
-            text = "${currentIndex.inc()}/$totalCount", // TODO, string res
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.labelMedium
-        )
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "${currentIndex.inc()}/$totalCount", // TODO, string res
+                modifier = Modifier,
+                style = MaterialTheme.typography.labelMedium
+            )
+            TimerClock(
+                modifier = Modifier.size(24.dp),
+                remainingTime = remainingTime,
+            )
+        }
     }
+}
+
+@Suppress("InfiniteTransitionLabel", "InfinitePropertiesLabel", "TransitionPropertiesLabel", "UpdateTransitionLabel")
+@Composable
+private fun TimerClock(
+    remainingTime: MDTrainWordAnswerTime,
+    modifier: Modifier = Modifier,
+    checkIsLowTime: (MDTrainWordAnswerTime) -> Boolean = {
+        it.percent <= 0.2
+    },
+    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    filledColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    strokeColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    lowTimeContainerColor: Color = MaterialTheme.colorScheme.errorContainer,
+    lowTimeFilledColor: Color = MaterialTheme.colorScheme.onErrorContainer,
+    lowTimeStrokeColor: Color = MaterialTheme.colorScheme.onErrorContainer,
+    strokeWidth: Dp = 1.dp,
+) {
+    val percent by animateFloatAsState(
+        targetValue = remainingTime.percent.toFloat(),
+        label = "time percent"
+    )
+    val isLowTime = checkIsLowTime(remainingTime)
+    val lowTimeTransition = updateTransition(targetState = isLowTime)
+    val animatedContainerColor by lowTimeTransition.animateColor {
+        if (it) lowTimeContainerColor else containerColor
+    }
+
+    val animatedFilledColor by lowTimeTransition.animateColor {
+        if (it) lowTimeFilledColor else filledColor
+    }
+
+    val animatedStrokeColor by lowTimeTransition.animateColor {
+        if (it) lowTimeStrokeColor else strokeColor
+    }
+    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(1000, easing = LinearEasing), RepeatMode.Reverse)
+    )
+
+    remainingTime.remainingTime
+    Box(
+        modifier = modifier
+            .graphicsLayer {
+                this.alpha = (if (isLowTime) infiniteAlpha else 1f)
+            }
+            .drawBehind {
+                drawCircle(color = animatedContainerColor)
+
+                drawArc(
+                    color = animatedFilledColor,
+                    startAngle = -90f,
+                    sweepAngle = 360 * (1 - percent),
+                    useCenter = true
+                )
+
+                drawCircle(
+                    color = animatedStrokeColor,
+                    style = Stroke(strokeWidth.toPx())
+                )
+            }
+    )
 }
 
 @Composable
 private fun WordTrainPage(
-    train: TrainWord,
-    onSubmit: (TrainWordAnswer) -> Unit,
+    train: MDTrainWordQuestion,
+    onSelectAnswerSubmit: (Int?) -> Unit,
+    onWriteWordSubmit: (String?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (train) {
-        is TrainWord.SelectAnswer -> WordSelectAnswerTrainPage(
+        is MDTrainWordQuestion.SelectAnswer -> WordSelectAnswerTrainPage(
             train = train,
-            onSubmit = onSubmit,
+            onSubmit = onSelectAnswerSubmit,
             modifier = modifier
         )
 
-        is TrainWord.WriteWord -> WordWriteTrainPage(
+        is MDTrainWordQuestion.WriteWord -> WordWriteTrainPage(
             train = train,
-            onSubmit = onSubmit,
+            onSubmit = onWriteWordSubmit,
             modifier = modifier
         )
     }
@@ -136,8 +236,8 @@ private fun WordTrainPage(
 
 @Composable
 private fun WordSelectAnswerTrainPage(
-    train: TrainWord.SelectAnswer,
-    onSubmit: (TrainWordAnswer) -> Unit,
+    train: MDTrainWordQuestion.SelectAnswer,
+    onSubmit: (Int?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedAnswerIndex: Int by rememberSaveable {
@@ -145,11 +245,7 @@ private fun WordSelectAnswerTrainPage(
     }
     val selectedAnswer: String by remember(selectedAnswerIndex) {
         derivedStateOf {
-            if (selectedAnswerIndex < 0) {
-                ""
-            } else {
-                train.options[selectedAnswerIndex]
-            }
+            train.options.getOrNull(selectedAnswerIndex) ?: ""
         }
     }
     val onSubmitEnabled by remember(selectedAnswerIndex) {
@@ -163,8 +259,7 @@ private fun WordSelectAnswerTrainPage(
             question = train.question,
             currentAnswer = selectedAnswer,
             onSubmit = {
-                val answer = train.toAnswer(selectedAnswerIndex)
-                onSubmit(answer)
+                onSubmit(selectedAnswerIndex.takeUnless { it < 0 })
             },
             onSubmitEnabled = onSubmitEnabled
         )
@@ -206,8 +301,8 @@ private fun WordSelectAnswerTrainPage(
 
 @Composable
 private fun WordWriteTrainPage(
-    train: TrainWord.WriteWord,
-    onSubmit: (TrainWordAnswer) -> Unit,
+    train: MDTrainWordQuestion.WriteWord,
+    onSubmit: (String?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var answer by remember {
@@ -221,7 +316,7 @@ private fun WordWriteTrainPage(
             question = train.question,
             currentAnswer = answer,
             onSubmit = {
-                onSubmit(train.toAnswer(answer))
+                onSubmit(answer)
             },
         )
         Column(modifier = Modifier.weight(1f)) {
@@ -297,88 +392,11 @@ private fun QuestionPagePart(
                 Text("Submit answer") // TODO, string res
             },
             trailingIcon = {
-                MDIcon(MDIconsSet.ArrowForward, contentDescription = null) // checked
+                MDIcon(
+                    icon = MDIconsSet.ArrowForward,
+                    contentDescription = null
+                ) // checked
             }
         )
-    }
-}
-
-@Preview
-@Composable
-private fun TrainScreenPreview() {
-    MyDictionaryTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                val word = Word(
-                    id = 0,
-                    meaning = "Auge",
-                    translation = "Eye",
-                    additionalTranslations = listOf("Human Eye", "Human Eye 2"),
-                    language = Language("de".code, "Deutsch", "German"),
-                    tags = setOf("Human body", "Organic"),
-                    transcription = "auge",
-                    examples = listOf("I habe zwei auge", "some other example"),
-                    createdAt = INVALID_INSTANT,
-                    updatedAt = INVALID_INSTANT,
-                    wordTypeTag = WordTypeTag(
-                        id = 0,
-                        name = "name",
-                        language = Language("de".code, "Deutsch", "German"),
-                        relations = listOf(WordTypeTagRelation("relation 1"), WordTypeTagRelation("relation 2")),
-                        wordsCount = 30,
-                    )
-                )
-
-                val uiState by remember {
-                    derivedStateOf {
-                        MDTrainMutableUiState().apply {
-                            onExecute {
-                                this.trainWordsList.addAll(
-                                    listOf(
-                                        TrainWord.SelectAnswer(
-                                            word = word,
-                                            questionSelector = { word.meaning },
-                                            options = listOf(
-                                                "Option 1",
-                                                "Option 2",
-                                                "Option 3",
-                                            ),
-                                            correctOptionIndex = 0,
-                                        ),
-                                        TrainWord.WriteWord(
-                                            word = word,
-                                            questionSelector = { word.meaning },
-                                            answerSelector = { word.translation },
-                                        )
-                                    )
-                                )
-                                true
-                            }
-                        }
-                    }
-                }
-                MDTrainScreen(
-                    uiState = uiState,
-                    uiActions = MDTrainUiActions(
-                        object : MDTrainNavigationUiActions {
-                            override fun onNavigateToResultsScreen() {
-                            }
-                        },
-                        object : MDTrainBusinessUiActions {
-                            override fun onSelectAnswer(answer: TrainWordAnswer) {
-                                uiState.currentWordIndex = uiState.currentWordIndex
-                                    .inc()
-                                    .mod(uiState.trainWordsList.size)
-                            }
-                        },
-                    )
-                )
-            }
-        }
     }
 }

@@ -1,7 +1,5 @@
 package dev.bayan_ibrahim.my_dictionary.core.common.helper_methods
 
-import kotlin.math.floor
-
 fun ClosedFloatingPointRange<Float>.calculateOutput(
     input: Float,
     forOutputRange: ClosedFloatingPointRange<Float>,
@@ -20,7 +18,11 @@ fun calculateOutput(
     outputRangeStart: Float,
     outputRangeEnd: Float,
 ): Float {
-    val slope = (outputRangeEnd - outputRangeStart) / (inputRangeEnd - inputRangeStart)
-    return outputRangeStart + floor(slope * (input - inputRangeStart) + 0.5f)
+    require(inputRangeStart != inputRangeEnd) { "invalid input range $inputRangeStart..$inputRangeEnd" }
+    if (outputRangeStart == outputRangeEnd) return outputRangeStart
+    // y = mx
+    val percentInInput = input.minus(inputRangeStart).div(inputRangeEnd - inputRangeStart)
+    val outputRange = outputRangeEnd.minus(outputRangeStart)
+    return percentInInput.times(outputRange).plus(outputRangeStart)
 }
 

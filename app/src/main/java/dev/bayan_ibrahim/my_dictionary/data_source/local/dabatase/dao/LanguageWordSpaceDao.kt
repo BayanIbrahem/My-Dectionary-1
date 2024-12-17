@@ -9,7 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguag
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceLanguageCode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceWordsCount
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLearningProgress
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMemoryDecayFactor
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import kotlinx.coroutines.flow.Flow
 
@@ -18,7 +18,7 @@ private const val select_from = """
             SELECT 
                 $dbLanguageCode as $dbLanguageWordSpaceLanguageCode, 
                 COUNT(*) as $dbLanguageWordSpaceWordsCount, 
-                AVG($dbWordLearningProgress) $dbLanguageWordSpaceAverageLearningProgress
+                AVG($dbWordMemoryDecayFactor) $dbLanguageWordSpaceAverageLearningProgress
             FROM $dbLanguageTable LEFT JOIN $dbWordTable On $dbLanguageTable.$dbLanguageCode = $dbWordTable.$dbWordLanguageCode
     """
 

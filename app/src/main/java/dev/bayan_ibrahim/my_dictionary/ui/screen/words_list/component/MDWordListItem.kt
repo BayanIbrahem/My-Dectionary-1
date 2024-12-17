@@ -153,7 +153,7 @@ fun MDWordListItem(
             }
             Text(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                text = "${word.wordTypeTag?.name?.plus(", ") ?: ""}progress ${word.learningProgress.times(100).roundToInt()}%",
+                text = word.wordTypeTag?.name ?: "",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

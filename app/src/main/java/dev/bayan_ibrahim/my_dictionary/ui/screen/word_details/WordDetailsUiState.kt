@@ -144,7 +144,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
             )
         }
         examples.setAll(word.examples.associateBy { idGenerator.nextId() })
-        learningProgress = word.learningProgress
+        learningProgress = word.memoryDecayFactor
     }
 
     fun toWord(): Word {
@@ -168,7 +168,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
                 )
             },
             examples = this.examples.values.toList(),
-            learningProgress = this.learningProgress,
+            memoryDecayFactor = this.learningProgress,
             createdAt = this.createdAt ?: now,
             updatedAt = now
         )

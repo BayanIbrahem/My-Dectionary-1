@@ -16,7 +16,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTrainHi
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTrainHistoryTrainHistoryType
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTrainHistoryWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordResult
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResult
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 
 @TypeConverters(
@@ -51,5 +51,5 @@ data class TrainHistoryEntity(
     @ColumnInfo(dbTrainHistoryTrainHistoryType)
     val trainType: TrainWordType,
     @ColumnInfo(dbTrainHistoryTrainHistoryResult)
-    val trainResult: TrainWordResult,
+    val trainResult: MDTrainWordResult,
 )

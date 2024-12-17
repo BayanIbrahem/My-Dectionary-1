@@ -18,13 +18,13 @@ fun Collection<TrainHistoryEntity>.toTrainHistoryModels(
     TrainHistory(
         time = (factoredTime * timeGroupByFactor).asEpochMillisecondsInstant(),
         // entities is not empty cause it is from group by
-        trainType = entities.first().trainType,
         words = entities.map {
             WordTrainHistory(
                 id = it.id,
                 wordId = it.wordId,
                 meaningSnapshot = it.meaningSnapshot,
                 trainResult = it.trainResult,
+                trainType = it.trainType,
             )
         }
     )
@@ -37,7 +37,7 @@ fun TrainHistory.toTrainHistoryEntities(): List<TrainHistoryEntity> {
             wordId = item.wordId,
             time = time.toEpochMilliseconds(),
             meaningSnapshot = item.meaningSnapshot,
-            trainType = trainType,
+            trainType = item.trainType,
             trainResult = item.trainResult
         )
     }

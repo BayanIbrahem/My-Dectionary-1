@@ -16,8 +16,9 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordCre
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordExamples
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLearningProgress
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLastTrain
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMeaning
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMemoryDecayFactor
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedMeaning
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
@@ -78,8 +79,10 @@ data class WordEntity(
     val tags: List<String> = emptyList(),
     @ColumnInfo(dbWordTypeTag)
     val wordTypeTagId: Long? = null,
-    @ColumnInfo(dbWordLearningProgress)
-    val learningProgress: Float = 0f,
+    @ColumnInfo(dbWordMemoryDecayFactor, defaultValue = "1")
+    val memoryDecayFactor: Float = 1f,
+    @ColumnInfo(dbWordLastTrain, defaultValue = "NULL")
+    val lastTrainTime: Long? = null,
     @ColumnInfo(dbWordTranscription)
     val transcription: String = INVALID_TEXT,
     @ColumnInfo(dbWordExamples)

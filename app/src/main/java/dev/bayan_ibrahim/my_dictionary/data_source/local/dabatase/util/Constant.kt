@@ -14,7 +14,8 @@ const val dbWordAdditionalTranslations = "word_additionalTranslations"
 const val dbWordTags = "words_tags"
 const val dbWordExamples = "word_examples"
 const val dbWordTranscription = "word_transcription"
-const val dbWordLearningProgress = "word_learningProgress"
+const val dbWordMemoryDecayFactor = "word_memoryDecayFactor"
+const val dbWordLastTrain = "word_lastTrain"
 const val dbWordTypeTag = "word_typeTag"
 
 // Word Train:

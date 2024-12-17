@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_ta
 
 import androidx.room.ColumnInfo
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLearningProgress
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMemoryDecayFactor
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTags
 
 data class WordIdWithTagAndProgress(
@@ -10,6 +10,6 @@ data class WordIdWithTagAndProgress(
     val wordId: Long,
     @ColumnInfo(dbWordTags)
     val tags: String,
-    @ColumnInfo(dbWordLearningProgress)
+    @ColumnInfo(dbWordMemoryDecayFactor)
     val progress: Float,
 )

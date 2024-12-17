@@ -108,8 +108,7 @@ class DataModule {
         db: MDDataBase,
         preferences: MDPreferencesDataStore,
     ): MDTrainRepo = MDTrainRepoImpl(
-        wordDao = db.getWordDao(),
-        trainHistoryDao = db.getWordTrainDao(),
+        db = db,
         preferences = preferences,
     )
 

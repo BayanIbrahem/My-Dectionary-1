@@ -125,7 +125,7 @@ class MDWordsListRepoImpl(
         if (!matchTags) return false
 
         // learning group
-        val wordLearningGroup = MDWordsListLearningProgressGroup.of(this.word.learningProgress)
+        val wordLearningGroup = MDWordsListLearningProgressGroup.of(this.word.memoryDecayFactor)
 
         val matchLearningGroup =
             wordLearningGroup in preferences.selectedLearningProgressGroups || preferences.selectedLearningProgressGroups.isEmpty()
@@ -162,8 +162,8 @@ class MDWordsListRepoImpl(
             }
 
             MDWordsListViewPreferencesSortBy.LearningProgress -> when (order) {
-                MDWordsListSortByOrder.Asc -> sortedBy { it.learningProgress }
-                MDWordsListSortByOrder.Desc -> sortedByDescending { it.learningProgress }
+                MDWordsListSortByOrder.Asc -> sortedBy { it.memoryDecayFactor }
+                MDWordsListSortByOrder.Desc -> sortedByDescending { it.memoryDecayFactor }
             }
         }
     }

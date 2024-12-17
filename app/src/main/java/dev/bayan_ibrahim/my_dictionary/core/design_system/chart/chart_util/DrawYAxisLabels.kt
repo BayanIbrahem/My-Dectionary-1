@@ -42,7 +42,7 @@ fun calculateYLabels(
         return calculateYLabels(range = range, labelsCount = rangeLength)
     val (min, max, step) = calculateYAxisStepsFields(range, labelsCount.coerceAtLeast(2))
     val first = range.first - step
-    return List(labelsCount + 2) { i ->
+    val values =  List(labelsCount + 2) { i ->
         (first + (i * step)).coerceIn(min, max)
     }.reversed().distinct().let {
         if (it.count() == 1) {
@@ -51,13 +51,14 @@ fun calculateYLabels(
             it
         }
     }
+    return values
 }
 
 fun calculateYAxisStepsFields(
     valueRange: IntRange,
     labelsCount: Int,
 ): Triple<Int?, Int, Int> {
-    val step = (valueRange.last - valueRange.first) / (labelsCount - 1)
+    val step = ((valueRange.last - valueRange.first) / (labelsCount - 1)).coerceAtLeast(1)
     val min = calculateMinStep(step, valueRange.first).takeIf { it < valueRange.first }
     val max = calculateMaxStep(step, valueRange.last)
     return Triple(min, max, step)
@@ -139,13 +140,17 @@ fun calculateYOutput(
     count: Int,
     top: Float = 0f,
     bottom: Float,
-): Float = calculateOutput(
-    input = mapYLabelIndex(index, count).toFloat(),
-    inputRangeStart = 0f,
-    inputRangeEnd = mapYLabelIndex(count.dec(), count).toFloat(),
-    outputRangeStart = top,
-    outputRangeEnd = bottom
-)
+): Float {
+    val inputRangeEnd = mapYLabelIndex(count.dec(), count).toFloat()
+    if (inputRangeEnd == 0f) return top
+    return calculateOutput(
+        input = mapYLabelIndex(index, count).toFloat(),
+        inputRangeStart = 0f,
+        inputRangeEnd = mapYLabelIndex(count.dec(), count).toFloat(),
+        outputRangeStart = top,
+        outputRangeEnd = bottom
+    )
+}
 
 /**
  * for 5 labels (with extra start and end labels) this would map range from 0..4 to 0..6

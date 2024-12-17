@@ -2,7 +2,6 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryDbNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
@@ -43,6 +42,7 @@ fun WordWithRelatedWords.asWordModel(
         }
     } ?: emptyList(),
     createdAt = this.word.createdAt.asEpochMillisecondsInstant(),
+    lastTrainTime = this.word.lastTrainTime?.asEpochMillisecondsInstant(),
     updatedAt = this.word.updatedAt.asEpochMillisecondsInstant()
 )
 
@@ -58,7 +58,8 @@ fun WordEntity.asWordModel(): Word = Word(
     examples = this.examples,
     wordTypeTag = null,
     relatedWords = emptyList(),
-    learningProgress = this.learningProgress,
+    memoryDecayFactor = this.memoryDecayFactor,
+    lastTrainTime = this.lastTrainTime?.asEpochMillisecondsInstant(),
     createdAt = this.createdAt.asEpochMillisecondsInstant(),
     updatedAt = this.updatedAt.asEpochMillisecondsInstant()
 )
@@ -77,7 +78,8 @@ fun Word.asWordEntity(
     transcription = this.transcription,
     examples = this.examples,
     wordTypeTagId = this.wordTypeTag?.id?.nullIfInvalid(),
-    learningProgress = this.learningProgress,
+    memoryDecayFactor = this.memoryDecayFactor,
+    lastTrainTime = this.lastTrainTime?.toEpochMilliseconds(),
     createdAt = this.createdAt.toEpochMilliseconds(),
     updatedAt = (if (setUpdateTimeToNow) Clock.System.now() else this.updatedAt).toEpochMilliseconds()
 )

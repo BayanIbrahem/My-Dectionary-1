@@ -1,8 +1,10 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
 
+import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.TrainHistoryDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.toTrainHistoryEntities
@@ -20,10 +22,12 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class MDTrainRepoImpl(
-    private val wordDao: WordDao,
-    private val trainHistoryDao: TrainHistoryDao,
+    private val db: MDDataBase,
+    private val wordDao: WordDao = db.getWordDao(),
+    private val trainHistoryDao: TrainHistoryDao = db.getWordTrainDao(),
     private val preferences: MDPreferencesDataStore,
 ) : MDTrainRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordDao) {
+
     override suspend fun getTrainPreferences(): MDWordsListTrainPreferences = preferences.getWordsListTrainPreferences()
     override suspend fun getViewPreferences(): MDWordsListViewPreferences = preferences.getWordsListViewPreferences()
     override suspend fun getAllSelectedLanguageWords(): Sequence<Word> {
@@ -51,8 +55,14 @@ class MDTrainRepoImpl(
         excludedWordsIds = wordsIds,
     ).map { it.toTrainHistoryModels() }
 
-    override suspend fun submitTrainHistory(trainHistory: TrainHistory) {
+    override suspend fun submitTrainHistory(trainHistory: TrainHistory, wordsNewMemoryDecay: Map<Long, Float>) {
         val entities = trainHistory.toTrainHistoryEntities()
-        trainHistoryDao.insertTrainHistories(entities)
+        db.withTransaction {
+            trainHistoryDao.insertTrainHistories(entities)
+            val newLastTrainTime = trainHistory.time.toEpochMilliseconds()
+            wordsNewMemoryDecay.forEach { (id, decay) ->
+                wordDao.updateLastTrainHistoryAndMemoryDecay(id, newLastTrainTime, decay)
+            }
+        }
     }
 }

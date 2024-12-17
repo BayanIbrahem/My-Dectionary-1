@@ -1,9 +1,11 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.train
 
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordAnswer
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordAnswer
 
 interface MDTrainBusinessUiActions {
-    fun onSelectAnswer(answer: TrainWordAnswer)
+    fun onSelectAnswer(answer: MDTrainWordAnswer)
+    fun onSelectAnswerSubmit(index: Int?)
+    fun onWriteWordSubmit(answer: String?)
 }
 
 interface MDTrainNavigationUiActions {

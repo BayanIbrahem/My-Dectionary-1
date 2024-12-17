@@ -179,9 +179,10 @@ private fun getColorOfType(
 ): Color {
     val type = TrainWordResultType.entries[typeOrdinal]
     return when (type) {
-        TrainWordResultType.Fail -> error
+        TrainWordResultType.Wrong -> error
         TrainWordResultType.Timeout -> onSurface
         TrainWordResultType.Pass -> primary
+        TrainWordResultType.Right -> onSurface
     }
 }
 

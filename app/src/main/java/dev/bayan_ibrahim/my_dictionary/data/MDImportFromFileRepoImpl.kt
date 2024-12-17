@@ -204,7 +204,6 @@ class MDImportFromFileRepoImpl(
                                 additionalTranslations = rawWord.additionalTranslations.filter { it.isNotBlank() },
                                 tags = rawWord.tags.filter { it.isNotBlank() },
                                 wordTypeTagId = tagId,
-                                learningProgress = 0f,
                                 transcription = rawWord.transcription.ifBlank { "" },
                                 examples = rawWord.examples.filter { it.isNotBlank() },
                                 createdAt = System.currentTimeMillis()

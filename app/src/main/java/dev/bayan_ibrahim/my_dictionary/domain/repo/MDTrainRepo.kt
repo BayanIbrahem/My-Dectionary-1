@@ -18,5 +18,8 @@ interface MDTrainRepo: MDTrainPreferencesRepo {
         wordsIds: Set<Long> = emptySet()
     ): Flow<List<TrainHistory>>
 
-    suspend fun submitTrainHistory(trainHistory: TrainHistory)
+    suspend fun submitTrainHistory(
+        trainHistory: TrainHistory,
+        wordsNewMemoryDecay: Map<Long, Float>,
+    )
 }

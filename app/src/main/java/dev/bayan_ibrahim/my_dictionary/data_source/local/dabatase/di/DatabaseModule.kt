@@ -23,7 +23,7 @@ class DatabaseModule {
         klass = MDDataBase::class.java,
         name = "my_dictionary_db"
     )
-        .fallbackToDestructiveMigrationFrom(1, 2, 3)
+        .fallbackToDestructiveMigrationFrom(1, 2, 3, 4, 5)
         .build()
 
 }

@@ -54,7 +54,7 @@ interface MDWordsListViewPreferences {
         if (selectedLearningProgressGroups.isEmpty()) return true
         if (selectedLearningProgressGroups.count() == MDWordsListLearningProgressGroup.entries.count()) return true
         return selectedLearningProgressGroups.any { group ->
-            word.learningProgress in group.learningRange
+            word.memoryDecayFactor in group.learningRange
         }
     }
 }

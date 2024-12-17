@@ -31,7 +31,7 @@ enum class WordsListTrainPreferencesSortBy(
     override val strLabel: String,
     override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
-    LearningProgress("Learning Progress", MDIconsSet.LearningProgress), // checked
+    MemorizingProbability("Memorizing Probability", MDIconsSet.LearningProgress), // checked
     TrainingTime("Training Time", MDIconsSet.TrainTime),// checked
     CreateTime("Create Time", MDIconsSet.CreateTime),// checked
     Random("Random", MDIconsSet.Random);// checked
@@ -40,7 +40,7 @@ enum class WordsListTrainPreferencesSortBy(
     fun orderLabel(order: MDWordsListSortByOrder): String = when (order) {
         // TODO, string res
         MDWordsListSortByOrder.Asc -> when (this) {
-            LearningProgress -> "Words with the fewest learning progress"
+            MemorizingProbability -> "Words with the fewest learning progress"
             TrainingTime -> "Words trained by long time ago"
             CreateTime -> "Words created long time ago"
             Random -> "Random order"
@@ -48,7 +48,7 @@ enum class WordsListTrainPreferencesSortBy(
 
         // TODO, string res
         MDWordsListSortByOrder.Desc -> when (this) {
-            LearningProgress -> "Words with the largest learning progress"
+            MemorizingProbability -> "Words with the largest learning progress"
             TrainingTime -> "Words trained by recently"
             CreateTime -> "Words created recently"
             Random -> "Random order"
