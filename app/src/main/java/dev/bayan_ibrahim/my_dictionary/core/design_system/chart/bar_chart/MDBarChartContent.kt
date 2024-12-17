@@ -32,7 +32,6 @@ val defaultColors = listOf(
 @Composable
 fun MDBarChartContent(
     bars: List<Int>,
-    yLabelsCount: Int,
     modifier: Modifier = Modifier,
     textMeasurer: TextMeasurer = rememberTextMeasurer(),
     color: (index: Int, value: Int) -> Color = { i, _ ->
@@ -50,7 +49,6 @@ fun MDBarChartContent(
             values = bars,
             textMeasurer = textMeasurer,
             color = color,
-            yLabelsCount = yLabelsCount,
             labelColor = labelColor,
             gapPercent = gapPercent,
             valuePadding = valuePadding,
@@ -79,10 +77,7 @@ private fun MDSomeChartComponentPreview() {
                     yLabels = listOf(0, 25, 50, 75, 100, 125),
                     xLabels = List(values.size) { i -> i.toString() }
                 ) {
-                    MDBarChartContent(
-                        bars = values,
-                        yLabelsCount = 6
-                    )
+                    MDBarChartContent(bars = values)
                 }
             }
         }

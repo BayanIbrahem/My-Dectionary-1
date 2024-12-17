@@ -5,6 +5,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -16,7 +17,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.asFormattedString
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutput
-import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.calculateYAxisStepsFields
 
 /**
  * @param values the values list of bars
@@ -33,7 +33,6 @@ fun Modifier.drawBars(
     values: List<Int>,
     textMeasurer: TextMeasurer,
     color: (index: Int, value: Int) -> Color,
-    yLabelsCount: Int,
     labelColor: (index: Int, value: Int) -> Color,
     gapPercent: Float = 0.5f,
     valuePadding: Dp = 2.dp,
@@ -45,7 +44,6 @@ fun Modifier.drawBars(
         textMeasurer = textMeasurer,
         valueFormat = valueFormat,
         color = color,
-        yLabelsCount = yLabelsCount,
         labelColor = labelColor,
         gapPercent = gapPercent,
         valuePadding = valuePadding,
@@ -57,7 +55,6 @@ fun DrawScope.drawBars(
     values: List<Int>,
     textMeasurer: TextMeasurer,
     color: (index: Int, value: Int) -> Color,
-    yLabelsCount: Int,
     labelColor: (index: Int, value: Int) -> Color,
     gapPercent: Float = 0.5f,
     valuePadding: Dp = 2.dp,
@@ -71,12 +68,11 @@ fun DrawScope.drawBars(
             textMeasurer.measure(valueFormat(value))
         },
         color = color,
-        yLabelsCount = yLabelsCount,
         labelColor = labelColor,
         gapPercent = gapPercent,
         valuePadding = valuePadding.toPx(),
         cornerRadius = CornerRadius(radius.toPx()),
-        pointsValuesHeight =  pointsValuesHeight,
+        pointsValuesHeight = pointsValuesHeight,
     )
 }
 
@@ -96,7 +92,6 @@ private fun DrawScope.drawBars(
     values: List<Int>,
     measureValue: (Int) -> TextLayoutResult,
     color: (index: Int, value: Int) -> Color,
-    yLabelsCount: Int,
     labelColor: (index: Int, value: Int) -> Color,
     gapPercent: Float = 0.5f,
     valuePadding: Float = 2.dp.toPx(),
@@ -121,7 +116,7 @@ private fun DrawScope.drawBars(
                 outputRangeStart = 0f,
             ),
             barColor = color(i, value),
-            horizontalCenter = calculateBarHorizontalCenter(i, count, size.width, barWidth),
+            horizontalCenter = calculateBarHorizontalCenter(i, count, size.width, barWidth).takeUnless { it.isNaN() } ?: size.center.x,
             value = measureValue(value),
             labelColor = labelColor(i, value),
         )
@@ -140,6 +135,14 @@ fun calculateBarWidth(
     count: Int,
     gapPercent: Float,
 ): Float {
+    if (count == 1) {
+        // b + 2g= w
+        // g = p * b
+        // b + 2pb = w
+        // b(1 +2p) = w
+        // b = w/(1+2p)
+        return totalWidth.div((1 + 2 * gapPercent))
+    }
     return totalWidth / (count + gapPercent * count.dec())
 }
 

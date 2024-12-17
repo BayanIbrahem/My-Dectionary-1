@@ -118,7 +118,6 @@ fun MDBarChart(
     ) {
         MDBarChartContent(
             bars = bars,
-            yLabelsCount = yLabelsCount,
             textMeasurer = textMeasurer,
             color = barColor,
             labelColor = barLabelColor,

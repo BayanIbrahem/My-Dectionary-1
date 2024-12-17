@@ -194,7 +194,6 @@ private fun MDSomeChartComponentPreview() {
                             color = { index, value ->
                                 Color.Red
                             },
-                            yLabelsCount = yLabelsCount,
                             labelColor = { _, _ ->
                                 Color.DarkGray
                             }

@@ -5,6 +5,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
@@ -59,19 +60,27 @@ private fun DrawScope.drawXLabels(
     horizontalPadding: Pair<Float, Float> = Pair(0f, 0f),
 ) {
     val count = labels.count()
-    val (startPadding, endPadding) = horizontalPadding
-    val horizontalEmptySpace = size.width - labels.sumOf { it.size.width }
-    val spacedBy = (horizontalEmptySpace - startPadding - endPadding) / count.dec()
-    var prevEnd: Float = startPadding - spacedBy // we subtract spacedBy because it would be added for first item
-    labels.forEachIndexed { i, label ->
-        val halfWidth = label.size.width / 2
-        val center = prevEnd + spacedBy + halfWidth
-        prevEnd = center + halfWidth
+    if (count == 1) {
         drawXLabel(
-            label = label,
-            center = center,
+            label = labels.first(),
+            center = size.center.x,
             rotationDegree = rotationDegree
         )
+    } else {
+        val (startPadding, endPadding) = horizontalPadding
+        val horizontalEmptySpace = size.width - labels.sumOf { it.size.width }
+        val spacedBy = (horizontalEmptySpace - startPadding - endPadding) / count.dec()
+        var prevEnd: Float = startPadding - spacedBy // we subtract spacedBy because it would be added for first item
+        labels.forEachIndexed { i, label ->
+            val halfWidth = label.size.width / 2
+            val center = prevEnd + spacedBy + halfWidth
+            prevEnd = center + halfWidth
+            drawXLabel(
+                label = label,
+                center = center,
+                rotationDegree = rotationDegree
+            )
+        }
     }
 }
 
