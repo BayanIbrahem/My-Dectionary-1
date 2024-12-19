@@ -21,7 +21,7 @@ fun MDIconsSet.getDefaultIcon() = when (this) {
     MDIconsSet.ImportFromFile -> MDIcon(outlinedRes = D.download_file_outline, filledRes = D.download_file_fill, contentDescription = S.content_description_import_from_file)
     MDIconsSet.LanguageWordSpace -> MDIcon(outlinedRes = D.globe2, filledRes = D.globe1, contentDescription = S.content_description_language_word_space) // TODO, optimize icon
     MDIconsSet.LatestTrainsCount -> MDIcon(default = D.line_chart, contentDescription = S.content_description_latest_trains_count) // TODO, icon res
-    MDIconsSet.LearningProgress -> MDIcon(outlinedRes = D.progress_40, filledRes = D.progress_60, contentDescription = S.content_description_learning_progress) // TODO, optimize icon (fill only)
+    MDIconsSet.MemorizingProbability -> MDIcon(outlinedRes = D.progress_40, filledRes = D.progress_60, contentDescription = S.content_description_learning_progress) // TODO, optimize icon (fill only)
     MDIconsSet.LineChart -> MDIcon(default = D.line_chart, contentDescription = S.content_description_line_chart)
     MDIconsSet.Profile -> MDIcon(outlinedRes = D.profile_outline, filledRes = D.profile_fill, contentDescription = S.content_description_profile)
     MDIconsSet.Random -> MDIcon(outlinedRes = D.random_outline, filledRes = D.random_fill, contentDescription = S.content_description_random)

@@ -1,17 +1,18 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import MDWordsListViewPreferencesDialogRoute
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesDialogRoute
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesDialogRoute
 
 @Composable
 fun MDWordsListRoute(
@@ -21,12 +22,14 @@ fun MDWordsListRoute(
     modifier: Modifier = Modifier,
     viewModel: MDWordsListViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(navArgs) {
+    DisposableEffect(Unit) {
         viewModel.initWithNavArgs(navArgs)
+        this.onDispose { }
     }
 
     val uiState = viewModel.uiState
     val wordsList = viewModel.paginatedWordsList.collectAsLazyPagingItems()
+    val lifeMemorizingProbability by viewModel.lifeMemorizingProbability.collectAsStateWithLifecycle()
     val navActions by remember(uiState.selectedWordSpace.language.code) {
         derivedStateOf {
             object : MDWordsListNavigationUiActions {
@@ -46,6 +49,7 @@ fun MDWordsListRoute(
         uiActions = uiActions,
         wordsList = wordsList,
         modifier = modifier,
+        lifeMemorizingProbability = lifeMemorizingProbability
     )
     // Dialog:
     // train preferences dialog:

@@ -27,7 +27,7 @@ enum class MDIconsSet {
     ImportFromFile,
     LanguageWordSpace,
     LatestTrainsCount,
-    LearningProgress,
+    MemorizingProbability,
     LineChart,
     Menu,
     MoreVert,

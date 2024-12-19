@@ -1,7 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table
 
 import androidx.room.ColumnInfo
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceAverageLearningProgress
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceAverageMemorizingProbability
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceLanguageCode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceWordsCount
 
@@ -10,6 +10,6 @@ data class LanguageWordSpaceEntity(
     val languageCode: String,
     @ColumnInfo(dbLanguageWordSpaceWordsCount)
     val wordsCount: Int,
-    @ColumnInfo(dbLanguageWordSpaceAverageLearningProgress)
-    val averageLearningProgress: Float,
+    @ColumnInfo(dbLanguageWordSpaceAverageMemorizingProbability)
+    val averageMemorizingProbability: Float,
 )

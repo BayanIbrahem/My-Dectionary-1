@@ -7,6 +7,7 @@ sealed interface MDTrainWordAnswer {
     val word: Word
     val selectedAnswer: String?
     val correctAnswer: String
+    val submitOption: MDTrainSubmitOption
     val consumedDuration: Duration
     val isTimeOut: Boolean
     val type: TrainWordType
@@ -15,6 +16,7 @@ sealed interface MDTrainWordAnswer {
         override val word: Word,
         override val selectedAnswer: String?,
         override val correctAnswer: String,
+        override val submitOption: MDTrainSubmitOption,
         override val consumedDuration: Duration,
         override val isTimeOut: Boolean,
     ) : MDTrainWordAnswer {
@@ -25,6 +27,7 @@ sealed interface MDTrainWordAnswer {
         override val word: Word,
         override val selectedAnswer: String?,
         override val correctAnswer: String,
+        override val submitOption: MDTrainSubmitOption,
         override val consumedDuration: Duration,
         override val isTimeOut: Boolean,
     ) : MDTrainWordAnswer {
@@ -34,17 +37,19 @@ sealed interface MDTrainWordAnswer {
 
 fun MDTrainWordAnswer.asResult(): MDTrainWordResult = if (isTimeOut) {
     MDTrainWordResult.Timeout(consumedDuration = consumedDuration)
-} else if (selectedAnswer == null) {
+} else if (selectedAnswer == null || submitOption == MDTrainSubmitOption.Pass) {
     MDTrainWordResult.Pass(consumedDuration = consumedDuration)
 } else if (selectedAnswer == correctAnswer) {
     MDTrainWordResult.Right(
         consumedDuration = consumedDuration,
-        correctAnswer = correctAnswer
+        correctAnswer = correctAnswer,
+        submitOption = submitOption
     )
 } else {
     MDTrainWordResult.Wrong(
         consumedDuration = consumedDuration,
         selectedAnswer = selectedAnswer ?: "-",
         correctAnswer = correctAnswer,
+        submitOption = submitOption
     )
 }

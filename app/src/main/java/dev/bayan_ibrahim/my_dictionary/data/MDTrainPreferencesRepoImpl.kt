@@ -2,39 +2,43 @@ package dev.bayan_ibrahim.my_dictionary.data
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagMatchNormalize
 import dev.bayan_ibrahim.my_dictionary.core.util.invalidIfNull
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
+import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainPreferencesRepo
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Clock
 
 class MDTrainPreferencesRepoImpl(
     private val wordDao: WordDao,
-): MDTrainPreferencesRepo {
-    override suspend fun getWordsIdsOfTagsAndProgressRange(
+) : MDTrainPreferencesRepo {
+    override suspend fun getWordsIdsOfTagsAndMemorizingProbability(
         viewPreferences: MDWordsListViewPreferences,
     ): Set<Long> {
-        val (minProgress, maxProgress) = progressRangeOf(viewPreferences.selectedLearningProgressGroups)
         val includeEmptyTags = viewPreferences.selectedTags.isEmpty()
-        return wordDao.getWordsIdsWithTagsOfLearningProgressRange(
+        return wordDao.getWordsWithTags(
             includeEmptyTags = includeEmptyTags,
-            minProgress = minProgress,
-            maxProgress = maxProgress
         ).map {
-            it.mapNotNull { (id, tags, progress) ->
+            val now = Clock.System.now()
+            it.mapNotNull {
+                val word = it.asWordModel()
                 val matchTags = checkMatchTagsOf(
-                    tags = StringListConverter.stringToListConverter(tags),
+                    tags = word.tags,
                     filterTags = viewPreferences.selectedTags,
                     includeFilterTags = viewPreferences.includeSelectedTags,
                 )
-                val matchProgress = checkMatchProgressOf(
-                    progress,
-                    viewPreferences.selectedLearningProgressGroups
+                if (!matchTags) return@mapNotNull null
+
+                val memorizingProbability = MDTrainDataSource.Default.memoryDecayFormula(word, now)
+                val matchMemorizingProbability = checkMatchMemorizingProbabilityOf(
+                    progress = memorizingProbability,
+                    filterProgressGroups = viewPreferences.selectedMemorizingProbabilityGroups
                 )
-                if (matchTags && matchProgress) {
-                    id
+                return@mapNotNull if (matchMemorizingProbability) {
+                    word.id
                 } else {
                     null
                 }
@@ -42,14 +46,14 @@ class MDTrainPreferencesRepoImpl(
         }.first()
     }
 
-    private fun progressRangeOf(collection: Collection<MDWordsListLearningProgressGroup>): Pair<Float, Float> = collection.minOfOrNull {
+    private fun progressRangeOf(collection: Collection<MDWordsListMemorizingProbabilityGroup>): Pair<Float, Float> = collection.minOfOrNull {
         it.learningRange.start
     }.invalidIfNull(0f) to collection.maxOfOrNull {
         it.learningRange.endInclusive
     }.invalidIfNull(1f)
 
     private fun checkMatchTagsOf(
-        tags: List<String>,
+        tags: Set<String>,
         filterTags: Set<String>,
         includeFilterTags: Boolean,
     ): Boolean {
@@ -65,9 +69,9 @@ class MDTrainPreferencesRepoImpl(
         }
     }
 
-    private fun checkMatchProgressOf(
+    private fun checkMatchMemorizingProbabilityOf(
         progress: Float,
-        filterProgressGroups: Set<MDWordsListLearningProgressGroup>,
+        filterProgressGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     ): Boolean = filterProgressGroups.isEmpty() || filterProgressGroups.any {
         progress in it.learningRange
     }

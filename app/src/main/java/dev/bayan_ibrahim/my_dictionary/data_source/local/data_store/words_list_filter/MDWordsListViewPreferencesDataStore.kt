@@ -4,7 +4,7 @@ import android.content.Context
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferencesBuilder
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -28,8 +28,8 @@ class MDWordsListDataStoreViewPreferencesImpl(
             searchTarget = MDWordsListSearchTarget.entries[it.searchTargetIndex],
             selectedTags = it.selectedTagsList.toSet(),
             includeSelectedTags = it.includeSelectTags,
-            selectedLearningProgressGroups = it.selectedLearningProgressGroupsList.map { index ->
-                MDWordsListLearningProgressGroup.entries[index]
+            selectedMemorizingProbabilityGroups = it.selectedMemorizingProbabilityGroupsList.map { index ->
+                MDWordsListMemorizingProbabilityGroup.entries[index]
             }.toSet(),
             sortBy = MDWordsListViewPreferencesSortBy.entries[it.sortBy],
             sortByOrder = MDWordsListSortByOrder.entries[it.sortByOrder],
@@ -45,8 +45,8 @@ class MDWordsListDataStoreViewPreferencesImpl(
                 selectedTags.clear()
                 selectedTags.addAll(wordsList.selectedTags)
                 includeSelectTags = wordsList.includeSelectedTags
-                selectedLearningProgressGroups.clear()
-                selectedLearningProgressGroups.addAll(wordsList.selectedLearningProgressGroups.map { enum -> enum.ordinal })
+                selectedMemorizingProbabilityGroups.clear()
+                selectedMemorizingProbabilityGroups.addAll(wordsList.selectedMemorizingProbabilityGroups.map { enum -> enum.ordinal })
                 sortBy = wordsList.sortBy.ordinal
                 sortByOrder = wordsList.sortByOrder.ordinal
             }

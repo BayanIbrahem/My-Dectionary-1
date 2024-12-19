@@ -11,7 +11,6 @@ import androidx.room.Transaction
 import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryDbNormalize
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.WordIdWithTagAndProgress
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordBaseWordId
@@ -203,28 +202,23 @@ interface WordDao {
     @Query(
         """
         SELECT
-            $dbWordId,
-            $dbWordTags,
-            $dbWordMemoryDecayFactor
+            *
         FROM
             $dbWordTable
         WHERE
-            (:includeEmptyTags OR LENGTH($dbWordTags) > 0) AND
-            $dbWordMemoryDecayFactor BETWEEN :minProgress AND :maxProgress
+            (:includeEmptyTags OR LENGTH($dbWordTags) > 0)
     """
     )
-    fun getWordsIdsWithTagsOfLearningProgressRange(
+    fun getWordsWithTags(
         includeEmptyTags: Boolean = true,
-        minProgress: Float = 0f,
-        maxProgress: Float = 1f,
-    ): Flow<List<WordIdWithTagAndProgress>>
+    ): Flow<List<WordEntity>>
 
 
     fun getSortByColumnName(sortBy: MDWordsListViewPreferencesSortBy): String {
         return when (sortBy) {
             MDWordsListViewPreferencesSortBy.Meaning -> dbWordMeaning
             MDWordsListViewPreferencesSortBy.Translation -> dbWordTranslation
-            MDWordsListViewPreferencesSortBy.LearningProgress -> dbWordMemoryDecayFactor
+            MDWordsListViewPreferencesSortBy.MemorizingProbability -> dbWordMemoryDecayFactor
         }
     }
 

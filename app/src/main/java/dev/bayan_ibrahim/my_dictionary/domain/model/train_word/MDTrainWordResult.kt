@@ -15,6 +15,7 @@ import kotlin.time.Duration
 @Serializable(TrainWordResultSerializer::class)
 sealed interface MDTrainWordResult {
     val consumedDuration: Duration
+    val submitOption: MDTrainSubmitOption
 
     val type: TrainWordResultType
         get() = when (this) {
@@ -29,7 +30,14 @@ sealed interface MDTrainWordResult {
         val selectedAnswer: String,
         val correctAnswer: String,
         override val consumedDuration: Duration,
+        override val submitOption: MDTrainSubmitOption,
     ) : MDTrainWordResult {
+        init {
+            require(submitOption in MDTrainSubmitOption.primaryEntities) {
+                "Invalid submit option $submitOption for Wrong answer, must be one of primary entities $${MDTrainSubmitOption.primaryEntities}"
+            }
+        }
+
         companion object Companion {
             val type = TrainWordResultType.Wrong
         }
@@ -39,7 +47,14 @@ sealed interface MDTrainWordResult {
     data class Right(
         override val consumedDuration: Duration,
         val correctAnswer: String,
+        override val submitOption: MDTrainSubmitOption,
     ) : MDTrainWordResult {
+        init {
+            require(submitOption in MDTrainSubmitOption.primaryEntities) {
+                "Invalid submit option $submitOption for Right answer, must be one of primary entities $${MDTrainSubmitOption.primaryEntities}"
+            }
+        }
+
         companion object Companion {
             val type = TrainWordResultType.Right
         }
@@ -49,6 +64,8 @@ sealed interface MDTrainWordResult {
     data class Pass(
         override val consumedDuration: Duration,
     ) : MDTrainWordResult {
+        override val submitOption: MDTrainSubmitOption = MDTrainSubmitOption.Pass
+
         companion object Companion {
             val type = TrainWordResultType.Pass
         }
@@ -58,6 +75,8 @@ sealed interface MDTrainWordResult {
     data class Timeout(
         override val consumedDuration: Duration,
     ) : MDTrainWordResult {
+        override val submitOption: MDTrainSubmitOption = MDTrainSubmitOption.Answer
+
         companion object Companion {
             val type = TrainWordResultType.Timeout
         }

@@ -7,7 +7,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tag
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagViewNormalize
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListViewPreferencesRepo
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
@@ -86,20 +86,20 @@ class MDWordsListViewPreferencesViewModel @Inject constructor(
         }
 
         override fun onSelectLearningGroup(
-            group: MDWordsListLearningProgressGroup,
+            group: MDWordsListMemorizingProbabilityGroup,
         ) = editViewByPreferences {
-            if (group in selectedLearningProgressGroups) {
-                this.selectedLearningProgressGroups = this.selectedLearningProgressGroups.remove(group)
+            if (group in selectedMemorizingProbabilityGroups) {
+                this.selectedMemorizingProbabilityGroups = this.selectedMemorizingProbabilityGroups.remove(group)
             } else {
-                this.selectedLearningProgressGroups = this.selectedLearningProgressGroups.add(group)
+                this.selectedMemorizingProbabilityGroups = this.selectedMemorizingProbabilityGroups.add(group)
             }
         }
 
-        override fun onToggleAllLearningProgressGroups(selected: Boolean) = editViewByPreferences {
+        override fun onToggleAllMemorizingProbabilityGroups(selected: Boolean) = editViewByPreferences {
             if (selected) {
-                this.selectedLearningProgressGroups = MDWordsListLearningProgressGroup.entries.toPersistentSet()
+                this.selectedMemorizingProbabilityGroups = MDWordsListMemorizingProbabilityGroup.entries.toPersistentSet()
             } else {
-                this.selectedLearningProgressGroups = persistentSetOf()
+                this.selectedMemorizingProbabilityGroups = persistentSetOf()
             }
         }
 

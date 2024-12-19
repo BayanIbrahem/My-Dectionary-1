@@ -10,7 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
@@ -27,7 +27,7 @@ class MDWordsListViewPreferencesMutableUiState(
     searchTarget: MDWordsListSearchTarget = defaultWordsListViewPreferences.searchTarget,
     selectedTags: Set<String> = defaultWordsListViewPreferences.selectedTags,
     includeSelectedTags: Boolean = defaultWordsListViewPreferences.includeSelectedTags,
-    selectedLearningProgressGroups: Set<MDWordsListLearningProgressGroup> = defaultWordsListViewPreferences.selectedLearningProgressGroups,
+    selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup> = defaultWordsListViewPreferences.selectedMemorizingProbabilityGroups,
     sortBy: MDWordsListViewPreferencesSortBy = defaultWordsListViewPreferences.sortBy,
     sortByOrder: MDWordsListSortByOrder = defaultWordsListViewPreferences.sortByOrder,
 ) : MDWordsListViewPreferencesUiState, MDMutableUiState() {
@@ -36,7 +36,7 @@ class MDWordsListViewPreferencesMutableUiState(
         searchTarget = data.searchTarget,
         selectedTags = data.selectedTags,
         includeSelectedTags = data.includeSelectedTags,
-        selectedLearningProgressGroups = data.selectedLearningProgressGroups,
+        selectedMemorizingProbabilityGroups = data.selectedMemorizingProbabilityGroups,
         sortBy = data.sortBy,
         sortByOrder = data.sortByOrder
     )
@@ -45,8 +45,8 @@ class MDWordsListViewPreferencesMutableUiState(
     override var searchTarget: MDWordsListSearchTarget by mutableStateOf(searchTarget)
     override var selectedTags: PersistentSet<String> by mutableStateOf(selectedTags.toPersistentSet())
     override var includeSelectedTags: Boolean by mutableStateOf(includeSelectedTags)
-    override var selectedLearningProgressGroups: PersistentSet<MDWordsListLearningProgressGroup> by mutableStateOf(
-        selectedLearningProgressGroups.toPersistentSet()
+    override var selectedMemorizingProbabilityGroups: PersistentSet<MDWordsListMemorizingProbabilityGroup> by mutableStateOf(
+        selectedMemorizingProbabilityGroups.toPersistentSet()
     )
     override var sortBy: MDWordsListViewPreferencesSortBy by mutableStateOf(sortBy)
     override var sortByOrder: MDWordsListSortByOrder by mutableStateOf(sortByOrder)
@@ -59,7 +59,7 @@ class MDWordsListViewPreferencesMutableUiState(
         searchTarget = preferences.searchTarget
         selectedTags = preferences.selectedTags.toPersistentSet()
         includeSelectedTags = preferences.includeSelectedTags
-        selectedLearningProgressGroups = preferences.selectedLearningProgressGroups.toPersistentSet()
+        selectedMemorizingProbabilityGroups = preferences.selectedMemorizingProbabilityGroups.toPersistentSet()
         sortBy = preferences.sortBy
         sortByOrder = preferences.sortByOrder
     }

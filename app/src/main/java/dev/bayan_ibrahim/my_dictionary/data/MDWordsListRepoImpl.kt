@@ -13,13 +13,14 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDLanguageSelectionDialogRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
@@ -34,6 +35,7 @@ class MDWordsListRepoImpl(
     languageRepo: MDLanguageSelectionDialogRepo,
 ) : MDWordsListRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordDao), MDLanguageSelectionDialogRepo by languageRepo {
     override fun getViewPreferences(): Flow<MDWordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
+    override fun getUserPreferences(): Flow<MDUserPreferences> = preferences.getUserPreferencesStream()
 
     override fun getLanguageTags(code: LanguageCode): Flow<Set<String>> = wordDao.getTagsInLanguage(code.code).map {
         it.map {
@@ -125,10 +127,10 @@ class MDWordsListRepoImpl(
         if (!matchTags) return false
 
         // learning group
-        val wordLearningGroup = MDWordsListLearningProgressGroup.of(this.word.memoryDecayFactor)
+        val wordLearningGroup = MDWordsListMemorizingProbabilityGroup.of(this.word.memoryDecayFactor)
 
         val matchLearningGroup =
-            wordLearningGroup in preferences.selectedLearningProgressGroups || preferences.selectedLearningProgressGroups.isEmpty()
+            wordLearningGroup in preferences.selectedMemorizingProbabilityGroups || preferences.selectedMemorizingProbabilityGroups.isEmpty()
         @Suppress("RedundantIf", "RedundantSuppression")
         if (!matchLearningGroup) return false
 
@@ -161,7 +163,7 @@ class MDWordsListRepoImpl(
                 MDWordsListSortByOrder.Desc -> sortedByDescending { it.translation }
             }
 
-            MDWordsListViewPreferencesSortBy.LearningProgress -> when (order) {
+            MDWordsListViewPreferencesSortBy.MemorizingProbability -> when (order) {
                 MDWordsListSortByOrder.Asc -> sortedBy { it.memoryDecayFactor }
                 MDWordsListSortByOrder.Desc -> sortedByDescending { it.memoryDecayFactor }
             }

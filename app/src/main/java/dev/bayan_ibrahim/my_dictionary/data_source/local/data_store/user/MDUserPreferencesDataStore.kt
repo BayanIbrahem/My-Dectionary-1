@@ -48,7 +48,8 @@ class MDUserPreferencesDataStoreImpl(
                 it in 0..<MDIconsPack.entries.count()
             }?.let {
                 MDIconsPack.entries[it]
-            } ?: MDIconsPack.Default
+            } ?: MDIconsPack.Default,
+            liveMemorizingProbability = it.liveMemorizingProbability
         )
     }
 
@@ -74,6 +75,7 @@ class MDUserPreferencesDataStoreImpl(
                     MDThemeContrastType.High -> UserPreferencesThemeContrast.High
                 }
                 this.iconsSet = user.iconsPack.ordinal
+                this.liveMemorizingProbability = user.liveMemorizingProbability
             }
         }
     }

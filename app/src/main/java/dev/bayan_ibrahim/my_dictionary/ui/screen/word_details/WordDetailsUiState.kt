@@ -38,7 +38,7 @@ interface WordDetailsUiState : MDUiState {
     val selectedTypeTag: WordTypeTag?
     val relatedWords: Map<Long, Pair<WordTypeTagRelation, String>> // Map<Label, List<Word>>, for each relation it may have more than one value
     val examples: Map<Long, String>
-    val learningProgress: Float
+    val memorizingProbability: Float
     val createdAt: Instant?
 
     // todo add some statistics
@@ -60,7 +60,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     override var selectedTypeTag: WordTypeTag? by mutableStateOf(null)
     override val relatedWords: SnapshotStateMap<Long, Pair<WordTypeTagRelation, String>> = mutableStateMapOf()
     override val examples: SnapshotStateMap<Long, String> = mutableStateMapOf()
-    override var learningProgress: Float by mutableFloatStateOf(0f)
+    override var memorizingProbability: Float by mutableFloatStateOf(0f)
         private set
 
     private val idGenerator = IncrementalIdGenerator()
@@ -144,7 +144,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
             )
         }
         examples.setAll(word.examples.associateBy { idGenerator.nextId() })
-        learningProgress = word.memoryDecayFactor
+        memorizingProbability = word.memoryDecayFactor
     }
 
     fun toWord(): Word {
@@ -168,7 +168,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
                 )
             },
             examples = this.examples.values.toList(),
-            memoryDecayFactor = this.learningProgress,
+            memoryDecayFactor = this.memorizingProbability,
             createdAt = this.createdAt ?: now,
             updatedAt = now
         )

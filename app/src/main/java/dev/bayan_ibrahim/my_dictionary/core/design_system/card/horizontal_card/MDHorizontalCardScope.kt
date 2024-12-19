@@ -11,17 +11,17 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDUiScopeItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDUiScopeProvider
 import dev.bayan_ibrahim.my_dictionary.core.design_system.rememberStateOfItems
 
-data class MDHorizontalCardScopeItem(
-    val modifier: Modifier = Modifier,
-    val enabled: Boolean = true,
-    val onClick: (() -> Unit)? = null,
-    val onLongClick: (() -> Unit)? = null,
-    val colors: MDHorizontalCardColors? = null,
-    val styles: MDHorizontalCardStyles? = null,
-    val leadingIcon: @Composable (() -> Unit)? = null,
-    val trailingIcon: @Composable (() -> Unit)? = null,
-    val subtitle: (@Composable () -> Unit)? = null,
-    val title: @Composable () -> Unit,
+open class MDHorizontalCardScopeItem(
+    open val modifier: Modifier = Modifier,
+    open val enabled: Boolean = true,
+    open val onClick: (() -> Unit)? = null,
+    open val onLongClick: (() -> Unit)? = null,
+    open val colors: MDHorizontalCardColors? = null,
+    open val styles: MDHorizontalCardStyles? = null,
+    open val leadingIcon: @Composable (() -> Unit)? = null,
+    open val trailingIcon: @Composable (() -> Unit)? = null,
+    open val subtitle: (@Composable () -> Unit)? = null,
+    open val title: @Composable () -> Unit,
 ) : MDUiScopeItem
 
 typealias MDHorizontalCardScope = MDUiScope<MDHorizontalCardScopeItem>

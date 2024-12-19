@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.train
 
 import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -12,16 +13,41 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -42,16 +68,31 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDListItem
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGridGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreenDefaults
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDTrainQuestionExtraInfo
+import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainSubmitOption
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordQuestion
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.train.component.MDTrainTopAppBar
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import kotlinx.datetime.Clock
 
 @Composable
 fun MDTrainScreen(
@@ -68,6 +109,7 @@ fun MDTrainScreen(
     MDScreen(
         uiState = uiState,
         modifier = modifier,
+        contentWindowInsets = MDScreenDefaults.contentWindowInsets.add(WindowInsets.ime), // adding software keyboard window insets
         topBar = {
             MDTrainTopAppBar()
         },
@@ -215,8 +257,8 @@ private fun TimerClock(
 @Composable
 private fun WordTrainPage(
     train: MDTrainWordQuestion,
-    onSelectAnswerSubmit: (Int?) -> Unit,
-    onWriteWordSubmit: (String?) -> Unit,
+    onSelectAnswerSubmit: (Int, MDTrainSubmitOption) -> Unit,
+    onWriteWordSubmit: (String, MDTrainSubmitOption) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (train) {
@@ -237,7 +279,7 @@ private fun WordTrainPage(
 @Composable
 private fun WordSelectAnswerTrainPage(
     train: MDTrainWordQuestion.SelectAnswer,
-    onSubmit: (Int?) -> Unit,
+    onSubmit: (Int, MDTrainSubmitOption) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedAnswerIndex: Int by rememberSaveable {
@@ -253,56 +295,78 @@ private fun WordSelectAnswerTrainPage(
     }
     Column(
         modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         QuestionPagePart(
             modifier = Modifier.weight(1f),
             question = train.question,
             currentAnswer = selectedAnswer,
             onSubmit = {
-                onSubmit(selectedAnswerIndex.takeUnless { it < 0 })
+                onSubmit(selectedAnswerIndex, it)
             },
             onSubmitEnabled = onSubmitEnabled
         )
-        Column(
-            modifier = Modifier,
+        val columnsCount by remember(train.options.count()) {
+            derivedStateOf {
+                if (train.options.count() < 4) 1 else 2
+            }
+        }
+
+        // TODO, pass default selected visible info form view model and store it into it, provide options in profile to provide available extra info
+        var selectedVisibleInfo: MDTrainQuestionExtraInfo? by remember {
+            mutableStateOf(null)
+        }
+        ExtraInfoPagePart(
+            word = train.word,
+            selectedVisibleInfo = selectedVisibleInfo,
+            availableExtraInfo = MDTrainQuestionExtraInfo.entries,
+            onSelectVisibleInfo = { selectedVisibleInfo = it },
+            modifier = Modifier.weight(1f),
+        )
+        val selectedItemColors = MDHorizontalCardDefaults.primaryColors
+        val normalItemColors = MDHorizontalCardDefaults.colors()
+        MDHorizontalCardGridGroup(
+            columns = GridCells.Fixed(columnsCount)
         ) {
             train.options.forEachIndexed { i, option ->
-                val selected by remember(i, selectedAnswerIndex) {
-                    derivedStateOf { i == selectedAnswerIndex }
-                }
-                MDListItem(
+                item(
                     onClick = {
                         selectedAnswerIndex = i
                     },
-                    leadingContent = {
-                        if (selected) {
+                    colors = if (i == selectedAnswerIndex) {
+                        selectedItemColors
+                    } else {
+                        normalItemColors
+                    },
+                    leadingIcon = {
+                        if (i == selectedAnswerIndex) {
                             MDIcon(MDIconsSet.Check) // checked
                         } else {
                             Box(modifier = Modifier.width(24.dp))
                         }
                     },
-                    trailingContent = {
+                    trailingIcon = {
                         // to keep the title in the middle
                         Box(modifier = Modifier.width(24.dp))
                     },
-                    headlineContent = {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(option)
-                        }
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(option)
                     }
-                )
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun WordWriteTrainPage(
     train: MDTrainWordQuestion.WriteWord,
-    onSubmit: (String?) -> Unit,
+    onSubmit: (String, MDTrainSubmitOption) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var answer by remember {
@@ -310,16 +374,31 @@ private fun WordWriteTrainPage(
     }
     Column(
         modifier = modifier,
+//            modifier = modifier/*.windowInsetsPadding(WindowInsets.safeContent)*/,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         QuestionPagePart(
             modifier = Modifier.weight(1f),
             question = train.question,
             currentAnswer = answer,
             onSubmit = {
-                onSubmit(answer)
+                onSubmit(answer, it)
             },
         )
-        Column(modifier = Modifier.weight(1f)) {
+        var selectedVisibleInfo: MDTrainQuestionExtraInfo? by remember {
+            mutableStateOf(null)
+        }
+        ExtraInfoPagePart(
+            word = train.word,
+            selectedVisibleInfo = selectedVisibleInfo,
+            availableExtraInfo = MDTrainQuestionExtraInfo.entries,
+            onSelectVisibleInfo = { selectedVisibleInfo = it },
+            modifier = Modifier.weight(1f),
+        )
+        Box(
+//            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
             MDBasicTextField(
                 value = answer,
                 modifier = Modifier.fillMaxWidth(),
@@ -336,7 +415,7 @@ private fun WordWriteTrainPage(
 private fun QuestionPagePart(
     question: String,
     currentAnswer: String,
-    onSubmit: () -> Unit,
+    onSubmit: (MDTrainSubmitOption) -> Unit,
     modifier: Modifier = Modifier,
     onSubmitEnabled: Boolean = true,
     style: TextStyle = MaterialTheme.typography.titleLarge,
@@ -385,18 +464,262 @@ private fun QuestionPagePart(
                 }
             }
         }
-        AssistChip(
-            onClick = onSubmit,
-            enabled = onSubmitEnabled,
-            label = {
-                Text("Submit answer") // TODO, string res
-            },
-            trailingIcon = {
-                MDIcon(
-                    icon = MDIconsSet.ArrowForward,
-                    contentDescription = null
-                ) // checked
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            MDTrainSubmitOption.primaryEntities.forEach { option ->
+                AssistChip(
+                    onClick = {
+                        onSubmit(option)
+                    },
+                    enabled = onSubmitEnabled,
+                    label = {
+                        Text(option.label)
+                    },
+                    leadingIcon = {
+                        MDIcon(option.icon)
+                    }
+                )
             }
-        )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            MDTrainSubmitOption.secondaryEntities.forEach { option ->
+                TextButton(
+                    onClick = {
+                        onSubmit(option)
+                    },
+                ) {
+                    Text(option.label, textDecoration = TextDecoration.Underline, fontStyle = FontStyle.Italic)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExtraInfoPagePart(
+    word: Word,
+    selectedVisibleInfo: MDTrainQuestionExtraInfo?,
+    availableExtraInfo: List<MDTrainQuestionExtraInfo>,
+    onSelectVisibleInfo: (MDTrainQuestionExtraInfo?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val validAvailableExtraInfo by remember(word) {
+        derivedStateOf {
+            availableExtraInfo.associateWith {
+                when (it) {
+                    MDTrainQuestionExtraInfo.Transcription -> listOf(word.transcription)
+                    MDTrainQuestionExtraInfo.Tag -> word.tags
+                    MDTrainQuestionExtraInfo.TypeTag -> listOfNotNull(word.wordTypeTag?.name)
+                    MDTrainQuestionExtraInfo.RelatedWords -> word.relatedWords.map { it.value }
+                    MDTrainQuestionExtraInfo.Example -> word.examples
+                    MDTrainQuestionExtraInfo.AdditionalTranslation -> word.additionalTranslations
+                }
+            }.filterValues { it.isNotEmpty() }
+        }
+    }
+    val notSelectedAvailableExtraInfo by remember(validAvailableExtraInfo, selectedVisibleInfo) {
+        derivedStateOf {
+            if (selectedVisibleInfo == null) {
+                validAvailableExtraInfo.keys
+            } else {
+                validAvailableExtraInfo.keys - selectedVisibleInfo
+            }.toList()
+        }
+    }
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
+    ) {
+        val selectedVisibleInfoData by remember(selectedVisibleInfo, validAvailableExtraInfo) {
+            derivedStateOf {
+                validAvailableExtraInfo[selectedVisibleInfo]
+            }
+        }
+        Box(
+            modifier = Modifier
+                .weight(1f),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            androidx.compose.animation.AnimatedVisibility(
+                visible = selectedVisibleInfoData != null
+            ) {
+                ExtraInfoDataAnimatedPart(
+                    title = selectedVisibleInfo?.label ?: "",
+                    icon = selectedVisibleInfo?.icon ?: MDIconsSet.Close, // TODO, set transparent icon not to show any wrong info on animation
+                    valuesItems = selectedVisibleInfoData ?: emptyList(),
+                )
+            }
+        }
+        LazyRow(
+            modifier = Modifier.height(48.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (selectedVisibleInfo != null) {
+                item(
+                    key = selectedVisibleInfo
+                ) {
+                    IconButton(
+                        modifier = Modifier.animateItem(),
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary,
+                        ),
+                        onClick = {
+                            onSelectVisibleInfo(null)
+                        }
+                    ) {
+                        MDIcon(selectedVisibleInfo.icon)
+                    }
+                }
+                item {
+                    VerticalDivider(
+                        modifier = Modifier
+                            .height(36.dp)
+                            .animateItem()
+                    )
+                }
+            }
+            items(
+                items = notSelectedAvailableExtraInfo,
+                key = { it.ordinal }
+            ) {
+                FilledIconButton(
+                    modifier = Modifier.animateItem(),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                    onClick = { onSelectVisibleInfo(it) }
+                ) {
+                    MDIcon(it.icon)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ExtraInfoDataAnimatedPart(
+    title: String,
+    icon: MDIconsSet,
+    valuesItems: Collection<String>,
+    modifier: Modifier = Modifier,
+) {
+    MDVerticalCard(
+        modifier = modifier
+            .animateContentSize { _, _ -> }
+            .width(IntrinsicSize.Max),
+        header = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                MDIcon(icon)
+                Text(
+                    text = title,
+                    maxLines = 1
+                )
+            }
+        },
+        cardClickable = false,
+        headerClickable = false,
+        contentModifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ) {
+        FlowRow(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            valuesItems.ifEmpty {
+                listOf("No Items") // TODO, string res
+            }.forEach {
+                Text(it)
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun QuestionPagePartPreview() {
+    MyDictionaryTheme {
+        Surface(
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Box(
+                modifier = Modifier,
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    QuestionPagePart(
+                        question = "Question",
+                        currentAnswer = "",
+                        onSubmit = {}
+                    )
+                    QuestionPagePart(
+                        question = "Question",
+                        currentAnswer = "Answer",
+                        onSubmit = {}
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ExtraInfoPagePartPreview() {
+    MyDictionaryTheme {
+        Surface(
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Box(
+                modifier = Modifier,
+                contentAlignment = Alignment.Center,
+            ) {
+                var selectedVisibleInfo: MDTrainQuestionExtraInfo? by remember {
+                    mutableStateOf(null)
+                }
+                ExtraInfoPagePart(
+                    word = Word(
+                        id = 1,
+                        meaning = "Meaning",
+                        translation = "Translation",
+                        additionalTranslations = listOf("Additional translation 1", "Additional translation 2"),
+                        transcription = "Transcription",
+                        examples = listOf("Example 1", "Example 2"),
+                        tags = setOf("Tag 1", "Tag 2", "Tag 3"),
+                        wordTypeTag = WordTypeTag(
+                            1, name = "Type tag", "en".code.language,
+                            relations = listOf(
+                                WordTypeTagRelation("label")
+                            ),
+                        ),
+                        relatedWords = listOf(
+                            RelatedWord(0, 0, 0, "label", "related 1"),
+                            RelatedWord(0, 0, 0, "label", "related 2"),
+                            RelatedWord(0, 0, 0, "label", "related 3"),
+                        ),
+                        language = "en".code.language,
+                        createdAt = Clock.System.now(),
+                        updatedAt = Clock.System.now(),
+                    ),
+                    selectedVisibleInfo = selectedVisibleInfo,
+                    availableExtraInfo = MDTrainQuestionExtraInfo.entries,
+                    onSelectVisibleInfo = { selectedVisibleInfo = it }
+                )
+            }
+        }
     }
 }

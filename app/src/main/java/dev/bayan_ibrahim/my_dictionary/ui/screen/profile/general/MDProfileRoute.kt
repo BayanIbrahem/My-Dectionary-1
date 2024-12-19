@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
@@ -21,6 +22,7 @@ fun MDProfileRoute(
     }
 
     val uiState = viewModel.uiState
+    val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val navActions by remember {
         derivedStateOf {
             object : MDProfileNavigationUiActions {
@@ -49,6 +51,7 @@ fun MDProfileRoute(
     }
     MDProfileScreen(
         uiState = uiState,
+        userPreferences = userPreferences,
         uiActions = uiActions,
         modifier = modifier,
     )

@@ -342,13 +342,13 @@ private fun MDWordsListLanguageSelectionPageDialogPreview() {
                     LanguageWordSpace(
                         language = Language(code = "en".code, selfDisplayName = "English", localDisplayName = "English"),
                         wordsCount = 100,
-                        averageLearningProgress = 0.5f
+                        averageMemorizingProbability = 0.5f
                     ),
 
                     LanguageWordSpace(
                         language = Language(code = "es".code, selfDisplayName = "Spanish", localDisplayName = "Español"),
                         wordsCount = 250,
-                        averageLearningProgress = 0.1f
+                        averageMemorizingProbability = 0.1f
                     )
                 ),
                 secondaryList = persistentListOf(

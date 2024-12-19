@@ -2,7 +2,9 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.train
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutput
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.inSeconds
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainSubmitOption
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResult
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordResultType
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -62,7 +64,12 @@ class MDTrainMemoryDecayFactorAnswerDurationBasedDataSource(
                 baselineFactorValue - extraFactorValue
             }
         }
-        return word.memoryDecayFactor * factorDiff
+        val newFactor = word.memoryDecayFactor * applySubmitOptionOnFactor(
+            factorDiff = factorDiff,
+            option = answer.submitOption,
+            resultType = answer.type
+        )
+        return newFactor
     }
 
     private fun baselineOf(
@@ -107,4 +114,38 @@ class MDTrainMemoryDecayFactorAnswerDurationBasedDataSource(
     override fun toString(): String {
         return "MDTrainMemoryDecayFactorAnswerDurationBasedDataSource(defaultAnswerDuration=$defaultAnswerDuration, maxAnswerDuration=$maxAnswerDuration)"
     }
+}
+
+/**
+ * submit option affects the effect of the answer
+ *
+ * - [MDTrainSubmitOption.Pass]: no effect
+ * - [MDTrainSubmitOption.Guess]: new factor effect = factor effect * 0.5
+ * - [MDTrainSubmitOption.Answer]: no effect
+ * - [MDTrainSubmitOption.Confident]: new factor effect = factor * 2
+ *
+ * we ane not multiplying the old factor but we change the value of ([factorDiff] - 1) by multiplying it by the calculated number
+ * ```kotlin
+val factorDiff = 1.5f
+val newFactor = when(option) {
+    MDTrainSubmitOption.Pass -> 1.5f
+    MDTrainSubmitOption.Guess -> 1.25f
+    MDTrainSubmitOption.Answer -> 1.5f
+    MDTrainSubmitOption.Confident -> 2f
+}
+```
+ *
+ * @param resultType is never used for now but later it may be used to modify effect shifting
+ */
+private fun applySubmitOptionOnFactor(
+    factorDiff: Float,
+    option: MDTrainSubmitOption,
+    resultType: TrainWordResultType,
+): Float = when (option) {
+    MDTrainSubmitOption.Pass -> 1f
+    MDTrainSubmitOption.Guess -> 0.5f
+    MDTrainSubmitOption.Answer -> 1f
+    MDTrainSubmitOption.Confident -> 2f
+}.let {
+    1f + factorDiff.minus(1f).times(it)
 }

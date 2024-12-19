@@ -11,6 +11,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,10 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsLis
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.language_selection_dialog.MDLanguageSelectionDialogRoute
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import kotlinx.coroutines.delay
+import kotlinx.datetime.Clock
+import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun MDWordsListScreen(
@@ -36,10 +41,22 @@ fun MDWordsListScreen(
     wordsList: LazyPagingItems<Word>,
     uiActions: MDWordsListUiActions,
     modifier: Modifier = Modifier,
+    lifeMemorizingProbability: Boolean = false,
 ) {
     val selectedWordsCount by remember(uiState.selectedWords) {
         derivedStateOf {
             uiState.selectedWords.count()
+        }
+    }
+    var now by remember {
+        mutableStateOf(Clock.System.now())
+    }
+    LaunchedEffect(lifeMemorizingProbability) {
+        if (lifeMemorizingProbability) {
+            while (true) {
+                delay(1.seconds)
+                now = Clock.System.now()
+            }
         }
     }
     MDScreen(
@@ -78,7 +95,7 @@ fun MDWordsListScreen(
         }
         LazyVerticalGrid(
             GridCells.Adaptive(250.dp), Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
+            contentPadding = PaddingValues(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -98,14 +115,27 @@ fun MDWordsListScreen(
                     )
                 }
             ) { i, word ->
-                val isSelected by remember {
+                val isSelected by remember(uiState.selectedWords) {
                     derivedStateOf { word.id in uiState.selectedWords }
                 }
 
-                val isExpanded by remember {
+                val isExpanded by remember(expandedWordId) {
                     derivedStateOf { expandedWordId == word.id }
                 }
 
+                val liveMemorizingProbability by remember(
+                    key1 = now,
+                    key2 = word.memoryDecayFactor,
+                    key3 = word.lastTrainTime
+                ) {
+                    derivedStateOf {
+                        word
+                            .getMemorizingProbabilityOfTime(now)
+                            .times(1000)
+                            .roundToInt()
+                            .div(10f)
+                    }
+                }
                 MDWordListItem(
                     word = word,
                     searchQuery = uiState.viewPreferencesQuery,
@@ -113,6 +143,8 @@ fun MDWordsListScreen(
                     primaryAction = {
                         if (uiState.isSelectModeOn) {
                             Checkbox(checked = isSelected, onCheckedChange = null)
+                        } else {
+                            Text("$liveMemorizingProbability%")
                         }
                     },
                     onClickHeader = {

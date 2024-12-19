@@ -95,7 +95,7 @@ fun MDLanguageWordSpaceListItem(
                 )
                 if (!hideWordCountAndProgress)
                     Text(
-                        text = "progress ${wordSpace.averageLearningProgress.times(1000).toInt().div(10f)}%", // TODO, string res, TODO, format
+                        text = "progress ${wordSpace.averageMemorizingProbability.times(1000).toInt().div(10f)}%", // TODO, string res, TODO, format
                         style = MaterialTheme.typography.bodySmall,
                         color = animatedContentVariantColor,
                     )
@@ -119,7 +119,7 @@ private fun LanguagesContentPreview() {
                         "English"
                     ),
                     wordsCount = 100,
-                    averageLearningProgress = 0.1f
+                    averageMemorizingProbability = 0.1f
                 ),
                 isSelected = false,
                 onClick = {}

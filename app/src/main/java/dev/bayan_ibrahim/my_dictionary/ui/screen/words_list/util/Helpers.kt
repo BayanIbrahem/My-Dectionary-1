@@ -22,7 +22,7 @@ enum class MDWordsListViewPreferencesSortBy(
 ) : LabeledEnum, IconedEnum {
     Meaning("Meaning", MDIconsSet.WordMeaning),// TODO, string res // checked
     Translation("Translation", MDIconsSet.WordTranslation),// TODO, string res // checked
-    LearningProgress("Learning Progress", MDIconsSet.LearningProgress);// TODO, string res // checked
+    MemorizingProbability("Learning Progress", MDIconsSet.MemorizingProbability);// TODO, string res // checked
 //    CreatedAt, // TODO, coming soon
 //    UpdatedAt
 }
@@ -31,7 +31,7 @@ enum class WordsListTrainPreferencesSortBy(
     override val strLabel: String,
     override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
-    MemorizingProbability("Memorizing Probability", MDIconsSet.LearningProgress), // checked
+    MemorizingProbability("Memorizing Probability", MDIconsSet.MemorizingProbability), // checked
     TrainingTime("Training Time", MDIconsSet.TrainTime),// checked
     CreateTime("Create Time", MDIconsSet.CreateTime),// checked
     Random("Random", MDIconsSet.Random);// checked
@@ -71,14 +71,14 @@ enum class MDWordsListSortByOrder(
 }
 
 
-enum class MDWordsListLearningProgressGroup(override val strLabel: String, val learningRange: ClosedFloatingPointRange<Float>) : LabeledEnum {
+enum class MDWordsListMemorizingProbabilityGroup(override val strLabel: String, val learningRange: ClosedFloatingPointRange<Float>) : LabeledEnum {
     NotLearned("Not Learned", 0f..0.25f),
     Known("Known", 0.25f..0.5f),
     Acknowledged("Acknowledged", 0.5f..0.75f),
     Learned("Learned", 0.75f..1f);
 
     companion object {
-        fun of(percent: Float): MDWordsListLearningProgressGroup {
+        fun of(percent: Float): MDWordsListMemorizingProbabilityGroup {
             val coercedPercent = percent.coerceIn(0f..1f)
             return entries.first {
                 coercedPercent in it.learningRange

@@ -16,11 +16,13 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainMemoryDeca
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.TrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.WordTrainHistory
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainSubmitOption
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordAnswer
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordQuestion
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.asResult
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.toAnswer
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.toTimeoutAnswer
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
@@ -77,13 +79,17 @@ class MDTrainViewModel @Inject constructor(
         }
     }
 
+    private var disposed: Boolean = true
 
     fun initWithNavArgs(args: MDDestination.Train) {
+        if (!disposed) return
+        disposed = false
+
         viewModelScope.launch {
             _uiState.emit(MDTrainUiState.Loading)
             val trainPreferences: MDWordsListTrainPreferences = repo.getTrainPreferences()
             val viewPreferences = repo.getViewPreferences()
-            val idsOfAllowedTagsAndProgressRange: Set<Long> = repo.getWordsIdsOfTagsAndProgressRange(viewPreferences)
+            val idsOfAllowedTagsAndProgressRange: Set<Long> = repo.getWordsIdsOfTagsAndMemorizingProbability(viewPreferences)
             val allWords: Sequence<Word> = repo.getAllSelectedLanguageWords()
 
             val validWords = allWords.filter { word ->
@@ -234,17 +240,9 @@ class MDTrainViewModel @Inject constructor(
             val index = state.currentIndex
             val question = state.trainWordsListQuestion[index]
             val answer = when (question) {
-                is MDTrainWordQuestion.SelectAnswer -> question.toAnswer(
-                    selectedIndex = null,
-                    consumedDuration = maxAvailableAnswerTime,
-                    maximumAllowedDuration = maxAvailableAnswerTime
-                )
+                is MDTrainWordQuestion.SelectAnswer -> question.toTimeoutAnswer(maxAvailableAnswerTime)
 
-                is MDTrainWordQuestion.WriteWord -> question.toAnswer(
-                    answer = null,
-                    consumedDuration = maxAvailableAnswerTime,
-                    maximumAllowedDuration = maxAvailableAnswerTime
-                )
+                is MDTrainWordQuestion.WriteWord -> question.toTimeoutAnswer(maxAvailableAnswerTime)
             }
             state.onAnswerQuestion(question, answer)
         }
@@ -274,7 +272,7 @@ class MDTrainViewModel @Inject constructor(
             }
         }
 
-        override fun onSelectAnswerSubmit(index: Int?) {
+        override fun onSelectAnswerSubmit(index: Int, submitOption: MDTrainSubmitOption) {
             val state = uiState.value
             val time = wordRemainingTimeDataSource.value
             if (state is MDTrainUiState.AnswerWord) {
@@ -286,14 +284,14 @@ class MDTrainViewModel @Inject constructor(
                         answer = question.toAnswer(
                             selectedIndex = index,
                             consumedDuration = time.remainingTime,
-                            maximumAllowedDuration = time.totalTime
+                            submitOption = submitOption,
                         )
                     )
                 }
             }
         }
 
-        override fun onWriteWordSubmit(answer: String?) {
+        override fun onWriteWordSubmit(answer: String, submitOption: MDTrainSubmitOption) {
             val state = uiState.value
             val time = wordRemainingTimeDataSource.value
             if (state is MDTrainUiState.AnswerWord) {
@@ -305,12 +303,16 @@ class MDTrainViewModel @Inject constructor(
                         answer = question.toAnswer(
                             answer = answer,
                             consumedDuration = time.remainingTime,
-                            maximumAllowedDuration = time.totalTime
+                            submitOption = submitOption,
                         )
                     )
                 }
             }
         }
+    }
+
+    fun onDispose() {
+        disposed = true
     }
 }
 

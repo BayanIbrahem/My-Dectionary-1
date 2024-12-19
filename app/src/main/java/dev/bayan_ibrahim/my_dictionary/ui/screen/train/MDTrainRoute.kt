@@ -1,7 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.train
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -17,8 +17,9 @@ fun MDTrainRoute(
     navigateToStatisticsScreen: () -> Unit,
     viewModel: MDTrainViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(args) {
+    DisposableEffect(Unit) {
         viewModel.initWithNavArgs(args)
+        this.onDispose {}
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

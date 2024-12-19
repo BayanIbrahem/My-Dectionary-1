@@ -31,7 +31,7 @@ fun WordDetailsTopAppBar(
     validWord: Boolean,
     isNewWord: Boolean,
     language: Language,
-    learningProgress: Float,
+    memorizingProbability: Float,
     onCancel: () -> Unit,
     onSave: () -> Unit,
     onShare: () -> Unit,
@@ -66,7 +66,7 @@ fun WordDetailsTopAppBar(
     ) {
         Leading(
             isNewWord = isNewWord,
-            learningProgress = learningProgress,
+            memorizingProbability = memorizingProbability,
             modifier = Modifier.align(Alignment.CenterStart)
         )
         Text(
@@ -89,7 +89,7 @@ fun WordDetailsTopAppBar(
 @Composable
 private fun Leading(
     isNewWord: Boolean,
-    learningProgress: Float,
+    memorizingProbability: Float,
     modifier: Modifier = Modifier,
 ) {
     if (isNewWord) {
@@ -109,7 +109,7 @@ private fun Leading(
                 style = MaterialTheme.typography.titleSmall
             )
             Text(
-                text = "$learningProgress",
+                text = "$memorizingProbability",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -196,7 +196,7 @@ private fun WordDetailsTopAppBarPreview() {
                     isEditModeOn = false,
                     isNewWord = false,
                     language = Language("en".code, "English", "English"),
-                    learningProgress = 0.1f,
+                    memorizingProbability = 0.1f,
                     validWord = true,
                     onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
                 )
@@ -204,7 +204,7 @@ private fun WordDetailsTopAppBarPreview() {
                     isEditModeOn = true,
                     isNewWord = false,
                     language = Language("en".code, "English", "English"),
-                    learningProgress = 0.1f,
+                    memorizingProbability = 0.1f,
                     validWord = true,
                     onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
                 )
@@ -212,7 +212,7 @@ private fun WordDetailsTopAppBarPreview() {
                     isEditModeOn = true,
                     isNewWord = false,
                     language = Language("en".code, "English", "English"),
-                    learningProgress = 0.1f,
+                    memorizingProbability = 0.1f,
                     validWord = false,
                     onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
                 )
@@ -221,7 +221,7 @@ private fun WordDetailsTopAppBarPreview() {
                     isEditModeOn = true,
                     isNewWord = true,
                     language = Language("en".code, "English", "English"),
-                    learningProgress = 0.1f,
+                    memorizingProbability = 0.1f,
                     validWord = true,
                     onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
                 )

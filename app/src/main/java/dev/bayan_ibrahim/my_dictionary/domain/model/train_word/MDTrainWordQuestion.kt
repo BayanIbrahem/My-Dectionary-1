@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.train_word
 
 import androidx.compose.runtime.Immutable
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import kotlin.time.Duration
 
@@ -39,25 +40,49 @@ sealed interface MDTrainWordQuestion {
 
 
 fun MDTrainWordQuestion.SelectAnswer.toAnswer(
-    selectedIndex: Int?,
+    selectedIndex: Int,
+    submitOption: MDTrainSubmitOption,
     consumedDuration: Duration,
-    maximumAllowedDuration: Duration,
 ): MDTrainWordAnswer.SelectAnswer = MDTrainWordAnswer.SelectAnswer(
     word = word,
-    selectedAnswer = selectedIndex?.let { options[it] },
+    selectedAnswer = options.getOrNull(selectedIndex),
     correctAnswer = options[correctOptionIndex],
+    submitOption = submitOption,
     consumedDuration = consumedDuration,
-    isTimeOut = consumedDuration >= maximumAllowedDuration
+    isTimeOut = false
+)
+
+fun MDTrainWordQuestion.SelectAnswer.toTimeoutAnswer(
+    maxDuration: Duration,
+): MDTrainWordAnswer.SelectAnswer = MDTrainWordAnswer.SelectAnswer(
+    word = word,
+    selectedAnswer = null,
+    correctAnswer = options[correctOptionIndex],
+    submitOption = MDTrainSubmitOption.Answer,
+    consumedDuration = maxDuration,
+    isTimeOut = true
 )
 
 fun MDTrainWordQuestion.WriteWord.toAnswer(
-    answer: String?,
+    answer: String,
+    submitOption: MDTrainSubmitOption,
     consumedDuration: Duration,
-    maximumAllowedDuration: Duration,
 ): MDTrainWordAnswer.WriteWord = MDTrainWordAnswer.WriteWord(
     word = word,
-    selectedAnswer = answer,
+    selectedAnswer = answer.nullIfInvalid(),
     correctAnswer = this.answer,
+    submitOption = submitOption,
     consumedDuration = consumedDuration,
-    isTimeOut = consumedDuration >= maximumAllowedDuration
+    isTimeOut = false
+)
+
+fun MDTrainWordQuestion.WriteWord.toTimeoutAnswer(
+    maxDuration: Duration,
+): MDTrainWordAnswer.WriteWord = MDTrainWordAnswer.WriteWord(
+    word = word,
+    selectedAnswer = null,
+    correctAnswer = this.answer,
+    submitOption = MDTrainSubmitOption.Answer,
+    consumedDuration = maxDuration,
+    isTimeOut = true
 )

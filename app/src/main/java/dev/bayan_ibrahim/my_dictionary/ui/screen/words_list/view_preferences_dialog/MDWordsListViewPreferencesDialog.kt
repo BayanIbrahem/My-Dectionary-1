@@ -34,7 +34,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
@@ -104,7 +104,7 @@ fun MDWordsListViewPreferencesDialog(
                     tagSearchQuery = uiState.tagSearchQuery,
                     tagsSuggestions = uiState.tagsSuggestions,
                     includeSelectedTags = uiState.includeSelectedTags,
-                    selectedLearningProgressGroups = uiState.selectedLearningProgressGroups,
+                    selectedMemorizingProbabilityGroups = uiState.selectedMemorizingProbabilityGroups,
                     onTagSearchQueryChange = uiActions::onTagSearchQueryChange,
                     onSelectTag = uiActions::onSelectTag,
                     onRemoveTag = uiActions::onRemoveTag,
@@ -164,7 +164,7 @@ private fun SearchBody(
 
     val selectedTags: Set<String>
     val includeSelectedTags: Boolean
-    val selectedLearningProgressGroups: Set<WordsListLearningProgressGroup>
+    val selectedMemorizingProbabilityGroups: Set<WordsListMemorizingProbabilityGroup>
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -173,12 +173,12 @@ private fun FilterBody(
     tagSearchQuery: String,
     tagsSuggestions: List<String>,
     includeSelectedTags: Boolean,
-    selectedLearningProgressGroups: Set<MDWordsListLearningProgressGroup>,
+    selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     onTagSearchQueryChange: (String) -> Unit,
     onSelectTag: (String) -> Unit,
     onRemoveTag: (String) -> Unit,
     onToggleSelectedTags: (Boolean) -> Unit,
-    onSelectLearningGroup: (MDWordsListLearningProgressGroup) -> Unit,
+    onSelectLearningGroup: (MDWordsListMemorizingProbabilityGroup) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = MDHorizontalCardDefaults.primaryColors
@@ -243,9 +243,9 @@ private fun FilterBody(
         MDHorizontalCardGroup(
             title = { Text("Learning groups") }
         ) {
-            MDWordsListLearningProgressGroup.entries.forEach { group ->
+            MDWordsListMemorizingProbabilityGroup.entries.forEach { group ->
                 checkboxItem(
-                    checked = group in selectedLearningProgressGroups,
+                    checked = group in selectedMemorizingProbabilityGroups,
                     colors = colors,
                     onClick = {
                         onSelectLearningGroup(group)

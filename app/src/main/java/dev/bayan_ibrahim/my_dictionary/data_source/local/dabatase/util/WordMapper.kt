@@ -98,6 +98,6 @@ fun Word.asRelatedWords(): List<WordTypeTagRelatedWordEntity> = this.relatedWord
 fun LanguageWordSpaceEntity.asWordSpaceModel(): LanguageWordSpace = LanguageWordSpace(
     language = languageCode.code.language,
     wordsCount = wordsCount,
-    averageLearningProgress = averageLearningProgress,
+    averageMemorizingProbability = averageMemorizingProbability,
 )
 

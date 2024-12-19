@@ -25,7 +25,7 @@ class MDStatisticsRepoImpl(
     ).first().toTrainHistoryModels()
 
     override suspend fun getMostRecentTrainHistory(count: Int): List<TrainHistory> {
-        return trainHistoryDao.getTrainHistoryOf().first().toTrainHistoryModels().sortedBy {
+        return trainHistoryDao.getTrainHistoryOf().first().toTrainHistoryModels().sortedByDescending {
             it.time
         }.safeSubList(0, count)
     }

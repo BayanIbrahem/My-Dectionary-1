@@ -3,6 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.profile.general
 import androidx.compose.runtime.Immutable
 
 interface MDProfileBusinessUiActions {
+    fun onToggleLiveTemplate(liveTemplate: Boolean)
 }
 
 interface MDProfileNavigationUiActions {

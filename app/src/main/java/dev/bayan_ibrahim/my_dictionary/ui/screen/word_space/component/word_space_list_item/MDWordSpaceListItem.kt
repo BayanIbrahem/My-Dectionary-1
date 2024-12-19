@@ -481,7 +481,7 @@ private val state = LanguageWordSpaceMutableState(
     wordSpace = LanguageWordSpace(
         language = language,
         wordsCount = 100,
-        averageLearningProgress = 0.55f
+        averageMemorizingProbability = 0.55f
     ),
     initialTags = listOf(
         WordTypeTag(

@@ -63,7 +63,7 @@ fun WordDetailsScreen(
                     validWord = uiState.valid,
                     language = uiState.language,
                     isNewWord = uiState.id == INVALID_ID,
-                    learningProgress = uiState.learningProgress,
+                    memorizingProbability = uiState.memorizingProbability,
                     onEdit = uiActions::onEnableEditMode,
                     onSave = uiActions::onSaveChanges,
                     onCancel = uiActions::onCancelChanges,

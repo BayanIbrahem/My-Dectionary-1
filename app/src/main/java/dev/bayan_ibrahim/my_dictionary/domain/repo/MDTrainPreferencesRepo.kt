@@ -7,5 +7,5 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
  * this repo for shared logic related with [MDWordsListTrainPreferencesDataStore] in more than one screen
  */
 interface MDTrainPreferencesRepo {
-    suspend fun getWordsIdsOfTagsAndProgressRange(viewPreferences: MDWordsListViewPreferences): Set<Long>
+    suspend fun getWordsIdsOfTagsAndMemorizingProbability(viewPreferences: MDWordsListViewPreferences): Set<Long>
 }

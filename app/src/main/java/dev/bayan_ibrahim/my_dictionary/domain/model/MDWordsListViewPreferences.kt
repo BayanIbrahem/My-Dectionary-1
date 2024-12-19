@@ -6,7 +6,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tag
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagRegexNormalize
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListLearningProgressGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
@@ -17,18 +17,18 @@ interface MDWordsListViewPreferences {
     val searchTarget: MDWordsListSearchTarget
     val selectedTags: Set<String>
     val includeSelectedTags: Boolean
-    val selectedLearningProgressGroups: Set<MDWordsListLearningProgressGroup>
+    val selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>
     val sortBy: MDWordsListViewPreferencesSortBy
     val sortByOrder: MDWordsListSortByOrder
 
     val effectiveFilter: Boolean
         get() = searchQuery.isNotBlank()
                 || selectedTags.isNotEmpty()
-                || (selectedLearningProgressGroups.count() in 1..(MDWordsListLearningProgressGroup.entries.count()))
+                || (selectedMemorizingProbabilityGroups.count() in 1..(MDWordsListMemorizingProbabilityGroup.entries.count()))
 
     fun matches(word: Word): Boolean = matchesSearch(word)
             && matchesTags(word)
-            && matchesLearningGroup(word)
+            && matchesMemorizingProbabilityGroup(word)
 
     private fun matchesSearch(word: Word): Boolean {
         if (searchQuery.isBlank()) return true
@@ -50,10 +50,10 @@ interface MDWordsListViewPreferences {
         }
     }
 
-    private fun matchesLearningGroup(word: Word): Boolean {
-        if (selectedLearningProgressGroups.isEmpty()) return true
-        if (selectedLearningProgressGroups.count() == MDWordsListLearningProgressGroup.entries.count()) return true
-        return selectedLearningProgressGroups.any { group ->
+    private fun matchesMemorizingProbabilityGroup(word: Word): Boolean {
+        if (selectedMemorizingProbabilityGroups.isEmpty()) return true
+        if (selectedMemorizingProbabilityGroups.count() == MDWordsListMemorizingProbabilityGroup.entries.count()) return true
+        return selectedMemorizingProbabilityGroups.any { group ->
             word.memoryDecayFactor in group.learningRange
         }
     }
@@ -64,7 +64,7 @@ data class WordsListViewPreferencesBuilder(
     override val searchTarget: MDWordsListSearchTarget,
     override val selectedTags: Set<String>,
     override val includeSelectedTags: Boolean,
-    override val selectedLearningProgressGroups: Set<MDWordsListLearningProgressGroup>,
+    override val selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     override val sortBy: MDWordsListViewPreferencesSortBy,
     override val sortByOrder: MDWordsListSortByOrder,
 ) : MDWordsListViewPreferences
@@ -75,7 +75,7 @@ val defaultWordsListViewPreferences by lazy {
         searchTarget = MDWordsListSearchTarget.All,
         selectedTags = emptySet(),
         includeSelectedTags = true,
-        selectedLearningProgressGroups = emptySet(),
+        selectedMemorizingProbabilityGroups = emptySet(),
         sortBy = MDWordsListViewPreferencesSortBy.Meaning,
         sortByOrder = MDWordsListSortByOrder.Asc,
     )

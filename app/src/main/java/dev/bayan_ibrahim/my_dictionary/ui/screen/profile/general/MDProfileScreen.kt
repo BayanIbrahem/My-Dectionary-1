@@ -16,8 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.component.MDProfileTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -25,6 +27,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 @Composable
 fun MDProfileScreen(
     uiState: MDProfileUiState,
+    userPreferences: MDUserPreferences,
     uiActions: MDProfileUiActions,
     modifier: Modifier = Modifier,
 ) {
@@ -45,6 +48,10 @@ fun MDProfileScreen(
                 onClickSync = uiActions::navigateToSync,
             )
             ThemeGroup(uiActions::navigateToAppTheme)
+            WordsListGroup(
+                isLiveTemplateEnabled = userPreferences.liveMemorizingProbability,
+                onToggleLiveTemplate = uiActions::onToggleLiveTemplate
+            )
         }
     }
 }
@@ -117,6 +124,39 @@ private fun ThemeGroup(
     }
 }
 
+@Composable
+private fun WordsListGroup(
+    isLiveTemplateEnabled: Boolean,
+    onToggleLiveTemplate: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    MDHorizontalCardGroup(
+        modifier = modifier,
+        title = {
+            Text("Words List") // TODO, string res
+        },
+    ) {
+        checkboxItem (
+            checked = isLiveTemplateEnabled,
+            onClick = {
+                onToggleLiveTemplate(!isLiveTemplateEnabled)
+            },
+            subtitle = {
+                Text(
+                    if (isLiveTemplateEnabled) {
+                        "probability would be calculated in real time"
+                    } else {
+                        "probability would be calculated once for each word"
+                    }
+                )
+            }
+        ) {
+            Text("Memorize Probability live preview") // TODO, string res
+        }
+    }
+
+}
+
 @Preview
 @Composable
 private fun MDProfileScreenPreview() {
@@ -132,6 +172,7 @@ private fun MDProfileScreenPreview() {
                     uiState = MDProfileMutableUiState().apply {
                         onExecute { true }
                     },
+                    userPreferences = MDUserPreferences(),
                     uiActions = MDProfileUiActions(
                         object : MDProfileNavigationUiActions {
                             override fun navigateToImportFromFile() {}
@@ -139,7 +180,11 @@ private fun MDProfileScreenPreview() {
                             override fun navigateToSync() {}
                             override fun navigateToAppTheme() {}
                         },
-                        object : MDProfileBusinessUiActions {},
+                        object : MDProfileBusinessUiActions {
+                            override fun onToggleLiveTemplate(liveTemplate: Boolean) {
+                                TODO("Not yet implemented")
+                            }
+                        },
                     )
                 )
             }

@@ -51,6 +51,13 @@ class MDWordsListViewModel @Inject constructor(
 
     private val _paginatedWordsList: MutableStateFlow<PagingData<Word>> = MutableStateFlow(PagingData.empty())
     val paginatedWordsList: StateFlow<PagingData<Word>> = _paginatedWordsList.asStateFlow()
+    val lifeMemorizingProbability = repo.getUserPreferences().map {
+        it.liveMemorizingProbability
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = false
+    )
 
     private var paginatedWordsListJob: Job? = null
     private fun setPaginatedWordsListJob() {
@@ -60,7 +67,7 @@ class MDWordsListViewModel @Inject constructor(
                 updateUiStateFromViewPreferences(preferences)
                 currentLanguageFlow.collectLatest { language ->
                     paginatedWordsListJob = launch {
-                        val wordsIds = repo.getWordsIdsOfTagsAndProgressRange(preferences)
+                        val wordsIds = repo.getWordsIdsOfTagsAndMemorizingProbability(preferences)
                         repo.getPaginatedWordsList(
                             code = language?.code ?: "".code,
                             wordsIdsOfTagsAndProgressRange = wordsIds,

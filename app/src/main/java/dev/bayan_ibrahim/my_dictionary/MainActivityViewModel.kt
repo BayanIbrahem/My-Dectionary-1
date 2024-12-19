@@ -30,13 +30,13 @@ class MainActivityViewModel @Inject constructor(
             MDUserPreferences()
         }.distinctUntilChangedBy {
             it.getSelectedThemeIdentifier(false) to it.getSelectedThemeIdentifier(true)
-        }.map { (_, theme, themeVariantType, themeContrastVariantType, iconsSet) ->
-            val currentVariant = theme.getContrastVariance(themeContrastVariantType)
+        }.map { user ->
+            val currentVariant = user.theme.getContrastVariance(user.themeContrastType)
             MainActivityUiState(
-                themeVariant = themeVariantType,
+                themeVariant = user.themeVariant,
                 lightColorScheme = currentVariant.first.buildColorScheme(context).toColorScheme(),
                 darkColorScheme = currentVariant.second.buildColorScheme(context).toColorScheme(),
-                iconsPack = iconsSet,
+                iconsPack = user.iconsPack,
                 initialized = true,
             )
         }.stateIn(

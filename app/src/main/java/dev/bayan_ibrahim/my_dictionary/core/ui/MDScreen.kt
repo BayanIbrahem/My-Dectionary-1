@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -22,6 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
 
+data object MDScreenDefaults {
+    val paddingWindowInsets = WindowInsets(8.dp, 8.dp, 8.dp, 8.dp)
+    val contentWindowInsets
+        @Composable
+        get() = ScaffoldDefaults.contentWindowInsets.add(
+            paddingWindowInsets
+        )
+}
+
 @Composable
 fun MDScreen(
     uiState: MDUiState,
@@ -30,7 +41,7 @@ fun MDScreen(
     contentAlignment: Alignment = Alignment.TopCenter,
     showFloatingActionButtonOnLoading: Boolean = false,
     showFloatingActionButtonOnError: Boolean = false,
-    contentWindowInsets: WindowInsets = WindowInsets(8.dp, 8.dp, 8.dp, 8.dp),
+    contentWindowInsets: WindowInsets = MDScreenDefaults.contentWindowInsets,
     topBar: @Composable () -> Unit = {},
     floatingActionButton: (@Composable () -> Unit) = {},
     content: @Composable BoxScope.() -> Unit,

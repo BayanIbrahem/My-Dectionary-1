@@ -8,6 +8,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeVariant
 
 data class MDUserPreferences(
     val selectedLanguagePage: Language? = null,
+    val liveMemorizingProbability: Boolean = false,
     val theme: MDTheme = MDTheme.Default,
     val themeVariant: MDThemeVariant = MDThemeVariant.System,
     val themeContrastType: MDThemeContrastType = MDThemeContrastType.Normal,

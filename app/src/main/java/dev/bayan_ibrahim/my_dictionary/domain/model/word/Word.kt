@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.word
 
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
+import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
@@ -21,4 +22,12 @@ data class Word(
     val lastTrainTime: Instant? = null,
     val createdAt: Instant,
     val updatedAt: Instant,
-)
+) {
+    val memorizingProbability: Float
+        get() = MDTrainDataSource.Default.memoryDecayFormula(this)
+
+    fun getMemorizingProbabilityOfTime(instant: Instant): Float {
+        val probability = MDTrainDataSource.Default.memoryDecayFormula(this, instant)
+        return probability
+    }
+}

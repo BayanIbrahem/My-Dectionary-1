@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -164,25 +165,20 @@ fun MDHorizontalCard(
         }
     }
     Column {
-        val containerColor by remember(enabled) {
-            derivedStateOf {
-                if (enabled) {
-                    colors.enabledContainerColor
-                } else {
-                    colors.disabledContainerColor
-                }
+        val containerColor by animateColorAsState(
+            if (enabled) {
+                colors.enabledContainerColor
+            } else {
+                colors.disabledContainerColor
             }
-        }
-
-        val titleColor by remember(enabled) {
-            derivedStateOf {
-                if (enabled) {
-                    colors.enabledTitleColor
-                } else {
-                    colors.disabledTitleColor
-                }
+        )
+        val titleColor by animateColorAsState(
+            if (enabled) {
+                colors.enabledTitleColor
+            } else {
+                colors.disabledTitleColor
             }
-        }
+        )
 
         Surface(
             modifier = modifier
