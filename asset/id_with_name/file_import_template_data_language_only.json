@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "languages": [
+    {
+      "id": "en",
+      "typeTags": [
+        {
+          "id": 1,
+          "typeTagName": "name",
+          "relations": [
+            {
+              "id": 10,
+              "relationLabel": "single"
+            },
+            {
+              "id": 11,
+              "relationLabel": "plural"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "typeTagName": "verb",
+          "relations": [
+            {
+              "id": 20,
+              "relationLabel": "past"
+            },
+            {
+              "id": 21,
+              "relationLabel": "present"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "es",
+      "typeTags": [
+        {
+          "id": 3,
+          "typeTagName": "nombre",
+          "relations": [
+            {
+              "id": 30,
+              "relationLabel": "singular"
+            },
+            {
+              "id": 31,
+              "relationLabel": "plural"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "typeTagName": "verbo",
+          "relations": [
+            {
+              "id": 40,
+              "relationLabel": "pasado"
+            },
+            {
+              "id": 41,
+              "relationLabel": "presente"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr",
+      "typeTags": [
+        {
+          "id": 5,
+          "typeTagName": "nom",
+          "relations": [
+            {
+              "id": 50,
+              "relationLabel": "singulier"
+            },
+            {
+              "id": 51,
+              "relationLabel": "pluriel"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "typeTagName": "verbe",
+          "relations": [
+            {
+              "id": 60,
+              "relationLabel": "passé"
+            },
+            {
+              "id": 61,
+              "relationLabel": "présent"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

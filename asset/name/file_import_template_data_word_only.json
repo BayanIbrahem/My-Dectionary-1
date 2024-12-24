@@ -1,0 +1,549 @@
+{
+  "version": 1,
+  "words": [
+    {
+      "language": "en",
+      "meaning": "apple",
+      "translation": "manzana",
+      "transcription": "ˈæpəl",
+      "tags": [
+        {
+          "id": 1,
+          "value": "object/food/fruit"
+        }
+      ],
+      "examples": [
+        "I ate an apple."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 1,
+        "typeTagName": "name"
+      },
+      "relatedWords": [
+        {
+          "id": 11,
+          "relation": "plural",
+          "word": "apples"
+        }
+      ]
+    },
+    {
+      "language": "es",
+      "meaning": "perro",
+      "translation": "dog",
+      "transcription": "ˈpero",
+      "tags": [
+        {
+          "id": 3,
+          "value": "object/animal/mammal"
+        }
+      ],
+      "examples": [
+        "El perro ladra."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 3,
+        "typeTagName": "nombre"
+      },
+      "relatedWords": [
+        {
+          "id": 31,
+          "relation": "plural",
+          "word": "perros"
+        }
+      ]
+    },
+    {
+      "language": "fr",
+      "meaning": "chat",
+      "translation": "cat",
+      "transcription": "ʃa",
+      "tags": [
+        {
+          "id": 3,
+          "value": "object/animal/mammal"
+        }
+      ],
+      "examples": [
+        "Le chat dort."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 5,
+        "typeTagName": "nom"
+      },
+      "relatedWords": [
+        {
+          "id": 51,
+          "relation": "pluriel",
+          "word": "chats"
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "meaning": "hammer",
+      "translation": "martillo",
+      "transcription": "ˈhæmər",
+      "tags": [
+        {
+          "id": 5,
+          "value": "object/tool/handtool"
+        }
+      ],
+      "examples": [
+        "I used a hammer."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 1,
+        "typeTagName": "name"
+      },
+      "relatedWords": [
+        {
+          "id": 11,
+          "relation": "plural",
+          "word": "hammers"
+        }
+      ]
+    },
+    {
+      "language": "es",
+      "meaning": "montaña",
+      "translation": "mountain",
+      "transcription": "monˈtaɲa",
+      "tags": [
+        {
+          "id": 7,
+          "value": "place/natural/mountain"
+        }
+      ],
+      "examples": [
+        "La montaña es alta."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 3,
+        "typeTagName": "nombre"
+      },
+      "relatedWords": [
+        {
+          "id": 31,
+          "relation": "plural",
+          "word": "montañas"
+        }
+      ]
+    },
+    {
+      "language": "fr",
+      "meaning": "mer",
+      "translation": "sea",
+      "transcription": "mɛʁ",
+      "tags": [
+        {
+          "id": 8,
+          "value": "place/natural/ocean"
+        }
+      ],
+      "examples": [
+        "J'aime la mer."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 5,
+        "typeTagName": "nom"
+      },
+      "relatedWords": [
+        {
+          "id": 51,
+          "relation": "pluriel",
+          "word": "mers"
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "meaning": "build",
+      "translation": "construir",
+      "transcription": "bɪld",
+      "tags": [
+        {
+          "id": 9,
+          "value": "place/manmade/building"
+        }
+      ],
+      "examples": [
+        "They build houses."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 2,
+        "typeTagName": "verb"
+      },
+      "relatedWords": [
+        {
+          "id": 20,
+          "relation": "past",
+          "word": "built"
+        }
+      ]
+    },
+    {
+      "language": "es",
+      "meaning": "correr",
+      "translation": "run",
+      "transcription": "koˈrer",
+      "tags": [
+        {
+          "id": 10,
+          "value": "place/manmade/road"
+        }
+      ],
+      "examples": [
+        "Me gusta correr."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 4,
+        "typeTagName": "verbo"
+      },
+      "relatedWords": [
+        {
+          "id": 40,
+          "relation": "pasado",
+          "word": "corrió"
+        }
+      ]
+    },
+    {
+      "language": "fr",
+      "meaning": "voler",
+      "translation": "fly",
+      "transcription": "vɔ.le",
+      "tags": [
+        {
+          "id": 4,
+          "value": "object/animal/bird"
+        }
+      ],
+      "examples": [
+        "Les oiseaux volent."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 6,
+        "typeTagName": "verbe"
+      },
+      "relatedWords": [
+        {
+          "id": 60,
+          "relation": "passé",
+          "word": "vola"
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "meaning": "carrot",
+      "translation": "zanahoria",
+      "transcription": "ˈkærət",
+      "tags": [
+        {
+          "id": 2,
+          "value": "object/food/vegetables"
+        }
+      ],
+      "examples": [
+        "I like carrots."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 1,
+        "typeTagName": "name"
+      },
+      "relatedWords": [
+        {
+          "id": 11,
+          "relation": "plural",
+          "word": "carrots"
+        }
+      ]
+    },
+    {
+      "language": "es",
+      "meaning": "pájaro",
+      "translation": "bird",
+      "transcription": "ˈpa.xa.ɾo",
+      "tags": [
+        {
+          "id": 4,
+          "value": "object/animal/bird"
+        }
+      ],
+      "examples": [
+        "El pájaro canta."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 3,
+        "typeTagName": "nombre"
+      },
+      "relatedWords": [
+        {
+          "id": 31,
+          "relation": "plural",
+          "word": "pájaros"
+        }
+      ]
+    },
+    {
+      "language": "fr",
+      "meaning": "arbre",
+      "translation": "tree",
+      "transcription": "aʁbʁ",
+      "tags": [
+        {
+          "id": 7,
+          "value": "place/natural/mountain"
+        }
+      ],
+      "examples": [
+        "L'arbre est grand."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 5,
+        "typeTagName": "nom"
+      },
+      "relatedWords": [
+        {
+          "id": 51,
+          "relation": "pluriel",
+          "word": "arbres"
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "meaning": "ocean",
+      "translation": "océano",
+      "transcription": "ˈoʊʃn",
+      "tags": [
+        {
+          "id": 8,
+          "value": "place/natural/ocean"
+        }
+      ],
+      "examples": [
+        "The ocean is vast."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 1,
+        "typeTagName": "name"
+      },
+      "relatedWords": [
+        {
+          "id": 11,
+          "relation": "plural",
+          "word": "oceans"
+        }
+      ]
+    },
+    {
+      "language": "es",
+      "meaning": "edificio",
+      "translation": "building",
+      "transcription": "e.ðiˈfi.θjo",
+      "tags": [
+        {
+          "id": 9,
+          "value": "place/manmade/building"
+        }
+      ],
+      "examples": [
+        "El edificio es moderno."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 3,
+        "typeTagName": "nombre"
+      },
+      "relatedWords": [
+        {
+          "id": 31,
+          "relation": "plural",
+          "word": "edificios"
+        }
+      ]
+    },
+    {
+      "language": "fr",
+      "meaning": "route",
+      "translation": "road",
+      "transcription": "ʁut",
+      "tags": [
+        {
+          "id": 10,
+          "value": "place/manmade/road"
+        }
+      ],
+      "examples": [
+        "La route est longue."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 5,
+        "typeTagName": "nom"
+      },
+      "relatedWords": [
+        {
+          "id": 51,
+          "relation": "pluriel",
+          "word": "routes"
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "meaning": "eat",
+      "translation": "comer",
+      "transcription": "iːt",
+      "tags": [
+        {
+          "id": 1,
+          "value": "object/food/fruit"
+        },
+        {
+          "id": 2,
+          "value": "object/food/vegetables"
+        }
+      ],
+      "examples": [
+        "I eat fruit and vegetables."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 2,
+        "typeTagName": "verb"
+      },
+      "relatedWords": [
+        {
+          "id": 20,
+          "relation": "past",
+          "word": "ate"
+        }
+      ]
+    },
+    {
+      "language": "es",
+      "meaning": "martillo",
+      "translation": "hammer",
+      "transcription": "marˈti.ʎo",
+      "tags": [
+        {
+          "id": 5,
+          "value": "object/tool/handtool"
+        }
+      ],
+      "examples": [
+        "Necesito un martillo."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 3,
+        "typeTagName": "nombre"
+      },
+      "relatedWords": [
+        {
+          "id": 31,
+          "relation": "plural",
+          "word": "martillos"
+        }
+      ]
+    },
+    {
+      "language": "fr",
+      "meaning": "perceuse",
+      "translation": "drill",
+      "transcription": "pɛʁ.søz",
+      "tags": [
+        {
+          "id": 6,
+          "value": "object/tool/powertool"
+        }
+      ],
+      "examples": [
+        "J'utilise une perceuse."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 5,
+        "typeTagName": "nom"
+      },
+      "relatedWords": [
+        {
+          "id": 51,
+          "relation": "pluriel",
+          "word": "perceuses"
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "meaning": "mountain",
+      "translation": "montaña",
+      "transcription": "ˈmaʊntən",
+      "tags": [
+        {
+          "id": 7,
+          "value": "place/natural/mountain"
+        }
+      ],
+      "examples": [
+        "The mountain is very high."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 1,
+        "typeTagName": "name"
+      },
+      "relatedWords": [
+        {
+          "id": 11,
+          "relation": "plural",
+          "word": "mountains"
+        }
+      ]
+    },
+    {
+      "language": "es",
+      "meaning": "zanahoria",
+      "translation": "carrot",
+      "transcription": "θa.naˈo.ɾja",
+      "tags": [
+        {
+          "id": 2,
+          "value": "object/food/vegetables"
+        }
+      ],
+      "examples": [
+        "Me gustan las zanahorias."
+      ],
+      "additionalTranslations": [],
+      "typeTag": {
+        "id": 3,
+        "typeTagName": "nombre"
+      },
+      "relatedWords": [
+        {
+          "id": 31,
+          "relation": "plural",
+          "word": "zanahorias"
+        }
+      ]
+    }
+  ]
+}

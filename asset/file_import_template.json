@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "languages": [
+    {
+      "id": "en", 
+      "typeTags": [
+        {
+          "typeTagName": "verb",
+          "relations": [
+            {
+              "relationLabel": "past"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "value": "important"
+    }
+  ],
+  "words": [
+    {
+      "language": "en",
+      "meaning": "run",
+      "translation": "correr",
+      "transcription": "rʌn",
+      "tags": [
+        {
+          "value": "important"
+        }
+      ],
+      "examples": ["I run every morning."],
+      "additionalTranslations": ["sprint", "jog"],
+      "typeTag": {
+        "typeTagName": "verb"
+      },
+      "relatedWords": [
+        {
+          "relation": "past",
+          "word": "ran"
+        }
+      ]
+    }
+  ]
+}
