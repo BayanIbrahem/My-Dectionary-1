@@ -42,7 +42,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDropDownMenuDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileType
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.endOnly
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -246,7 +246,7 @@ private fun FileTypeDropDown(
         modifier = modifier,
         fieldModifier = Modifier.requiredWidth(120.dp),
         trailingIcons = {
-            MDIcon(MDIconsSet.ArrowDropdown, contentDescription = null) // checked
+            MDIcon(MDIconsSet.ArrowDropdown, contentDescription = null) 
         },
         menuMatchFieldWidth = false,
         fieldReadOnly = true,

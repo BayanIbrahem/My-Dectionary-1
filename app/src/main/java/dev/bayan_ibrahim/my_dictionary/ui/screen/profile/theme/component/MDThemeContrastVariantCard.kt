@@ -106,7 +106,7 @@ fun MDThemeContrastVariantCard(
         }
         val sizeScale by animateFloatAsState(if (selected) 1f else 0f)
         MDIcon(
-            icon = MDIconsSet.Verified, // checked
+            icon = MDIconsSet.Verified, 
             modifier = Modifier
                 .size(16.dp)
                 .graphicsLayer {

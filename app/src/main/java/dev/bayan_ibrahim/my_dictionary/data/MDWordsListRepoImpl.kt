@@ -5,17 +5,23 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.map
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagsAndRelatedWordsDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordsPaginatedDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word_cross_context_tag.WordsCrossContextTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithContextTagsAndRelatedWordsRelation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModelSet
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDLanguageSelectionDialogRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainPreferencesRepo
@@ -24,29 +30,38 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 
 
 class MDWordsListRepoImpl(
     private val wordDao: WordDao,
+    private val wordsPaginatedDao: WordsPaginatedDao,
+    private val wordWithTagsDao: WordWithContextTagDao,
+    private val wordWithTagAndRelatedWordsDao: WordWithContextTagsAndRelatedWordsDao,
     private val tagDao: WordTypeTagDao,
     private val preferences: MDPreferencesDataStore,
     languageRepo: MDLanguageSelectionDialogRepo,
-) : MDWordsListRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordDao), MDLanguageSelectionDialogRepo by languageRepo {
+) : MDWordsListRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordWithTagsDao), MDLanguageSelectionDialogRepo by languageRepo {
     override fun getViewPreferences(): Flow<MDWordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
     override fun getUserPreferences(): Flow<MDUserPreferences> = preferences.getUserPreferencesStream()
 
-    override fun getLanguageTags(code: LanguageCode): Flow<Set<String>> = wordDao.getTagsInLanguage(code.code).map {
-        it.map {
-            StringListConverter.stringToListConverter(it)
-        }.flatten().toSet()
-    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getLanguageTags(code: LanguageCode): Flow<Set<ContextTag>> = wordDao
+        .getWordsIdsOfLanguage(code.code).flatMapConcat { wordsIds ->
+            wordWithTagsDao.getWordsWithTagsRelations(wordsIds)
+        }.map {
+            it.map {
+                it.tags.map { it.asModel() }
+            }.flatten().toSet()
+        }
 
     override fun getWordsList(
         code: LanguageCode,
         viewPreferences: MDWordsListViewPreferences,
-    ): Flow<List<Word>> = wordDao.getWordsWithRelatedOfLanguage(code.code).map {
+    ): Flow<List<Word>> = wordWithTagAndRelatedWordsDao.getWordsWithContextTagsAndRelatedWordsRelations(code.code).map {
         it.mapNotNull { wordWithRelation ->
             if (wordWithRelation.checkMatchViewPreferences(viewPreferences)) {
                 val wordTypeTag = wordWithRelation.word.wordTypeTagId?.let { typeTagId ->
@@ -72,7 +87,7 @@ class MDWordsListRepoImpl(
         }
     ) {
         when (viewPreferences.sortByOrder) {
-            MDWordsListSortByOrder.Asc -> wordDao.getPaginatedWordsWithRelatedAscOf(
+            MDWordsListSortByOrder.Asc -> wordsPaginatedDao.getPaginatedWordsAscOf(
                 languageCode = code.code,
                 targetWords = wordsIdsOfTagsAndProgressRange,
                 includeMeaning = viewPreferences.searchTarget.includeMeaning,
@@ -81,7 +96,7 @@ class MDWordsListRepoImpl(
                 sortBy = wordDao.getSortByColumnName(viewPreferences.sortBy)
             )
 
-            MDWordsListSortByOrder.Desc -> wordDao.getPaginatedWordsWithRelatedDescOf(
+            MDWordsListSortByOrder.Desc -> wordsPaginatedDao.getPaginatedWordsDescOf(
                 languageCode = code.code,
                 targetWords = wordsIdsOfTagsAndProgressRange,
                 includeMeaning = viewPreferences.searchTarget.includeMeaning,
@@ -110,7 +125,7 @@ class MDWordsListRepoImpl(
         wordDao.deleteWords(ids)
     }
 
-    private fun WordWithRelatedWords.checkMatchViewPreferences(preferences: MDWordsListViewPreferences): Boolean {
+    private fun WordWithContextTagsAndRelatedWordsRelation.checkMatchViewPreferences(preferences: MDWordsListViewPreferences): Boolean {
         // search
         val normalizedSearchQuery = preferences.searchQuery.trim().lowercase()
         val matchSearch = this.word.searchQueryOf(preferences.searchTarget).any { value ->
@@ -118,12 +133,10 @@ class MDWordsListRepoImpl(
         }
         if (!matchSearch) return false
 
+        val wordTags = this.tags.asModelSet()
+
         // tags
-        val matchTags = if (preferences.includeSelectedTags) {
-            this.word.tags.any { it in preferences.selectedTags }
-        } else {
-            this.word.tags.all { it !in preferences.selectedTags }
-        } || preferences.selectedTags.isEmpty()
+        val matchTags = preferences.matchesTags(wordTags)
         if (!matchTags) return false
 
         // learning group

@@ -11,7 +11,6 @@ const val dbWordTranslation = "word_translation"
 const val dbWordNormalizedTranslation = "word_normalized_translation"
 const val dbWordLanguageCode = "word_languageCode"
 const val dbWordAdditionalTranslations = "word_additionalTranslations"
-const val dbWordTags = "words_tags"
 const val dbWordExamples = "word_examples"
 const val dbWordTranscription = "word_transcription"
 const val dbWordMemoryDecayFactor = "word_memoryDecayFactor"
@@ -33,10 +32,10 @@ const val dbLanguageWordSpaceWordsCount = "languageWordSpace_wordsCount"
 const val dbLanguageWordSpaceAverageMemorizingProbability = "languageWordSpace_averageMemorizingProbability"
 
 // Word type tag:
-const val dbTypeTagTable = "tags"
-const val dbTypeTagId = "tag_id"
-const val dbTypeTagName = "tag_name"
-const val dbTypeTagLanguage = "tag_language"
+const val dbTypeTagTable = "typeTags"
+const val dbTypeTagId = "typeTag_id"
+const val dbTypeTagName = "typeTag_name"
+const val dbTypeTagLanguage = "typeTag_language"
 
 // Word type tag relation:
 const val dbTypeTagRelationTable = "tagRelations"
@@ -54,3 +53,14 @@ const val dbTypeTagRelatedWordName = "relatedWord_name"
 // Language:
 const val dbLanguageTable = "languages"
 const val dbLanguageCode = "language_code"
+
+// Context tags:
+const val dbContextTagTable = "contextTags"
+const val dbContextTagId = "contextTags_id"
+const val dbContextTagPath = "contextTags_path"
+
+// context tags with words:
+const val dbWordsCrossContextTagsTable = "wordsWithContextTags"
+const val dbWordsCrossContextTagsId = "wordsWithContextTags_id"
+const val dbWordsCrossContextTagsWordId = "wordsWithContextTags_wordId"
+const val dbWordsCrossContextTagsTagId = "wordsWithContextTags_tagId"

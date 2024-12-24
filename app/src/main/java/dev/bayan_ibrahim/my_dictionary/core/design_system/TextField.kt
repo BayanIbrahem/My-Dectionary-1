@@ -266,13 +266,13 @@ private fun MDTextFieldPreview() {
                             onClick = {},
                             modifier = Modifier.size(36.dp)
                         ) {
-                            MDIcon(MDIconsSet.Share) // checked
+                            MDIcon(MDIconsSet.Share) 
                         }
                         IconButton(
                             onClick = {},
                             modifier = Modifier.size(36.dp)
                         ) {
-                            MDIcon(MDIconsSet.Share) // checked
+                            MDIcon(MDIconsSet.Share) 
                         }
                     },
                     trailingIcons = {
@@ -280,13 +280,13 @@ private fun MDTextFieldPreview() {
                             onClick = {},
                             modifier = Modifier.size(36.dp)
                         ) {
-                            MDIcon(MDIconsSet.Share) // checked
+                            MDIcon(MDIconsSet.Share) 
                         }
                         IconButton(
                             onClick = {},
                             modifier = Modifier.size(36.dp)
                         ) {
-                            MDIcon(MDIconsSet.Share) // checked
+                            MDIcon(MDIconsSet.Share) 
                         }
                     },
                 )

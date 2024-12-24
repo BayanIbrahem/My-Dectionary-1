@@ -1,21 +1,24 @@
 package dev.bayan_ibrahim.my_dictionary.domain.repo
 
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
-import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingMutableSummaryActions
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStrategy
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActions
 
 interface MDImportFromFileRepo {
     suspend fun checkFileIfValid(fileData: MDFileData): Boolean
 
     suspend fun processFile(
         fileData: MDFileData,
-        outputSummaryActions: MDFileProcessingMutableSummaryActions,
-        existedWordStrategy: MDFileStrategy = MDFileStrategy.OverrideValid,
-        corruptedWordStrategy: MDFileStrategy = MDFileStrategy.Ignore,
-        tryGetReaderByMimeType: Boolean = true,
-        tryGetReaderByFileHeader: Boolean = true,
-        allowedLanguages: Set<Language> = allLanguages.values.toSet(),
+        outputSummaryActions: MDFileProcessingSummaryActions,
+        existedWordStrategy: MDPropertyConflictStrategy,
+        corruptedWordStrategy: MDPropertyCorruptionStrategy,
+        allowedFileParts: Set<MDFilePartType> = MDFilePartType.entries.toSet(),
     )
+
+    suspend fun getAvailablePartsInFile(
+        fileData: MDFileData,
+        outputSummaryActions: MDFileProcessingSummaryActions,
+    ): List<MDFilePartType>
 }

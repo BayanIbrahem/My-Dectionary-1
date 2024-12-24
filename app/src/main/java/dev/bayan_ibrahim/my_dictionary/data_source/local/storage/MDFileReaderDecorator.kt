@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.storage
 
 import android.util.Log
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.exception.CloseTransactionException
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
 import java.io.InputStream
 
 abstract class MDFileReaderDecorator<Data : Any>(

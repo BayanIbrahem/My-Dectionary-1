@@ -16,13 +16,13 @@ enum class MDWordsListTrainPreferencesTab {
         get() = when (this) {
             TrainType -> MDTabData.LabelWithIcon(
                 label = "Train Type",
-                icon = MDIconsSet.TrainType, // checked
+                icon = MDIconsSet.TrainType, 
                 key = TrainType.ordinal
             )
 
             WordsOrder -> MDTabData.LabelWithIcon(
                 label = "Words Order",
-                icon = MDIconsSet.TrainWordsOrder, // checked
+                icon = MDIconsSet.TrainWordsOrder, 
                 key = WordsOrder.ordinal
             )
         }

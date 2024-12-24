@@ -1,9 +1,9 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details
 
 import androidx.compose.runtime.Immutable
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.TypeTagWithRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 
 
 interface WordDetailsBusinessUiActions {
@@ -15,8 +15,9 @@ interface WordDetailsBusinessUiActions {
     fun onTranscriptionChange(newTranscription: String)
     fun onEditAdditionalTranslation(id: Long, newAdditionalTranslation: String)
     fun onValidateAdditionalTranslations(focusedTextFieldId: Long? = null)
-    fun onEditTag(id: Long, newTag: String)
-    fun onValidateTags(focusedTextFieldId: Long? = null)
+    fun onEditTag(tag: ContextTag, isNew: Boolean)
+    fun onDeleteTag(i: Int, tag: ContextTag)
+    fun onAddTagToTree(tag: ContextTag)
     fun onChangeTypeTag(newTypeTag: WordTypeTag?)
     fun onAddNewRelatedWord(relation: WordTypeTagRelation)
     fun onEditRelatedWordRelation(id: Long, newRelation: WordTypeTagRelation)
@@ -35,4 +36,5 @@ interface WordDetailsNavigationUiActions {
 class WordDetailsUiActions(
     navigationActions: WordDetailsNavigationUiActions,
     businessActions: WordDetailsBusinessUiActions,
-) : WordDetailsBusinessUiActions by businessActions, WordDetailsNavigationUiActions by navigationActions
+) : WordDetailsBusinessUiActions by businessActions, WordDetailsNavigationUiActions by navigationActions {
+}

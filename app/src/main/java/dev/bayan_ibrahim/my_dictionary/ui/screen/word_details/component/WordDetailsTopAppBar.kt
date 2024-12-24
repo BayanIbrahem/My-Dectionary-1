@@ -149,7 +149,7 @@ private fun RowScope.EditModeTrailingActions(
     ) {
         MDIcon(
             icon = MDIconsSet.Close,
-            contentDescription = "cancel changes" // checked
+            contentDescription = "cancel changes" 
         ) // TODO, string res
     }
     IconButton(
@@ -158,7 +158,7 @@ private fun RowScope.EditModeTrailingActions(
     ) {
         MDIcon(
             icon = MDIconsSet.Save,
-            contentDescription = "save word", // checked
+            contentDescription = "save word", 
         ) // TODO, string res
     }
 
@@ -171,7 +171,7 @@ private fun PreviewModeTrailingActions(onShare: () -> Unit, onEdit: () -> Unit) 
     ) {
         MDIcon(
             icon = MDIconsSet.Share,
-            contentDescription = "share word",// checked
+            contentDescription = "share word",
         ) // TODO, string res
     }
     IconButton(
@@ -179,7 +179,7 @@ private fun PreviewModeTrailingActions(onShare: () -> Unit, onEdit: () -> Unit) 
     ) {
         MDIcon(
             icon = MDIconsSet.Edit,
-            contentDescription = "edit word",// checked
+            contentDescription = "edit word",
         ) // TODO, string res
     }
 }

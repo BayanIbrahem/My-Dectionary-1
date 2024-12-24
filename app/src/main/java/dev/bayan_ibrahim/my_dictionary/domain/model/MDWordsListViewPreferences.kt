@@ -2,9 +2,8 @@ package dev.bayan_ibrahim.my_dictionary.domain.model
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalize
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagMatchNormalize
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagRegexNormalize
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
@@ -15,7 +14,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListView
 interface MDWordsListViewPreferences {
     val searchQuery: String
     val searchTarget: MDWordsListSearchTarget
-    val selectedTags: Set<String>
+    val selectedTags: Set<ContextTag>
     val includeSelectedTags: Boolean
     val selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>
     val sortBy: MDWordsListViewPreferencesSortBy
@@ -27,7 +26,7 @@ interface MDWordsListViewPreferences {
                 || (selectedMemorizingProbabilityGroups.count() in 1..(MDWordsListMemorizingProbabilityGroup.entries.count()))
 
     fun matches(word: Word): Boolean = matchesSearch(word)
-            && matchesTags(word)
+            && matchesTags(word.tags)
             && matchesMemorizingProbabilityGroup(word)
 
     private fun matchesSearch(word: Word): Boolean {
@@ -40,12 +39,22 @@ interface MDWordsListViewPreferences {
         return matchMeaning || matchTranslation
     }
 
-    private fun matchesTags(word: Word): Boolean {
+    fun matchesTags(
+        tags: Set<ContextTag>,
+    ): Boolean {
         if (selectedTags.isEmpty()) return true
-        val normalizedWordTags = word.tags.map { it.tagMatchNormalize }
-        return selectedTags.any {
-            it.tagRegexNormalize.toRegex().let { regex ->
-                normalizedWordTags.any { tag -> regex.matches(tag) }
+
+        return if (includeSelectedTags) {
+            tags.any { provided ->
+                selectedTags.any { required ->
+                    provided.contains(required)
+                }
+            }
+        } else {
+            tags.none { provided ->
+                selectedTags.none { required ->
+                    provided.contains(required)
+                }
             }
         }
     }
@@ -62,7 +71,7 @@ interface MDWordsListViewPreferences {
 data class WordsListViewPreferencesBuilder(
     override val searchQuery: String,
     override val searchTarget: MDWordsListSearchTarget,
-    override val selectedTags: Set<String>,
+    override val selectedTags: Set<ContextTag>,
     override val includeSelectedTags: Boolean,
     override val selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     override val sortBy: MDWordsListViewPreferencesSortBy,

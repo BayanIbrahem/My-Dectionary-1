@@ -1,10 +1,10 @@
 package dev.bayan_ibrahim.my_dictionary.data.di
 
+import android.os.Build
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDRawWord
 import dev.bayan_ibrahim.my_dictionary.data.MDImportFromFileRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDLanguageSelectionDialogRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDStatisticsRepoImpl
@@ -16,9 +16,7 @@ import dev.bayan_ibrahim.my_dictionary.data.MDWordsListTrainDialogRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordsListViewPreferencesRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
-import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.words_list_filter.MDWordsListTrainPreferencesDataStore
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderDecorator
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.MDCSVFileSplitter
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.MDFileReaderAbstractFactory
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDLanguageSelectionDialogRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDStatisticsRepo
@@ -37,11 +35,7 @@ class DataModule {
     @Provides
     fun providesWordDetailsRepo(
         db: MDDataBase,
-    ): MDWordDetailsRepo = MDWordDetailsRepoImpl(
-        wordDao = db.getWordDao(),
-        tagDao = db.getWordTypeTagDao(),
-        languageDao = db.getLanguageDao()
-    )
+    ): MDWordDetailsRepo = MDWordDetailsRepoImpl(db = db)
 
     @Singleton
     @Provides
@@ -52,6 +46,7 @@ class DataModule {
         preferences = preferences,
         wordSpaceDao = db.getLanguageWordSpaceDao(),
     )
+
     @Singleton
     @Provides
     fun providesWordsListRepo(
@@ -60,16 +55,19 @@ class DataModule {
         languageRepo: MDLanguageSelectionDialogRepo,
     ): MDWordsListRepo = MDWordsListRepoImpl(
         wordDao = db.getWordDao(),
+        wordsPaginatedDao = db.getWordsPaginatedDao(),
+        wordWithTagsDao = db.getWordWithContextTagDao(),
+        wordWithTagAndRelatedWordsDao = db.getWordsWithContextTagAndRelatedWordsDao(),
         tagDao = db.getWordTypeTagDao(),
         preferences = preferences,
-        languageRepo = languageRepo
+        languageRepo = languageRepo,
     )
 
     @Singleton
     @Provides
     fun providesWordsListTrainDialogRepo(
         preferences: MDPreferencesDataStore,
-    ): MDWordsListTrainDialogRepo= MDWordsListTrainDialogRepoImpl(
+    ): MDWordsListTrainDialogRepo = MDWordsListTrainDialogRepoImpl(
         dataStore = preferences
     )
 
@@ -80,6 +78,7 @@ class DataModule {
         preferences: MDPreferencesDataStore,
     ): MDWordsListViewPreferencesRepo = MDWordsListViewPreferencesRepoImpl(
         wordDao = db.getWordDao(),
+        wordWithTagsDao = db.getWordWithContextTagDao(),
         dataStore = preferences,
         userPreferences = preferences,
     )
@@ -94,12 +93,15 @@ class DataModule {
     @Provides
     fun provideImportFromFileRepo(
         db: MDDataBase,
-        rawWordReader: MDFileReaderDecorator<MDRawWord>,
-        rawWordCSVFileSplitter: MDCSVFileSplitter<MDRawWord>,
+        abstractFactory: MDFileReaderAbstractFactory,
+//        rawWordReader: MDFileReaderDecorator<MDRawWord>,
+//        rawWordCSVFileSplitter: MDCSVFileSplitter<MDRawWord>,
     ): MDImportFromFileRepo = MDImportFromFileRepoImpl(
         db = db,
-        rawWordReader = rawWordReader,
-        rawWordCSVFileSplitter = rawWordCSVFileSplitter
+        abstractFactory = abstractFactory,
+        appVersion = Build.VERSION.RELEASE
+//        rawWordReader = rawWordReader,
+//        rawWordCSVFileSplitter = rawWordCSVFileSplitter
     )
 
     @Singleton
@@ -117,7 +119,9 @@ class DataModule {
     fun provideStatisticsRepo(
         db: MDDataBase,
     ): MDStatisticsRepo = MDStatisticsRepoImpl(
-        wordDao = db.getWordDao(),
         trainHistoryDao = db.getWordTrainDao(),
+        wordDao = db.getWordDao(),
+        contextTagDao = db.getContextTagDao(),
+        wordCrossContextTagDao = db.getWordsCrossTagsDao(),
     )
 }

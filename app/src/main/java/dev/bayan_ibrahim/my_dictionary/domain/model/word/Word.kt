@@ -5,6 +5,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import kotlinx.datetime.Instant
 
 data class Word(
@@ -13,7 +14,7 @@ data class Word(
     val translation: String,
     val additionalTranslations: List<String>,
     val language: Language,
-    val tags: Set<String> = emptySet(),
+    val tags: Set<ContextTag> = emptySet(),
     val transcription: String = INVALID_TEXT,
     val examples: List<String> = emptyList(),
     val wordTypeTag: WordTypeTag? = null,

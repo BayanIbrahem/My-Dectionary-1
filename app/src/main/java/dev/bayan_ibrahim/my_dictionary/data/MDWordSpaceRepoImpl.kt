@@ -2,8 +2,8 @@ package dev.bayan_ibrahim.my_dictionary.data
 
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageWordSpaceDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageWordSpaceDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagRelatedWordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagRelationWordsDao

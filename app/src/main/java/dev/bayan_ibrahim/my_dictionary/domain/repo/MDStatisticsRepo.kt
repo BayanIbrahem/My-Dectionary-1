@@ -14,7 +14,7 @@ interface MDStatisticsRepo {
 
     suspend fun getTrainHistoryOfWord(wordId: Long): List<TrainHistory>
     suspend fun getTrainHistoryOfLanguage(language: Language): List<TrainHistory>
-    suspend fun getTrainHistoryOfTag(tag: String): List<TrainHistory>
+    suspend fun getTrainHistoryOfTag(tag: Long): List<TrainHistory>
     suspend fun getTrainHistoryOfTypeTag(typeTagId: Long): List<TrainHistory>
 
     suspend fun getAllTrainsCount(): Int

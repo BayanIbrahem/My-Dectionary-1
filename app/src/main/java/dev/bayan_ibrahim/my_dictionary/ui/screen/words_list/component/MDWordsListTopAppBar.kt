@@ -124,7 +124,7 @@ private fun WordsListTopAppBarNormalMode(
                     // adjust filter preferences
                 },
             ) {
-                MDIcon(MDIconsSet.Train) // checked
+                MDIcon(MDIconsSet.Train) 
             }
             IconButton(
                 onClick = {
@@ -132,7 +132,7 @@ private fun WordsListTopAppBarNormalMode(
                     // adjust filter preferences
                 },
             ) {
-                MDIcon(MDIconsSet.Filter) // checked
+                MDIcon(MDIconsSet.Filter) 
             }
             var expanded by remember {
                 mutableStateOf(false)
@@ -150,7 +150,7 @@ private fun WordsListTopAppBarNormalMode(
                     onDismissRequest = dismiss,
                     menuOffset = menuOffset,
                     icon = {
-                        MDIcon(MDIconsSet.MoreVert) // checked
+                        MDIcon(MDIconsSet.MoreVert) 
                     }
                 ) {
                     MenuItem(

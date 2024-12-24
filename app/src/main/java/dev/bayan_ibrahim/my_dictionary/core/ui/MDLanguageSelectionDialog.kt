@@ -2,19 +2,18 @@ package dev.bayan_ibrahim.my_dictionary.core.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,16 +31,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchDialogInputField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardColors
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.bottomOnly
+import dev.bayan_ibrahim.my_dictionary.ui.theme.topOnly
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -86,7 +88,9 @@ fun MDLanguageSelectionDialog(
             LanguageSearchBar(
                 query = query,
                 onQueryChange = queryChangeAction,
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(),
             )
         },
         actions = {
@@ -109,8 +113,8 @@ fun MDLanguageSelectionDialog(
             selectedLanguageCode = selectedWordSpace?.language?.code,
             onClickWordSpace = { selectedWordSpace = it },
             modifier = Modifier
-                .padding(8.dp)
-                .size(250.dp, 200.dp),
+                .padding(vertical = 8.dp)
+                .sizeIn(maxWidth = 300.dp, maxHeight = 350.dp),
             primaryListCountTitleBuilder = primaryListCountTitleBuilder,
             secondaryListCountTitleBuilder = secondaryListCountTitleBuilder,
             hideWordCountAndProgress = hideWordCountAndProgress,
@@ -179,30 +183,12 @@ private fun LanguageSearchBar(
             allLanguages.values.random()
         }
     }
-    MDBasicTextField(
-        value = query,
-        onValueChange = onQueryChange,
+    MDSearchDialogInputField(
+        searchQuery = query,
+        onSearchQueryChange = onQueryChange,
         modifier = modifier,
         label = "Language",// TODO, string res
         placeholder = "${randomLanguage.code}, ${randomLanguage.selfDisplayName} or ${randomLanguage.localDisplayName}", // TODO, string res
-        colors = MDTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-        ),
-        leadingIcons = {
-            MDIcon(MDIconsSet.Search, contentDescription = null)  // field has already label // checked
-        },
-        trailingIcons = {
-            IconButton(
-                onClick = {
-                    onQueryChange("")
-                }
-            ) {
-                MDIcon(MDIconsSet.Close) // checked
-            }
-        }
     )
 }
 
@@ -229,47 +215,62 @@ private fun LanguagesContent(
         derivedStateOf { secondaryList.count() }
     }
     val state = rememberLazyListState()
+    val singleListShape = MDHorizontalCardGroupDefaults.shape
+    val firstItemShape = singleListShape.topOnly
+    val lastItemShape = singleListShape.bottomOnly
+    val middleItemShape = singleListShape.copy(CornerSize(0.dp))
+    val selectedColor = MDHorizontalCardDefaults.primaryColors
+    val normalColor = MDHorizontalCardDefaults.colors(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+    )
     LazyColumn(
         modifier = modifier.scrollbar(state, stickHeadersContentType = "Label"),
         state = state,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (primaryItemsCount > 0) {
             stickyHeader(contentType = "Label") {
-                HeaderTitle(text = primaryListCountTitleBuilder(primaryItemsCount))
+                HeaderTitle(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    text = primaryListCountTitleBuilder(primaryItemsCount),
+                )
             }
         }
-        items(primaryList) { wordSpace ->
-            MDLanguageWordSpaceListItem(
+        itemsIndexed(primaryList) { i, wordSpace ->
+            WordSpaceCardItem(
+                i = i,
+                itemsCount = primaryItemsCount,
+                singleListShape = singleListShape,
+                firstItemShape = firstItemShape,
+                lastItemShape = lastItemShape,
+                middleItemShape = middleItemShape,
+                selectedLanguageCode = selectedLanguageCode,
                 wordSpace = wordSpace,
-                hideWordCountAndProgress = hideWordCountAndProgress,
-                isSelected = wordSpace.language.code == selectedLanguageCode,
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                selectedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-                selectedContentColor = MaterialTheme.colorScheme.onSurface,
-                onClick = { onClickWordSpace(wordSpace) }
+                selectedColor = selectedColor,
+                normalColor = normalColor,
+                onClickWordSpace = onClickWordSpace
             )
         }
         if (secondaryItemsCount > 0) {
-            item {
-                HorizontalDivider(modifier = Modifier.padding(4.dp))
-            }
             stickyHeader(contentType = "Label") {
                 HeaderTitle(
+                    modifier = Modifier.padding(bottom = 8.dp),
                     text = secondaryListCountTitleBuilder(secondaryItemsCount),
                 )
             }
         }
-        items(secondaryList) { wordSpace ->
-            MDLanguageWordSpaceListItem(
+        itemsIndexed(secondaryList) { i, wordSpace ->
+            WordSpaceCardItem(
+                i = i,
+                itemsCount = secondaryItemsCount,
+                singleListShape = singleListShape,
+                firstItemShape = firstItemShape,
+                lastItemShape = lastItemShape,
+                middleItemShape = middleItemShape,
+                selectedLanguageCode = selectedLanguageCode,
                 wordSpace = wordSpace,
-                isSelected = wordSpace.language.code == selectedLanguageCode,
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                selectedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-                selectedContentColor = MaterialTheme.colorScheme.onSurface,
-                onClick = { onClickWordSpace(wordSpace) }
+                selectedColor = selectedColor,
+                normalColor = normalColor,
+                onClickWordSpace = onClickWordSpace
             )
         }
         if (secondaryItemsCount + primaryItemsCount == 0) {
@@ -284,6 +285,93 @@ private fun LanguagesContent(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun WordSpaceCardItem(
+    i: Int,
+    itemsCount: Int,
+    singleListShape: CornerBasedShape,
+    firstItemShape: CornerBasedShape,
+    lastItemShape: CornerBasedShape,
+    middleItemShape: CornerBasedShape,
+    selectedLanguageCode: LanguageCode?,
+    wordSpace: LanguageWordSpace,
+    selectedColor: MDHorizontalCardColors,
+    normalColor: MDHorizontalCardColors,
+    onClickWordSpace: (LanguageWordSpace) -> Unit,
+) {
+    val isLast by remember(i) {
+        derivedStateOf {
+            i == itemsCount.dec()
+        }
+    }
+    val itemShape by remember(i) {
+        derivedStateOf {
+            if (itemsCount == 1) {
+                singleListShape
+            } else if (i == 0) {
+                firstItemShape
+            } else if (isLast) {
+                lastItemShape
+            } else {
+                middleItemShape
+            }
+        }
+    }
+    val dividerThickness by remember(isLast) {
+        derivedStateOf {
+            if (isLast) {
+                0.dp
+            } else {
+                1.dp
+            }
+        }
+    }
+    val bottomPadding by remember(isLast) {
+        derivedStateOf {
+            if (isLast) {
+                8.dp
+            } else {
+                0.dp
+            }
+        }
+    }
+
+    val colors by remember(selectedLanguageCode) {
+        derivedStateOf {
+            if (selectedLanguageCode == wordSpace.language.code) {
+                selectedColor
+            } else {
+                normalColor
+            }
+        }
+    }
+    MDHorizontalCard(
+        modifier = Modifier
+            .padding(bottom = bottomPadding)
+            .clip(itemShape),
+        colors = colors,
+        bottomHorizontalDividerThickness = dividerThickness,
+        onClick = {
+            onClickWordSpace(wordSpace)
+        },
+        leadingIcon = {
+            Text(
+                text = wordSpace.language.code.uppercaseCode,
+                style = if (wordSpace.language.code.isLong) {
+                    MaterialTheme.typography.titleSmall
+                } else {
+                    MaterialTheme.typography.titleLarge
+                },
+            )
+        },
+        subtitle = {
+            Text("${wordSpace.wordsCount} words") // TODO string res
+        }
+    ) {
+        Text(wordSpace.language.localDisplayName)
     }
 }
 

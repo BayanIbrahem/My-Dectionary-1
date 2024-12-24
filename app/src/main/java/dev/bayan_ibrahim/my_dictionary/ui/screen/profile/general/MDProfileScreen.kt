@@ -72,7 +72,7 @@ private fun BackupAndRestoreGroup(
         item(
             onClick = onClickImportFromFile,
             leadingIcon = {
-                MDIcon(MDIconsSet.ImportFromFile, contentDescription = null) // checked
+                MDIcon(MDIconsSet.ImportFromFile, contentDescription = null) 
             }
         ) {
             Text("Import from file")// TODO, string res
@@ -82,7 +82,7 @@ private fun BackupAndRestoreGroup(
             onClick = onClickExportToFile,
             enabled = false, // TODO, not implemented yet
             leadingIcon = {
-                MDIcon(MDIconsSet.ExportToFile, contentDescription = null) // checked
+                MDIcon(MDIconsSet.ExportToFile, contentDescription = null) 
             }
         ) {
             Text("Export to file")// TODO, string res
@@ -92,7 +92,7 @@ private fun BackupAndRestoreGroup(
             onClick = onClickSync,
             enabled = false, // TODO, not implemented yet
             leadingIcon = {
-                MDIcon(MDIconsSet.Sync, contentDescription = null) // checked
+                MDIcon(MDIconsSet.Sync, contentDescription = null) 
             },
         ) {
             Text("Sync")// TODO, string res
@@ -115,7 +115,7 @@ private fun ThemeGroup(
         item(
             onClick = onClickAppTheme,
             leadingIcon = {
-                MDIcon(icon = MDIconsSet.Colors, contentDescription = null) // checked
+                MDIcon(icon = MDIconsSet.Colors, contentDescription = null) 
             }
         ) {
             // TODO, string resource

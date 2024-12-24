@@ -5,6 +5,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainSubmitOption
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResult
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import kotlinx.datetime.Instant
@@ -160,7 +162,7 @@ class MDTrainMemoryDecayFactorAnswerDurationBasedDataSourceTest {
         translation: String = "",
         additionalTranslations: List<String> = emptyList(),
         language: Language = Language("en".code, "English", "English"),
-        tags: Set<String> = emptySet(),
+        tags: Set<ContextTag> = emptySet(),
         transcription: String = INVALID_TEXT,
         examples: List<String> = emptyList(),
         wordTypeTag: WordTypeTag? = null,
@@ -193,7 +195,8 @@ class MDTrainMemoryDecayFactorAnswerDurationBasedDataSourceTest {
     ): MDTrainWordResult.Wrong = MDTrainWordResult.Wrong(
         selectedAnswer = selectedAnswer,
         correctAnswer = correctAnswer,
-        consumedDuration = consumedDuration
+        consumedDuration = consumedDuration,
+        submitOption = MDTrainSubmitOption.Answer
     )
 
     private fun right(
@@ -201,7 +204,8 @@ class MDTrainMemoryDecayFactorAnswerDurationBasedDataSourceTest {
         correctAnswer: String = "",
     ): MDTrainWordResult.Right = MDTrainWordResult.Right(
         consumedDuration = consumedDuration,
-        correctAnswer = correctAnswer
+        correctAnswer = correctAnswer,
+        submitOption = MDTrainSubmitOption.Answer
     )
 
     private fun pass(

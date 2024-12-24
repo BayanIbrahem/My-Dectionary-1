@@ -20,9 +20,9 @@ enum class MDWordsListViewPreferencesSortBy(
     override val strLabel: String,
     override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
-    Meaning("Meaning", MDIconsSet.WordMeaning),// TODO, string res // checked
-    Translation("Translation", MDIconsSet.WordTranslation),// TODO, string res // checked
-    MemorizingProbability("Learning Progress", MDIconsSet.MemorizingProbability);// TODO, string res // checked
+    Meaning("Meaning", MDIconsSet.WordMeaning),// TODO, string res 
+    Translation("Translation", MDIconsSet.WordTranslation),// TODO, string res 
+    MemorizingProbability("Learning Progress", MDIconsSet.MemorizingProbability);// TODO, string res 
 //    CreatedAt, // TODO, coming soon
 //    UpdatedAt
 }
@@ -31,10 +31,10 @@ enum class WordsListTrainPreferencesSortBy(
     override val strLabel: String,
     override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
-    MemorizingProbability("Memorizing Probability", MDIconsSet.MemorizingProbability), // checked
-    TrainingTime("Training Time", MDIconsSet.TrainTime),// checked
-    CreateTime("Create Time", MDIconsSet.CreateTime),// checked
-    Random("Random", MDIconsSet.Random);// checked
+    MemorizingProbability("Memorizing Probability", MDIconsSet.MemorizingProbability), 
+    TrainingTime("Training Time", MDIconsSet.TrainTime),
+    CreateTime("Create Time", MDIconsSet.CreateTime),
+    Random("Random", MDIconsSet.Random);
 
     @Composable
     fun orderLabel(order: MDWordsListSortByOrder): String = when (order) {
@@ -62,11 +62,11 @@ enum class MDWordsListSortByOrder(
 ) : LabeledEnum, IconedEnum {
     Asc(
         strLabel = "Asc",
-        icon = MDIconsSet.AscSort // checked
+        icon = MDIconsSet.AscSort 
     ), // TODO, string res
     Desc(
         strLabel = "Desc",
-        icon = MDIconsSet.DescSort // checked
+        icon = MDIconsSet.DescSort 
     ), // TODO, string res
 }
 

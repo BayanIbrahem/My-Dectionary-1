@@ -1,7 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.json
 
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderDecorator
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -10,7 +10,7 @@ import java.io.IOException
 import java.io.InputStream
 
 
-class MDJsonFileReader<Data : Any> (
+class MDJsonFileReader<Data : Any>(
     /**
      * just use [Json.decodeToSequence] for this param
      */

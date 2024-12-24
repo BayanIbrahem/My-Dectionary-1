@@ -223,7 +223,7 @@ private fun fieldTrailingIcons(
                 },
                 modifier = Modifier.size(36.dp),
             ) {
-                MDIcon(MDIconsSet.Close) // checked
+                MDIcon(MDIconsSet.Close) 
             }
             IconButton(
                 onClick = {
@@ -231,7 +231,7 @@ private fun fieldTrailingIcons(
                 },
                 modifier = Modifier.size(36.dp),
             ) {
-                MDIcon(MDIconsSet.Check) // checked
+                MDIcon(MDIconsSet.Check) 
             }
         }
     } else null
@@ -261,7 +261,7 @@ private fun MDWordFieldTextFieldPreview() {
                     MDWordFieldTextField(
                         value = value,
                         onValueChange = { value = it },
-                        leadingIcon = MDIconsSet.WordMeaning, // checked
+                        leadingIcon = MDIconsSet.WordMeaning, 
                         placeholder = "Normal Field",
                         index = 1,
                         modifier = Modifier.fillMaxWidth(),
@@ -277,7 +277,7 @@ private fun MDWordFieldTextFieldPreview() {
 
                         },
                         suggestionTitle = { this },
-                        leadingIcon = MDIconsSet.WordMeaning, // checked
+                        leadingIcon = MDIconsSet.WordMeaning, 
                         placeholder = "Field With suggestions",
                         index = 1,
                         fieldModifier = Modifier.fillMaxWidth(),

@@ -10,6 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -25,7 +26,7 @@ interface MDWordsListViewPreferencesUiState : MDWordsListViewPreferences, MDUiSt
 class MDWordsListViewPreferencesMutableUiState(
     searchQuery: String = defaultWordsListViewPreferences.searchQuery,
     searchTarget: MDWordsListSearchTarget = defaultWordsListViewPreferences.searchTarget,
-    selectedTags: Set<String> = defaultWordsListViewPreferences.selectedTags,
+    selectedTags: Set<ContextTag> = defaultWordsListViewPreferences.selectedTags,
     includeSelectedTags: Boolean = defaultWordsListViewPreferences.includeSelectedTags,
     selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup> = defaultWordsListViewPreferences.selectedMemorizingProbabilityGroups,
     sortBy: MDWordsListViewPreferencesSortBy = defaultWordsListViewPreferences.sortBy,
@@ -43,7 +44,7 @@ class MDWordsListViewPreferencesMutableUiState(
 
     override var searchQuery: String by mutableStateOf(searchQuery)
     override var searchTarget: MDWordsListSearchTarget by mutableStateOf(searchTarget)
-    override var selectedTags: PersistentSet<String> by mutableStateOf(selectedTags.toPersistentSet())
+    override var selectedTags: PersistentSet<ContextTag> by mutableStateOf(selectedTags.toPersistentSet())
     override var includeSelectedTags: Boolean by mutableStateOf(includeSelectedTags)
     override var selectedMemorizingProbabilityGroups: PersistentSet<MDWordsListMemorizingProbabilityGroup> by mutableStateOf(
         selectedMemorizingProbabilityGroups.toPersistentSet()

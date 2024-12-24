@@ -3,8 +3,8 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv
 import androidx.core.net.toUri
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.serializer.MDCSVSerializer
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.serializer.decodeLines
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileType
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
 import java.io.BufferedWriter
 import java.io.File
 import java.io.InputStream

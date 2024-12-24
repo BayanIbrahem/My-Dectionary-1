@@ -15,56 +15,56 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTag
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-abstract class WordTypeTagRelatedWordDao {
+interface WordTypeTagRelatedWordDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun insertRelatedWord(word: WordTypeTagRelatedWordEntity): Long
+    suspend fun insertRelatedWord(word: WordTypeTagRelatedWordEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun insertRelatedWords(words: List<WordTypeTagRelatedWordEntity>)
+    suspend fun insertRelatedWords(words: Collection<WordTypeTagRelatedWordEntity>)
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun updateRelatedWord(word: WordTypeTagRelatedWordEntity)
+    suspend fun updateRelatedWord(word: WordTypeTagRelatedWordEntity)
 
     @Delete
-    abstract suspend fun deleteRelatedWord(word: WordTypeTagRelatedWordEntity)
+    suspend fun deleteRelatedWord(word: WordTypeTagRelatedWordEntity)
 
     @Delete
-    abstract suspend fun deleteRelatedWords1(words: List<WordTypeTagRelatedWordEntity>)
+    suspend fun deleteRelatedWords1(words: List<WordTypeTagRelatedWordEntity>)
 
     @Query(
         """
             DELETE FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordId = :id
         """
     )
-    abstract suspend fun deleteRelatedWord(id: Long)
+    suspend fun deleteRelatedWord(id: Long)
 
     @Query(
         """
             DELETE FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordBaseWordId = :baseWordId
         """
     )
-    abstract suspend fun deleteRelatedWordsOfWord(baseWordId: Long)
+    suspend fun deleteRelatedWordsOfWord(baseWordId: Long)
 
     @Query(
         """
             DELETE FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordId IN (:ids)
         """
     )
-    abstract suspend fun deleteRelatedWords2(ids: List<Long>)
+    suspend fun deleteRelatedWords2(ids: List<Long>)
 
     @Query(
         """
             SELECT * FROM $dbTypeTagRelatedWordTable 
         """
     )
-    abstract fun getAllRelatedWords(): Flow<List<WordTypeTagRelatedWordEntity>>
+    fun getAllRelatedWords(): Flow<List<WordTypeTagRelatedWordEntity>>
 
     @Query(
         """
             SELECT * FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordBaseWordId IN (:baseWordIds)
         """
     )
-    abstract fun getAllRelatedWordsOfWords(baseWordIds: Collection<Long>): Flow<List<WordTypeTagRelatedWordEntity>>
+    fun getAllRelatedWordsOfWords(baseWordIds: Collection<Long>): Flow<List<WordTypeTagRelatedWordEntity>>
 
     @Query(
         """
@@ -75,5 +75,5 @@ abstract class WordTypeTagRelatedWordDao {
             GROUP BY $dbTypeTagRelatedWordRelationId
         """
     )
-    abstract fun getRelatedWordsCount(): Map<@MapColumn("id") Long, @MapColumn("count") Int>
+    fun getRelatedWordsCount(): Map<@MapColumn("id") Long, @MapColumn("count") Int>
 }

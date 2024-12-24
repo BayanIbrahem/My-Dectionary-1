@@ -3,8 +3,6 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagRegexNormalize
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagViewNormalize
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListViewPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
@@ -59,13 +57,13 @@ class MDWordsListViewPreferencesViewModel @Inject constructor(
         override fun onTagSearchQueryChange(query: String) {
             _uiState.tagSearchQuery = query
             viewModelScope.launch {
-                val queryRegex = query.tagRegexNormalize.toRegex()
                 val newTags = repo.getSelectedLanguageTags().mapNotNull { tag ->
-                    if (tag !in uiState.selectedTags && queryRegex.matches(tag.lowercase())) {
-                        tag.tagViewNormalize
-                    } else {
+                    // TODO, handle this query
+//                    if (tag !in uiState.selectedTags && queryRegex.matches(tag.lowercase())) {
+//                        tag.tagViewNormalize
+//                    } else {
                         null
-                    }
+//                    }
                 }
                 _uiState.tagsSuggestions.clear()
                 _uiState.tagsSuggestions.addAll(newTags)
@@ -73,12 +71,14 @@ class MDWordsListViewPreferencesViewModel @Inject constructor(
         }
 
         override fun onSelectTag(tag: String) = editViewByPreferences {
-            this.selectedTags = this.selectedTags.add(tag)
+            // TODO, handle adding tag
+//            this.selectedTags = this.selectedTags.add(tag)
             _uiState.tagSearchQuery = ""
         }
 
         override fun onRemoveTag(tag: String) = editViewByPreferences {
-            this.selectedTags = this.selectedTags.remove(tag)
+            // TODO, handle remove tag
+//            this.selectedTags = this.selectedTags.remove(tag)
         }
 
         override fun onToggleIncludeSelectedTags(includeSelectedTags: Boolean) = editViewByPreferences {

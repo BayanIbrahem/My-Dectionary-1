@@ -267,8 +267,8 @@ private fun MDTabRowPreview() {
                 MDTabRow(
                     tabs = listOf(
                         MDTabData.Label("label only"),
-                        MDTabData.Icon(MDIconsSet.WordsList), // checked
-                        MDTabData.LabelWithIcon("label with icon", MDIconsSet.WordsList), // checked
+                        MDTabData.Icon(MDIconsSet.WordsList), 
+                        MDTabData.LabelWithIcon("label with icon", MDIconsSet.WordsList), 
                     ),
                     selectedTabIndex = selectedTabIndex,
                     onClickTab = { i, _ ->

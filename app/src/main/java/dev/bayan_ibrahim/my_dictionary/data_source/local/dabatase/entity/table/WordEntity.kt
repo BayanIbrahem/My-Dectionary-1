@@ -22,7 +22,6 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMem
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedMeaning
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTags
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranscription
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTypeTag
@@ -75,8 +74,6 @@ data class WordEntity(
     val languageCode: String,
     @ColumnInfo(dbWordAdditionalTranslations)
     val additionalTranslations: List<String> = emptyList(),
-    @ColumnInfo(dbWordTags)
-    val tags: List<String> = emptyList(),
     @ColumnInfo(dbWordTypeTag)
     val wordTypeTagId: Long? = null,
     @ColumnInfo(dbWordMemoryDecayFactor, defaultValue = "1")

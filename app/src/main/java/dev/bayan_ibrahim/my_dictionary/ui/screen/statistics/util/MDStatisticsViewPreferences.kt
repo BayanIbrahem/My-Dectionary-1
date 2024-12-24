@@ -51,7 +51,7 @@ sealed interface MDStatisticsViewPreferences {
      */
     @Serializable
     data class Tag(
-        val tag: String,
+        val tagId: Long,
         override val dateUnit: MDDateUnit = DEFAULT_DATE_UNIT,
     ) : MDStatisticsViewPreferences
 

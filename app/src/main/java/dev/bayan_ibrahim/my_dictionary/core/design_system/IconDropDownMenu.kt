@@ -54,7 +54,7 @@ private fun MDIconDropDownMenuPreview() {
                     expanded = true,
                     onDismissRequest = {},
                     icon = {
-                        MDIcon(MDIconsSet.Menu) // checked
+                        MDIcon(MDIconsSet.Menu) 
                     },
                 ) {
                     repeat(3) {

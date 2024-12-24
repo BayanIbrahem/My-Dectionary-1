@@ -26,6 +26,7 @@ fun LazyListScope.wordDetailsTextFieldList(
     onItemValueChange: (Long, String) -> Unit,
     leadingIcon: MDIconsSet,
     groupLabel: String,
+    isEditModeOn: Boolean,
     itemModifier: Modifier = Modifier,
     itemsPlaceholder: String = "Add (leave blank to delete)",// TODO, string res
     lastItemPlaceholder: String = "Add new",// TODO, string res
@@ -49,6 +50,7 @@ fun LazyListScope.wordDetailsTextFieldList(
         val placeholder = if (isLast) lastItemPlaceholder else itemsPlaceholder
         MDWordFieldTextField(
             value = value,
+            readOnly = !isEditModeOn,
             onValueChange = onValueChange,
             leadingIcon = leadingIcon,
             modifier = itemModifier

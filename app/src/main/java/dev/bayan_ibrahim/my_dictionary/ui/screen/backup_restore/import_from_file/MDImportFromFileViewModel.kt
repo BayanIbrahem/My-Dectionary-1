@@ -4,22 +4,26 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileType
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingMutableSummary
-import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingMutableSummaryActionsImpl
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummary
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsImpl
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class MDImportFromFileViewModel @Inject constructor(
     private val repo: MDImportFromFileRepo,
+    @Named("available_versions")
+    val availableVersions: List<Int>,
 ) : ViewModel() {
     private val _uiState: MDImportFromFileMutableUiState = MDImportFromFileMutableUiState()
     val uiState: MDImportFromFileUiState = _uiState
@@ -32,7 +36,7 @@ class MDImportFromFileViewModel @Inject constructor(
 //    val importSummary: StateFlow<MDFileProcessingSummary> = _importSummaryFlow.asStateFlow()
 
     private val _importSummary: MDFileProcessingMutableSummary = MDFileProcessingMutableSummary()
-    private val importSummaryActions = MDFileProcessingMutableSummaryActionsImpl(_importSummary)
+    private val importSummaryActions = MDFileProcessingSummaryActionsImpl(_importSummary)
     val importSummary: MDFileProcessingSummary = _importSummary
 
     private var fileProcessJob: Job? = null
@@ -68,11 +72,11 @@ class MDImportFromFileViewModel @Inject constructor(
             _uiState.overrideFileTypeChecked = checked
         }
 
-        override fun onChangeCorruptedWordStrategy(strategy: MDFileStrategy) {
+        override fun onChangeCorruptedWordStrategy(strategy: MDPropertyCorruptionStrategy) {
             _uiState.corruptedWordStrategy = strategy
         }
 
-        override fun onChangeExistedWordStrategy(strategy: MDFileStrategy) {
+        override fun onChangeExistedWordStrategy(strategy: MDPropertyConflictStrategy) {
             _uiState.existedWordStrategy = strategy
         }
 
@@ -89,25 +93,12 @@ class MDImportFromFileViewModel @Inject constructor(
                         )
                     }
                 }
-//                viewModelScope.launch(Dispatchers.IO) {
-//                    uiState.selectedFileData?.let { data ->
-//                        repo.processFile(
-//                            fileData = data,
-//                            existedWordStrategy = uiState.existedWordStrategy,
-//                            corruptedWordStrategy = uiState.corruptedWordStrategy,
-//                        ).collect {
-//                            _importSummaryFlow.value = it
-//                            Log.d("summary", "import summary updated ${it.totalParsedWords}")
-//                        }
-//                    }
-//                }
             }
         }
 
         override fun onCancelImportProcess() {
             fileProcessJob?.cancel()
             importSummaryActions.reset()
-//            _importSummaryFlow.value = MDFileProcessingSummary()
         }
     }
 }

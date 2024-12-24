@@ -1,22 +1,30 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.ui.MDContextTagExplorerDialog
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.core.ui.UnavailableComponentHint
@@ -24,7 +32,11 @@ import dev.bayan_ibrahim.my_dictionary.core.ui.scrollbar
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsMutableTree
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsTree
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.WordDetailsTopAppBar
+import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.wordDetailsContextTagListItems
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.wordDetailsRelatedWordsTextFieldsList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.wordDetailsTextFieldList
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -34,9 +46,27 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 @Composable
 fun WordDetailsScreen(
     uiState: WordDetailsUiState,
+    contextTagsTree: ContextTagsTree,
     uiActions: WordDetailsUiActions,
     modifier: Modifier = Modifier,
 ) {
+    var showTagsDialog by remember {
+        mutableStateOf(false)
+    }
+    MDContextTagExplorerDialog(
+        showDialog = showTagsDialog,
+        onDismissRequest = { showTagsDialog = false },
+        tagsTree = contextTagsTree,
+        allowAddTags = true,
+        onAddTag = { tag ->
+            uiActions.onAddTagToTree(tag)
+        },
+        allowSelectTerminalTag = true,
+        allowSelectNonTerminalTag = true,
+        onSelect = { tag, isLeaf ->
+            uiActions.onEditTag(tag, false)
+        }
+    )
     MDScreen(
         uiState = uiState,
         modifier = modifier.fillMaxSize(),
@@ -76,7 +106,7 @@ fun WordDetailsScreen(
                 MDWordFieldTextField(
                     value = uiState.meaning,
                     onValueChange = uiActions::onMeaningChange,
-                    leadingIcon = MDIconsSet.WordMeaning, // checked
+                    leadingIcon = MDIconsSet.WordMeaning, 
                     modifier = Modifier.fillMaxWidth(),
                     label = "Meaning", // TODO, string res
                     readOnly = !uiState.isEditModeOn,
@@ -86,7 +116,7 @@ fun WordDetailsScreen(
                 MDWordFieldTextField(
                     value = uiState.translation,
                     onValueChange = uiActions::onTranslationChange,
-                    leadingIcon = MDIconsSet.WordTranslation, // checked
+                    leadingIcon = MDIconsSet.WordTranslation, 
                     modifier = Modifier.fillMaxWidth(),
                     label = "Translation", // TODO, string res
                     readOnly = !uiState.isEditModeOn,
@@ -96,7 +126,7 @@ fun WordDetailsScreen(
                 MDWordFieldTextField(
                     value = uiState.transcription,
                     onValueChange = uiActions::onTranscriptionChange,
-                    leadingIcon = MDIconsSet.WordTranscription, // checked
+                    leadingIcon = MDIconsSet.WordTranscription, 
                     modifier = Modifier.fillMaxWidth(),
                     label = "Transcription", // TODO, string res
                     readOnly = !uiState.isEditModeOn,
@@ -106,23 +136,26 @@ fun WordDetailsScreen(
             wordDetailsTextFieldList(
                 items = uiState.additionalTranslations,
                 onItemValueChange = uiActions::onEditAdditionalTranslation,
-                leadingIcon = MDIconsSet.WordAdditionalTranslation,// checked
+                leadingIcon = MDIconsSet.WordAdditionalTranslation,
                 groupLabel = "Additional Translations", // TODO, string res
-                onGroupFocusChanged = uiActions::onValidateAdditionalTranslations
+                onGroupFocusChanged = uiActions::onValidateAdditionalTranslations,
+                isEditModeOn = uiState.isEditModeOn,
             )
-            wordDetailsTextFieldList(
-                items = uiState.tags,
-                onItemValueChange = uiActions::onEditTag,
-                leadingIcon = MDIconsSet.WordTag,// checked
-                groupLabel = "Tags", // TODO, string res
-                onGroupFocusChanged = uiActions::onValidateTags
+            wordDetailsContextTagListItems(
+                tags = uiState.tags,
+                isEditModeOn = uiState.isEditModeOn,
+                onDeleteTag = uiActions::onDeleteTag,
+                onAddNewTagClick = {
+                    showTagsDialog = true
+                }
             )
             wordDetailsTextFieldList(
                 items = uiState.examples,
                 onItemValueChange = uiActions::onEditExample,
-                leadingIcon = MDIconsSet.WordExample,// checked
+                leadingIcon = MDIconsSet.WordExample,
                 groupLabel = "Examples", // TODO, string res
-                onGroupFocusChanged = uiActions::onValidateExamples
+                onGroupFocusChanged = uiActions::onValidateExamples,
+                isEditModeOn = uiState.isEditModeOn
             )
             item {
                 if (uiState.typeTags.isNotEmpty()) {
@@ -134,7 +167,7 @@ fun WordDetailsScreen(
                             uiActions.onChangeTypeTag(type)
                         },
                         suggestionTitle = { this.name },
-                        leadingIcon = MDIconsSet.WordTypeTag,// checked
+                        leadingIcon = MDIconsSet.WordTypeTag,
                         fieldModifier = Modifier.fillMaxWidth(),
                         label = "Word Type", // TODO, string res
                         fieldReadOnly = true,
@@ -154,11 +187,43 @@ fun WordDetailsScreen(
                 onSelectRelation = { id, relation ->
                     uiActions.onEditRelatedWordRelation(id, relation)
                 },
-                leadingIcon = MDIconsSet.WordRelatedWords,// checked
+                leadingIcon = MDIconsSet.WordRelatedWords,
                 groupLabel = "Word Relations", // TODO, string res
                 onGroupFocusChanged = uiActions::onValidateRelatedWords
             )
         }
+    }
+}
+
+@Composable
+private fun ContextTagListItem(
+    tag: ContextTag,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier) {
+        tag.segments.forEach { segment ->
+            Box(
+                modifier = Modifier.height(48.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(segment)
+            }
+        }
+    }
+}
+
+@Composable
+private fun NewContextTagListItem(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .height(48.dp)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("New Tag")
     }
 }
 
@@ -180,6 +245,7 @@ private fun WordDetailsScreenPreview() {
             Box(modifier = Modifier) {
                 WordDetailsScreen(
                     uiState = uiState,
+                    contextTagsTree = ContextTagsMutableTree(),
                     uiActions = getUiActions()
                 )
             }
@@ -200,8 +266,9 @@ private fun getUiActions() = WordDetailsUiActions(
         override fun onTranscriptionChange(newTranscription: String) {}
         override fun onEditAdditionalTranslation(id: Long, newAdditionalTranslation: String) {}
         override fun onValidateAdditionalTranslations(focusedTextFieldId: Long?) {}
-        override fun onEditTag(id: Long, newTag: String) {}
-        override fun onValidateTags(focusedTextFieldId: Long?) {}
+        override fun onEditTag(tag: ContextTag, isNew: Boolean) {}
+        override fun onDeleteTag(i: Int, tag: ContextTag) {}
+        override fun onAddTagToTree(tag: ContextTag) {}
         override fun onChangeTypeTag(newTypeTag: WordTypeTag?) {}
         override fun onAddNewRelatedWord(relation: WordTypeTagRelation) {}
         override fun onEditRelatedWordRelation(id: Long, newRelation: WordTypeTagRelation) {}

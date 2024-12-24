@@ -20,6 +20,9 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsObservableTree
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsTree
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -33,7 +36,7 @@ interface WordDetailsUiState : MDUiState {
     val transcription: String
     val translation: String
     val additionalTranslations: Map<Long, String>
-    val tags: Map<Long, String>
+    val tags: List<ContextTag>
     val typeTags: List<WordTypeTag>
     val selectedTypeTag: WordTypeTag?
     val relatedWords: Map<Long, Pair<WordTypeTagRelation, String>> // Map<Label, List<Word>>, for each relation it may have more than one value
@@ -55,7 +58,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     override var transcription: String by mutableStateOf(INVALID_TEXT)
     override var translation: String by mutableStateOf(INVALID_TEXT)
     override val additionalTranslations: SnapshotStateMap<Long, String> = mutableStateMapOf()
-    override val tags: SnapshotStateMap<Long, String> = mutableStateMapOf()
+    override val tags: SnapshotStateList<ContextTag> = mutableStateListOf()
     override val typeTags: SnapshotStateList<WordTypeTag> = mutableStateListOf()
     override var selectedTypeTag: WordTypeTag? by mutableStateOf(null)
     override val relatedWords: SnapshotStateMap<Long, Pair<WordTypeTagRelation, String>> = mutableStateMapOf()
@@ -73,10 +76,6 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         additionalTranslations[idGenerator.nextId()] = value
     }
 
-    fun addTag(value: String) {
-        tags[idGenerator.nextId()] = value
-    }
-
     fun addRelatedWord(relation: WordTypeTagRelation, value: String) {
         relatedWords[idGenerator.nextId()] = relation to value
     }
@@ -87,7 +86,9 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
 
     fun ensureOnTrailingBlankItemAdditionalTranslation() = additionalTranslations.ensureOneTrailingBlankItem()
 
-    fun ensureOnTrailingBlankItemTag() = tags.ensureOneTrailingBlankItem()
+    fun ensureOnTrailingBlankItemTag() {
+        // TODO,
+    }
 
     fun ensureOnTrailingBlankItemExample() = examples.ensureOneTrailingBlankItem()
 
@@ -134,7 +135,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         transcription = word.transcription
         translation = word.translation
         additionalTranslations.setAll(word.additionalTranslations.associateBy { idGenerator.nextId() })
-        tags.setAll(word.tags.associateBy { idGenerator.nextId() })
+        tags.setAll(word.tags)
         selectedTypeTag = word.wordTypeTag
         selectedTypeTag?.relations?.associateBy { it.id }?.let { relations ->
             relatedWords.setAll(
@@ -156,7 +157,7 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
             translation = this.translation,
             transcription = this.transcription,
             additionalTranslations = this.additionalTranslations.values.toList(),
-            tags = this.tags.values.toSet(),
+            tags = this.tags.toSet(),
             wordTypeTag = this.selectedTypeTag,
             relatedWords = this.relatedWords.map { (_, word) ->
                 RelatedWord(

@@ -57,10 +57,10 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
@@ -320,7 +320,10 @@ private fun MDWordListItemPreview() {
                         translation = "Eye",
                         additionalTranslations = listOf("Human Eye", "Human Eye 2"),
                         language = Language("de".code, "Deutsch", "German"),
-                        tags = setOf("Human body", "Organic"),
+                        tags = setOf(
+                            ContextTag(value ="Human body"),
+                            ContextTag(value ="Organic")
+                        ),
                         transcription = "auge",
                         examples = listOf("I habe zwei auge", "some other example"),
                         createdAt = INVALID_INSTANT,
@@ -338,7 +341,7 @@ private fun MDWordListItemPreview() {
                         IconButton(onClick = {
                             expanded = !expanded
                         }) {
-                            MDIcon(MDIconsSet.Close) // checked
+                            MDIcon(MDIconsSet.Close) 
                         }
                     },
                     secondaryAction = {

@@ -35,14 +35,19 @@ fun TypeTagWithRelation.asTagModelWithCount(relationsCount: Map<Long, Int>): Wor
     )
 }
 
-fun WordTypeTag.asTagEntity() = WordTypeTagEntity(
-    id = id.nullIfInvalid(),
+fun WordTypeTag.asTagEntity(
+    id: Long? = this.id.nullIfInvalid(),
+) = WordTypeTagEntity(
+    id = id,
     name = name,
     language = language.code.code,
 )
 
-fun WordTypeTagRelation.asRelationEntity(tagId: Long) = WordTypeTagRelationEntity(
-    id = id.nullIfInvalid(),
+fun WordTypeTagRelation.asRelationEntity(
+    tagId: Long,
+    id: Long? = this.id.nullIfInvalid(),
+) = WordTypeTagRelationEntity(
+    id = id,
     label = label,
     tagId = tagId,
 )

@@ -63,53 +63,15 @@ val searchQueryRegexNormalizer = MDNormalizerWrapper(
  */
 val String.searchQueryRegexNormalize: String get() = searchQueryRegexNormalizer.normalize(this)
 
-/**
- * - trim white spaces [MDTrimNormalizer]
- * - convert to lowercase [MDLowercaseNormalizer]
- * - add leading # [MDCustomNormalizer]
- */
-val tagViewNormalizer = MDNormalizerWrapper(
-    MDTrimNormalizer(),
-    MDLowercaseNormalizer,
-    MDCustomNormalizer { "#$it" }
-)
 
-/**
- * - `Some Tag  ` ->`#some tag`
- * @see [tagViewNormalizer]
- */
-val String.tagViewNormalize: String get() = tagViewNormalizer.normalize(this)
-
-/**
- * - convert to lowercase [MDLowercaseNormalizer]
- * - filter not white spaces or # [MDFilterNotNormalizer]
- */
 val tagMatchNormalizer = MDNormalizerWrapper(
     MDTrimNormalizer(),
     MDLowercaseNormalizer,
-    MDFilterNotNormalizer { it.isWhitespace() || it == '#' },
 )
 
 /**
- * - `#some Tag` ->`sometag`
+ * - trim and lower case
+ * - `some Tag` ->`some tag`
  * @see [tagMatchNormalizer]
  */
 val String.tagMatchNormalize: String get() = tagMatchNormalizer.normalize(this)
-
-/**
- * - convert to lowercase [MDLowercaseNormalizer]
- * - filter not white spaces or # [MDFilterNotNormalizer]
- * - split and rejoin spaced by .*? with leading and training .* [MDCharsSeparatorNormalizer]
- */
-val tagRegexNormalizer = MDNormalizerWrapper(
-    MDLowercaseNormalizer,
-    MDFilterNotNormalizer { it.isWhitespace() || it == '#' },
-    MDCharsSeparatorNormalizer(joinSeparator = ".*", prefix = ".*", suffix = ".*")
-)
-
-/**
- * - `#some Tag` ->`.*?s.*?o.*?m.*?e.*?t.*?a.*?g.*?`
- * @see tagRegexNormalizer
- */
-val String.tagRegexNormalize: String get() = tagRegexNormalizer.normalize(this)
-

@@ -105,7 +105,7 @@ class MDStatisticsViewModel @Inject constructor(
         tagPreferences: MDStatisticsViewPreferences.Tag,
         dateUnit: MDDateUnit = uiState.dateUnit ?: MDStatisticsViewPreferences.DEFAULT_DATE_UNIT,
     ): MDStatisticsLineChartData = repo
-        .getTrainHistoryOfTag(tagPreferences.tag)
+        .getTrainHistoryOfTag(tagPreferences.tagId)
         .asLineChartData(dateUnit)
 
     private suspend fun initTypeTagPreferences(

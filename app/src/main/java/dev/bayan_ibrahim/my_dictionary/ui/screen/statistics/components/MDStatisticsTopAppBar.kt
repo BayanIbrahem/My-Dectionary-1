@@ -71,7 +71,7 @@ fun MDStatisticsTopAppBar(
                                 expandDropDownMenu = true
                             }
                         ) {
-                            MDIcon(MDIconsSet.MoreVert) // checked
+                            MDIcon(MDIconsSet.MoreVert) 
                         }
                     }
                 ) {
@@ -138,7 +138,7 @@ private fun MDMostRecentTrainHistoryActions(
     ) {
         item(
             leadingIcon = {
-                MDIcon(MDIconsSet.LatestTrainsCount, contentDescription = null) // checked
+                MDIcon(MDIconsSet.LatestTrainsCount, contentDescription = null) 
             }
         ) {
             Text("View Preferences")
@@ -152,7 +152,7 @@ private fun MDMostRecentTrainHistoryActions(
                     it == count
                 }?.let {
                     {
-                        MDIcon(MDIconsSet.Check, contentDescription = null) // checked
+                        MDIcon(MDIconsSet.Check, contentDescription = null) 
                     }
                 }
             ) {
@@ -173,7 +173,7 @@ private fun MDDateUnitActions(
     ) {
         item(
             leadingIcon = {
-                MDIcon(MDIconsSet.TrainHistoryDateGroup, contentDescription = null) // checked
+                MDIcon(MDIconsSet.TrainHistoryDateGroup, contentDescription = null) 
             }
         ) {
             Text("View Preferences")

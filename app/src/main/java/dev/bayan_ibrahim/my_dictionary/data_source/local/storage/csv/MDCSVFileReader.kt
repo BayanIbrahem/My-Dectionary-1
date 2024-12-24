@@ -5,7 +5,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.MDFileReaderDecorator
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.serializer.MDCSVSerializer
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.csv.serializer.decodeLines
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
 import java.io.InputStream
 
 class MDCSVFileReader<Data : Any>(

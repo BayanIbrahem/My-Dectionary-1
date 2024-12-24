@@ -85,7 +85,7 @@ fun MDWordsListScreen(
                         uiActions.navigateToWordDetails(null)
                     }
                 ) {
-                    MDIcon(MDIconsSet.Add) // checked
+                    MDIcon(MDIconsSet.Add) 
                 }
             }
         }

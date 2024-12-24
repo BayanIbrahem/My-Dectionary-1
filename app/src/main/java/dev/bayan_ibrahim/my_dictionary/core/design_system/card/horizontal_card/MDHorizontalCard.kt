@@ -276,10 +276,10 @@ private fun MDHorizontalCardsPreview() {
                 MDHorizontalCard(
                     onClick = {},
                     leadingIcon = {
-                        MDIcon(MDIconsSet.Verified) // checked
+                        MDIcon(MDIconsSet.Verified) 
                     },
                     trailingIcon = {
-                        MDIcon(MDIconsSet.Verified) // checked
+                        MDIcon(MDIconsSet.Verified) 
                     }
                 ) {
                     Text("this is a field")

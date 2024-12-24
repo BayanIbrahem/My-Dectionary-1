@@ -1,6 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.storage
 
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileData
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
 import java.io.InputStream
 
 class MDFileReaderWrapper<Data : Any>(

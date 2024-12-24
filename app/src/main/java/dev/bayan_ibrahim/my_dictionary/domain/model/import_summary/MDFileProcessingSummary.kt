@@ -1,39 +1,32 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.import_summary
 
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
+import kotlinx.collections.immutable.PersistentSet
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 interface MDFileProcessingSummary {
-    val status: MDFileProcessingSummaryStatus
-    val recognizedLanguages: Map<Language, Boolean>
-    val currentLanguage: Language?
-    val currentLanguageSummary: MDFileProcessingSummaryData
-    val totalSummary: MDFileProcessingSummaryData
-    val processingStartTime: Long
-    val processingEndTime: Long
+    var prevStep: MDFileProcessingSummaryActionsStep?
+    var currentStep: MDFileProcessingSummaryActionsStep
+    val expectedSteps: SnapshotStateList<MDFileProcessingSummaryActionsStep>
+    var isParsingAvailablePartsOnly: Boolean
+    var availableParts: PersistentSet<MDFilePartType>?
+    val exceptions: Map<MDFileProcessingSummaryStepException, Int>
+    val warnings: Map<MDFileProcessingSummaryStepWarning, Int>
+    var status: MDFileProcessingSummaryStatus
+    val recognizedLanguages: Map<LanguageCode, Boolean>
+    val recognizedTypeTags: Map<Pair<LanguageCode, String>, Boolean>
+    val recognizedTypeTagsRelations: Map<Triple<LanguageCode, String, String>, Boolean>
+    val recognizedContextTags: Map<String, Boolean>
+    val recognizedWords: Map<Triple<LanguageCode, String, String>, Boolean>
+    val recognizedCorruptedWords: Map<Triple<LanguageCode, String, String>, Boolean>
+    var processingStartTime: Long
+    var processingEndTime: Long
 
-    val runningTime: Duration?
+    val runningDuration: Duration?
         get() = if (processingStartTime > 0 && processingEndTime > 0) {
             (processingEndTime - processingStartTime).milliseconds
-        } else if (processingStartTime > 0) {
-            (System.currentTimeMillis() - processingStartTime).milliseconds
-        } else {
-            null
-
-        }
-
-    fun asString(
-        separator: String = "\n",
-        runningTime: Duration? = this.runningTime,
-    ): String = buildString {
-        appendLine("Summary - status: $status")
-        appendLine("running time: ${this@MDFileProcessingSummary.runningTime ?: "-"}")
-        appendLine("languages: new ${recognizedLanguages.count { it.value }}, existed: ${recognizedLanguages.count { !it.value }}")
-        appendLine("current language $currentLanguage")
-        appendLine("Current Language summary")
-        append(currentLanguageSummary.asString(separator))
-        appendLine("Total Summary")
-        append(totalSummary.asString(separator))
-    }
+        } else null
 }

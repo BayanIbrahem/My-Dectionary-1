@@ -3,9 +3,12 @@ package dev.bayan_ibrahim.my_dictionary.data
 
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.TrainHistoryDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagsAndRelatedWordsDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word_cross_context_tag.WordsCrossContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.toTrainHistoryEntities
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.toTrainHistoryModels
@@ -18,24 +21,35 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class MDTrainRepoImpl(
     private val db: MDDataBase,
     private val wordDao: WordDao = db.getWordDao(),
+    private val wordWithTagsAndRelatedWordsDao: WordWithContextTagsAndRelatedWordsDao = db.getWordsWithContextTagAndRelatedWordsDao(),
     private val trainHistoryDao: TrainHistoryDao = db.getWordTrainDao(),
+    private val typeTagDao: WordTypeTagDao = db.getWordTypeTagDao(),
     private val preferences: MDPreferencesDataStore,
-) : MDTrainRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordDao) {
+) : MDTrainRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(db.getWordWithContextTagDao()) {
 
     override suspend fun getTrainPreferences(): MDWordsListTrainPreferences = preferences.getWordsListTrainPreferences()
     override suspend fun getViewPreferences(): MDWordsListViewPreferences = preferences.getWordsListViewPreferences()
     override suspend fun getAllSelectedLanguageWords(): Sequence<Word> {
         val currentLanguage = preferences.getUserPreferences().selectedLanguagePage ?: return sequenceOf()
-        return wordDao.getWordsOfLanguage(currentLanguage.code.code)
-            .map { words ->
-                words.asSequence().map(WordEntity::asWordModel)
-            }.firstOrNull() ?: sequenceOf()
+
+        val typeTags = typeTagDao.getTagTypesOfLanguage(currentLanguage.code.code).first().map {
+            it.asTagModel()
+        }.associateBy {
+            it.id
+        }
+
+        return wordWithTagsAndRelatedWordsDao.getWordsWithContextTagsAndRelatedWordsRelations(currentLanguage.code.code).map {
+            it.asSequence().map { relation ->
+                relation.asWordModel(typeTags[relation.word.wordTypeTagId])
+            }
+        }.firstOrNull() ?: sequenceOf()
     }
 
     override fun getTrainHistoryOf(

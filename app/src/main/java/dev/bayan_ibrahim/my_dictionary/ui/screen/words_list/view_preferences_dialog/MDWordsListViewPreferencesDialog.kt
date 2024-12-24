@@ -34,6 +34,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -169,7 +170,7 @@ private fun SearchBody(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FilterBody(
-    selectedTags: Set<String>,
+    selectedTags: Set<ContextTag>,
     tagSearchQuery: String,
     tagsSuggestions: List<String>,
     includeSelectedTags: Boolean,
@@ -207,9 +208,10 @@ private fun FilterBody(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             selectedTags.forEach { tag ->
+                // TODO, handle viewing, adding ,deleting tags
                 AssistChip(
-                    onClick = { onRemoveTag(tag) },
-                    label = { Text(tag) },
+                    onClick = { onRemoveTag(tag.value) },
+                    label = { Text(tag.value) },
                     shape = MaterialTheme.shapes.medium,
                 )
             }

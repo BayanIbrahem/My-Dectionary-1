@@ -137,21 +137,21 @@ fun MDWordSpaceListItem(
                         onClick = actions::onCancel,
                         enabled = isEditable,
                     ) {
-                        MDIcon(MDIconsSet.Close) // checked
+                        MDIcon(MDIconsSet.Close) 
                     }
 
                     IconButton(
                         onClick = actions::onSubmit,
                         enabled = isEditable,
                     ) {
-                        MDIcon(MDIconsSet.Check) // checked
+                        MDIcon(MDIconsSet.Check) 
                     }
                 } else {
                     IconButton(
                         onClick = actions::onEnableEditMode,
                         enabled = isEditable,
                     ) {
-                        MDIcon(MDIconsSet.Edit) // checked
+                        MDIcon(MDIconsSet.Edit) 
                     }
                 }
             }
@@ -364,12 +364,12 @@ private fun WordSpaceEditableTagListItem(
                 Row {
                     if (showOnDelete) {
                         IconButton(onDelete, modifier = Modifier.size(36.dp)) {
-                            MDIcon(MDIconsSet.Delete) // checked
+                            MDIcon(MDIconsSet.Delete) 
                         }
                     }
                     if (showOnReset) {
                         IconButton(onReset, modifier = Modifier.size(36.dp)) {
-                            MDIcon(MDIconsSet.Reset) // checked
+                            MDIcon(MDIconsSet.Reset) 
                         }
                     }
                 }
@@ -426,9 +426,9 @@ private fun WordsSpaceFieldEditDialog(
             value = value,
             onChangeValue = { value = it },
             leadingIcon = if (isTag) {
-                MDIconsSet.WordTypeTag // checked
+                MDIconsSet.WordTypeTag 
             } else {
-                MDIconsSet.WordRelatedWords // checked
+                MDIconsSet.WordRelatedWords 
             },
             placeholder = if (isTag) "Word Type Tag name" else "Word Type Tag Relation label", // TODO, string res
         )

@@ -5,20 +5,18 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.mea
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithRelatedWords
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.LanguageWordSpaceEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithContextTagsAndRelatedWordsRelation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import kotlinx.datetime.Clock
 
 @JvmName("WordWithRelatedWordsAsWordModel")
-fun WordWithRelatedWords.asWordModel(
+fun WordWithContextTagsAndRelatedWordsRelation.asWordModel(
     tag: WordTypeTag? = null,
 ): Word = Word(
     id = this.word.id!!,
@@ -26,7 +24,7 @@ fun WordWithRelatedWords.asWordModel(
     translation = this.word.translation.meaningViewNormalize,
     additionalTranslations = this.word.additionalTranslations,
     language = this.word.languageCode.code.language,
-    tags = this.word.tags.toSet(),
+    tags = this.tags.map { it.asModel() }.toSet(),
     transcription = this.word.transcription,
     examples = this.word.examples,
     wordTypeTag = tag,
@@ -46,6 +44,7 @@ fun WordWithRelatedWords.asWordModel(
     updatedAt = this.word.updatedAt.asEpochMillisecondsInstant()
 )
 
+@Deprecated("Non Consistent data, tags data is lost")
 @JvmName("WordEntityAsWordModel")
 fun WordEntity.asWordModel(): Word = Word(
     id = this.id ?: INVALID_ID,
@@ -53,7 +52,6 @@ fun WordEntity.asWordModel(): Word = Word(
     translation = this.translation,
     additionalTranslations = this.additionalTranslations,
     language = this.languageCode.code.language,
-    tags = this.tags.toSet(),
     transcription = this.transcription,
     examples = this.examples,
     wordTypeTag = null,
@@ -74,7 +72,6 @@ fun Word.asWordEntity(
     normalizedTranslation = this.translation.meaningSearchNormalize,
     additionalTranslations = this.additionalTranslations,
     languageCode = this.language.code.code,
-    tags = this.tags.toList(),
     transcription = this.transcription,
     examples = this.examples,
     wordTypeTagId = this.wordTypeTag?.id?.nullIfInvalid(),
@@ -94,10 +91,4 @@ fun Word.asRelatedWords(): List<WordTypeTagRelatedWordEntity> = this.relatedWord
         )
     }
 }
-
-fun LanguageWordSpaceEntity.asWordSpaceModel(): LanguageWordSpace = LanguageWordSpace(
-    language = languageCode.code.language,
-    wordsCount = wordsCount,
-    averageMemorizingProbability = averageMemorizingProbability,
-)
 

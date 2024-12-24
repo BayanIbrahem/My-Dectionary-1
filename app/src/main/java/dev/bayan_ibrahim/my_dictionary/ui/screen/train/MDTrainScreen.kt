@@ -340,7 +340,7 @@ private fun WordSelectAnswerTrainPage(
                     },
                     leadingIcon = {
                         if (i == selectedAnswerIndex) {
-                            MDIcon(MDIconsSet.Check) // checked
+                            MDIcon(MDIconsSet.Check) 
                         } else {
                             Box(modifier = Modifier.width(24.dp))
                         }
@@ -511,7 +511,7 @@ private fun ExtraInfoPagePart(
             availableExtraInfo.associateWith {
                 when (it) {
                     MDTrainQuestionExtraInfo.Transcription -> listOf(word.transcription)
-                    MDTrainQuestionExtraInfo.Tag -> word.tags
+                    MDTrainQuestionExtraInfo.Tag -> word.tags.map { it.value } // TODO, show tags correctly
                     MDTrainQuestionExtraInfo.TypeTag -> listOfNotNull(word.wordTypeTag?.name)
                     MDTrainQuestionExtraInfo.RelatedWords -> word.relatedWords.map { it.value }
                     MDTrainQuestionExtraInfo.Example -> word.examples
@@ -699,7 +699,6 @@ private fun ExtraInfoPagePartPreview() {
                         additionalTranslations = listOf("Additional translation 1", "Additional translation 2"),
                         transcription = "Transcription",
                         examples = listOf("Example 1", "Example 2"),
-                        tags = setOf("Tag 1", "Tag 2", "Tag 3"),
                         wordTypeTag = WordTypeTag(
                             1, name = "Type tag", "en".code.language,
                             relations = listOf(

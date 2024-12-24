@@ -26,7 +26,7 @@ class MDWordsListDataStoreViewPreferencesImpl(
         WordsListViewPreferencesBuilder(
             searchQuery = it.searchQuery,
             searchTarget = MDWordsListSearchTarget.entries[it.searchTargetIndex],
-            selectedTags = it.selectedTagsList.toSet(),
+            selectedTags = emptySet(),
             includeSelectedTags = it.includeSelectTags,
             selectedMemorizingProbabilityGroups = it.selectedMemorizingProbabilityGroupsList.map { index ->
                 MDWordsListMemorizingProbabilityGroup.entries[index]
@@ -42,8 +42,6 @@ class MDWordsListDataStoreViewPreferencesImpl(
                 val wordsList = getWordsList(getWordsListViewPreferences())
                 searchQuery = wordsList.searchQuery
                 searchTargetIndex = wordsList.searchTarget.ordinal
-                selectedTags.clear()
-                selectedTags.addAll(wordsList.selectedTags)
                 includeSelectTags = wordsList.includeSelectedTags
                 selectedMemorizingProbabilityGroups.clear()
                 selectedMemorizingProbabilityGroups.addAll(wordsList.selectedMemorizingProbabilityGroups.map { enum -> enum.ordinal })

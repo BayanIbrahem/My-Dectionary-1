@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDApp
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryDynamicTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.LocalIconsPack
+import java.io.InputStream
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -52,4 +54,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

@@ -1,6 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.LanguageWordSpaceDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageWordSpaceDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.LanguageWordSpaceEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordSpaceModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.user.MDUserPreferencesDataStore

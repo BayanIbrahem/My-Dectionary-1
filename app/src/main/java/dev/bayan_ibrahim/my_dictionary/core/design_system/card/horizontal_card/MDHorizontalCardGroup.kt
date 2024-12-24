@@ -156,8 +156,8 @@ private fun MDHorizontalCardGroupPreview() {
             ) {
                 MDHorizontalCardGroup {
                     item(
-                        leadingIcon = { MDIcon(MDIconsSet.Check) }, // checked
-                        trailingIcon = { MDIcon(MDIconsSet.Check) }, // checked
+                        leadingIcon = { MDIcon(MDIconsSet.Check) }, 
+                        trailingIcon = { MDIcon(MDIconsSet.Check) }, 
                         enabled = true,
                         subtitle = {
                             Text("subtitle")
@@ -166,8 +166,8 @@ private fun MDHorizontalCardGroupPreview() {
                         Text("title")
                     }
                     item(
-                        leadingIcon = { MDIcon(MDIconsSet.Check) }, // checked
-                        trailingIcon = { MDIcon(MDIconsSet.Check) }, // checked
+                        leadingIcon = { MDIcon(MDIconsSet.Check) }, 
+                        trailingIcon = { MDIcon(MDIconsSet.Check) }, 
                         enabled = false,
                         subtitle = {
                             Text("subtitle")
@@ -177,7 +177,7 @@ private fun MDHorizontalCardGroupPreview() {
                     }
                     item(
                         leadingIcon = {},
-                        trailingIcon = { MDIcon(MDIconsSet.Check) }, // checked
+                        trailingIcon = { MDIcon(MDIconsSet.Check) }, 
                         enabled = true,
                         subtitle = {
                             Text("subtitle")
@@ -186,7 +186,7 @@ private fun MDHorizontalCardGroupPreview() {
                         Text("title")
                     }
                     item(
-                        leadingIcon = { MDIcon(MDIconsSet.Check) }, // checked
+                        leadingIcon = { MDIcon(MDIconsSet.Check) }, 
                         trailingIcon = {},
                         enabled = true,
                         subtitle = {
@@ -197,8 +197,8 @@ private fun MDHorizontalCardGroupPreview() {
                     }
 
                     item(
-                        leadingIcon = { MDIcon(MDIconsSet.Check) }, // checked
-                        trailingIcon = { MDIcon(MDIconsSet.Check) }, // checked
+                        leadingIcon = { MDIcon(MDIconsSet.Check) }, 
+                        trailingIcon = { MDIcon(MDIconsSet.Check) }, 
                         enabled = true,
                     ) {
                         Text("title")

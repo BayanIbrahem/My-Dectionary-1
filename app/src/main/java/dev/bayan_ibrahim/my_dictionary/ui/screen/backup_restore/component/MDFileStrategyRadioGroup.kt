@@ -11,19 +11,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
-import dev.bayan_ibrahim.my_dictionary.domain.model.MDFileStrategy
-import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.util.label
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 @Composable
-fun MDFileStrategyRadioGroup(
-    selectedStrategy: MDFileStrategy,
-    onSelectStrategy: (MDFileStrategy) -> Unit,
+fun <E : LabeledEnum> MDPropertyStrategyGroup(
+    selectedStrategy: E,
+    availableStrategies: List<E>,
+    onSelectStrategy: (E) -> Unit,
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
-    availableStrategies: List<MDFileStrategy> = MDFileStrategy.entries,
-    label: @Composable (MDFileStrategy) -> String = { it.label },
+    label: @Composable (E) -> String = { it.label },
 ) {
     MDHorizontalCardGroup(
         modifier = modifier,
@@ -44,7 +44,9 @@ fun MDFileStrategyRadioGroup(
             val selected = selectedStrategy == strategy
             radioItem(
                 selected = selected,
-                onClick = { onSelectStrategy(strategy) },
+                onClick = {
+                    onSelectStrategy(strategy)
+                },
             ) {
                 Text(label(strategy))
             }
@@ -63,8 +65,9 @@ private fun MDFileStrategyRadioGroupPreview() {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                MDFileStrategyRadioGroup(
-                    selectedStrategy = MDFileStrategy.Ignore,
+                MDPropertyStrategyGroup(
+                    selectedStrategy = MDPropertyConflictStrategy.IgnoreProperty,
+                    availableStrategies = MDPropertyConflictStrategy.entries,
                     onSelectStrategy = {},
                     title = "Corrupted File",
                 )

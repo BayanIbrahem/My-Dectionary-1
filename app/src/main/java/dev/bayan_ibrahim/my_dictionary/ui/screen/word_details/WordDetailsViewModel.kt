@@ -10,9 +10,17 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsMutableTree
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsTree
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.asTree
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -23,6 +31,13 @@ class WordDetailsViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState: WordDetailsMutableUiState = WordDetailsMutableUiState()
     val uiState: WordDetailsUiState get() = _uiState
+    val contextTagsTreeStream: StateFlow<ContextTagsTree> = repo.getContextTagsStream().map {
+        it.asTree()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ContextTagsMutableTree()
+    )
 
     fun initWithNavArgs(args: MDDestination.WordDetails) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -72,7 +87,6 @@ class WordDetailsViewModel @Inject constructor(
                 _uiState.onExecute {
                     _uiState.isEditModeOn = false
                     onValidateAdditionalTranslations()
-                    onValidateTags()
                     onValidateRelatedWords()
                     onValidateExamples()
                     val word = _uiState.toWord()
@@ -136,14 +150,23 @@ class WordDetailsViewModel @Inject constructor(
             onAdd = _uiState::addAdditionalTranslation
         )
 
-        override fun onEditTag(id: Long, newTag: String) = ensureEditableUiState {
-            tags[id] = newTag
+        override fun onEditTag(tag: ContextTag, isNew: Boolean) = ensureEditableUiState {
+            if (tags.none {
+                    (it.id == tag.id && it.id != INVALID_ID) || it.value == tag.value
+                }) {
+                tags.add(tag)
+            }
         }
 
-        override fun onValidateTags(focusedTextFieldId: Long?) = _uiState.tags.validateField(
-            focusedTextFieldId = focusedTextFieldId,
-            onAdd = _uiState::addTag
-        )
+        override fun onDeleteTag(i: Int, tag: ContextTag) = ensureEditableUiState {
+            tags.removeAt(i)
+        }
+
+        override fun onAddTagToTree(tag: ContextTag) = ensureEditableUiState {
+            viewModelScope.launch(Dispatchers.IO) {
+                repo.addOrUpdateContextTag(tag)
+            }
+        }
 
         override fun onChangeTypeTag(newTypeTag: WordTypeTag?) = ensureEditableUiState {
             this.selectedTypeTag = newTypeTag

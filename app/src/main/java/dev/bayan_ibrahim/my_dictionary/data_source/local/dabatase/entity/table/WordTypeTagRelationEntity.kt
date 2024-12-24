@@ -23,7 +23,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTag
         )
     ],
     indices = [
-        Index(dbTypeTagRelationTagId)
+        Index(dbTypeTagRelationTagId),
     ]
 )
 data class WordTypeTagRelationEntity(
