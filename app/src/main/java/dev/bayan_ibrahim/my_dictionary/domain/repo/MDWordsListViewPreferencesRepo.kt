@@ -10,5 +10,5 @@ interface MDWordsListViewPreferencesRepo {
     suspend fun getViewPreferences(): MDWordsListViewPreferences = getViewPreferencesStream().first()
     suspend fun setViewPreferences(preferences: MDWordsListViewPreferences)
 
-    suspend fun getSelectedLanguageTags(): Set<ContextTag>
+    suspend fun getSelectedLanguageTags(): Flow<Set<ContextTag>>
 }

@@ -44,19 +44,12 @@ interface MDWordsListViewPreferences {
     ): Boolean {
         if (selectedTags.isEmpty()) return true
 
-        return if (includeSelectedTags) {
-            tags.any { provided ->
-                selectedTags.any { required ->
-                    provided.contains(required)
-                }
-            }
-        } else {
-            tags.none { provided ->
-                selectedTags.none { required ->
-                    provided.contains(required)
-                }
+        val anyContained = tags.any { provided ->
+            selectedTags.any { required ->
+                required.contains(provided)
             }
         }
+        return !includeSelectedTags.xor(anyContained)
     }
 
     private fun matchesMemorizingProbabilityGroup(word: Word): Boolean {

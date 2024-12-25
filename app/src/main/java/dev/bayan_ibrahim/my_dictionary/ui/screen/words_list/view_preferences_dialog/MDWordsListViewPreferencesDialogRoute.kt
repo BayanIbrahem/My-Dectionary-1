@@ -30,6 +30,8 @@ fun MDWordsListViewPreferencesDialogRoute(
             }
         }
     }
+    val contextTagsSelectionState = viewModel.contextTagsState
+    val contextTagsSelectionActions = viewModel.contextTagsActions
     val uiActions by remember {
         derivedStateOf {
             viewModel.getUiActions(navActions)
@@ -39,6 +41,8 @@ fun MDWordsListViewPreferencesDialogRoute(
         showDialog = showDialog,
         uiState = uiState,
         uiActions = uiActions,
+        contextTagsSelectionState = contextTagsSelectionState,
+        contextTagsSelectionActions = contextTagsSelectionActions,
         modifier = modifier,
     )
 }

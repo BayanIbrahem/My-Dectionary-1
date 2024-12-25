@@ -34,6 +34,9 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
@@ -48,6 +51,8 @@ fun MDWordsListViewPreferencesDialog(
     showDialog: Boolean,
     uiState: MDWordsListViewPreferencesUiState,
     uiActions: MDWordsListViewPreferencesUiActions,
+    contextTagsSelectionState: MDContextTagsSelectionUiState,
+    contextTagsSelectionActions: MDContextTagsSelectionActions,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember {
@@ -101,14 +106,10 @@ fun MDWordsListViewPreferencesDialog(
                 )
 
                 MDWordsListViewPreferencesTab.Filter -> FilterBody(
-                    selectedTags = uiState.selectedTags,
-                    tagSearchQuery = uiState.tagSearchQuery,
-                    tagsSuggestions = uiState.tagsSuggestions,
+                    contextTagsSelectionState = contextTagsSelectionState,
+                    contextTagsSelectionActions = contextTagsSelectionActions,
                     includeSelectedTags = uiState.includeSelectedTags,
                     selectedMemorizingProbabilityGroups = uiState.selectedMemorizingProbabilityGroups,
-                    onTagSearchQueryChange = uiActions::onTagSearchQueryChange,
-                    onSelectTag = uiActions::onSelectTag,
-                    onRemoveTag = uiActions::onRemoveTag,
                     onToggleSelectedTags = uiActions::onToggleIncludeSelectedTags,
                     onSelectLearningGroup = uiActions::onSelectLearningGroup,
                 )
@@ -170,14 +171,10 @@ private fun SearchBody(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FilterBody(
-    selectedTags: Set<ContextTag>,
-    tagSearchQuery: String,
-    tagsSuggestions: List<String>,
+    contextTagsSelectionState: MDContextTagsSelectionUiState,
+    contextTagsSelectionActions: MDContextTagsSelectionActions,
     includeSelectedTags: Boolean,
     selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
-    onTagSearchQueryChange: (String) -> Unit,
-    onSelectTag: (String) -> Unit,
-    onRemoveTag: (String) -> Unit,
     onToggleSelectedTags: (Boolean) -> Unit,
     onSelectLearningGroup: (MDWordsListMemorizingProbabilityGroup) -> Unit,
     modifier: Modifier = Modifier,
@@ -189,34 +186,13 @@ private fun FilterBody(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        MDWordFieldTextField(
-            value = tagSearchQuery,
-            modifier = Modifier.fillMaxWidth(),
-            onValueChange = onTagSearchQueryChange,
-            suggestions = tagsSuggestions,
-            onSelectSuggestion = { _, tag ->
-                tag?.let(onSelectTag)
-            },
-            allowCancelSelection = false,
-            suggestionTitle = { this },
-            leadingIcon = MDIconsSet.WordTag,
-            label = "Tag Query", // TODO, string res
-            placeholder = "Eg. Food" // TODO, string res
+        MDContextTagsSelectionItem(
+            state = contextTagsSelectionState,
+            actions = contextTagsSelectionActions,
+            allowAddTags = false,
+            allowRemoveTags = false,
+            allowEditTags = true,
         )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            selectedTags.forEach { tag ->
-                // TODO, handle viewing, adding ,deleting tags
-                AssistChip(
-                    onClick = { onRemoveTag(tag.value) },
-                    label = { Text(tag.value) },
-                    shape = MaterialTheme.shapes.medium,
-                )
-            }
-
-        }
         MDHorizontalCardGroup {
             checkboxItem(
                 checked = includeSelectedTags,

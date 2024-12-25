@@ -5,12 +5,12 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.map
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagsAndRelatedWordsDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordsPaginatedDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word_cross_context_tag.WordsCrossContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithContextTagsAndRelatedWordsRelation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
@@ -43,6 +43,7 @@ class MDWordsListRepoImpl(
     private val wordWithTagAndRelatedWordsDao: WordWithContextTagsAndRelatedWordsDao,
     private val tagDao: WordTypeTagDao,
     private val preferences: MDPreferencesDataStore,
+    private val languageDao: LanguageDao,
     languageRepo: MDLanguageSelectionDialogRepo,
 ) : MDWordsListRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordWithTagsDao), MDLanguageSelectionDialogRepo by languageRepo {
     override fun getViewPreferences(): Flow<MDWordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
@@ -125,7 +126,13 @@ class MDWordsListRepoImpl(
         wordDao.deleteWords(ids)
     }
 
-    private fun WordWithContextTagsAndRelatedWordsRelation.checkMatchViewPreferences(preferences: MDWordsListViewPreferences): Boolean {
+    override suspend fun deleteWordSpace(languageCode: LanguageCode) {
+        languageDao.deleteLanguage(languageCode.code)
+    }
+
+    private fun WordWithContextTagsAndRelatedWordsRelation.checkMatchViewPreferences(
+        preferences: MDWordsListViewPreferences,
+    ): Boolean {
         // search
         val normalizedSearchQuery = preferences.searchQuery.trim().lowercase()
         val matchSearch = this.word.searchQueryOf(preferences.searchTarget).any { value ->

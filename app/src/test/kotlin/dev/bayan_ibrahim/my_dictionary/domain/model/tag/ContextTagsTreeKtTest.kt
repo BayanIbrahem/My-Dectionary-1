@@ -65,6 +65,13 @@ class ContextTagsTreeKtTest {
         assertEquals(expectedSubTree, actualSubTree)
     }
 
+
+    @Test
+    fun `getSubTree-currentTree-returnSameTree`() {
+        val tree=tagsTree["object"]!!
+        val actualSubTree = tagsTree[ContextTag("object")]
+        assertEquals(tree, actualSubTree)
+    }
     @Test
     fun `getSubTree-nonExistedDirectSubTree-returNull`() {
         val actualSubTree = tagsTree["not an existed value"]

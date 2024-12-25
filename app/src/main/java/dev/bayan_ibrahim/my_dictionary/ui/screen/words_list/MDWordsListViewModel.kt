@@ -66,17 +66,23 @@ class MDWordsListViewModel @Inject constructor(
             viewPreferences.collectLatest { preferences ->
                 updateUiStateFromViewPreferences(preferences)
                 currentLanguageFlow.collectLatest { language ->
-                    paginatedWordsListJob = launch {
-                        val wordsIds = repo.getWordsIdsOfTagsAndMemorizingProbability(preferences)
-                        repo.getPaginatedWordsList(
-                            code = language?.code ?: "".code,
-                            wordsIdsOfTagsAndProgressRange = wordsIds,
-                            viewPreferences = preferences,
-                        ).distinctUntilChanged()
-                            .cachedIn(viewModelScope)
-                            .collect { pagingData ->
-                                _paginatedWordsList.value = pagingData
-                            }
+                    if (language != null) {
+                        _uiState.selectedWordSpace = repo.getLanguagesWordSpaces(language.code) ?: LanguageWordSpace()
+                        paginatedWordsListJob = launch {
+                            val wordsIds = repo.getWordsIdsOfTagsAndMemorizingProbability(
+                                language = language,
+                                viewPreferences = preferences
+                            )
+                            repo.getPaginatedWordsList(
+                                code = language.code,
+                                wordsIdsOfTagsAndProgressRange = wordsIds,
+                                viewPreferences = preferences,
+                            ).distinctUntilChanged()
+                                .cachedIn(viewModelScope)
+                                .collect { pagingData ->
+                                    _paginatedWordsList.value = pagingData
+                                }
+                        }
                     }
                 }
             }
@@ -153,10 +159,14 @@ class MDWordsListViewModel @Inject constructor(
         }
 
         override fun onConfirmDeleteLanguageWordSpace() {
-            _uiState.isLanguageWordSpaceDeleteProcessRunning = true
-            // todo, delete
-            _uiState.isLanguageWordSpaceDeleteProcessRunning = false
-            _uiState.isLanguageWordSpaceDeleteDialogShown = false
+            viewModelScope.launch {
+                _uiState.isLanguageWordSpaceDeleteProcessRunning = true
+                repo.deleteWordSpace(uiState.selectedWordSpace.language.code)
+                repo.setDefaultSelectedLanguagePage()
+                _uiState.isLanguageWordSpaceDeleteProcessRunning = false
+                _uiState.isLanguageWordSpaceDeleteDialogShown = false
+                initWithNavArgs(MDDestination.TopLevel.WordsList())
+            }
         }
 
         override fun onCancelDeleteLanguageWordSpace() {

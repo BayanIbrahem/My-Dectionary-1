@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 
 @Composable
@@ -25,8 +24,8 @@ fun WordDetailsRoute(
             wordsDetailsViewModel.uiState
         }
     }
-    val contextTagsTree by wordsDetailsViewModel.contextTagsTreeStream.collectAsStateWithLifecycle()
-
+    val contextTagsState = wordsDetailsViewModel.contextTagsState
+    val contextTagsActions = wordsDetailsViewModel.contextTagsActions
     val navigationUiActions by remember {
         derivedStateOf {
             object : WordDetailsNavigationUiActions {
@@ -44,8 +43,9 @@ fun WordDetailsRoute(
     }
     WordDetailsScreen(
         uiState = uiState,
-        contextTagsTree = contextTagsTree,
         uiActions = uiActions,
+        contextTagsState = contextTagsState,
+        contextTagsActions = contextTagsActions,
         modifier = modifier,
     )
 }

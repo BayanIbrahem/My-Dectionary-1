@@ -6,6 +6,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import kotlinx.coroutines.flow.Flow
 
 interface MDLanguageSelectionDialogRepo {
+    suspend fun setDefaultSelectedLanguagePage(): LanguageCode
     suspend fun setSelectedLanguagePage(code: LanguageCode)
     suspend fun getSelectedLanguagePage(): Language?
     suspend fun getLanguagesWordSpaces(code: LanguageCode): LanguageWordSpace?

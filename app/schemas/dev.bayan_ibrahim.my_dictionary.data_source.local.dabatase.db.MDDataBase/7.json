@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "9226df8d399e7fbf13f5820627310fe9",
+    "identityHash": "c42477c553135ed07ead5129aed008ff",
     "entities": [
       {
         "tableName": "words",
@@ -238,7 +238,7 @@
       },
       {
         "tableName": "typeTags",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`typeTag_id` INTEGER PRIMARY KEY AUTOINCREMENT, `typeTag_name` TEXT NOT NULL, `typeTag_language` TEXT NOT NULL, FOREIGN KEY(`typeTag_language`) REFERENCES `languages`(`language_code`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`typeTag_id` INTEGER PRIMARY KEY AUTOINCREMENT, `typeTag_name` TEXT NOT NULL, `typeTag_language` TEXT NOT NULL, FOREIGN KEY(`typeTag_language`) REFERENCES `languages`(`language_code`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -279,8 +279,8 @@
         "foreignKeys": [
           {
             "table": "languages",
-            "onDelete": "RESTRICT",
-            "onUpdate": "RESTRICT",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
             "columns": [
               "typeTag_language"
             ],
@@ -568,7 +568,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9226df8d399e7fbf13f5820627310fe9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c42477c553135ed07ead5129aed008ff')"
     ]
   }
 }

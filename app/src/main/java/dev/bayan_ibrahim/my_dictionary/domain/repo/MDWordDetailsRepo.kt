@@ -11,6 +11,7 @@ interface MDWordDetailsRepo {
     suspend fun saveExistedWord(word: Word)
     fun getContextTagsStream(): Flow<List<ContextTag>>
     suspend fun addOrUpdateContextTag(tag: ContextTag): ContextTag
+    suspend fun removeContextTag(tag: ContextTag)
     suspend fun getLanguageTags(language: String): List<WordTypeTag>
     fun getLanguageTagsStream(language: String): Flow<List<WordTypeTag>>
     suspend fun deleteWord(id: Long)

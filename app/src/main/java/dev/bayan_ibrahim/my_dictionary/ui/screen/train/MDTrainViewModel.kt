@@ -89,7 +89,15 @@ class MDTrainViewModel @Inject constructor(
             _uiState.emit(MDTrainUiState.Loading)
             val trainPreferences: MDWordsListTrainPreferences = repo.getTrainPreferences()
             val viewPreferences = repo.getViewPreferences()
-            val idsOfAllowedTagsAndProgressRange: Set<Long> = repo.getWordsIdsOfTagsAndMemorizingProbability(viewPreferences)
+            val selectedLanguage = repo.getSelectedLanguage() ?: let {
+                // TODO, handle invalid language
+                _uiState.emit(MDTrainUiState.Finish)
+                return@launch
+            }
+            val idsOfAllowedTagsAndProgressRange: Set<Long> = repo.getWordsIdsOfTagsAndMemorizingProbability(
+                language = selectedLanguage,
+                viewPreferences = viewPreferences,
+            )
             val allWords: Sequence<Word> = repo.getAllSelectedLanguageWords()
 
             val validWords = allWords.filter { word ->

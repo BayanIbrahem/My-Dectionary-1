@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDLanguageSelectionDialogRepo
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,7 +18,18 @@ class MDLanguageSelectionDialogViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState: MDLanguageSelectionDialogMutableUiState = MDLanguageSelectionDialogMutableUiState()
     val uiState: MDLanguageSelectionDialogUiState = _uiState
+    private val languageFlow = repo.getSelectedLanguagePageStream()
+    private var languageFlowListener: Job? = null
     fun initWithNavArgs() {
+        languageFlowListener?.cancel()
+        languageFlowListener = viewModelScope.launch {
+            languageFlow.collect { language ->
+                val currentLanguage = repo.getSelectedLanguagePage() ?: return@collect
+                val currentWordSpace = repo.getLanguagesWordSpaces(currentLanguage.code) ?: return@collect
+                _uiState.selectedWordSpace = currentWordSpace
+                onLanguageQueryChange(uiState.query)
+            }
+        }
         viewModelScope.launch {
             val currentLanguage = repo.getSelectedLanguagePage() ?: return@launch
             val currentWordSpace = repo.getLanguagesWordSpaces(currentLanguage.code) ?: return@launch

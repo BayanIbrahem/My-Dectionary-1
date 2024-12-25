@@ -146,7 +146,7 @@ fun MDWordListItem(
             if (word.tags.isNotEmpty()) {
                 Text(
                     modifier = Modifier.align(Alignment.BottomStart),
-                    text = word.tags.toList().safeSubList(0, 3).joinToString(", #", "#"),
+                    text = word.tags.random().value,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -29,4 +29,5 @@ interface MDWordsListRepo : MDTrainPreferencesRepo, MDLanguageSelectionDialogRep
     ): Flow<PagingData<Word>>
 
     suspend fun deleteWords(ids: Collection<Long>)
+    suspend fun deleteWordSpace(languageCode: LanguageCode)
 }

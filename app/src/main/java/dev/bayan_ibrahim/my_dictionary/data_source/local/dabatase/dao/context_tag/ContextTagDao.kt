@@ -35,6 +35,13 @@ interface ContextTagDao {
 
     @Query(
         """
+            DELETE FROM $dbContextTagTable WHERE $dbContextTagPath IN (:values)
+        """
+    )
+    suspend fun deleteContextTagsOfValues(values: Collection<String>)
+
+    @Query(
+        """
             SELECT * FROM $dbContextTagTable WHERE $dbContextTagId = :id
         """
     )
@@ -58,4 +65,11 @@ interface ContextTagDao {
     fun getContextTagsLike(
         pattern: String,
     ): Flow<List<ContextTagEntity>>
+
+    @Query(
+        """
+            SELECT * FROM $dbContextTagTable WHERE $dbContextTagId in (:ids)
+        """
+    )
+    fun getContextTagsOf(ids: Collection<Long>): Flow<List<ContextTagEntity>>
 }

@@ -8,10 +8,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListView
 interface MDWordsListViewPreferencesBusinessUiActions {
     fun onSearchQueryChange(query: String)
     fun onSelectSearchTarget(searchTarget: MDWordsListSearchTarget)
-    fun onSelectTag(tag: String)
-    fun onRemoveTag(tag: String)
     fun onClearViewPreferences()
-    fun onTagSearchQueryChange(query: String)
     fun onToggleIncludeSelectedTags(includeSelectedTags: Boolean)
     fun onSelectLearningGroup(group: MDWordsListMemorizingProbabilityGroup)
     fun onToggleAllMemorizingProbabilityGroups(selected: Boolean)

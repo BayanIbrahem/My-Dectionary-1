@@ -1,10 +1,12 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -74,6 +76,7 @@ fun LazyListScope.wordDetailsTextFieldList(
 
 fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
     items: Map<Long, Pair<WordTypeTagRelation, String>>,
+    isEditMode: Boolean,
     onItemValueChange: (Long, String) -> Unit,
     typeRelations: List<WordTypeTagRelation>?,
     onSelectRelation: (Long, WordTypeTagRelation) -> Unit,
@@ -121,6 +124,7 @@ fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
                     suggestions = typeRelations,
                     onValueChange = {},
                     fieldReadOnly = true,
+                    menuReadOnly = !isEditMode,
                     allowCancelSelection = false,
                     onSelectSuggestion = { i, relation ->
                         relation?.let {
@@ -148,6 +152,7 @@ fun LazyListScope.wordDetailsRelatedWordsTextFieldsList(
                     value = value.second,
                     onValueChange = onValueChange,
                     leadingIcon = null,
+                    readOnly = !isEditMode,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth(),

@@ -61,6 +61,7 @@ class DataModule {
         tagDao = db.getWordTypeTagDao(),
         preferences = preferences,
         languageRepo = languageRepo,
+        languageDao = db.getLanguageDao()
     )
 
     @Singleton

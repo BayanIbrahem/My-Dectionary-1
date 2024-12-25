@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
+import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
@@ -98,6 +99,14 @@ class MDWordDetailsRepoImpl(
         } else {
             val newId = contextTagDao.insertContextTag(tag.asEntity())
             tag.copy(id = newId)
+        }
+    }
+
+    override suspend fun removeContextTag(tag: ContextTag) {
+        if (tag.id == INVALID_ID) {
+            contextTagDao.deleteContextTagsOfValues(listOf(tag.value))
+        } else {
+            contextTagDao.deleteContextTagsOfIds(listOf(tag.id))
         }
     }
 

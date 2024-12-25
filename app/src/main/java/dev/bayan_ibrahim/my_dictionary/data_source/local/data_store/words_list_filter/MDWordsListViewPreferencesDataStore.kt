@@ -4,6 +4,7 @@ import android.content.Context
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferencesBuilder
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
@@ -26,7 +27,7 @@ class MDWordsListDataStoreViewPreferencesImpl(
         WordsListViewPreferencesBuilder(
             searchQuery = it.searchQuery,
             searchTarget = MDWordsListSearchTarget.entries[it.searchTargetIndex],
-            selectedTags = emptySet(),
+            selectedTags = it.selectedTagsList.map { ContextTag(it) }.toSet(),
             includeSelectedTags = it.includeSelectTags,
             selectedMemorizingProbabilityGroups = it.selectedMemorizingProbabilityGroupsList.map { index ->
                 MDWordsListMemorizingProbabilityGroup.entries[index]
@@ -42,6 +43,8 @@ class MDWordsListDataStoreViewPreferencesImpl(
                 val wordsList = getWordsList(getWordsListViewPreferences())
                 searchQuery = wordsList.searchQuery
                 searchTargetIndex = wordsList.searchTarget.ordinal
+                selectedTags.clear()
+                selectedTags.addAll(wordsList.selectedTags.map { it.value })
                 includeSelectTags = wordsList.includeSelectedTags
                 selectedMemorizingProbabilityGroups.clear()
                 selectedMemorizingProbabilityGroups.addAll(wordsList.selectedMemorizingProbabilityGroups.map { enum -> enum.ordinal })

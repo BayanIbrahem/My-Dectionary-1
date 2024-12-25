@@ -21,8 +21,6 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsObservableTree
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsTree
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -36,7 +34,6 @@ interface WordDetailsUiState : MDUiState {
     val transcription: String
     val translation: String
     val additionalTranslations: Map<Long, String>
-    val tags: List<ContextTag>
     val typeTags: List<WordTypeTag>
     val selectedTypeTag: WordTypeTag?
     val relatedWords: Map<Long, Pair<WordTypeTagRelation, String>> // Map<Label, List<Word>>, for each relation it may have more than one value
@@ -49,8 +46,6 @@ interface WordDetailsUiState : MDUiState {
 
 class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     override var isEditModeOn: Boolean by mutableStateOf(true)
-    override var valid: Boolean by mutableStateOf(false)
-        private set
     override var id: Long by mutableLongStateOf(INVALID_ID)
     override var createdAt: Instant? by mutableStateOf(null)
     override var language: Language by mutableStateOf(INVALID_LANGUAGE)
@@ -58,7 +53,6 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     override var transcription: String by mutableStateOf(INVALID_TEXT)
     override var translation: String by mutableStateOf(INVALID_TEXT)
     override val additionalTranslations: SnapshotStateMap<Long, String> = mutableStateMapOf()
-    override val tags: SnapshotStateList<ContextTag> = mutableStateListOf()
     override val typeTags: SnapshotStateList<WordTypeTag> = mutableStateListOf()
     override var selectedTypeTag: WordTypeTag? by mutableStateOf(null)
     override val relatedWords: SnapshotStateMap<Long, Pair<WordTypeTagRelation, String>> = mutableStateMapOf()
@@ -68,8 +62,11 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
 
     private val idGenerator = IncrementalIdGenerator()
 
-    fun validateWord() {
-        valid = meaning.isNotBlank() && translation.isNotBlank()
+    override val valid: Boolean
+        get() = validateWord()
+
+    fun validateWord(): Boolean {
+        return meaning.isNotBlank() && translation.isNotBlank()
     }
 
     fun addAdditionalTranslation(value: String) {
@@ -85,10 +82,6 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
     }
 
     fun ensureOnTrailingBlankItemAdditionalTranslation() = additionalTranslations.ensureOneTrailingBlankItem()
-
-    fun ensureOnTrailingBlankItemTag() {
-        // TODO,
-    }
 
     fun ensureOnTrailingBlankItemExample() = examples.ensureOneTrailingBlankItem()
 
@@ -135,7 +128,6 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         transcription = word.transcription
         translation = word.translation
         additionalTranslations.setAll(word.additionalTranslations.associateBy { idGenerator.nextId() })
-        tags.setAll(word.tags)
         selectedTypeTag = word.wordTypeTag
         selectedTypeTag?.relations?.associateBy { it.id }?.let { relations ->
             relatedWords.setAll(
@@ -148,7 +140,9 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
         memorizingProbability = word.memoryDecayFactor
     }
 
-    fun toWord(): Word {
+    fun toWord(
+        contextTags: Set<ContextTag>,
+    ): Word {
         val now = Clock.System.now()
         return Word(
             id = this.id,
@@ -156,19 +150,25 @@ class WordDetailsMutableUiState : WordDetailsUiState, MDMutableUiState() {
             language = this.language,
             translation = this.translation,
             transcription = this.transcription,
-            additionalTranslations = this.additionalTranslations.values.toList(),
-            tags = this.tags.toSet(),
+            additionalTranslations = this.additionalTranslations.values.mapNotNull { it.ifBlank { null } }.distinct(),
             wordTypeTag = this.selectedTypeTag,
-            relatedWords = this.relatedWords.map { (_, word) ->
-                RelatedWord(
-                    id = INVALID_ID,
-                    baseWordId = this.id,
-                    relationLabel = word.first.label,
-                    value = word.second,
-                    relationId = word.first.id,
-                )
+            relatedWords = this.relatedWords.mapNotNull { (_, word) ->
+                if (word.second.isBlank()) {
+                    null
+                } else {
+                    RelatedWord(
+                        id = INVALID_ID,
+                        baseWordId = this.id,
+                        relationLabel = word.first.label,
+                        value = word.second,
+                        relationId = word.first.id,
+                    )
+                }
+            }.distinctBy {
+                Pair(it.relationId, it.value)
             },
-            examples = this.examples.values.toList(),
+            tags = contextTags,
+            examples = this.examples.values.toSet().mapNotNull { it.ifBlank { null } },
             memoryDecayFactor = this.memorizingProbability,
             createdAt = this.createdAt ?: now,
             updatedAt = now

@@ -19,8 +19,8 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLan
             entity = LanguageEntity::class,
             parentColumns = [dbLanguageCode],
             childColumns = [dbTypeTagLanguage],
-            onUpdate = ForeignKey.RESTRICT,
-            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE,
         ),
     ],
     indices = [

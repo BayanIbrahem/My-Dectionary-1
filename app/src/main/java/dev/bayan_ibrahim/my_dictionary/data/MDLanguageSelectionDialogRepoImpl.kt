@@ -20,6 +20,12 @@ class MDLanguageSelectionDialogRepoImpl(
     private val preferences: MDUserPreferencesDataStore,
     private val wordSpaceDao: LanguageWordSpaceDao,
 ) : MDLanguageSelectionDialogRepo {
+    override suspend fun setDefaultSelectedLanguagePage(): LanguageCode {
+        val code = wordSpaceDao.getLanguagesWordSpaces().first().firstOrNull()?.languageCode?.code ?: "en".code
+        setSelectedLanguagePage(code)
+        return code
+    }
+
     override suspend fun setSelectedLanguagePage(code: LanguageCode) {
         preferences.writeUserPreferences {
             it.copy(selectedLanguagePage = code.language)

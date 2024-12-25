@@ -13,9 +13,20 @@ data class ContextTag(
     val wordsCount: Int? = null,
 ) {
     constructor(
+        parent: ContextTag? = null,
+        segment: String,
+        id: Long = INVALID_ID,
+        wordsCount: Int? = null,
+    ) : this(
+        segments = (parent?.segments ?: emptyList()) + segment,
+        id = id,
+        wordsCount = wordsCount,
+    )
+
+    constructor(
         segments: Iterable<String>,
         id: Long = INVALID_ID,
-        wordsCount: Int? = null
+        wordsCount: Int? = null,
     ) : this(
         value = segments.joinToString(ContextTagSegmentSeparator),
         id = id,
@@ -25,7 +36,7 @@ data class ContextTag(
     constructor(
         vararg segments: String,
         id: Long = INVALID_ID,
-        wordsCount: Int? = null
+        wordsCount: Int? = null,
     ) : this(
         value = segments.joinToString(ContextTagSegmentSeparator),
         id = id,
@@ -35,25 +46,6 @@ data class ContextTag(
     val segments = value.split(ContextTagSegmentSeparator)
 
     operator fun get(level: Int): String = segments[level]
-
-    val depth: Int
-        get() = segments.count()
-
-    /**
-     * return parent that contains [level]  segments count, if [level] > [depth] return null
-     */
-    fun parentAtLevelOrNull(level: Int): ContextTag? {
-        return if (level > depth) {
-            null
-        } else {
-            ContextTag(segments.subList(0, level))
-        }
-    }
-
-    /**
-     * return parent that contains [level] segments count, if [level] > [depth] throw an exception
-     */
-    fun parentAtLevel(level: Int): ContextTag = parentAtLevelOrNull(level)!!
 
     init {
         require(value.isNotBlank()) {
@@ -97,5 +89,52 @@ data class ContextTag(
         }
         return true
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ContextTag) return false
+
+        if (value != other.value) return false
+        if (id != other.id) return false
+        if ((wordsCount ?: 0) != (other.wordsCount ?: 0)) return false
+        if (segments != other.segments) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = value.hashCode()
+        result = 31 * result + id.hashCode()
+        result = 31 * result + (wordsCount ?: 0)
+        result = 31 * result + segments.hashCode()
+        return result
+    }
 }
 
+val ContextTag.depth: Int
+    get() = segments.count()
+
+val ContextTag.isTopLevel
+    get() = depth == 1
+
+val ContextTag.parentOrNull: ContextTag?
+    get() = if (isTopLevel) null else parentAtLevelOrNull(depth.dec())
+
+val ContextTag.parent: ContextTag
+    get() = parentOrNull ?: throw IllegalArgumentException("Top level tag has no parent")
+
+/**
+ * return parent that contains [level]  segments count, if [level] > [depth] return null
+ */
+fun ContextTag.parentAtLevelOrNull(level: Int): ContextTag? {
+    return if (level > depth) {
+        null
+    } else {
+        ContextTag(segments.subList(0, level))
+    }
+}
+
+/**
+ * return parent that contains [level] segments count, if [level] > [depth] throw an exception
+ */
+fun ContextTag.parentAtLevel(level: Int): ContextTag = parentAtLevelOrNull(level)!!

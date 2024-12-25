@@ -11,9 +11,9 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListViewPreferencesRep
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 class MDWordsListViewPreferencesRepoImpl(
     private val wordDao: WordDao,
@@ -35,7 +35,8 @@ class MDWordsListViewPreferencesRepoImpl(
 
     // TODO, this function is duplicated with similar one in words list repo
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getSelectedLanguageTags(): Set<ContextTag> = languageFlow.firstOrNull()?.code?.code?.let { languageCode ->
+    override suspend fun getSelectedLanguageTags(): Flow<Set<ContextTag>> = languageFlow.mapNotNull {
+        val languageCode = it?.code?.code ?: return@mapNotNull null
         wordDao.getWordsIdsOfLanguage(
             languageCode = languageCode
         ).flatMapConcat { wordsIds ->
@@ -45,6 +46,5 @@ class MDWordsListViewPreferencesRepoImpl(
                 it.tags.map { it.asModel() }
             }.flatten().toSet()
         }.first()
-    } ?: emptySet()
-
+    }
 }

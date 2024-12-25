@@ -1,10 +1,13 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
 import dev.bayan_ibrahim.my_dictionary.core.util.invalidIfNull
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.context_tag.ContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import kotlinx.coroutines.flow.first
@@ -14,9 +17,10 @@ class MDTrainPreferencesRepoImpl(
     private val wordWithTagsDao: WordWithContextTagDao,
 ) : MDTrainPreferencesRepo {
     override suspend fun getWordsIdsOfTagsAndMemorizingProbability(
+        language: Language,
         viewPreferences: MDWordsListViewPreferences,
     ): Set<Long> {
-        val words = wordWithTagsDao.getAllWordsWithTagsRelations().first().map {
+        val words = wordWithTagsDao.getWordsWithTagsRelations(language.code.code).first().map {
             it.asWordModel()
         }
         val now = Clock.System.now()

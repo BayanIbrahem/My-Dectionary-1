@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.core.ui
+package dev.bayan_ibrahim.my_dictionary.core.ui.context_tag
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -41,9 +41,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagMatchNormalize
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchDialogInputField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
@@ -52,8 +54,9 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.i
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagSegmentSeparator
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsTree
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.asTree
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.depth
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.parentAtLevel
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
@@ -61,27 +64,9 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 fun MDContextTagExplorerDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
-    tagsTree: ContextTagsTree,
-    onSelect: (currentTag: ContextTag, isLeaf: Boolean) -> Unit,
+    state: MDContextTagsSelectionUiState,
+    actions: MDContextTagsSelectionActions,
     modifier: Modifier = Modifier,
-    /**
-     * callback to enable/disable tags but keep viewing all, if the item is not visible according to
-     * [viewFilter] then this callback would not be called
-     * if the tag doesn't match search query and [searchFilterHidesTagsOnly] is true, then this
-     * callback would not be called
-     */
-    enableFilter: (ContextTag) -> Boolean = { true },
-    /**
-     * callback to view/hide tags
-     * if the tag doesn't match search query and [searchFilterHidesTagsOnly] is false, then this
-     * callback would not be called
-     */
-    viewFilter: (ContextTag) -> Boolean = { true },
-    /**
-     * if true then tags that doesn't match search query will still be visible but disabled even
-     * it its result is true in tags filter
-     */
-    searchFilterHidesTagsOnly: Boolean = false,
     // ui
     tagTrailingIcon: (@Composable (ContextTag) -> Unit)? = { tag ->
         tag.wordsCount?.takeIf {
@@ -94,48 +79,22 @@ fun MDContextTagExplorerDialog(
         MDIcon(MDIconsSet.WordTag) // TODO, icons tag
     },
     primaryActionLabel: String = "Select", // TODO, string res
-    // select:
-    allowSelectTerminalTag: Boolean = true,
-    allowSelectNonTerminalTag: Boolean = true,
-    defaultSelectedTag: ContextTag? = null,
     /**
      * callback when click a list item, passing current tag, and destination tag and if the destination
      * tag is leaf or not
      */
-    onClickListItem: (
-        currentTag: ContextTag?,
-        clickedTag: ContextTag,
-        isClickedTagLeaf: Boolean,
-    ) -> Unit = { _, _, _ -> },
-    // add:
-    allowAddTags: Boolean = false,
+    // search:
+    searchFilterHidesTagsOnly: Boolean = false,
+    // permissions:
     /**
-     * after updating data and [tagsTree] pass the new tag as the [defaultSelectedTag] to keep this dialog at the same page
+     * toggle permission to create new tags to database
      */
-    onAddTag: (tag: ContextTag) -> Unit = {},
+    allowAddTags: Boolean = true,
+    /**
+     * toggle permissions to remove tags to database (permanently)
+     */
+    allowRemoveTags: Boolean = true,
 ) {
-    var selectedTag: ContextTag? by remember {
-        mutableStateOf(null)
-    }
-    val selectedSubTree: ContextTagsTree by remember(selectedTag, tagsTree) {
-        derivedStateOf {
-            selectedTag?.let {
-                tagsTree[it].also { subtree ->
-                    if (subtree == null) {
-                        selectedTag = null
-                    }
-                }
-            } ?: tagsTree
-        }
-    }
-    LaunchedEffect(defaultSelectedTag, tagsTree) {
-        if (defaultSelectedTag != null) {
-            val tree = tagsTree[defaultSelectedTag] ?: throw IllegalArgumentException(
-                "default selected tag is not null and isn't existed in tags tree"
-            )
-            selectedTag = defaultSelectedTag
-        }
-    }
     var isAddNewTagInProgress by remember {
         mutableStateOf(false)
     }
@@ -147,13 +106,10 @@ fun MDContextTagExplorerDialog(
     }
 
     val primaryActionEnabled by remember(
-        allowSelectTerminalTag,
-        allowSelectNonTerminalTag,
-        selectedTag,
+        state.currentTagsTree,
     ) {
         derivedStateOf {
-            (allowSelectTerminalTag && selectedSubTree.isLeaf) ||
-                    (allowSelectNonTerminalTag && selectedSubTree.tag != null && !selectedSubTree.isLeaf)
+            state.currentTagsTree.tag != null
         }
     }
     var searchQuery by remember {
@@ -163,17 +119,14 @@ fun MDContextTagExplorerDialog(
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
         modifier = modifier
-            .sizeIn(maxWidth = 300.dp)
-        ,
+            .sizeIn(maxWidth = 300.dp),
         actions = {
             MDAlertDialogActions(
                 onDismissRequest = onDismissRequest,
                 primaryActionLabel = primaryActionLabel,
                 primaryClickEnabled = primaryActionEnabled,
                 onPrimaryClick = {
-                    selectedSubTree.tag?.let {
-                        onSelect(it, selectedSubTree.isLeaf)
-                    }
+                    actions.onSelectCurrentTag()
                 }
             )
         },
@@ -184,23 +137,24 @@ fun MDContextTagExplorerDialog(
             .padding(MDCardDefaults.headerPaddingValues),
         title = {
             DialogHeader(
-                searchQuery = searchQuery,
-                onSearchQueryChange = {
-                    searchQuery = it
-                },
-                tagsTree = tagsTree,
-                selectedSubTree = selectedSubTree,
-                onSelectTag = {
-                    selectedTag = it
-                },
-                allowAddTags = allowAddTags,
+                state = state,
+                actions = actions,
                 isAddNewTagInProgress = isAddNewTagInProgress,
+                allowAddTags = allowAddTags,
                 onAddNewTag = {
                     isAddNewTagInProgress = true
                 }
             )
         }
     ) {
+        var deleteConfirmTag: ContextTag? by remember {
+            mutableStateOf(null)
+        }
+        DeleteTagConfirmDialog(
+            selectedTag = deleteConfirmTag,
+            onDismissRequest = { deleteConfirmTag = null },
+            onConfirm = actions::onDeleteContextTag
+        )
         Column(
             modifier = Modifier
                 .heightIn(max = 250.dp)
@@ -208,15 +162,14 @@ fun MDContextTagExplorerDialog(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             MDHorizontalCardGroup {
-                selectedSubTree.nextLevel.forEach { (segment, subTree) ->
+                state.currentTagsTree.nextLevel.forEach { (segment, subTree) ->
                     val (isVisible, isEnabled) = subTree.tag?.let { tag ->
                         val matchSearchQuery = tag.segments.last().tagMatchNormalize.startsWith(searchQuery.tagMatchNormalize)
-                        val showDueToSearchQuery = searchFilterHidesTagsOnly || matchSearchQuery
-                        val isVisible = showDueToSearchQuery || viewFilter(tag)
-                        val isEnabled = isVisible && matchSearchQuery && enableFilter(tag)
+                        val isVisible = searchFilterHidesTagsOnly || matchSearchQuery
+                        val isEnabled = isVisible && matchSearchQuery && subTree.tag !in state.disabledTags
                         Pair(isVisible, isEnabled)
                     } ?: Pair(true, true)
-                    if(isVisible) {
+                    if (isVisible) {
                         item(
                             enabled = isEnabled,
                             leadingIcon = {
@@ -230,19 +183,19 @@ fun MDContextTagExplorerDialog(
                                 }
                             },
                             onClick = {
-                                selectedTag = subTree.tag
-                                onClickListItem(
-                                    selectedTag,
-                                    subTree.tag!!,
-                                    subTree.isLeaf,
-                                )
-                            }
+                                subTree.tag?.let { actions.onClickTag(it) }
+                            },
+                            onLongClick = if (allowRemoveTags) {
+                                {
+                                    deleteConfirmTag = subTree.tag
+                                }
+                            } else null
                         ) {
                             Text(segment)
                         }
                     }
                 }
-                if (selectedSubTree.isLeaf) {
+                if (state.currentTagsTree.isLeaf) {
                     item {
                         Text("No Inner tags for current")
                     }
@@ -268,12 +221,8 @@ fun MDContextTagExplorerDialog(
                     },
                     onKeyboardAction = {
                         // cancel
-                        if (newTagSegmentText.isNotEmpty()) {// add new Tag
-                            val newTag = selectedSubTree.tag?.let {
-                                ContextTag(it.segments + newTagSegmentText)
-                            } ?: ContextTag(newTagSegmentText)
-                            onAddTag(newTag)
-                        }
+                        actions.onAddNewContextTag(newTagSegmentText)
+                        newTagSegmentText = ""
                         isAddNewTagInProgress = false
                     },
                     trailingIcons = {
@@ -289,13 +238,8 @@ fun MDContextTagExplorerDialog(
                             if (newTagSegmentText.isNotBlank()) {
                                 IconButton(
                                     onClick = {
-                                        // cancel
-                                        if (newTagSegmentText.isNotEmpty()) {// add new Tag
-                                            val newTag = selectedSubTree.tag?.let {
-                                                ContextTag(it.segments + newTagSegmentText)
-                                            } ?: ContextTag(newTagSegmentText)
-                                            onAddTag(newTag)
-                                        }
+                                        actions.onAddNewContextTag(newTagSegmentText)
+                                        newTagSegmentText = ""
                                         isAddNewTagInProgress = false
                                     }
                                 ) {
@@ -311,22 +255,82 @@ fun MDContextTagExplorerDialog(
 }
 
 @Composable
+private fun DeleteTagConfirmDialog(
+    selectedTag: ContextTag?,
+    onDismissRequest: () -> Unit,
+    onConfirm: (ContextTag) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val showDialog by remember(selectedTag) {
+        derivedStateOf {
+            selectedTag != null
+        }
+    }
+    val onConfirmDelete: () -> Unit by remember(selectedTag, onConfirm) {
+        derivedStateOf {
+            selectedTag?.let {
+                {
+                    onConfirm(it)
+                    onDismissRequest()
+                }
+            } ?: {}
+        }
+    }
+    MDAlertDialog(
+        showDialog = showDialog,
+        onDismissRequest = onDismissRequest,
+        textStyle = MDCardDefaults.textStyles(headerTextStyle = MaterialTheme.typography.titleLarge),
+        headerModifier = Modifier.padding(8.dp),
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Delete Context Tag",
+                    modifier = Modifier.weight(1f),
+                )// TODO, string res
+            }
+        },
+        modifier = modifier,
+        actions = {
+            MDAlertDialogActions(
+                onDismissRequest = onDismissRequest,
+                onPrimaryClick = onConfirmDelete,
+                onSecondaryClick = onDismissRequest,
+                primaryActionLabel = "Delete",
+                colors = MDDialogDefaults.colors(
+                    primaryActionColor = MaterialTheme.colorScheme.error,
+                ),
+                dismissOnPrimaryClick = false,
+                dismissOnSecondaryClick = false,
+            )
+        },
+    ) {
+        Text(
+            text = "Delete ${selectedTag?.value ?: ""} this action can not be undone",
+            modifier = Modifier.padding(8.dp),
+            style = MaterialTheme.typography.bodyLarge,
+        )// TODO, string res
+    }
+}
+
+@Composable
 private fun DialogHeader(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
-
-    tagsTree: ContextTagsTree,
-    selectedSubTree: ContextTagsTree,
-    onSelectTag: (ContextTag?) -> Unit,
-
-    allowAddTags: Boolean,
+    state: MDContextTagsSelectionUiState,
+    actions: MDContextTagsSelectionActions,
     isAddNewTagInProgress: Boolean,
+    allowAddTags: Boolean,
     onAddNewTag: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val randomTagLastSegment by remember {
         derivedStateOf {
-            selectedSubTree.nextLevel.values.randomOrNull()?.tag?.segments?.lastOrNull()
+            state.currentTagsTree.nextLevel.values.randomOrNull()?.tag?.segments?.lastOrNull()
+        }
+    }
+    val isCurrentRoot by remember(state.currentTagsTree) {
+        derivedStateOf {
+            state.currentTagsTree.isRoot
         }
     }
     Row(
@@ -334,23 +338,13 @@ private fun DialogHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         AnimatedVisibility(
-            visible = !selectedSubTree.isRoot,
+            visible = !isCurrentRoot,
             enter = fadeIn() + expandHorizontally(),
             exit = fadeOut() + shrinkHorizontally(),
         ) {
             IconButton(
-                enabled = !selectedSubTree.isRoot,
-                onClick = {
-                    selectedSubTree.tag?.let {
-                        onSelectTag(
-                            if (it.depth == 1) {
-                                tagsTree.tag
-                            } else {
-                                tagsTree[it.parentAtLevel(it.depth.dec())]?.tag
-                            }
-                        )
-                    }
-                }
+                enabled = !isCurrentRoot,
+                onClick = actions::onNavigateUp
             ) {
                 Icon(
                     painter = painterResource(R.drawable.arrow_back), // TODO, icon res
@@ -366,19 +360,17 @@ private fun DialogHeader(
             Text("Tags tree", style = MaterialTheme.typography.titleMedium)
             MDSearchDialogInputField(
                 modifier = Modifier.fillMaxWidth(),
-                searchQuery = searchQuery,
-                onSearchQueryChange = onSearchQueryChange,
+                searchQuery = state.searchQuery,
+                onSearchQueryChange = actions::onSearchQueryChange,
                 label = "",
                 placeholder = randomTagLastSegment?.let { "e.g $it" /*TODO, string res */ } ?: ""
             )
-            selectedSubTree.tag?.let {
+            state.currentTagsTree.tag?.let {
                 MDContextTagPath(
                     tag = it,
                     onClickSegment = { i, s ->
                         val parentTag = it.parentAtLevel(i.inc())
-                        tagsTree[parentTag]?.let {
-                            onSelectTag(it.tag)
-                        }
+                        actions.onClickTag(parentTag)
                     }
                 )
             }
@@ -464,17 +456,30 @@ private fun MDContextTagSelectorDialogPreview() {
                         ).asTree()
                     }
                 }
+                val state by remember {
+                    derivedStateOf {
+                        MDContextTagsSelectionMutableUiState()
+                    }
+                }
+                val actions by remember(state) {
+                    derivedStateOf {
+                        MDContextTagsSelectionActionsImpl(
+                            state = state,
+                            onAddNewTag = {},
+                            onDeleteTag = {}
+                        )
+                    }
+                }
                 MDContextTagExplorerDialog(
                     showDialog = true,
                     onDismissRequest = {
 
                     },
+                    state = state,
+                    actions = actions,
                     tagTrailingIcon = {
                         MDIcon(MDIconsSet.Delete)
                     },
-                    allowAddTags = true,
-                    tagsTree = tree,
-                    onSelect = { _, _ -> }
                 )
             }
         }
