@@ -33,9 +33,6 @@ class WordDetailsViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState: WordDetailsMutableUiState = WordDetailsMutableUiState()
     val uiState: WordDetailsUiState get() = _uiState
-    val contextTagsTreeStream: Flow<ContextTagsTree> = repo.getContextTagsStream().map {
-        it.asTree()
-    }
 
     private val _tagsState = MDContextTagsSelectionMutableUiState()
     val contextTagsState: MDContextTagsSelectionUiState = _tagsState
@@ -50,8 +47,8 @@ class WordDetailsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             tagsStateAllTagsStreamCollectorJob?.cancel()
             tagsStateAllTagsStreamCollectorJob = launch {
-                contextTagsTreeStream.collect { allTagsTree ->
-                    _tagsState.allTagsTree.setFrom(allTagsTree)
+                repo.getContextTagsStream().collect { allTags ->
+                    _tagsState.allTagsTree.setFrom(allTags)
                     contextTagsActions.refreshCurrentTree()
                 }
             }

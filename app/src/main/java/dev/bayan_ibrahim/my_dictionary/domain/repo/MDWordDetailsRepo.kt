@@ -5,13 +5,10 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import kotlinx.coroutines.flow.Flow
 
-interface MDWordDetailsRepo {
+interface MDWordDetailsRepo: MDContextTagsRepo {
     suspend fun getWord(wordId: Long): Word
     suspend fun saveNewWord(word: Word): Word
     suspend fun saveExistedWord(word: Word)
-    fun getContextTagsStream(): Flow<List<ContextTag>>
-    suspend fun addOrUpdateContextTag(tag: ContextTag): ContextTag
-    suspend fun removeContextTag(tag: ContextTag)
     suspend fun getLanguageTags(language: String): List<WordTypeTag>
     fun getLanguageTagsStream(language: String): Flow<List<WordTypeTag>>
     suspend fun deleteWord(id: Long)

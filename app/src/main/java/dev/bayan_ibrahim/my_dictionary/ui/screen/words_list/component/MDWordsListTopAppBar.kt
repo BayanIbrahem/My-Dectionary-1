@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -26,9 +29,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActionsImpl
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionMutableUiState
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -49,8 +59,11 @@ fun MDWordsListTopAppBar(
     onSelectLanguagePage: () -> Unit,
     onDeleteWordSpace: () -> Unit,
     // selection mode actions
+    contextTagsSelectionState: MDContextTagsSelectionUiState,
+    contextTagsSelectionActions: MDContextTagsSelectionActions,
     onClearSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
+    onConfirmAppendContextTagsOnSelectedWords: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -73,6 +86,9 @@ fun MDWordsListTopAppBar(
                 totalWordsCount = visibleWordsCount,
                 onClearSelection = onClearSelection,
                 onDeleteSelection = onDeleteSelection,
+                contextTagsSelectionState = contextTagsSelectionState,
+                contextTagsSelectionActions = contextTagsSelectionActions,
+                onConfirmAppendContextTagsOnSelectedWords = onConfirmAppendContextTagsOnSelectedWords,
                 modifier = modifier
             )
         }
@@ -124,7 +140,7 @@ private fun WordsListTopAppBarNormalMode(
                     // adjust filter preferences
                 },
             ) {
-                MDIcon(MDIconsSet.Train) 
+                MDIcon(MDIconsSet.Train)
             }
             IconButton(
                 onClick = {
@@ -132,7 +148,7 @@ private fun WordsListTopAppBarNormalMode(
                     // adjust filter preferences
                 },
             ) {
-                MDIcon(MDIconsSet.Filter) 
+                MDIcon(MDIconsSet.Filter)
             }
             var expanded by remember {
                 mutableStateOf(false)
@@ -150,7 +166,7 @@ private fun WordsListTopAppBarNormalMode(
                     onDismissRequest = dismiss,
                     menuOffset = menuOffset,
                     icon = {
-                        MDIcon(MDIconsSet.MoreVert) 
+                        MDIcon(MDIconsSet.MoreVert)
                     }
                 ) {
                     MenuItem(
@@ -184,15 +200,18 @@ private fun WordsListTopAppBarSelectionMode(
     totalWordsCount: Int,
     onClearSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
+    contextTagsSelectionState: MDContextTagsSelectionUiState,
+    contextTagsSelectionActions: MDContextTagsSelectionActions,
+    onConfirmAppendContextTagsOnSelectedWords: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hasSelected by remember(selectedWordsCount) {
         derivedStateOf { selectedWordsCount > 0 }
     }
+    var showSelectedTagsDialog by remember {
+        mutableStateOf(false)
+    }
 
-//    val hasNotSelected by remember(totalWordsCount, selectedWordsCount) {
-//        derivedStateOf { totalWordsCount > selectedWordsCount }
-//    }
     MDTopAppBar(
         title = {
             Text("$selectedWordsCount selected of $totalWordsCount") // TODO, string res
@@ -241,10 +260,75 @@ private fun WordsListTopAppBarSelectionMode(
                         enabled = hasSelected,
                         important = true,
                     )
+                    MenuItem(
+                        leadingIcon = MDIconsSet.WordTag, // TODO, icon res
+                        text = "Append Context tags",
+                        onClick = {
+                            dismiss()
+                            showSelectedTagsDialog = true
+                        },
+                        enabled = hasSelected,
+                    )
                 }
             }
         },
     )
+    // Dialog:
+    ExtraTagsDialog(
+        showDialog = showSelectedTagsDialog,
+        onDismissRequest = { showSelectedTagsDialog = false },
+        selectedWordsCount = selectedWordsCount,
+        contextTagsSelectionState = contextTagsSelectionState,
+        contextTagsSelectionActions = contextTagsSelectionActions,
+        onConfirm = onConfirmAppendContextTagsOnSelectedWords,
+    )
+}
+
+@Composable
+private fun ExtraTagsDialog(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
+    selectedWordsCount: Int,
+    contextTagsSelectionState: MDContextTagsSelectionUiState,
+    contextTagsSelectionActions: MDContextTagsSelectionActions,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    MDAlertDialog(
+        modifier = modifier.widthIn(max = 300.dp),
+        showDialog = showDialog,
+        onDismissRequest = onDismissRequest,
+        headerModifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        title = {
+            Column {
+                Text(text = "Append Tags") // TODO, string res
+                Text(
+                    text = "Selected Words $selectedWordsCount",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline
+                ) // TODO, string res
+            }
+        },
+        actions = {
+            MDAlertDialogActions(
+                onDismissRequest = onDismissRequest,
+                onPrimaryClick = onConfirm,
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            MDContextTagsSelectionItem(
+                state = contextTagsSelectionState,
+                actions = contextTagsSelectionActions
+            )
+        }
+    }
+
 }
 
 @Composable
@@ -288,7 +372,7 @@ private fun WordsListTopAppBarPreview() {
         ) {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)) {
                 var selectionMode by remember {
-                    mutableStateOf(false)
+                    mutableStateOf(true)
                 }
                 MDWordsListTopAppBar(
                     isSelectionModeOn = selectionMode,
@@ -305,6 +389,12 @@ private fun WordsListTopAppBarPreview() {
                     },
                     onDeleteSelection = {},
                     onTrainVisibleWords = {},
+                    contextTagsSelectionState = MDContextTagsSelectionMutableUiState(),
+                    contextTagsSelectionActions = MDContextTagsSelectionActionsImpl(
+                        state = MDContextTagsSelectionMutableUiState(),
+                        onAddNewTag = {},
+                        onDeleteTag = {}),
+                    onConfirmAppendContextTagsOnSelectedWords = {}
                 )
 //                WordsListTopAppBar(
 //                    isSelectionModeOn = false,

@@ -43,13 +43,17 @@ fun MDWordsListRoute(
             viewModel.getUiActions(navActions)
         }
     }
+    val contextTagsSelectionState = viewModel.contextTagsState
+    val contextTagsSelectionActions = viewModel.contextTagsActions
 
     MDWordsListScreen(
         uiState = uiState,
         uiActions = uiActions,
         wordsList = wordsList,
+        contextTagsSelectionState = contextTagsSelectionState,
+        contextTagsSelectionActions = contextTagsSelectionActions,
         modifier = modifier,
-        lifeMemorizingProbability = lifeMemorizingProbability
+        lifeMemorizingProbability = lifeMemorizingProbability,
     )
     // Dialog:
     // train preferences dialog:

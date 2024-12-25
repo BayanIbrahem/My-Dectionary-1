@@ -5,14 +5,19 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.map
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.context_tag.ContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagsAndRelatedWordsDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordsPaginatedDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word_cross_context_tag.WordsCrossContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithContextTagsAndRelatedWordsRelation
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordCrossContextTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModelSet
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
@@ -23,6 +28,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDContextTagsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDLanguageSelectionDialogRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
@@ -41,11 +47,19 @@ class MDWordsListRepoImpl(
     private val wordsPaginatedDao: WordsPaginatedDao,
     private val wordWithTagsDao: WordWithContextTagDao,
     private val wordWithTagAndRelatedWordsDao: WordWithContextTagsAndRelatedWordsDao,
+    private val wordsCrossTagDao: WordsCrossContextTagDao,
     private val tagDao: WordTypeTagDao,
     private val preferences: MDPreferencesDataStore,
     private val languageDao: LanguageDao,
+    private val contextTagDao: ContextTagDao,
     languageRepo: MDLanguageSelectionDialogRepo,
-) : MDWordsListRepo, MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordWithTagsDao), MDLanguageSelectionDialogRepo by languageRepo {
+) : MDWordsListRepo,
+    MDTrainPreferencesRepo by MDTrainPreferencesRepoImpl(wordWithTagsDao),
+    MDLanguageSelectionDialogRepo by languageRepo,
+    MDContextTagsRepo by MDContextTagsRepoImpl(
+        contextTagDao = contextTagDao,
+        wordsCrossContextTagDao = wordsCrossTagDao
+    ) {
     override fun getViewPreferences(): Flow<MDWordsListViewPreferences> = preferences.getWordsListViewPreferencesStream()
     override fun getUserPreferences(): Flow<MDUserPreferences> = preferences.getUserPreferencesStream()
 
@@ -128,6 +142,25 @@ class MDWordsListRepoImpl(
 
     override suspend fun deleteWordSpace(languageCode: LanguageCode) {
         languageDao.deleteLanguage(languageCode.code)
+    }
+
+    override suspend fun appendTagsToWords(
+        wordsIds: Set<Long>,
+        tags: List<ContextTag>,
+    ) {
+        val tagsIds = tags.map {
+            it.id.nullIfInvalid() ?: contextTagDao.insertContextTag(it.asEntity())
+        }
+        val relations = wordsIds.map { w ->
+            tagsIds.map { t ->
+                WordCrossContextTagEntity(
+                    id = null,
+                    wordId = w,
+                    tagId = t
+                )
+            }
+        }.flatten()
+        wordsCrossTagDao.insertWordCrossContextTagsList(relations)
     }
 
     private fun WordWithContextTagsAndRelatedWordsRelation.checkMatchViewPreferences(

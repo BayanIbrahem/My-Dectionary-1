@@ -1,6 +1,5 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
-import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
@@ -22,6 +21,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordMod
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDContextTagsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -31,14 +31,13 @@ import kotlinx.coroutines.flow.onStart
 
 class MDWordDetailsRepoImpl(
     private val db: MDDataBase,
-) : MDWordDetailsRepo {
-    private val wordDao: WordDao = db.getWordDao()
-    private val contextTagDao: ContextTagDao = db.getContextTagDao()
-    private val wordsCrossContextTagDao: WordsCrossContextTagDao = db.getWordsCrossTagsDao()
-    private val wordWithContextTagsAndRelatedWordsDao: WordWithContextTagsAndRelatedWordsDao = db.getWordsWithContextTagAndRelatedWordsDao()
-    private val typeTagDao: WordTypeTagDao = db.getWordTypeTagDao()
-    private val languageDao: LanguageDao = db.getLanguageDao()
-
+    private val contextTagDao: ContextTagDao = db.getContextTagDao(),
+    private val wordDao: WordDao = db.getWordDao(),
+    private val wordsCrossContextTagDao: WordsCrossContextTagDao = db.getWordsCrossTagsDao(),
+    private val wordWithContextTagsAndRelatedWordsDao: WordWithContextTagsAndRelatedWordsDao = db.getWordsWithContextTagAndRelatedWordsDao(),
+    private val typeTagDao: WordTypeTagDao = db.getWordTypeTagDao(),
+    private val languageDao: LanguageDao = db.getLanguageDao(),
+) : MDWordDetailsRepo, MDContextTagsRepo by MDContextTagsRepoImpl(contextTagDao, wordsCrossContextTagDao) {
     override suspend fun getWord(wordId: Long): Word {
         val word = wordWithContextTagsAndRelatedWordsDao.getWordWithContextTagsAndRelatedWordsRelation(wordId)
         require(word != null) { "Invalid Word Id $wordId" }
@@ -82,33 +81,6 @@ class MDWordDetailsRepoImpl(
         return relations
     }
 
-    override fun getContextTagsStream(): Flow<List<ContextTag>> = wordsCrossContextTagDao.getAllWordsCrossContextTags().map {
-        it.groupBy { it.tagId }.mapValues { it.value.count() }
-    }.onStart {
-        emptyMap<Long, Int>()
-    }.combine(contextTagDao.getAllContextTags()) { tagIdWordsCount, contextTags ->
-        contextTags.map { tag ->
-            tag.asModel(tagIdWordsCount[tag.tagId] ?: 0)
-        }
-    }
-
-    override suspend fun addOrUpdateContextTag(tag: ContextTag): ContextTag {
-        return if (tag.id != INVALID_ID) {
-            contextTagDao.updateContextTag(tag.asEntity())
-            tag
-        } else {
-            val newId = contextTagDao.insertContextTag(tag.asEntity())
-            tag.copy(id = newId)
-        }
-    }
-
-    override suspend fun removeContextTag(tag: ContextTag) {
-        if (tag.id == INVALID_ID) {
-            contextTagDao.deleteContextTagsOfValues(listOf(tag.value))
-        } else {
-            contextTagDao.deleteContextTagsOfIds(listOf(tag.id))
-        }
-    }
 
     override suspend fun saveExistedWord(word: Word) {
         require(word.id != INVALID_ID) { "expected valid id for existed word but get ${word.id}, if you are trying to save a new word use saveNewWord method" }

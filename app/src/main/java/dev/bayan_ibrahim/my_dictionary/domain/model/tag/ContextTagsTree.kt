@@ -121,6 +121,12 @@ class ContextTagsMutableTree(
         }
     }
 
+    fun setFrom(tags: List<ContextTag>) {
+        this.nextLevel.clear()
+        this.tag = null
+        tags.forEach(::addTag)
+    }
+
     fun setFrom(tree: ContextTagsTree) {
         this.nextLevel.clear()
         this.tag = tree.tag

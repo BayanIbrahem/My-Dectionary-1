@@ -60,8 +60,10 @@ class DataModule {
         wordWithTagAndRelatedWordsDao = db.getWordsWithContextTagAndRelatedWordsDao(),
         tagDao = db.getWordTypeTagDao(),
         preferences = preferences,
+        languageDao = db.getLanguageDao(),
+        contextTagDao = db.getContextTagDao(),
         languageRepo = languageRepo,
-        languageDao = db.getLanguageDao()
+        wordsCrossTagDao = db.getWordsCrossTagsDao(),
     )
 
     @Singleton

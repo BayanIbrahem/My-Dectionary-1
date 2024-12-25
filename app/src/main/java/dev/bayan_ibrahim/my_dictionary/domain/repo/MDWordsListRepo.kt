@@ -9,7 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import kotlinx.coroutines.flow.Flow
 
 
-interface MDWordsListRepo : MDTrainPreferencesRepo, MDLanguageSelectionDialogRepo {
+interface MDWordsListRepo : MDTrainPreferencesRepo, MDLanguageSelectionDialogRepo, MDContextTagsRepo {
     // view preferences
     fun getViewPreferences(): Flow<MDWordsListViewPreferences>
     fun getUserPreferences(): Flow<MDUserPreferences>
@@ -30,4 +30,8 @@ interface MDWordsListRepo : MDTrainPreferencesRepo, MDLanguageSelectionDialogRep
 
     suspend fun deleteWords(ids: Collection<Long>)
     suspend fun deleteWordSpace(languageCode: LanguageCode)
+    suspend fun appendTagsToWords(
+        wordsIds: Set<Long>,
+        tags: List<ContextTag>,
+    )
 }

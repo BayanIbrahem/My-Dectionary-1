@@ -32,6 +32,7 @@ interface MDWordsListBusinessUiActions {
 
     fun onShowViewPreferencesDialog()
     fun onDismissViewPreferencesDialog()
+    fun onConfirmAppendContextTagsOnSelectedWords()
 }
 
 interface MDWordsListNavigationUiActions {

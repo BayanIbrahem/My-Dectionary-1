@@ -24,6 +24,8 @@ import androidx.paging.compose.LazyPagingItems
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyPagingGridItems
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordListItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
@@ -40,6 +42,8 @@ fun MDWordsListScreen(
     uiState: MDWordsListUiState,
     wordsList: LazyPagingItems<Word>,
     uiActions: MDWordsListUiActions,
+    contextTagsSelectionState: MDContextTagsSelectionUiState,
+    contextTagsSelectionActions: MDContextTagsSelectionActions,
     modifier: Modifier = Modifier,
     lifeMemorizingProbability: Boolean = false,
 ) {
@@ -65,7 +69,6 @@ fun MDWordsListScreen(
         invalidDataMessage = "Select a language to start", // TODO, string res
         topBar = {
             MDWordsListTopAppBar(
-                modifier = Modifier.background(Color.Green),
                 isSelectionModeOn = uiState.isSelectModeOn,
                 language = uiState.selectedWordSpace.language,
                 selectedWordsCount = selectedWordsCount,
@@ -74,8 +77,12 @@ fun MDWordsListScreen(
                 onAdjustFilterPreferences = uiActions::onShowViewPreferencesDialog,
                 onSelectLanguagePage = uiActions::onShowLanguageWordSpacesDialog,
                 onDeleteWordSpace = uiActions::onDeleteLanguageWordSpace,
+                contextTagsSelectionState = contextTagsSelectionState,
+                contextTagsSelectionActions = contextTagsSelectionActions,
                 onClearSelection = uiActions::onClearSelection,
-                onDeleteSelection = uiActions::onDeleteSelection
+                onDeleteSelection = uiActions::onDeleteSelection,
+                onConfirmAppendContextTagsOnSelectedWords = uiActions::onConfirmAppendContextTagsOnSelectedWords,
+                modifier = Modifier.background(Color.Green),
             )
         },
         floatingActionButton = {

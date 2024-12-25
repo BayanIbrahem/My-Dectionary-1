@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActionsImpl
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionMutableUiState
+import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
@@ -12,11 +16,13 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,8 +66,38 @@ class MDWordsListViewModel @Inject constructor(
     )
 
     private var paginatedWordsListJob: Job? = null
+
+    private val _tagsState = MDContextTagsSelectionMutableUiState()
+    val contextTagsState: MDContextTagsSelectionUiState = _tagsState
+    val contextTagsActions: MDContextTagsSelectionActions = MDContextTagsSelectionActionsImpl(
+        state = _tagsState,
+        onAddNewTag = ::onAddTagToTree,
+        onDeleteTag = ::onRemoveTagFromTree
+    )
+
+    private fun onAddTagToTree(tag: ContextTag) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.addOrUpdateContextTag(tag)
+        }
+    }
+
+    private fun onRemoveTagFromTree(tag: ContextTag) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.removeContextTag(tag)
+        }
+    }
+
+    private var tagsStateAllTagsStreamCollectorJob: Job? = null
     private fun setPaginatedWordsListJob() {
         viewModelScope.launch {
+            tagsStateAllTagsStreamCollectorJob?.cancel()
+            tagsStateAllTagsStreamCollectorJob = launch {
+                repo.getContextTagsStream().collect { tags ->
+                    _tagsState.allTagsTree.setFrom(tags)
+                    contextTagsActions.refreshCurrentTree()
+                }
+            }
+
             paginatedWordsListJob?.cancel()
             viewPreferences.collectLatest { preferences ->
                 updateUiStateFromViewPreferences(preferences)
@@ -256,6 +292,24 @@ class MDWordsListViewModel @Inject constructor(
 
         override fun onDismissViewPreferencesDialog() {
             _uiState.showViewPreferencesDialog = false
+        }
+
+        override fun onConfirmAppendContextTagsOnSelectedWords() {
+            if (uiState.isSelectModeOn) {
+                if (uiState.selectedWords.isNotEmpty()) {
+                    val selectedTags = contextTagsState.selectedTags.toList()
+                    if (selectedTags.isNotEmpty()) {
+                        contextTagsActions.clearSelectedTags()
+                        contextTagsActions.onResetToRoot()
+                        viewModelScope.launch {
+                            repo.appendTagsToWords(
+                                wordsIds = uiState.selectedWords,
+                                tags = selectedTags
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 
