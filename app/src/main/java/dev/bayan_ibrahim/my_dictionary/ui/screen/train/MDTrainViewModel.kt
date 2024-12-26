@@ -235,7 +235,7 @@ class MDTrainViewModel @Inject constructor(
             WordTrainHistory(
                 id = null,
                 wordId = answer.word.id,
-                meaningSnapshot = answer.correctAnswer,
+                questionWord = train.question,
                 trainResult = answer.asResult(),
                 trainType = train.type
             )
@@ -291,7 +291,7 @@ class MDTrainViewModel @Inject constructor(
                         train = question,
                         answer = question.toAnswer(
                             selectedIndex = index,
-                            consumedDuration = time.remainingTime,
+                            consumedDuration = time.totalTime - time.remainingTime,
                             submitOption = submitOption,
                         )
                     )

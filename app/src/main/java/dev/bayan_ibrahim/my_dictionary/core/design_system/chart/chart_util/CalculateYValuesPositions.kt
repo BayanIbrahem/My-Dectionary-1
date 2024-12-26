@@ -29,6 +29,7 @@ private fun yPositionOfValue(yLabelsValues: List<Int>, value: Int, count: Int): 
         // there is always a value this is larger than the current so we choose <= instead of <
         it <= value
     }
+    if(largestMin == 0) return 1f
     val smallestMax = largestMin.dec()
     val largestMinOutput = calculateYOutput(
         index = largestMin,

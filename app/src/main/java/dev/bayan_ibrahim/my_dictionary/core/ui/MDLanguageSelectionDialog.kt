@@ -3,6 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.core.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.horizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
@@ -223,6 +225,8 @@ private fun LanguagesContent(
     val normalColor = MDHorizontalCardDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
     )
+    val cardColors = MDHorizontalCardGroupDefaults.colors()
+    val cardStyles = MDHorizontalCardGroupDefaults.styles()
     LazyColumn(
         modifier = modifier.scrollbar(state, stickHeadersContentType = "Label"),
         state = state,
@@ -235,14 +239,21 @@ private fun LanguagesContent(
                 )
             }
         }
-        itemsIndexed(primaryList) { i, wordSpace ->
-            WordSpaceCardItem(
-                i = i,
-                itemsCount = primaryItemsCount,
-                singleListShape = singleListShape,
-                firstItemShape = firstItemShape,
-                lastItemShape = lastItemShape,
-                middleItemShape = middleItemShape,
+        horizontalCardGroup(
+            itemsCount = primaryItemsCount,
+            shape = singleListShape,
+            topOnlyShape = firstItemShape,
+            bottomOnlyShape = lastItemShape,
+            middleShape = middleItemShape,
+            colors = cardColors,
+            styles = cardStyles
+        ) { i->
+            val wordSpace by remember(primaryList, i) {
+                derivedStateOf {
+                    primaryList[i]
+                }
+            }
+            MDWordSpaceCardItem2(
                 selectedLanguageCode = selectedLanguageCode,
                 wordSpace = wordSpace,
                 selectedColor = selectedColor,
@@ -251,6 +262,9 @@ private fun LanguagesContent(
             )
         }
         if (secondaryItemsCount > 0) {
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             stickyHeader(contentType = "Label") {
                 HeaderTitle(
                     modifier = Modifier.padding(bottom = 8.dp),
@@ -258,20 +272,30 @@ private fun LanguagesContent(
                 )
             }
         }
-        itemsIndexed(secondaryList) { i, wordSpace ->
-            WordSpaceCardItem(
-                i = i,
-                itemsCount = secondaryItemsCount,
-                singleListShape = singleListShape,
-                firstItemShape = firstItemShape,
-                lastItemShape = lastItemShape,
-                middleItemShape = middleItemShape,
+        horizontalCardGroup(
+            itemsCount = secondaryItemsCount,
+            shape = singleListShape,
+            topOnlyShape = firstItemShape,
+            bottomOnlyShape = lastItemShape,
+            middleShape = middleItemShape,
+            colors = cardColors,
+            styles = cardStyles
+        ) { i->
+            val wordSpace by remember(secondaryList, i) {
+                derivedStateOf {
+                    secondaryList[i]
+                }
+            }
+            MDWordSpaceCardItem2(
                 selectedLanguageCode = selectedLanguageCode,
                 wordSpace = wordSpace,
                 selectedColor = selectedColor,
                 normalColor = normalColor,
                 onClickWordSpace = onClickWordSpace
             )
+        }
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
         }
         if (secondaryItemsCount + primaryItemsCount == 0) {
             // empty list
@@ -289,56 +313,14 @@ private fun LanguagesContent(
 }
 
 @Composable
-private fun WordSpaceCardItem(
-    i: Int,
-    itemsCount: Int,
-    singleListShape: CornerBasedShape,
-    firstItemShape: CornerBasedShape,
-    lastItemShape: CornerBasedShape,
-    middleItemShape: CornerBasedShape,
+private fun MDWordSpaceCardItem2(
     selectedLanguageCode: LanguageCode?,
     wordSpace: LanguageWordSpace,
     selectedColor: MDHorizontalCardColors,
     normalColor: MDHorizontalCardColors,
     onClickWordSpace: (LanguageWordSpace) -> Unit,
+    modifier: Modifier =Modifier,
 ) {
-    val isLast by remember(i) {
-        derivedStateOf {
-            i == itemsCount.dec()
-        }
-    }
-    val itemShape by remember(i) {
-        derivedStateOf {
-            if (itemsCount == 1) {
-                singleListShape
-            } else if (i == 0) {
-                firstItemShape
-            } else if (isLast) {
-                lastItemShape
-            } else {
-                middleItemShape
-            }
-        }
-    }
-    val dividerThickness by remember(isLast) {
-        derivedStateOf {
-            if (isLast) {
-                0.dp
-            } else {
-                1.dp
-            }
-        }
-    }
-    val bottomPadding by remember(isLast) {
-        derivedStateOf {
-            if (isLast) {
-                8.dp
-            } else {
-                0.dp
-            }
-        }
-    }
-
     val colors by remember(selectedLanguageCode) {
         derivedStateOf {
             if (selectedLanguageCode == wordSpace.language.code) {
@@ -349,14 +331,11 @@ private fun WordSpaceCardItem(
         }
     }
     MDHorizontalCard(
-        modifier = Modifier
-            .padding(bottom = bottomPadding)
-            .clip(itemShape),
-        colors = colors,
-        bottomHorizontalDividerThickness = dividerThickness,
         onClick = {
             onClickWordSpace(wordSpace)
         },
+        modifier = modifier,
+        colors = colors,
         leadingIcon = {
             Text(
                 text = wordSpace.language.code.uppercaseCode,

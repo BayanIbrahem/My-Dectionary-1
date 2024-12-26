@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 8,
-    "identityHash": "c42477c553135ed07ead5129aed008ff",
+    "identityHash": "0323b40d8dddfec954817fef21dcfcae",
     "entities": [
       {
         "tableName": "words",
@@ -166,7 +166,7 @@
       },
       {
         "tableName": "trainHistory",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`trainHistory_id` INTEGER PRIMARY KEY AUTOINCREMENT, `trainHistory_wordId` INTEGER, `trainHistory_time` INTEGER NOT NULL, `trainHistory_wordMeaningSnapshot` TEXT NOT NULL, `trainHistory_TrainType` INTEGER NOT NULL, `trainHistory_TrainResult` TEXT NOT NULL, FOREIGN KEY(`trainHistory_wordId`) REFERENCES `words`(`word_id`) ON UPDATE SET NULL ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`trainHistory_id` INTEGER PRIMARY KEY AUTOINCREMENT, `trainHistory_wordId` INTEGER, `trainHistory_time` INTEGER NOT NULL, `trainHistory_questionWord` TEXT NOT NULL, `trainHistory_TrainType` INTEGER NOT NULL, `trainHistory_TrainResult` TEXT NOT NULL, FOREIGN KEY(`trainHistory_wordId`) REFERENCES `words`(`word_id`) ON UPDATE SET NULL ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -187,8 +187,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "meaningSnapshot",
-            "columnName": "trainHistory_wordMeaningSnapshot",
+            "fieldPath": "questionWord",
+            "columnName": "trainHistory_questionWord",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -568,7 +568,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c42477c553135ed07ead5129aed008ff')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0323b40d8dddfec954817fef21dcfcae')"
     ]
   }
 }

@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.word_space
 
 import androidx.compose.runtime.Immutable
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 
 interface MDWordSpaceBusinessUiActions {
@@ -9,7 +10,7 @@ interface MDWordSpaceBusinessUiActions {
 }
 
 interface MDWordSpaceNavigationUiActions {
-
+    fun navigateToStatistics(language: Language)
 }
 
 @Immutable

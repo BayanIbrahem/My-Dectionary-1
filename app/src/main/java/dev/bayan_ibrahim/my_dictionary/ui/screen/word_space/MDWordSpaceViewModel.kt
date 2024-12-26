@@ -25,8 +25,8 @@ class MDWordSpaceViewModel @Inject constructor(
     fun initWithNavArgs(args: MDDestination.TopLevel.WordSpace) {
         viewModelScope.launch(Dispatchers.IO) {
                 _uiState.onExecute {
+                    _uiState.wordSpacesWithActions.clear()
                     repo.getLanguagesWordSpacesWithTags().forEach { (wordSpace, tags) ->
-                        _uiState.wordSpacesWithActions.clear()
                         _uiState.wordSpacesWithActions.add(
                             LanguageWordSpaceMutableState(
                                 wordSpace = wordSpace,

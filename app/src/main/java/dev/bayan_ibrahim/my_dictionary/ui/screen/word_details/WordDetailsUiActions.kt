@@ -27,6 +27,7 @@ interface WordDetailsBusinessUiActions {
 
 interface WordDetailsNavigationUiActions {
     fun pop()
+    fun navigateToWordStatistics(wordId: Long)
 }
 
 @Immutable

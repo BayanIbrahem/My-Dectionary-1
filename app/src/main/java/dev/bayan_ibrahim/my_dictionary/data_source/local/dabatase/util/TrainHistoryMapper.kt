@@ -22,7 +22,7 @@ fun Collection<TrainHistoryEntity>.toTrainHistoryModels(
             WordTrainHistory(
                 id = it.id,
                 wordId = it.wordId,
-                meaningSnapshot = it.meaningSnapshot,
+                questionWord = it.questionWord,
                 trainResult = it.trainResult,
                 trainType = it.trainType,
             )
@@ -36,7 +36,7 @@ fun TrainHistory.toTrainHistoryEntities(): List<TrainHistoryEntity> {
             id = item.id,
             wordId = item.wordId,
             time = time.toEpochMilliseconds(),
-            meaningSnapshot = item.meaningSnapshot,
+            questionWord = item.questionWord,
             trainType = item.trainType,
             trainResult = item.trainResult
         )

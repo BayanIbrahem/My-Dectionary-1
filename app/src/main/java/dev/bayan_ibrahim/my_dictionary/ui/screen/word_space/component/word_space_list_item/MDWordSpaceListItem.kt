@@ -67,6 +67,7 @@ fun MDWordSpaceListItem(
     state: LanguageWordSpaceState,
     actions: LanguageWordSpaceActions,
     currentEditableLanguageCode: LanguageCode?,
+    navigateToStatistics: (Language) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isEditable by remember(currentEditableLanguageCode) {
@@ -133,25 +134,36 @@ fun MDWordSpaceListItem(
                 if (state.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else if (state.isEditModeOn) {
-                    IconButton(
-                        onClick = actions::onCancel,
-                        enabled = isEditable,
-                    ) {
-                        MDIcon(MDIconsSet.Close) 
-                    }
+                    Row {
+                        IconButton(
+                            onClick = actions::onCancel,
+                            enabled = isEditable,
+                        ) {
+                            MDIcon(MDIconsSet.Close)
+                        }
 
-                    IconButton(
-                        onClick = actions::onSubmit,
-                        enabled = isEditable,
-                    ) {
-                        MDIcon(MDIconsSet.Check) 
+                        IconButton(
+                            onClick = actions::onSubmit,
+                            enabled = isEditable,
+                        ) {
+                            MDIcon(MDIconsSet.Check)
+                        }
                     }
                 } else {
-                    IconButton(
-                        onClick = actions::onEnableEditMode,
-                        enabled = isEditable,
-                    ) {
-                        MDIcon(MDIconsSet.Edit) 
+                    Row {
+                        IconButton(
+                            onClick = {
+                                navigateToStatistics(state.wordSpace.language)
+                            }
+                        ) {
+                            MDIcon(MDIconsSet.Statistics)
+                        }
+                        IconButton(
+                            onClick = actions::onEnableEditMode,
+                            enabled = isEditable,
+                        ) {
+                            MDIcon(MDIconsSet.Edit)
+                        }
                     }
                 }
             }
@@ -364,12 +376,12 @@ private fun WordSpaceEditableTagListItem(
                 Row {
                     if (showOnDelete) {
                         IconButton(onDelete, modifier = Modifier.size(36.dp)) {
-                            MDIcon(MDIconsSet.Delete) 
+                            MDIcon(MDIconsSet.Delete)
                         }
                     }
                     if (showOnReset) {
                         IconButton(onReset, modifier = Modifier.size(36.dp)) {
-                            MDIcon(MDIconsSet.Reset) 
+                            MDIcon(MDIconsSet.Reset)
                         }
                     }
                 }
@@ -426,9 +438,9 @@ private fun WordsSpaceFieldEditDialog(
             value = value,
             onChangeValue = { value = it },
             leadingIcon = if (isTag) {
-                MDIconsSet.WordTypeTag 
+                MDIconsSet.WordTypeTag
             } else {
-                MDIconsSet.WordRelatedWords 
+                MDIconsSet.WordRelatedWords
             },
             placeholder = if (isTag) "Word Type Tag name" else "Word Type Tag Relation label", // TODO, string res
         )
@@ -466,7 +478,12 @@ private fun MDWordSpaceListItemPreview() {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                MDWordSpaceListItem(state = state, actions = actions, language.code)
+                MDWordSpaceListItem(
+                    state = state,
+                    actions = actions,
+                    currentEditableLanguageCode = language.code,
+                    navigateToStatistics = {}
+                )
             }
         }
     }

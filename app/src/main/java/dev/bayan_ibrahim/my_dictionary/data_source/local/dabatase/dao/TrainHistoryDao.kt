@@ -53,6 +53,7 @@ interface TrainHistoryDao {
             ) AND (
                 NOT :includeExcludedWordsIds OR $dbTrainHistoryWordId NOT IN (:excludedWordsIds)
             )
+            ORDER BY $dbTrainHistoryTime DESC
         """
     )
     fun getTrainHistoryOf(

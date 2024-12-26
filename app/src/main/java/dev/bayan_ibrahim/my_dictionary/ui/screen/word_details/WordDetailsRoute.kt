@@ -13,6 +13,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 fun WordDetailsRoute(
     wordDetails: MDDestination.WordDetails,
     pop: () -> Unit,
+    onNavigateToWordStatistics: (Long) -> Unit,
     modifier: Modifier = Modifier,
     wordsDetailsViewModel: WordDetailsViewModel = hiltViewModel(),
 ) {
@@ -30,6 +31,9 @@ fun WordDetailsRoute(
         derivedStateOf {
             object : WordDetailsNavigationUiActions {
                 override fun pop() = pop()
+                override fun navigateToWordStatistics(wordId: Long) {
+                    onNavigateToWordStatistics(wordId)
+                }
             }
         }
     }

@@ -22,7 +22,7 @@ const val dbTrainHistoryTable = "trainHistory"
 const val dbTrainHistoryId = "trainHistory_id"
 const val dbTrainHistoryWordId = "trainHistory_wordId"
 const val dbTrainHistoryTime = "trainHistory_time"
-const val dbTrainHistoryMeaningSnapshot = "trainHistory_wordMeaningSnapshot"
+const val dbTrainHistoryQuestionWord = "trainHistory_questionWord"
 const val dbTrainHistoryTrainHistoryType = "trainHistory_TrainType"
 const val dbTrainHistoryTrainHistoryResult = "trainHistory_TrainResult"
 

@@ -99,6 +99,11 @@ private val symbolsArgs = listOf(
     "MM" to "%6\$z",
     "M" to "%7\$z",
 
+    "DDDD" to "%8\$z",
+    "DDD" to "%9\$z",
+    "DD" to "%10\$z",
+    "D" to "%11\$z",
+
     "dddd" to "%8\$z",
     "ddd" to "%9\$z",
     "dd" to "%10\$z",

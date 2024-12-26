@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,11 +32,11 @@ fun WordDetailsTopAppBar(
     validWord: Boolean,
     isNewWord: Boolean,
     language: Language,
-    memorizingProbability: Float,
     onCancel: () -> Unit,
     onSave: () -> Unit,
     onShare: () -> Unit,
     onEdit: () -> Unit,
+    onClickWordStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     /**
      * if the top app bar container has padding then we should draw larger background to cover it
@@ -46,7 +47,8 @@ fun WordDetailsTopAppBar(
     val dividerColor = MaterialTheme.colorScheme.onSurfaceVariant
     Box(
         modifier = modifier
-            .height(42.dp)
+            .height(60.dp)
+            .padding(horizontal = 8.dp)
             .fillMaxWidth()
             .drawBehind {
                 val width = size.width + extraPadding.toPx()
@@ -66,7 +68,7 @@ fun WordDetailsTopAppBar(
     ) {
         Leading(
             isNewWord = isNewWord,
-            memorizingProbability = memorizingProbability,
+            onClickWordStatistics = onClickWordStatistics,
             modifier = Modifier.align(Alignment.CenterStart)
         )
         Text(
@@ -89,7 +91,7 @@ fun WordDetailsTopAppBar(
 @Composable
 private fun Leading(
     isNewWord: Boolean,
-    memorizingProbability: Float,
+    onClickWordStatistics: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (isNewWord) {
@@ -100,19 +102,11 @@ private fun Leading(
             modifier = modifier,
         )
     } else {
-        Column(
+        IconButton(
             modifier = modifier,
-            horizontalAlignment = Alignment.CenterHorizontally
+            onClick = onClickWordStatistics
         ) {
-            Text(
-                text = "Progress",// TODO, string res
-                style = MaterialTheme.typography.titleSmall
-            )
-            Text(
-                text = "$memorizingProbability",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            MDIcon(MDIconsSet.Statistics/* TODO, icon res */)
         }
     }
 }
@@ -149,7 +143,7 @@ private fun RowScope.EditModeTrailingActions(
     ) {
         MDIcon(
             icon = MDIconsSet.Close,
-            contentDescription = "cancel changes" 
+            contentDescription = "cancel changes"
         ) // TODO, string res
     }
     IconButton(
@@ -158,7 +152,7 @@ private fun RowScope.EditModeTrailingActions(
     ) {
         MDIcon(
             icon = MDIconsSet.Save,
-            contentDescription = "save word", 
+            contentDescription = "save word",
         ) // TODO, string res
     }
 
@@ -196,34 +190,46 @@ private fun WordDetailsTopAppBarPreview() {
                     isEditModeOn = false,
                     isNewWord = false,
                     language = Language("en".code, "English", "English"),
-                    memorizingProbability = 0.1f,
                     validWord = true,
-                    onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
+                    onCancel = {},
+                    onSave = {},
+                    onShare = {},
+                    onEdit = {},
+                    onClickWordStatistics = {},
                 )
                 WordDetailsTopAppBar(
                     isEditModeOn = true,
                     isNewWord = false,
                     language = Language("en".code, "English", "English"),
-                    memorizingProbability = 0.1f,
                     validWord = true,
-                    onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
+                    onCancel = {},
+                    onSave = {},
+                    onShare = {},
+                    onEdit = {},
+                    onClickWordStatistics = {}
                 )
                 WordDetailsTopAppBar(
                     isEditModeOn = true,
                     isNewWord = false,
                     language = Language("en".code, "English", "English"),
-                    memorizingProbability = 0.1f,
                     validWord = false,
-                    onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
+                    onCancel = {},
+                    onSave = {},
+                    onShare = {},
+                    onEdit = {},
+                    onClickWordStatistics = {}
                 )
 
                 WordDetailsTopAppBar(
                     isEditModeOn = true,
                     isNewWord = true,
                     language = Language("en".code, "English", "English"),
-                    memorizingProbability = 0.1f,
                     validWord = true,
-                    onCancel = {}, onSave = {}, onShare = {}, onEdit = {},
+                    onCancel = {},
+                    onSave = {},
+                    onShare = {},
+                    onEdit = {},
+                    onClickWordStatistics = {}
                 )
             }
         }

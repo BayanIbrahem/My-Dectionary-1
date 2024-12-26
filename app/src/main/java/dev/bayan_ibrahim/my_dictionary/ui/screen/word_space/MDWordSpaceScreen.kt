@@ -77,6 +77,7 @@ fun MDWordSpaceScreen(
                     state = state,
                     actions = actions,
                     currentEditableLanguageCode = uiState.currentEditableWordSpaceLanguageCode,
+                    navigateToStatistics = uiActions::navigateToStatistics
                 )
             }
             item(

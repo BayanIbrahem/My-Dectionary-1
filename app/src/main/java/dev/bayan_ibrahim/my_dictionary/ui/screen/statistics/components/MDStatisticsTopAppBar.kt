@@ -80,8 +80,14 @@ fun MDStatisticsTopAppBar(
                         availableTrainHistoryCount = availableTrainHistoryCount,
                         selectedTrainHistoryCount = selectedTrainHistoryCount,
                         dateUnit = dateUnit,
-                        onSelectTrainHistoryCount = onSelectTrainHistoryCount,
-                        onSelectDateUnit = onSelectDateUnit,
+                        onSelectTrainHistoryCount = {
+                            onSelectTrainHistoryCount(it)
+                            expandDropDownMenu = false
+                        },
+                        onSelectDateUnit = {
+                            onSelectDateUnit(it)
+                            expandDropDownMenu = false
+                        },
                     )
                 }
             }

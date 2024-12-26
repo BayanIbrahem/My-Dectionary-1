@@ -14,6 +14,17 @@ sealed interface MDStatisticsViewPreferences {
     /**
      * show history of the latest period
      */
+    fun copyWith(
+        dateUnit: MDDateUnit,
+    ): MDStatisticsViewPreferences = when (this) {
+        is Date -> copy(dateUnit)
+        is Language -> copy(dateUnit = dateUnit)
+        is Tag -> copy(dateUnit = dateUnit)
+        is Train -> copy(dateUnit = dateUnit)
+        is TypeTag -> copy(dateUnit = dateUnit)
+        is Word -> copy(dateUnit = dateUnit)
+    }
+
     @Serializable
     data class Date(
         override val dateUnit: MDDateUnit = DEFAULT_DATE_UNIT,

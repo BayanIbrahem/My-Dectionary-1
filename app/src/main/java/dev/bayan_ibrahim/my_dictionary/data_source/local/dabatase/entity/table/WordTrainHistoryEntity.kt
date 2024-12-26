@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.TrainWordResultConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.TrainWordTypeConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTrainHistoryId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTrainHistoryMeaningSnapshot
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTrainHistoryQuestionWord
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTrainHistoryTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTrainHistoryTime
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTrainHistoryTrainHistoryResult
@@ -46,8 +46,8 @@ data class TrainHistoryEntity(
     val wordId: Long?,
     @ColumnInfo(dbTrainHistoryTime)
     val time: Long,
-    @ColumnInfo(dbTrainHistoryMeaningSnapshot)
-    val meaningSnapshot: String,
+    @ColumnInfo(dbTrainHistoryQuestionWord)
+    val questionWord: String,
     @ColumnInfo(dbTrainHistoryTrainHistoryType)
     val trainType: TrainWordType,
     @ColumnInfo(dbTrainHistoryTrainHistoryResult)

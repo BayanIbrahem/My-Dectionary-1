@@ -34,6 +34,7 @@ import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectio
 import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.contextTagsSelectionItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.scrollbar
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
@@ -60,10 +61,14 @@ fun WordDetailsScreen(
                 validWord = uiState.valid,
                 language = uiState.language,
                 isNewWord = uiState.id == INVALID_ID,
-                memorizingProbability = uiState.memorizingProbability,
                 onEdit = uiActions::onEnableEditMode,
                 onSave = uiActions::onSaveChanges,
                 onCancel = uiActions::onCancelChanges,
+                onClickWordStatistics = {
+                    uiState.id.nullIfInvalid()?.let {
+                        uiActions.navigateToWordStatistics(wordId = it)
+                    }
+                },
                 onShare = {
                     // TODO, on share
                 }
@@ -88,12 +93,6 @@ fun WordDetailsScreen(
                 .scrollbar(state, stickHeadersContentType = 1),
             state = state,
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(
-                start = 8.dp,
-                top = 0.dp,
-                end = 8.dp,
-                bottom = 8.dp,
-            )
         ) {
             item {
                 MDWordFieldTextField(
@@ -255,6 +254,7 @@ private fun WordDetailsScreenPreview() {
 private fun getUiActions() = WordDetailsUiActions(
     object : WordDetailsNavigationUiActions {
         override fun pop() {}
+        override fun navigateToWordStatistics(wordId: Long) {}
     },
     object : WordDetailsBusinessUiActions {
         override fun onEnableEditMode() {}

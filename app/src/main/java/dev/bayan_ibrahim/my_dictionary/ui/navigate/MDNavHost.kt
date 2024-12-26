@@ -1,6 +1,5 @@
 package dev.bayan_ibrahim.my_dictionary.ui.navigate
 
-import dev.bayan_ibrahim.my_dictionary.ui.screen.train.MDTrainRoute
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -20,6 +19,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.general.MDProfileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.MDAppThemeRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.MDStatisticsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
+import dev.bayan_ibrahim.my_dictionary.ui.screen.train.MDTrainRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.WordDetailsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.MDWordSpaceRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.MDWordsListRoute
@@ -58,12 +58,27 @@ fun MDNavHost(
         }
         composable<WordDetails> {
             val wordDetails: WordDetails = it.toRoute()
-            WordDetailsRoute(wordDetails = wordDetails, pop = navController::popBackStack)
+            WordDetailsRoute(
+                wordDetails = wordDetails,
+                pop = navController::popBackStack,
+                onNavigateToWordStatistics = { wordId ->
+                    val preferences = MDStatisticsViewPreferences.Word(wordId)
+                    val route = MDDestination.Statistics(preferences)
+                    navController.navigate(route)
+                }
+            )
         }
 
         composable<WordSpace> {
             val wordDetails: WordSpace = it.toRoute()
-            MDWordSpaceRoute(navArgs = wordDetails)
+            MDWordSpaceRoute(
+                navArgs = wordDetails,
+                onNavigateToStatistics = { language ->
+                    val preferences = MDStatisticsViewPreferences.Language(language)
+                    val route = MDDestination.Statistics(preferences)
+                    navController.navigate(route)
+                }
+            )
         }
 
         composable<MDDestination.ImportFromFile> {

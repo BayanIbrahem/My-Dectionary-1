@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,17 +38,21 @@ data object MDHorizontalCardGroupDefaults {
     fun colors(
         fieldColors: MDHorizontalCardColors = MDHorizontalCardDefaults.colors(),
         titleColor: Color = MaterialTheme.colorScheme.onSurface,
+        subtitleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     ) = MDHorizontalCardGroupColors(
         cardColors = fieldColors,
-        titleColor = titleColor
+        titleColor = titleColor,
+        subtitleColor = subtitleColor,
     )
 
     @Composable
     fun primaryColors(
         titleColor: Color = MaterialTheme.colorScheme.onSurface,
+        subtitleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     ) = MDHorizontalCardGroupColors(
         cardColors = MDHorizontalCardDefaults.primaryColors,
-        titleColor = titleColor
+        titleColor = titleColor,
+        subtitleColor = subtitleColor
     )
 
     @Composable
@@ -65,6 +70,7 @@ data object MDHorizontalCardGroupDefaults {
 data class MDHorizontalCardGroupColors(
     val cardColors: MDHorizontalCardColors,
     val titleColor: Color,
+    val subtitleColor: Color,
 )
 
 data class MDHorizontalCardGroupStyles(
@@ -94,13 +100,15 @@ fun MDHorizontalCardGroup(
         title?.let {
             CompositionLocalProvider(
                 LocalTextStyle provides styles.titleStyle,
-                title,
+                LocalContentColor provides colors.titleColor,
+                content = title,
             )
         }
         subtitle?.let {
             CompositionLocalProvider(
                 LocalTextStyle provides styles.subtitleStyle,
-                subtitle,
+                LocalContentColor provides colors.subtitleColor,
+                content = subtitle,
             )
         }
 
@@ -156,8 +164,8 @@ private fun MDHorizontalCardGroupPreview() {
             ) {
                 MDHorizontalCardGroup {
                     item(
-                        leadingIcon = { MDIcon(MDIconsSet.Check) }, 
-                        trailingIcon = { MDIcon(MDIconsSet.Check) }, 
+                        leadingIcon = { MDIcon(MDIconsSet.Check) },
+                        trailingIcon = { MDIcon(MDIconsSet.Check) },
                         enabled = true,
                         subtitle = {
                             Text("subtitle")
@@ -166,8 +174,8 @@ private fun MDHorizontalCardGroupPreview() {
                         Text("title")
                     }
                     item(
-                        leadingIcon = { MDIcon(MDIconsSet.Check) }, 
-                        trailingIcon = { MDIcon(MDIconsSet.Check) }, 
+                        leadingIcon = { MDIcon(MDIconsSet.Check) },
+                        trailingIcon = { MDIcon(MDIconsSet.Check) },
                         enabled = false,
                         subtitle = {
                             Text("subtitle")
@@ -177,7 +185,7 @@ private fun MDHorizontalCardGroupPreview() {
                     }
                     item(
                         leadingIcon = {},
-                        trailingIcon = { MDIcon(MDIconsSet.Check) }, 
+                        trailingIcon = { MDIcon(MDIconsSet.Check) },
                         enabled = true,
                         subtitle = {
                             Text("subtitle")
@@ -186,7 +194,7 @@ private fun MDHorizontalCardGroupPreview() {
                         Text("title")
                     }
                     item(
-                        leadingIcon = { MDIcon(MDIconsSet.Check) }, 
+                        leadingIcon = { MDIcon(MDIconsSet.Check) },
                         trailingIcon = {},
                         enabled = true,
                         subtitle = {
@@ -197,8 +205,8 @@ private fun MDHorizontalCardGroupPreview() {
                     }
 
                     item(
-                        leadingIcon = { MDIcon(MDIconsSet.Check) }, 
-                        trailingIcon = { MDIcon(MDIconsSet.Check) }, 
+                        leadingIcon = { MDIcon(MDIconsSet.Check) },
+                        trailingIcon = { MDIcon(MDIconsSet.Check) },
                         enabled = true,
                     ) {
                         Text("title")

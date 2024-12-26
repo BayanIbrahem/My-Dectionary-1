@@ -1,5 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.train_word
 
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -13,17 +15,19 @@ import kotlinx.serialization.encoding.encodeStructure
 import kotlin.time.Duration
 
 @Serializable(TrainWordResultSerializer::class)
-sealed interface MDTrainWordResult {
+sealed interface MDTrainWordResult: IconedEnum {
     val consumedDuration: Duration
     val submitOption: MDTrainSubmitOption
 
-    val type: TrainWordResultType
+    val type: MDTrainWordResultType
         get() = when (this) {
             is Wrong -> Wrong.type
             is Right -> Right.type
             is Pass -> Pass.type
             is Timeout -> Timeout.type
         }
+    override val icon: MDIconsSet
+        get() = type.icon
 
     @Serializable
     data class Wrong(
@@ -39,7 +43,7 @@ sealed interface MDTrainWordResult {
         }
 
         companion object Companion {
-            val type = TrainWordResultType.Wrong
+            val type = MDTrainWordResultType.Wrong
         }
     }
 
@@ -56,7 +60,7 @@ sealed interface MDTrainWordResult {
         }
 
         companion object Companion {
-            val type = TrainWordResultType.Right
+            val type = MDTrainWordResultType.Right
         }
     }
 
@@ -67,7 +71,7 @@ sealed interface MDTrainWordResult {
         override val submitOption: MDTrainSubmitOption = MDTrainSubmitOption.Pass
 
         companion object Companion {
-            val type = TrainWordResultType.Pass
+            val type = MDTrainWordResultType.Pass
         }
     }
 
@@ -78,7 +82,7 @@ sealed interface MDTrainWordResult {
         override val submitOption: MDTrainSubmitOption = MDTrainSubmitOption.Answer
 
         companion object Companion {
-            val type = TrainWordResultType.Timeout
+            val type = MDTrainWordResultType.Timeout
         }
     }
 }

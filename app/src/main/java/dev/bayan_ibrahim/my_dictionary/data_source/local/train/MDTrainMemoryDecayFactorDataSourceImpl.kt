@@ -4,7 +4,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutpu
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.inSeconds
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainSubmitOption
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResult
-import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordResultType
+import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResultType
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -140,7 +140,7 @@ val newFactor = when(option) {
 private fun applySubmitOptionOnFactor(
     factorDiff: Float,
     option: MDTrainSubmitOption,
-    resultType: TrainWordResultType,
+    resultType: MDTrainWordResultType,
 ): Float = when (option) {
     MDTrainSubmitOption.Pass -> 1f
     MDTrainSubmitOption.Guess -> 0.5f
