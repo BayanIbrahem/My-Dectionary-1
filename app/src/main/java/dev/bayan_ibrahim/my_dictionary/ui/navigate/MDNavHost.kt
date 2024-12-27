@@ -13,8 +13,13 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordSp
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordsList
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.Train
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.WordDetails
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.MDExportToFileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.import_from_file.MDImportFromFileRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.marker_tags.MDMarkerTagsRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.migrate_similar_words.MDMigrateSimilarWordsRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.migrate_tags.MDMigrateTagsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.general.MDProfileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.MDAppThemeRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.MDStatisticsRoute
@@ -26,6 +31,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.MDWordsListRoute
 
 @Composable
 fun MDNavHost(
+    appUiState: MDAppUiState,
+    appActions: MDAppUiActions,
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
@@ -38,6 +45,8 @@ fun MDNavHost(
             val wordsList: WordsList = backStackEntry.toRoute()
             MDWordsListRoute(
                 navArgs = wordsList,
+                appUiState = appUiState,
+                appActions = appActions,
                 navigateToWordsDetails = { id, code ->
                     navController.navigate(WordDetails(id, code.code))
                 },
@@ -50,16 +59,24 @@ fun MDNavHost(
             val profile: Profile = backStackEntry.toRoute()
             MDProfileRoute(
                 profile = profile,
+                appUiState = appUiState,
+                appActions = appActions,
                 navigateToScreen = navController::navigate
             )
         }
         composable<Statistics> { backStackEntry ->
-            MDStatisticsRoute(args = MDDestination.Statistics())
+            MDStatisticsRoute(
+                args = MDDestination.Statistics(),
+                appUiState = appUiState,
+                appActions = appActions,
+            )
         }
         composable<WordDetails> {
             val wordDetails: WordDetails = it.toRoute()
             WordDetailsRoute(
                 wordDetails = wordDetails,
+                appUiState = appUiState,
+                appActions = appActions,
                 pop = navController::popBackStack,
                 onNavigateToWordStatistics = { wordId ->
                     val preferences = MDStatisticsViewPreferences.Word(wordId)
@@ -73,6 +90,8 @@ fun MDNavHost(
             val wordDetails: WordSpace = it.toRoute()
             MDWordSpaceRoute(
                 navArgs = wordDetails,
+                appUiState = appUiState,
+                appActions = appActions,
                 onNavigateToStatistics = { language ->
                     val preferences = MDStatisticsViewPreferences.Language(language)
                     val route = MDDestination.Statistics(preferences)
@@ -83,18 +102,28 @@ fun MDNavHost(
 
         composable<MDDestination.ImportFromFile> {
             val importFromFile: MDDestination.ImportFromFile = it.toRoute()
-            MDImportFromFileRoute(importFromFile)
+            MDImportFromFileRoute(
+                args = importFromFile,
+                appUiState = appUiState,
+                appActions = appActions,
+            )
         }
 
         composable<ExportToFile> {
             val exportToFile: ExportToFile = it.toRoute()
-            MDExportToFileRoute(exportToFile)
+            MDExportToFileRoute(
+                args = exportToFile,
+                appUiState = appUiState,
+                appActions = appActions,
+            )
         }
 
         composable<Train> {
             val train: Train = it.toRoute()
             MDTrainRoute(
                 args = train,
+                appUiState = appUiState,
+                appActions = appActions,
                 navigateToStatisticsScreen = {
                     navController.popBackStack()
                     navController.navigate(MDDestination.Statistics(MDStatisticsViewPreferences.Train()))
@@ -103,12 +132,47 @@ fun MDNavHost(
         }
         composable<MDDestination.Statistics> {
             val statistics: MDDestination.Statistics = it.toRoute()
-            MDStatisticsRoute(statistics)
+            MDStatisticsRoute(
+                args = statistics,
+                appUiState = appUiState,
+                appActions = appActions,
+            )
         }
 
         composable<MDDestination.AppTheme> {
             val theme: MDDestination.AppTheme = it.toRoute()
-            MDAppThemeRoute(theme)
+            MDAppThemeRoute(
+                args = theme,
+                appUiState = appUiState,
+                appActions = appActions,
+            )
+        }
+
+        composable<MDDestination.MarkerTags> {
+            val markerTags: MDDestination.MarkerTags = it.toRoute()
+            MDMarkerTagsRoute(
+                args = markerTags,
+                appUiState = appUiState,
+                appActions = appActions,
+            )
+        }
+
+        composable<MDDestination.MigrateTags> {
+            val markerTags: MDDestination.MigrateTags = it.toRoute()
+            MDMigrateTagsRoute(
+                markerTags,
+                appUiState = appUiState,
+                appActions = appActions,
+            )
+        }
+
+        composable<MDDestination.MigrateSimilarWords> {
+            val markerSimilarWords: MDDestination.MigrateSimilarWords = it.toRoute()
+            MDMigrateSimilarWordsRoute(
+                markerSimilarWords,
+                appUiState = appUiState,
+                appActions = appActions,
+            )
         }
     }
 }

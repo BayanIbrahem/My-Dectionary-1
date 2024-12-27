@@ -9,10 +9,13 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MDWordSpaceTopAppBar(
+    onNavigationIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     MDTopAppBar(
         modifier = modifier,
+        isTopLevel = true,
+        onNavigationIconClick = onNavigationIconClick,
         title = {
             Text("Language Word space") // TODO, string res
         }

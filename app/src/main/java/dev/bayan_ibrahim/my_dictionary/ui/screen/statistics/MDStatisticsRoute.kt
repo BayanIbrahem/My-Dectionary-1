@@ -8,10 +8,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 
 @Composable
 fun MDStatisticsRoute(
     args: MDDestination.Statistics,
+    appUiState: MDAppUiState,
+    appActions: MDAppUiActions,
     modifier: Modifier = Modifier,
     viewModel: MDStatisticsViewModel = hiltViewModel(),
 ) {
@@ -22,7 +27,7 @@ fun MDStatisticsRoute(
     val uiState = viewModel.uiState
     val navActions by remember {
         derivedStateOf {
-            object : MDStatisticsNavigationUiActions {
+            object : MDStatisticsNavigationUiActions, MDAppNavigationUiActions by appActions {
             }
         }
     }

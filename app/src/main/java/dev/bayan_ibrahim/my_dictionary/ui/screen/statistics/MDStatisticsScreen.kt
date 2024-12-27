@@ -55,6 +55,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.date.labelOfIdentifier
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.WordTrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResult
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResultType
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.components.MDStatisticsTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsChartTypeTab
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
@@ -81,6 +82,7 @@ fun MDStatisticsScreen(
                 dateUnit = uiState.dateUnit,
                 onSelectTrainHistoryCount = uiActions::onSelectTrainHistoryCount,
                 onSelectDateUnit = uiActions::onSelectDateUnit,
+                onNavigationIconClick = uiActions::onOpenNavDrawer,
             )
         },
     ) {
@@ -530,7 +532,10 @@ private fun MDStatisticsScreenPreview() {
                         onExecute { true }
                     },
                     uiActions = MDStatisticsUiActions(
-                        object : MDStatisticsNavigationUiActions {
+                        object : MDStatisticsNavigationUiActions, MDAppNavigationUiActions {
+                            override fun onOpenNavDrawer() {}
+                            override fun onCloseNavDrawer() {}
+
                         },
                         object : MDStatisticsBusinessUiActions {
                             override fun onSelectTrainHistoryCount(count: MDStatisticsMostResentHistoryCount) {}

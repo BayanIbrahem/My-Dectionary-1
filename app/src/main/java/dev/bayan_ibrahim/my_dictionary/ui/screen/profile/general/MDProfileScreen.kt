@@ -20,6 +20,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.c
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.component.MDProfileTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -35,7 +36,7 @@ fun MDProfileScreen(
         uiState = uiState,
         modifier = modifier,
         topBar = {
-            MDProfileTopAppBar()
+            MDProfileTopAppBar(onNavigationIconClick = uiActions::onOpenNavDrawer)
         },
     ) {
         Column(
@@ -72,7 +73,7 @@ private fun BackupAndRestoreGroup(
         item(
             onClick = onClickImportFromFile,
             leadingIcon = {
-                MDIcon(MDIconsSet.ImportFromFile, contentDescription = null) 
+                MDIcon(MDIconsSet.ImportFromFile, contentDescription = null)
             }
         ) {
             Text("Import from file")// TODO, string res
@@ -82,7 +83,7 @@ private fun BackupAndRestoreGroup(
             onClick = onClickExportToFile,
             enabled = false, // TODO, not implemented yet
             leadingIcon = {
-                MDIcon(MDIconsSet.ExportToFile, contentDescription = null) 
+                MDIcon(MDIconsSet.ExportToFile, contentDescription = null)
             }
         ) {
             Text("Export to file")// TODO, string res
@@ -92,7 +93,7 @@ private fun BackupAndRestoreGroup(
             onClick = onClickSync,
             enabled = false, // TODO, not implemented yet
             leadingIcon = {
-                MDIcon(MDIconsSet.Sync, contentDescription = null) 
+                MDIcon(MDIconsSet.Sync, contentDescription = null)
             },
         ) {
             Text("Sync")// TODO, string res
@@ -115,7 +116,7 @@ private fun ThemeGroup(
         item(
             onClick = onClickAppTheme,
             leadingIcon = {
-                MDIcon(icon = MDIconsSet.Colors, contentDescription = null) 
+                MDIcon(icon = MDIconsSet.Colors, contentDescription = null)
             }
         ) {
             // TODO, string resource
@@ -128,7 +129,7 @@ private fun ThemeGroup(
 private fun WordsListGroup(
     isLiveTemplateEnabled: Boolean,
     onToggleLiveTemplate: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     MDHorizontalCardGroup(
         modifier = modifier,
@@ -136,7 +137,7 @@ private fun WordsListGroup(
             Text("Words List") // TODO, string res
         },
     ) {
-        checkboxItem (
+        checkboxItem(
             checked = isLiveTemplateEnabled,
             onClick = {
                 onToggleLiveTemplate(!isLiveTemplateEnabled)
@@ -174,7 +175,10 @@ private fun MDProfileScreenPreview() {
                     },
                     userPreferences = MDUserPreferences(),
                     uiActions = MDProfileUiActions(
-                        object : MDProfileNavigationUiActions {
+                        object : MDProfileNavigationUiActions, MDAppNavigationUiActions {
+                            override fun onOpenNavDrawer() {}
+                            override fun onCloseNavDrawer() {}
+
                             override fun navigateToImportFromFile() {}
                             override fun navigateToExportToFile() {}
                             override fun navigateToSync() {}

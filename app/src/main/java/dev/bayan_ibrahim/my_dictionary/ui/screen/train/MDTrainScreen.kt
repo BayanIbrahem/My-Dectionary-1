@@ -111,7 +111,9 @@ fun MDTrainScreen(
         modifier = modifier,
         contentWindowInsets = MDScreenDefaults.contentWindowInsets.add(WindowInsets.ime), // adding software keyboard window insets
         topBar = {
-            MDTrainTopAppBar()
+            MDTrainTopAppBar(
+                uiActions::onPop
+            )
         },
     ) {
         if (uiState is MDTrainUiState.AnswerWord) {

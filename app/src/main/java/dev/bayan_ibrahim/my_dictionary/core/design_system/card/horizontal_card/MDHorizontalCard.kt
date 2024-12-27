@@ -255,10 +255,12 @@ fun MDHorizontalCard(
                 }
             }
         }
-        HorizontalDivider(
-            modifier = Modifier.height(bottomHorizontalDividerThickness),
-            color = colors.dividerColor
-        )
+        if(bottomHorizontalDividerThickness.value > 0f) {
+            HorizontalDivider(
+                modifier = Modifier.height(bottomHorizontalDividerThickness),
+                color = colors.dividerColor
+            )
+        }
     }
 }
 

@@ -35,6 +35,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MDStatisticsTopAppBar(
+    onNavigationIconClick: () -> Unit,
     preferences: MDStatisticsViewPreferences,
     availableTrainHistoryCount: Int,
     selectedTrainHistoryCount: MDStatisticsMostResentHistoryCount,
@@ -56,6 +57,8 @@ fun MDStatisticsTopAppBar(
             Text("Train Statistics")
         },
         modifier = modifier,
+        isTopLevel = true,
+        onNavigationIconClick = onNavigationIconClick,
         actions = {
             if (showActions) {
                 MDBasicIconDropDownMenu(
@@ -221,7 +224,8 @@ private fun MDStatisticsTopAppBarPreview() {
                         selectedTrainHistoryCount = MDStatisticsMostResentHistoryCount._1,
                         dateUnit = MDDateUnit.Year,
                         onSelectTrainHistoryCount = {},
-                        onSelectDateUnit = {}
+                        onSelectDateUnit = {},
+                        onNavigationIconClick = {},
                     )
                     MDStatisticsTopAppBar(
                         preferences = MDStatisticsViewPreferences.Train(),
@@ -229,7 +233,8 @@ private fun MDStatisticsTopAppBarPreview() {
                         selectedTrainHistoryCount = MDStatisticsMostResentHistoryCount._3,
                         dateUnit = MDDateUnit.Year,
                         onSelectTrainHistoryCount = {},
-                        onSelectDateUnit = {}
+                        onSelectDateUnit = {},
+                        onNavigationIconClick = {}
                     )
                 }
             }

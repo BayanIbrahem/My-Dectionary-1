@@ -16,10 +16,13 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MDProfileTopAppBar(
+    onNavigationIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     MDTopAppBar(
         modifier = modifier,
+        isTopLevel = true,
+        onNavigationIconClick = onNavigationIconClick,
         title = {
             Text("Profile") // TODO, string res
         }
@@ -37,7 +40,7 @@ private fun MDProfileTopAppBarPreview() {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                MDProfileTopAppBar()
+                MDProfileTopAppBar({})
 
             }
         }

@@ -38,6 +38,7 @@ import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.WordDetailsTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.wordDetailsRelatedWordsTextFieldsList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.wordDetailsTextFieldList
@@ -252,7 +253,10 @@ private fun WordDetailsScreenPreview() {
 }
 
 private fun getUiActions() = WordDetailsUiActions(
-    object : WordDetailsNavigationUiActions {
+    object : WordDetailsNavigationUiActions, MDAppNavigationUiActions {
+        override fun onOpenNavDrawer() {}
+        override fun onCloseNavDrawer() {}
+
         override fun pop() {}
         override fun navigateToWordStatistics(wordId: Long) {}
     },

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 
 
 interface WordDetailsBusinessUiActions {
@@ -25,7 +26,7 @@ interface WordDetailsBusinessUiActions {
     fun onValidateExamples(focusedTextFieldId: Long? = null)
 }
 
-interface WordDetailsNavigationUiActions {
+interface WordDetailsNavigationUiActions: MDAppNavigationUiActions {
     fun pop()
     fun navigateToWordStatistics(wordId: Long)
 }

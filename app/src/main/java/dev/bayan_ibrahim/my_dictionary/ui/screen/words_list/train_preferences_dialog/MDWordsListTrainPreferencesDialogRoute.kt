@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.navArgument
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 
 @Composable
 fun MDWordsListTrainPreferencesDialogRoute(
@@ -23,7 +25,8 @@ fun MDWordsListTrainPreferencesDialogRoute(
     val uiState = viewModel.uiState
     val navActions by remember {
         derivedStateOf {
-            object : MDWordsListTrainPreferencesNavigationUiActions {
+            object : MDWordsListTrainPreferencesNavigationUiActions{
+
                 override fun onDismissDialog() {
                     onDismissDialog()
                 }

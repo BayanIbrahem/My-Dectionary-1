@@ -11,15 +11,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 
 @Composable
 fun MDAppThemeRoute(
     args: MDDestination.AppTheme,
+    appUiState: MDAppUiState,
+    appActions: MDAppUiActions,
     modifier: Modifier = Modifier,
     viewModel: MDAppThemeViewModel = hiltViewModel(),
 
-) {
-    val context= LocalContext.current
+    ) {
+    val context = LocalContext.current
     LaunchedEffect(args) {
         viewModel.initWithNavArgs(args, context)
     }
@@ -31,7 +36,7 @@ fun MDAppThemeRoute(
     val uiState = viewModel.uiState
     val navActions by remember {
         derivedStateOf {
-            object : MDAppThemeNavigationUiActions {
+            object : MDAppThemeNavigationUiActions, MDAppNavigationUiActions by appActions {
             }
         }
     }

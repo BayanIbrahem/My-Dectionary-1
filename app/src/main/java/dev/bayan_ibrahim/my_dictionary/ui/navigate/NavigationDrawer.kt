@@ -1,0 +1,299 @@
+package dev.bayan_ibrahim.my_dictionary.ui.navigate
+
+import android.os.Build
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DrawerDefaults
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
+import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import kotlin.reflect.KClass
+
+@Composable
+fun MDNavigationDrawer(
+    currentDestination: KClass<out MDDestination>?,
+    onNavigateTo: (MDDestination) -> Unit,
+    modifier: Modifier = Modifier,
+    drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
+    gesturesEnabled: Boolean = true,
+    scrimColor: Color = DrawerDefaults.scrimColor,
+    content: @Composable () -> Unit,
+) {
+    ModalNavigationDrawer(
+        drawerContent = {
+            ModalDrawerSheet {
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    DrawerHeader()
+                    DrawerContent(
+                        currentDestination = currentDestination,
+                        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                        onNavigateTo = onNavigateTo,
+                    )
+                    DrawerFooter()
+                }
+            }
+        },
+        modifier = modifier,
+        drawerState = drawerState,
+        gesturesEnabled = gesturesEnabled,
+        scrimColor = scrimColor,
+        content = content
+    )
+}
+
+@Composable
+private fun DrawerHeader(
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            MDIcon(
+                icon = MDIconsSet.Profile,
+                modifier = Modifier.size(72.dp)
+            )
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.headlineLarge
+            )
+        }
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp))
+    }
+}
+
+@Composable
+private fun DrawerContent(
+    currentDestination: KClass<out MDDestination>?,
+    modifier: Modifier = Modifier,
+    onNavigateTo: (MDDestination) -> Unit,
+) {
+    Column(modifier = modifier) {
+        DrawerContentMainGroup(
+            currentDestination = currentDestination,
+            onNavigate = onNavigateTo,
+        )
+        DrawerContentToolsGroup(
+            currentDestination = currentDestination,
+            onNavigate = onNavigateTo,
+        )
+        DrawerContentMigrationGroup(
+            currentDestination = currentDestination,
+            onNavigate = onNavigateTo
+        )
+    }
+}
+
+@Composable
+private fun DrawerContentMainGroup(
+    currentDestination: KClass<out MDDestination>?,
+    modifier: Modifier = Modifier,
+    onNavigate: (MDDestination.TopLevel) -> Unit,
+) {
+    MDDrawerContentGroup(
+        modifier = modifier,
+        hasDivider = false,
+    ) { // TODO, string res
+        MDDestination.TopLevel.Enum.entries.forEachIndexed { i, topLevel ->
+            ContentGroupListItem(
+                label = topLevel.label,
+                leadingIcon = topLevel.icon,
+                modifier = Modifier.clip(MDHorizontalCardGroupDefaults.shape),
+                associatedDestination = topLevel.route::class,
+                currentDestination = currentDestination,
+                onClick = { onNavigate(topLevel.route) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun DrawerContentToolsGroup(
+    currentDestination: KClass<out MDDestination>?,
+    modifier: Modifier = Modifier,
+    onNavigate: (MDDestination) -> Unit,
+) {
+    MDDrawerContentGroup(
+        modifier = modifier,
+        title = "Tools"// TODO, string res
+    ) {
+        ContentGroupListItem(
+            label = "Marker Tags", // TODO, string res
+            leadingIcon = MDIconsSet.Colors,
+            modifier = Modifier.clip(MDHorizontalCardGroupDefaults.shape),
+            currentDestination = currentDestination,
+            associatedDestination = MDDestination.MarkerTags::class,
+            onClick = {
+                onNavigate(MDDestination.MarkerTags)
+            }
+        )
+    }
+}
+
+@Composable
+private fun DrawerContentMigrationGroup(
+    currentDestination: KClass<out MDDestination>?,
+    onNavigate: (MDDestination) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    MDDrawerContentGroup(
+        title = "Migration",// TODO, string res
+        modifier = modifier,
+    ) {
+        ContentGroupListItem(
+            label = "Migrate Tags",// TODO, string res
+            leadingIcon = MDIconsSet.WordTag,// TODO, icon res
+            currentDestination = currentDestination,
+            associatedDestination = MDDestination.MigrateTags::class,
+            onClick = {
+                onNavigate(MDDestination.MigrateTags)
+            },
+        )
+
+        ContentGroupListItem(
+            label = "Migrate Similar Words", // TODO, string res
+            leadingIcon = MDIconsSet.WordMeaning, // TODO, icon res
+            currentDestination = currentDestination,
+            associatedDestination = MDDestination.MigrateSimilarWords::class,
+            onClick = {
+                onNavigate(MDDestination.MigrateSimilarWords)
+            },
+        )
+    }
+}
+
+@Composable
+private fun MDDrawerContentGroup(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    hasDivider: Boolean = true,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Column(modifier = modifier.padding(bottom = 16.dp)) {
+        if (title != null) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+        }
+        if (hasDivider) {
+            HorizontalDivider(modifier = Modifier.width(120.dp))
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            content()
+        }
+    }
+
+}
+
+@Composable
+private fun ContentGroupListItem(
+    label: String,
+    leadingIcon: MDIconsSet,
+    /**
+     * would only be called if it is not selected ([currentDestination] != [associatedDestination])
+     */
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    currentDestination: KClass<out MDDestination>? = null,
+    associatedDestination: KClass<out MDDestination>? = null,
+    enabled: Boolean = true,
+) {
+    val selected by remember(currentDestination, associatedDestination) {
+        derivedStateOf {
+            associatedDestination != null && currentDestination == associatedDestination
+        }
+    }
+    val onNonSelectedClick by remember {
+        derivedStateOf {
+            {
+                if (!selected) onClick()
+            }
+        }
+    }
+    MDHorizontalCard(
+        onClick = onNonSelectedClick,
+        modifier = modifier.clip(MDHorizontalCardGroupDefaults.shape),
+        enabled = enabled,
+        colors = if (selected) MDHorizontalCardDefaults.primaryColors else MDHorizontalCardDefaults.colors(containerColor = Color.Transparent),
+        bottomHorizontalDividerThickness = 0.dp,
+        leadingIcon = {
+            MDIcon(leadingIcon, contentDescription = null)
+        }
+    ) {
+        Text(label)
+    }
+}
+
+/** app name with version */
+@Composable
+private fun DrawerFooter(
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        HorizontalDivider(modifier = Modifier.padding(start = 24.dp))
+        Text(
+            text = "${stringResource(R.string.app_name)} v ${Build.VERSION.RELEASE}",
+            modifier = Modifier.align(Alignment.End),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Preview(device = "id:pixel_9")
+@Composable
+private fun MDNavigationDrawerPreview() {
+    MyDictionaryTheme {
+        MDNavigationDrawer(
+            currentDestination = MDDestination.TopLevel.WordSpace::class,
+            onNavigateTo = {},
+            drawerState = rememberDrawerState(DrawerValue.Open)
+        ) {
+            Surface(
+                color = MaterialTheme.colorScheme.background
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+
+                }
+            }
+        }
+    }
+}

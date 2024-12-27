@@ -63,7 +63,7 @@ fun MDWordSpaceScreen(
         uiState = uiState,
         modifier = modifier,
         topBar = {
-            MDWordSpaceTopAppBar()
+            MDWordSpaceTopAppBar(onNavigationIconClick = uiActions::onOpenNavDrawer)
         }
     ) {
         LazyVerticalGrid(

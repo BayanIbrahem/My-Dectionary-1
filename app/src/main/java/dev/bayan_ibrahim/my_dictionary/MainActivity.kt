@@ -1,6 +1,5 @@
 package dev.bayan_ibrahim.my_dictionary
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,10 +16,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDApp
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDApp
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryDynamicTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.LocalIconsPack
-import java.io.InputStream
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

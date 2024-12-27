@@ -2,6 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import androidx.compose.runtime.Immutable
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 
 interface MDWordsListBusinessUiActions {
     // work space
@@ -35,7 +36,7 @@ interface MDWordsListBusinessUiActions {
     fun onConfirmAppendContextTagsOnSelectedWords()
 }
 
-interface MDWordsListNavigationUiActions {
+interface MDWordsListNavigationUiActions: MDAppNavigationUiActions {
     fun navigateToWordDetails(wordId: Long?)
 }
 

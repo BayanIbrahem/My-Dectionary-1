@@ -106,7 +106,7 @@ fun MDImportFromFileScreen(
         uiState = uiState,
         modifier = modifier,
         topBar = {
-            ImportFromFileTopAppBar()
+            ImportFromFileTopAppBar(onNavigationIconClick = uiActions::onPop)
         },
     ) {
         Column(

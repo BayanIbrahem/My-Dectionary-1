@@ -4,6 +4,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStrategy
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 
 interface MDImportFromFileBusinessUiActions {
     fun onSelectFile(fileData: MDFileData)
@@ -16,7 +17,7 @@ interface MDImportFromFileBusinessUiActions {
     fun onCancelImportProcess()
 }
 
-interface MDImportFromFileNavigationUiActions {
+interface MDImportFromFileNavigationUiActions: MDAppNavigationUiActions {
 }
 
 @androidx.compose.runtime.Immutable

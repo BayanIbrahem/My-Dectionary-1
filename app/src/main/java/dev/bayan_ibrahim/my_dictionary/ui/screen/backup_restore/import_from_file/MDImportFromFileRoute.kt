@@ -8,10 +8,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 
 @Composable
 fun MDImportFromFileRoute(
     args: MDDestination.ImportFromFile,
+    appUiState: MDAppUiState,
+    appActions: MDAppUiActions,
     modifier: Modifier = Modifier,
     viewModel: MDImportFromFileViewModel = hiltViewModel(),
 ) {
@@ -27,7 +32,7 @@ fun MDImportFromFileRoute(
     }
     val navActions by remember {
         derivedStateOf {
-            object : MDImportFromFileNavigationUiActions {
+            object : MDImportFromFileNavigationUiActions, MDAppNavigationUiActions by appActions{
             }
         }
     }

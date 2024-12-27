@@ -58,6 +58,7 @@ fun MDWordsListTopAppBar(
     onAdjustFilterPreferences: () -> Unit,
     onSelectLanguagePage: () -> Unit,
     onDeleteWordSpace: () -> Unit,
+    onNavigationIconClick: () -> Unit,
     // selection mode actions
     contextTagsSelectionState: MDContextTagsSelectionUiState,
     contextTagsSelectionActions: MDContextTagsSelectionActions,
@@ -78,6 +79,7 @@ fun MDWordsListTopAppBar(
                 onSelectLanguagePage = onSelectLanguagePage,
                 onDeleteWordSpace = onDeleteWordSpace,
                 modifier = modifier,
+                onNavigationIconClick = onNavigationIconClick,
             )
         }
         AnimatedVisibility(isSelectionModeOn) {
@@ -111,9 +113,12 @@ private fun WordsListTopAppBarNormalMode(
     onAdjustFilterPreferences: () -> Unit,
     onSelectLanguagePage: () -> Unit,
     onDeleteWordSpace: () -> Unit,
+    onNavigationIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     MDTopAppBar(
+        isTopLevel = true,
+        onNavigationIconClick = onNavigationIconClick,
         title = {
             Row(
                 verticalAlignment = Alignment.Bottom,
@@ -213,6 +218,8 @@ private fun WordsListTopAppBarSelectionMode(
     }
 
     MDTopAppBar(
+        isTopLevel = true, // this value is overwritten by navigation icon
+        onNavigationIconClick = {}, // cause it has a navigation icon
         title = {
             Text("$selectedWordsCount selected of $totalWordsCount") // TODO, string res
         },
@@ -394,7 +401,8 @@ private fun WordsListTopAppBarPreview() {
                         state = MDContextTagsSelectionMutableUiState(),
                         onAddNewTag = {},
                         onDeleteTag = {}),
-                    onConfirmAppendContextTagsOnSelectedWords = {}
+                    onConfirmAppendContextTagsOnSelectedWords = {},
+                    onNavigationIconClick = {},
                 )
 //                WordsListTopAppBar(
 //                    isSelectionModeOn = false,

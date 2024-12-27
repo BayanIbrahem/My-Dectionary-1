@@ -10,10 +10,13 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImportFromFileTopAppBar(
+    onNavigationIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     MDTopAppBar(
         modifier = modifier,
+        isTopLevel = false,
+        onNavigationIconClick = onNavigationIconClick,
         title = {
             Text("Import From file")
         }

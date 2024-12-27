@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component.MDAppThemeTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component.MDThemeCard
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component.MDThemeCardDefaults
@@ -31,7 +32,9 @@ fun MDAppThemeScreen(
         uiState = uiState,
         modifier = modifier,
         topBar = {
-            MDAppThemeTopAppBar()
+            MDAppThemeTopAppBar(
+                onNavigationIconClick = uiActions::onPop
+            )
         },
     ) {
         LazyVerticalGrid(
@@ -73,7 +76,10 @@ private fun MDAppThemeScreenPreview() {
                         onExecute { true }
                     },
                     uiActions = MDAppThemeUiActions(
-                        object : MDAppThemeNavigationUiActions {
+                        object : MDAppThemeNavigationUiActions, MDAppNavigationUiActions {
+                            override fun onOpenNavDrawer() {}
+                            override fun onCloseNavDrawer() {}
+
                         },
                         object : MDAppThemeBusinessUiActions {
                             override fun onClickContrast(theme: MDTheme, contrast: MDThemeContrast) {}

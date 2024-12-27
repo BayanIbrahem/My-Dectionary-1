@@ -8,10 +8,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 
 @Composable
 fun WordDetailsRoute(
     wordDetails: MDDestination.WordDetails,
+    appUiState: MDAppUiState,
+    appActions: MDAppUiActions,
     pop: () -> Unit,
     onNavigateToWordStatistics: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -29,7 +34,7 @@ fun WordDetailsRoute(
     val contextTagsActions = wordsDetailsViewModel.contextTagsActions
     val navigationUiActions by remember {
         derivedStateOf {
-            object : WordDetailsNavigationUiActions {
+            object : WordDetailsNavigationUiActions, MDAppNavigationUiActions by appActions {
                 override fun pop() = pop()
                 override fun navigateToWordStatistics(wordId: Long) {
                     onNavigateToWordStatistics(wordId)

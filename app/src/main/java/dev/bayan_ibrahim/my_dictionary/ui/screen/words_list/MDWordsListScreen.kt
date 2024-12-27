@@ -83,6 +83,7 @@ fun MDWordsListScreen(
                 onDeleteSelection = uiActions::onDeleteSelection,
                 onConfirmAppendContextTagsOnSelectedWords = uiActions::onConfirmAppendContextTagsOnSelectedWords,
                 modifier = Modifier.background(Color.Green),
+                onNavigationIconClick = uiActions::onOpenNavDrawer
             )
         },
         floatingActionButton = {

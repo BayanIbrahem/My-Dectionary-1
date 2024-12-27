@@ -1,9 +1,11 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file
 
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
+
 interface MDExportToFileBusinessUiActions {
 }
 
-interface MDExportToFileNavigationUiActions {
+interface MDExportToFileNavigationUiActions: MDAppNavigationUiActions {
 }
 
 @androidx.compose.runtime.Immutable

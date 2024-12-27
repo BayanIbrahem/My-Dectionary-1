@@ -9,10 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 
 @Composable
 fun MDTrainRoute(
     args: MDDestination.Train,
+    appUiState: MDAppUiState,
+    appActions: MDAppUiActions,
     modifier: Modifier = Modifier,
     navigateToStatisticsScreen: () -> Unit,
     viewModel: MDTrainViewModel = hiltViewModel(),
@@ -26,7 +31,7 @@ fun MDTrainRoute(
     val remainingTime by viewModel.wordRemainingTimeDataSource.collectAsStateWithLifecycle()
     val navActions by remember {
         derivedStateOf {
-            object : MDTrainNavigationUiActions {
+            object : MDTrainNavigationUiActions, MDAppNavigationUiActions by appActions {
                 override fun onNavigateToResultsScreen() {
                     navigateToStatisticsScreen()
                 }

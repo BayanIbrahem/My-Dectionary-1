@@ -2,6 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.train
 
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainSubmitOption
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordAnswer
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 
 interface MDTrainBusinessUiActions {
     fun onSelectAnswer(answer: MDTrainWordAnswer)
@@ -9,7 +10,7 @@ interface MDTrainBusinessUiActions {
     fun onWriteWordSubmit(answer: String, submitOption: MDTrainSubmitOption)
 }
 
-interface MDTrainNavigationUiActions {
+interface MDTrainNavigationUiActions: MDAppNavigationUiActions {
     fun onNavigateToResultsScreen()
 }
 

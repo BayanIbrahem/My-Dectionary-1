@@ -12,11 +12,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesDialogRoute
 
 @Composable
 fun MDWordsListRoute(
     navArgs: MDDestination.TopLevel.WordsList,
+    appUiState: MDAppUiState,
+    appActions: MDAppUiActions,
     navigateToWordsDetails: (wordId: Long?, code: LanguageCode) -> Unit,
     navigateToTrainScreen: () -> Unit,
     modifier: Modifier = Modifier,
@@ -32,7 +37,7 @@ fun MDWordsListRoute(
     val lifeMemorizingProbability by viewModel.lifeMemorizingProbability.collectAsStateWithLifecycle()
     val navActions by remember(uiState.selectedWordSpace.language.code) {
         derivedStateOf {
-            object : MDWordsListNavigationUiActions {
+            object : MDWordsListNavigationUiActions, MDAppNavigationUiActions by appActions {
                 override fun navigateToWordDetails(wordId: Long?) = navigateToWordsDetails(wordId, uiState.selectedWordSpace.language.code)
             }
         }

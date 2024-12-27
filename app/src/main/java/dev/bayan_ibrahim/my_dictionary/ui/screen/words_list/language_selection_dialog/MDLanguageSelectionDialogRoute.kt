@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 
 @Composable
 fun MDLanguageSelectionDialogRoute(
@@ -24,7 +25,7 @@ fun MDLanguageSelectionDialogRoute(
     val uiState = viewModel.uiState
     val navActions by remember {
         derivedStateOf {
-            object : MDLanguageSelectionDialogNavigationUiActions {
+            object : MDLanguageSelectionDialogNavigationUiActions{
                 override fun onDismissRequest() {
                     onDismissDialog()
                 }

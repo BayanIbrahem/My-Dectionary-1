@@ -10,10 +10,13 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MDTrainTopAppBar(
+    onNavigationIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     MDTopAppBar(
         modifier = modifier,
+        onNavigationIconClick = onNavigationIconClick,
+        isTopLevel = false,
         title = {
             Text("Train") // TODO, string res
         }
