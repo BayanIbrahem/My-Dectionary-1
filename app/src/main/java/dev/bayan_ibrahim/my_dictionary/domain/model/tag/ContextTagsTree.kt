@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.ui.graphics.Color
 
 interface ContextTagsTree {
     val tag: ContextTag?
@@ -81,15 +82,17 @@ class ContextTagsMutableTree(
         return nextLevel.getOrPut(segment) {
             ContextTagsMutableTree(
                 tag = ContextTag(
-                    parent = this.tag,
-                    segment = segment,
+                    segments = (this.tag?.segments ?: emptyList()) + segment,
                 )
             )
         }
     }
 
     fun addTag(tag: ContextTag) {
-        if (tag == this.tag) return
+        if (tag == this.tag) {
+            this.tag = tag // update color
+            return
+        }
         if (this.tag?.contains(tag) == false) {
             return
         } else {
@@ -99,8 +102,21 @@ class ContextTagsMutableTree(
                 deepestSubTree = deepestSubTree.addTag(segment)
             }
             this[tag]?.let {
-                it.tag = tag // adding words count and tag id
+                it.tag = tag // adding words count and tag id, and color values
             }
+        }
+    }
+
+    fun updateColors() {
+        updateColorsRecursive()
+    }
+
+    private fun updateColorsRecursive(inheritableParentColor: Color? = this.tag?.color) {
+        if (this.tag?.color == null) {
+            this.tag = this.tag?.copy(color = inheritableParentColor, currentColorIsPassed = true, passColorToChildren = true)
+        }
+        nextLevel.forEach {
+            it.value.updateColorsRecursive()
         }
     }
 
@@ -121,7 +137,7 @@ class ContextTagsMutableTree(
         }
     }
 
-    fun setFrom(tags: List<ContextTag>) {
+    fun setFrom(tags: Collection<ContextTag>) {
         this.nextLevel.clear()
         this.tag = null
         tags.forEach(::addTag)
@@ -153,17 +169,19 @@ class ContextTagsMutableTree(
 
 fun Collection<ContextTag>.asTree(): ContextTagsTree {
     val tree = ContextTagsMutableTree()
-    this.forEach { tag ->
-        tree.addTag(tag)
-    }
+    tree.setFrom(this)
+
     tree.refreshWordsCountForNodes()
+    tree.updateColors()
 
     return tree
 }
 
 fun ContextTagsTree.asList(): List<ContextTag> {
     val result = mutableListOf<ContextTag>()
+
     asListRecursive(result)
+
     return result
 }
 

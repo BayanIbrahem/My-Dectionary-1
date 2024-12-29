@@ -77,9 +77,7 @@ fun MDApp(
                 }
 
                 override fun onPop() {
-                    currentDestination?.let {
-                        navController.popBackStack(it, inclusive = true)
-                    }
+                    navController.popBackStack()
                 }
             }
         }
@@ -92,6 +90,9 @@ fun MDApp(
     MDNavigationDrawer(
         currentDestination = currentDestination,
         onNavigateTo = {
+            coroutineScope.launch {
+                drawerState.close()
+            }
             if(it is MDDestination.TopLevel) {
                 navController.popBackStack()
 

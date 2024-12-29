@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.tag
 
+import androidx.compose.ui.graphics.Color
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 
 /**
@@ -11,26 +12,36 @@ data class ContextTag(
     val value: String,
     val id: Long = INVALID_ID,
     val wordsCount: Int? = null,
+    val color: Color? = null,
+    /**
+     * if true then its color would be passed to any children
+     */
+    val passColorToChildren: Boolean = true,
+    /**
+     * if the current value is its parent color or its own color
+     */
+    val currentColorIsPassed: Boolean = true,
 ) {
-    constructor(
-        parent: ContextTag? = null,
-        segment: String,
-        id: Long = INVALID_ID,
-        wordsCount: Int? = null,
-    ) : this(
-        segments = (parent?.segments ?: emptyList()) + segment,
-        id = id,
-        wordsCount = wordsCount,
-    )
-
     constructor(
         segments: Iterable<String>,
         id: Long = INVALID_ID,
         wordsCount: Int? = null,
+        markerColor: Color? = null,
+        /**
+         * if true then its color would be passed to any children
+         */
+        passMarkerColorToChildren: Boolean = true,
+        /**
+         * if the current value is its parent color or its own color
+         */
+        currentColorIsInherited: Boolean = true,
     ) : this(
         value = segments.joinToString(ContextTagSegmentSeparator),
         id = id,
         wordsCount = wordsCount,
+        color = markerColor,
+        passColorToChildren = passMarkerColorToChildren,
+        currentColorIsPassed = currentColorIsInherited
     )
 
     constructor(
@@ -89,26 +100,6 @@ data class ContextTag(
         }
         return true
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ContextTag) return false
-
-        if (value != other.value) return false
-        if (id != other.id) return false
-        if ((wordsCount ?: 0) != (other.wordsCount ?: 0)) return false
-        if (segments != other.segments) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = value.hashCode()
-        result = 31 * result + id.hashCode()
-        result = 31 * result + (wordsCount ?: 0)
-        result = 31 * result + segments.hashCode()
-        return result
-    }
 }
 
 val ContextTag.depth: Int
@@ -138,3 +129,42 @@ fun ContextTag.parentAtLevelOrNull(level: Int): ContextTag? {
  * return parent that contains [level] segments count, if [level] > [depth] throw an exception
  */
 fun ContextTag.parentAtLevel(level: Int): ContextTag = parentAtLevelOrNull(level)!!
+
+
+/**
+ * Comparator for `ContextTag` objects to determine their ordering based on inheritance and path.
+ *
+ * In general it compare tas as it is an inheritance tree (like family tree when we need to compare which is older 🙂)
+ *
+ * Comparison rules:
+ * 1. `null` is considered the smallest value (both null returns 0).
+ * 2. A child tag is greater than its parent tag.
+ * 3. If neither is a parent of the other:
+ *    - The tag with the shorter path is smaller.
+ *    - If paths are of equal length, comparison is based on the lexicographic order of their segments.
+ */
+object InheritedTagsComparable : Comparator<ContextTag> {
+    override fun compare(t1: ContextTag?, t2: ContextTag?): Int {
+        // Null checks
+        if (t1 == null) return if (t2 == null) 0 else -1
+        if (t2 == null) return 1
+
+        // Parent-child relationship
+        when {
+            t1.contains(t2) -> return -1
+            t2.contains(t1) -> return 1
+        }
+
+        // Path length comparison
+        val depthComparison = t1.depth.compareTo(t2.depth)
+        if (depthComparison != 0) return depthComparison
+
+        // Lexicographic comparison of segments
+        for (i in 0 until t1.depth) {
+            val segmentComparison = t1[i].compareTo(t2[i])
+            if (segmentComparison != 0) return segmentComparison
+        }
+
+        return 0
+    }
+}

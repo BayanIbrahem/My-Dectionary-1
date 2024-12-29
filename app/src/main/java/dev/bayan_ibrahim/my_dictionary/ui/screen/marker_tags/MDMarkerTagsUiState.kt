@@ -5,9 +5,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
 
 
 interface MDMarkerTagsUiState : MDUiState {
-
 }
 
 class MDMarkerTagsMutableUiState : MDMarkerTagsUiState, MDMutableUiState() {
-
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
@@ -15,7 +16,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 
 @Composable
 fun MDMarkerTagsRoute(
-    args: MDDestination,
+    args: MDDestination.MarkerTags,
     appUiState: MDAppUiState,
     appActions: MDAppUiActions,
     modifier: Modifier = Modifier,
@@ -26,6 +27,10 @@ fun MDMarkerTagsRoute(
     }
 
     val uiState = viewModel.uiState
+    val markerTags by viewModel.markerTags.collectAsStateWithLifecycle()
+    val nonMarkerTagsState = viewModel.nonMarkerTagsExplorerState
+    val nonMarkerTagsActions = viewModel.nonMarkerTagsExplorerActions
+
     val navActions by remember {
         derivedStateOf {
             object : MDMarkerTagsNavigationUiActions, MDAppNavigationUiActions by appActions {
@@ -39,6 +44,9 @@ fun MDMarkerTagsRoute(
     }
     MDMarkerTagsScreen(
         uiState = uiState,
+        markerTags = markerTags,
+        nonMarkerTagsState = nonMarkerTagsState,
+        nonMarkerTagsActions = nonMarkerTagsActions,
         uiActions = uiActions,
         modifier = modifier,
     )

@@ -18,17 +18,13 @@ class MDContextTagsSelectionActionsImpl(
     private var forbiddenFilter: (ContextTag) -> Boolean = { false }
     private fun setCurrentTree(tree: ContextTagsTree) {
         state.currentTagsTree.setFrom(tree)
-        onUpdateFilteredTags()
+        onUpdateSelectEnableState()
     }
 
-    private fun onUpdateFilteredTags() {
-        val subTags = state.currentTagsTree.nextLevel.values.mapNotNull { it.tag }
-        val removedTags = subTags.filter {
-            !allowedFilter(it) || forbiddenFilter(it) || it in state.selectedTags
-        }
-        removedTags.forEach {
-            state.currentTagsTree.removeTag(it)
-        }
+    private fun onUpdateSelectEnableState() {
+        state.isSelectEnabled = state.currentTagsTree.tag?.let {
+            allowedFilter(it) && !forbiddenFilter(it)
+        } == true
     }
 
     private fun onUpdateDisabledTags() {
@@ -44,7 +40,7 @@ class MDContextTagsSelectionActionsImpl(
 
     private fun onUpdateSelectedTags() {
         onUpdateSelectedTags(state.selectedTags)
-        onUpdateFilteredTags()
+        onUpdateSelectEnableState()
         onUpdateDisabledTags()
     }
 
@@ -100,7 +96,7 @@ class MDContextTagsSelectionActionsImpl(
 
     override fun onAddNewContextTag(segment: String) {
         if (segment.isNotBlank()) {
-            val tag = ContextTag(state.currentTagsTree.tag, segment)
+            val tag = ContextTag((state.currentTagsTree.tag?.segments ?: emptyList()) + segment)
             onAddNewContextTag(tag)
         }
     }
@@ -122,28 +118,28 @@ class MDContextTagsSelectionActionsImpl(
 
     override fun onSetAllowedTagsFilter(filter: (ContextTag) -> Boolean) {
         allowedFilter = filter
-        onUpdateFilteredTags()
+        onUpdateSelectEnableState()
     }
 
     override fun onResetAllowedTagsFilter() {
         allowedFilter = { true }
-        onUpdateFilteredTags()
+        onUpdateSelectEnableState()
     }
 
     override fun onSetForbiddenTagsFilter(filter: (ContextTag) -> Boolean) {
         forbiddenFilter = filter
-        onUpdateFilteredTags()
+        onUpdateSelectEnableState()
     }
 
     override fun onResetForbiddenTagsFilter() {
         forbiddenFilter = { false }
-        onUpdateFilteredTags()
+        onUpdateSelectEnableState()
     }
 
     override fun onResetTagsFilter() {
         allowedFilter = { true }
         forbiddenFilter = { false }
-        onUpdateFilteredTags()
+        onUpdateSelectEnableState()
     }
 
     override fun refreshCurrentTree() {

@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.bayan_ibrahim.my_dictionary.data.MDImportFromFileRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDLanguageSelectionDialogRepoImpl
+import dev.bayan_ibrahim.my_dictionary.data.MDMarkerTagsRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDStatisticsRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDTrainRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordDetailsRepoImpl
@@ -19,6 +20,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreference
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.MDFileReaderAbstractFactory
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDLanguageSelectionDialogRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDMarkerTagsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDStatisticsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
@@ -126,5 +128,14 @@ class DataModule {
         wordDao = db.getWordDao(),
         contextTagDao = db.getContextTagDao(),
         wordCrossContextTagDao = db.getWordsCrossTagsDao(),
+    )
+
+    @Singleton
+    @Provides
+    fun provideMarkerTagsRepo(
+        db: MDDataBase,
+    ): MDMarkerTagsRepo = MDMarkerTagsRepoImpl(
+        contextTagDao = db.getContextTagDao(),
+        wordsCrossContextTagDao = db.getWordsCrossTagsDao(),
     )
 }

@@ -105,13 +105,6 @@ fun MDContextTagExplorerDialog(
         newTagSegmentText = ""
     }
 
-    val primaryActionEnabled by remember(
-        state.currentTagsTree,
-    ) {
-        derivedStateOf {
-            state.currentTagsTree.tag != null
-        }
-    }
     var searchQuery by remember {
         mutableStateOf("")
     }
@@ -124,7 +117,7 @@ fun MDContextTagExplorerDialog(
             MDAlertDialogActions(
                 onDismissRequest = onDismissRequest,
                 primaryActionLabel = primaryActionLabel,
-                primaryClickEnabled = primaryActionEnabled,
+                primaryClickEnabled = state.isSelectEnabled,
                 onPrimaryClick = {
                     actions.onSelectCurrentTag()
                 }

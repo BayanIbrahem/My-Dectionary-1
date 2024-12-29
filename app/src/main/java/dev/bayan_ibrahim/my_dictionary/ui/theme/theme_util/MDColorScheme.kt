@@ -88,11 +88,3 @@ data class MDColorScheme(
         third = surfaceContainer.toColor(),
     )
 }
-
-/**
- * must the color be # follwoed by 6 chars in hex
- */
-private fun String.toColor(): Color {
-    val colorLong = this.replaceFirst("#", "FF").toLong(16)
-    return Color(colorLong)
-}

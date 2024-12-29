@@ -9,4 +9,5 @@ interface MDContextTagsSelectionUiState {
     val allTagsTree: ContextTagsTree
     val currentTagsTree: ContextTagsTree
     val selectedTags: List<ContextTag>
+    val isSelectEnabled: Boolean
 }

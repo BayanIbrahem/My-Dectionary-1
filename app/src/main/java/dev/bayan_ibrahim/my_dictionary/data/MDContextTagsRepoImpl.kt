@@ -3,6 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.data
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.context_tag.ContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word_cross_context_tag.WordsCrossContextTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.ContextTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.onStart
 class MDContextTagsRepoImpl(
     private val contextTagDao: ContextTagDao,
     private val wordsCrossContextTagDao: WordsCrossContextTagDao,
-): MDContextTagsRepo {
+) : MDContextTagsRepo {
     override suspend fun addOrUpdateContextTag(tag: ContextTag): ContextTag {
         return if (tag.id != INVALID_ID) {
             contextTagDao.updateContextTag(tag.asEntity())
@@ -34,11 +35,22 @@ class MDContextTagsRepoImpl(
         }
     }
 
-    override fun getContextTagsStream(): Flow<List<ContextTag>> = wordsCrossContextTagDao.getAllWordsCrossContextTags().map {
-        it.groupBy { it.tagId }.mapValues { it.value.count() }
-    }.onStart {
-        emptyMap<Long, Int>()
-    }.combine(contextTagDao.getAllContextTags()) { tagIdWordsCount, contextTags ->
+
+    override fun getContextTagsStream(
+        includeMarkerTags: Boolean,
+        includeNonMarkerTags: Boolean,
+    ): Flow<List<ContextTag>> = contextTagDao.getAllTagsOfMarkerState(
+        includeMarker = includeMarkerTags,
+        includeNotMarker = includeNonMarkerTags
+    ).onStart {
+        emptyList<ContextTagEntity>()
+    }.combine(
+        wordsCrossContextTagDao.getAllWordsCrossContextTags().map {
+            it.groupBy { it.tagId }.mapValues { it.value.count() }
+        }.onStart {
+            emptyMap<Long, Int>()
+        }
+    ) { contextTags, tagIdWordsCount ->
         contextTags.map { tag ->
             tag.asModel(tagIdWordsCount[tag.tagId] ?: 0)
         }

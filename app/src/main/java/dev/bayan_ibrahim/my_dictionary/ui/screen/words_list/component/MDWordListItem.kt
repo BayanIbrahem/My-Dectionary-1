@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.MDNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalizer
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.safeSubList
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
@@ -61,6 +60,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerp
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
@@ -73,6 +73,7 @@ fun MDWordListItem(
     searchQuery: Pair<String?, String?>,
     modifier: Modifier = Modifier,
     colors: MDCardColors = MDCardDefaults.colors(),
+    overrideHeaderColorsFromTags: Boolean = true,
     expanded: Boolean = true,
     animationDuration: Int = 300,
     animationEasing: Easing = FastOutSlowInEasing,
@@ -97,9 +98,26 @@ fun MDWordListItem(
             searchQuery.first != null && searchQuery.second != null
         }
     }
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+    val updatedColors by remember(colors, overrideHeaderColorsFromTags, surfaceColor, onSurfaceColor) {
+        derivedStateOf {
+            if (overrideHeaderColorsFromTags) {
+                word.tags.firstNotNullOfOrNull { it.color }?.let { seed ->
+                    colors.copy(
+                        headerContainerColor = seed.lerp(surfaceColor),
+                        headerContentColor = seed.lerp(onSurfaceColor),
+                    )
+                } ?: colors
+            } else {
+                colors
+            }
+        }
+    }
     MDVerticalCard(
         modifier = modifier,
         headerClickable = headerClickable,
+        colors = updatedColors,
         cardClickable = cardClickable,
         onClickHeader = onClickHeader,
         onLongClickHeader = onLongClickHeader,
@@ -321,8 +339,8 @@ private fun MDWordListItemPreview() {
                         additionalTranslations = listOf("Human Eye", "Human Eye 2"),
                         language = Language("de".code, "Deutsch", "German"),
                         tags = setOf(
-                            ContextTag(value ="Human body"),
-                            ContextTag(value ="Organic")
+                            ContextTag(value = "Human body"),
+                            ContextTag(value = "Organic")
                         ),
                         transcription = "auge",
                         examples = listOf("I habe zwei auge", "some other example"),
@@ -341,7 +359,7 @@ private fun MDWordListItemPreview() {
                         IconButton(onClick = {
                             expanded = !expanded
                         }) {
-                            MDIcon(MDIconsSet.Close) 
+                            MDIcon(MDIconsSet.Close)
                         }
                     },
                     secondaryAction = {

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 8,
-    "identityHash": "0323b40d8dddfec954817fef21dcfcae",
+    "identityHash": "299675c0ded53d6c33db0df7f8e58644",
     "entities": [
       {
         "tableName": "words",
@@ -456,7 +456,7 @@
       },
       {
         "tableName": "contextTags",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contextTags_id` INTEGER PRIMARY KEY AUTOINCREMENT, `contextTags_path` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contextTags_id` INTEGER PRIMARY KEY AUTOINCREMENT, `contextTags_path` TEXT NOT NULL, `contextTags_color` INTEGER, `contextTags_passColorToChildren` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "tagId",
@@ -468,6 +468,18 @@
             "fieldPath": "path",
             "columnName": "contextTags_path",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "contextTags_color",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "passToChildren",
+            "columnName": "contextTags_passColorToChildren",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -568,7 +580,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0323b40d8dddfec954817fef21dcfcae')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '299675c0ded53d6c33db0df7f8e58644')"
     ]
   }
 }

@@ -35,7 +35,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
         ContextTagEntity::class,
         WordCrossContextTagEntity::class,
     ],
-    version = 8,
+    version = 9,
     exportSchema = true,
 )
 abstract class MDDataBase : RoomDatabase() {

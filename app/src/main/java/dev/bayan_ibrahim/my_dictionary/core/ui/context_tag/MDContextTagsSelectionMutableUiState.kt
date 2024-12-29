@@ -16,4 +16,5 @@ class MDContextTagsSelectionMutableUiState : MDContextTagsSelectionUiState {
     override val allTagsTree: ContextTagsMutableTree = ContextTagsMutableTree()
     override val currentTagsTree: ContextTagsMutableTree = ContextTagsMutableTree()
     override val selectedTags: SnapshotStateList<ContextTag> = mutableStateListOf()
+    override var isSelectEnabled by mutableStateOf(true)
 }

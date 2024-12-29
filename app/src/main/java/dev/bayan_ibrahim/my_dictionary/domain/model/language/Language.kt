@@ -1,5 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.language
 
+import android.text.TextUtils
+import android.util.LayoutDirection
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalize
 import kotlinx.serialization.Serializable
@@ -64,6 +66,11 @@ val Language.wordSpace: LanguageWordSpace
 val allLanguages: Map<LanguageCode, Language> by lazy {
     val defaultLocale = Locale.getDefault()
     Locale.getAvailableLocales().associate { locale ->
+        val layoutDirection = when (TextUtils.getLayoutDirectionFromLocale(locale)) {
+            LayoutDirection.RTL -> androidx.compose.ui.unit.LayoutDirection.Rtl
+            LayoutDirection.LTR -> androidx.compose.ui.unit.LayoutDirection.Ltr
+            else -> null
+        }
         locale.language.code to Language(
             code = locale.language.code,
             selfDisplayName = locale.displayLanguage,

@@ -4,7 +4,10 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import kotlinx.coroutines.flow.Flow
 
 interface MDContextTagsRepo {
-    fun getContextTagsStream(): Flow<List<ContextTag>>
+    fun getContextTagsStream(
+        includeMarkerTags: Boolean = true,
+        includeNonMarkerTags: Boolean = true,
+    ): Flow<List<ContextTag>>
     suspend fun addOrUpdateContextTag(tag: ContextTag): ContextTag
     suspend fun removeContextTag(tag: ContextTag)
 }

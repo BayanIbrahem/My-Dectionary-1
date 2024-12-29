@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.ContextTagEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbContextTagColor
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbContextTagId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbContextTagPath
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbContextTagTable
@@ -72,4 +73,31 @@ interface ContextTagDao {
         """
     )
     fun getContextTagsOf(ids: Collection<Long>): Flow<List<ContextTagEntity>>
+
+    @Query(
+        """
+            SELECT * FROM $dbContextTagTable WHERE $dbContextTagColor IS NOT NULL
+        """
+    )
+    fun getMarkerContextTags(): Flow<List<ContextTagEntity>>
+
+    @Query(
+        """
+            SELECT * FROM $dbContextTagTable WHERE $dbContextTagColor IS NULL
+        """
+    )
+    fun getNotMarkerContextTags(): Flow<List<ContextTagEntity>>
+
+    @Query(
+        """
+            SELECT * 
+            FROM $dbContextTagTable 
+            WHERE ($dbContextTagColor IS NULL AND :includeNotMarker) 
+            OR ($dbContextTagColor IS NOT NULL AND :includeMarker)
+        """
+    )
+    fun getAllTagsOfMarkerState(
+        includeMarker: Boolean,
+        includeNotMarker: Boolean,
+    ): Flow<List<ContextTagEntity>>
 }
