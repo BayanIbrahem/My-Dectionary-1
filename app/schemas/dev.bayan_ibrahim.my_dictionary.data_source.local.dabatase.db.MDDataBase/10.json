@@ -1,0 +1,664 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 10,
+    "identityHash": "66a78c45801999dd090286d103fc9374",
+    "entities": [
+      {
+        "tableName": "words",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`word_id` INTEGER PRIMARY KEY AUTOINCREMENT, `word_meaning` TEXT NOT NULL, `word_createdAt` INTEGER NOT NULL, `word_updatedAt` INTEGER NOT NULL, `word_normalized_meaning` TEXT NOT NULL, `word_translation` TEXT NOT NULL, `word_normalized_translation` TEXT NOT NULL, `word_languageCode` TEXT NOT NULL, `word_additionalTranslations` TEXT NOT NULL, `word_typeTag` INTEGER, `word_memoryDecayFactor` REAL NOT NULL DEFAULT 1, `word_lastTrain` INTEGER DEFAULT NULL, `word_transcription` TEXT NOT NULL, `word_examples` TEXT NOT NULL, `word_Synonym` TEXT NOT NULL, `word_Antonym` TEXT NOT NULL, `word_Hyponym` TEXT NOT NULL, `word_Hypernym` TEXT NOT NULL, `word_Meronym` TEXT NOT NULL, `word_Holonym` TEXT NOT NULL, `word_Homonym` TEXT NOT NULL, `word_Polysemy` TEXT NOT NULL, `word_Prototype` TEXT NOT NULL, `word_Metonymy` TEXT NOT NULL, `word_Collocation` TEXT NOT NULL, `word_Homograph` TEXT NOT NULL, `word_Homophone` TEXT NOT NULL, FOREIGN KEY(`word_typeTag`) REFERENCES `typeTags`(`typeTag_id`) ON UPDATE SET NULL ON DELETE SET NULL , FOREIGN KEY(`word_languageCode`) REFERENCES `languages`(`language_code`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "word_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "meaning",
+            "columnName": "word_meaning",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "word_createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "word_updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "normalizedMeaning",
+            "columnName": "word_normalized_meaning",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "translation",
+            "columnName": "word_translation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "normalizedTranslation",
+            "columnName": "word_normalized_translation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "languageCode",
+            "columnName": "word_languageCode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "additionalTranslations",
+            "columnName": "word_additionalTranslations",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wordTypeTagId",
+            "columnName": "word_typeTag",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "memoryDecayFactor",
+            "columnName": "word_memoryDecayFactor",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "lastTrainTime",
+            "columnName": "word_lastTrain",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "NULL"
+          },
+          {
+            "fieldPath": "transcription",
+            "columnName": "word_transcription",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "examples",
+            "columnName": "word_examples",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "synonym",
+            "columnName": "word_Synonym",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "antonym",
+            "columnName": "word_Antonym",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hyponym",
+            "columnName": "word_Hyponym",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hypernym",
+            "columnName": "word_Hypernym",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meronym",
+            "columnName": "word_Meronym",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "holonym",
+            "columnName": "word_Holonym",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "homonym",
+            "columnName": "word_Homonym",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "polysemy",
+            "columnName": "word_Polysemy",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prototype",
+            "columnName": "word_Prototype",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "metonymy",
+            "columnName": "word_Metonymy",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collocation",
+            "columnName": "word_Collocation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "homograph",
+            "columnName": "word_Homograph",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "homophone",
+            "columnName": "word_Homophone",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "word_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_words_word_typeTag",
+            "unique": false,
+            "columnNames": [
+              "word_typeTag"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_words_word_typeTag` ON `${TABLE_NAME}` (`word_typeTag`)"
+          },
+          {
+            "name": "index_words_word_languageCode",
+            "unique": false,
+            "columnNames": [
+              "word_languageCode"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_words_word_languageCode` ON `${TABLE_NAME}` (`word_languageCode`)"
+          },
+          {
+            "name": "index_words_word_normalized_meaning",
+            "unique": false,
+            "columnNames": [
+              "word_normalized_meaning"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_words_word_normalized_meaning` ON `${TABLE_NAME}` (`word_normalized_meaning`)"
+          },
+          {
+            "name": "index_words_word_normalized_translation",
+            "unique": false,
+            "columnNames": [
+              "word_normalized_translation"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_words_word_normalized_translation` ON `${TABLE_NAME}` (`word_normalized_translation`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "typeTags",
+            "onDelete": "SET NULL",
+            "onUpdate": "SET NULL",
+            "columns": [
+              "word_typeTag"
+            ],
+            "referencedColumns": [
+              "typeTag_id"
+            ]
+          },
+          {
+            "table": "languages",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "word_languageCode"
+            ],
+            "referencedColumns": [
+              "language_code"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "trainHistory",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`trainHistory_id` INTEGER PRIMARY KEY AUTOINCREMENT, `trainHistory_wordId` INTEGER, `trainHistory_time` INTEGER NOT NULL, `trainHistory_questionWord` TEXT NOT NULL, `trainHistory_TrainType` INTEGER NOT NULL, `trainHistory_TrainResult` TEXT NOT NULL, FOREIGN KEY(`trainHistory_wordId`) REFERENCES `words`(`word_id`) ON UPDATE SET NULL ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "trainHistory_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wordId",
+            "columnName": "trainHistory_wordId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "trainHistory_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "questionWord",
+            "columnName": "trainHistory_questionWord",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trainType",
+            "columnName": "trainHistory_TrainType",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trainResult",
+            "columnName": "trainHistory_TrainResult",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "trainHistory_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_trainHistory_trainHistory_wordId",
+            "unique": false,
+            "columnNames": [
+              "trainHistory_wordId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_trainHistory_trainHistory_wordId` ON `${TABLE_NAME}` (`trainHistory_wordId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "words",
+            "onDelete": "SET NULL",
+            "onUpdate": "SET NULL",
+            "columns": [
+              "trainHistory_wordId"
+            ],
+            "referencedColumns": [
+              "word_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "typeTags",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`typeTag_id` INTEGER PRIMARY KEY AUTOINCREMENT, `typeTag_name` TEXT NOT NULL, `typeTag_language` TEXT NOT NULL, FOREIGN KEY(`typeTag_language`) REFERENCES `languages`(`language_code`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "typeTag_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "typeTag_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "language",
+            "columnName": "typeTag_language",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "typeTag_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_typeTags_typeTag_language",
+            "unique": false,
+            "columnNames": [
+              "typeTag_language"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_typeTags_typeTag_language` ON `${TABLE_NAME}` (`typeTag_language`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "languages",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "typeTag_language"
+            ],
+            "referencedColumns": [
+              "language_code"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "tagRelatedWords",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`relatedWord_id` INTEGER PRIMARY KEY AUTOINCREMENT, `relatedWord_relationId` INTEGER NOT NULL, `relatedWord_baseWordId` INTEGER NOT NULL, `relatedWord_name` TEXT NOT NULL, FOREIGN KEY(`relatedWord_relationId`) REFERENCES `tagRelations`(`relation_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`relatedWord_baseWordId`) REFERENCES `words`(`word_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "relatedWord_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "relationId",
+            "columnName": "relatedWord_relationId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseWordId",
+            "columnName": "relatedWord_baseWordId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "word",
+            "columnName": "relatedWord_name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "relatedWord_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_tagRelatedWords_relatedWord_relationId",
+            "unique": false,
+            "columnNames": [
+              "relatedWord_relationId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tagRelatedWords_relatedWord_relationId` ON `${TABLE_NAME}` (`relatedWord_relationId`)"
+          },
+          {
+            "name": "index_tagRelatedWords_relatedWord_baseWordId",
+            "unique": false,
+            "columnNames": [
+              "relatedWord_baseWordId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tagRelatedWords_relatedWord_baseWordId` ON `${TABLE_NAME}` (`relatedWord_baseWordId`)"
+          },
+          {
+            "name": "index_tagRelatedWords_relatedWord_baseWordId_relatedWord_relationId",
+            "unique": true,
+            "columnNames": [
+              "relatedWord_baseWordId",
+              "relatedWord_relationId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_tagRelatedWords_relatedWord_baseWordId_relatedWord_relationId` ON `${TABLE_NAME}` (`relatedWord_baseWordId`, `relatedWord_relationId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "tagRelations",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "relatedWord_relationId"
+            ],
+            "referencedColumns": [
+              "relation_id"
+            ]
+          },
+          {
+            "table": "words",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "relatedWord_baseWordId"
+            ],
+            "referencedColumns": [
+              "word_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "tagRelations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`relation_id` INTEGER PRIMARY KEY AUTOINCREMENT, `relation_label` TEXT NOT NULL, `relation_tagId` INTEGER NOT NULL, FOREIGN KEY(`relation_tagId`) REFERENCES `typeTags`(`typeTag_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "relation_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "relation_label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "relation_tagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "relation_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_tagRelations_relation_tagId",
+            "unique": false,
+            "columnNames": [
+              "relation_tagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tagRelations_relation_tagId` ON `${TABLE_NAME}` (`relation_tagId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "typeTags",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "relation_tagId"
+            ],
+            "referencedColumns": [
+              "typeTag_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "languages",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`language_code` TEXT NOT NULL, PRIMARY KEY(`language_code`))",
+        "fields": [
+          {
+            "fieldPath": "code",
+            "columnName": "language_code",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "language_code"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "contextTags",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contextTags_id` INTEGER PRIMARY KEY AUTOINCREMENT, `contextTags_path` TEXT NOT NULL, `contextTags_color` INTEGER, `contextTags_passColorToChildren` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "tagId",
+            "columnName": "contextTags_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "path",
+            "columnName": "contextTags_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "contextTags_color",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "passToChildren",
+            "columnName": "contextTags_passColorToChildren",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "contextTags_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_contextTags_contextTags_path",
+            "unique": true,
+            "columnNames": [
+              "contextTags_path"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_contextTags_contextTags_path` ON `${TABLE_NAME}` (`contextTags_path`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "wordsWithContextTags",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wordsWithContextTags_id` INTEGER PRIMARY KEY AUTOINCREMENT, `wordsWithContextTags_wordId` INTEGER NOT NULL, `wordsWithContextTags_tagId` INTEGER NOT NULL, FOREIGN KEY(`wordsWithContextTags_wordId`) REFERENCES `words`(`word_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`wordsWithContextTags_tagId`) REFERENCES `contextTags`(`contextTags_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "wordsWithContextTags_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wordId",
+            "columnName": "wordsWithContextTags_wordId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "wordsWithContextTags_tagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "wordsWithContextTags_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_wordsWithContextTags_wordsWithContextTags_wordId",
+            "unique": false,
+            "columnNames": [
+              "wordsWithContextTags_wordId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wordsWithContextTags_wordsWithContextTags_wordId` ON `${TABLE_NAME}` (`wordsWithContextTags_wordId`)"
+          },
+          {
+            "name": "index_wordsWithContextTags_wordsWithContextTags_tagId",
+            "unique": false,
+            "columnNames": [
+              "wordsWithContextTags_tagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wordsWithContextTags_wordsWithContextTags_tagId` ON `${TABLE_NAME}` (`wordsWithContextTags_tagId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "words",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "wordsWithContextTags_wordId"
+            ],
+            "referencedColumns": [
+              "word_id"
+            ]
+          },
+          {
+            "table": "contextTags",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "wordsWithContextTags_tagId"
+            ],
+            "referencedColumns": [
+              "contextTags_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '66a78c45801999dd090286d103fc9374')"
+    ]
+  }
+}
