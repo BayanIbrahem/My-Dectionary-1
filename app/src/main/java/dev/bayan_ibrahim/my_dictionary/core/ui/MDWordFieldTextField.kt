@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusEvent
@@ -42,22 +43,24 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 fun MDWordFieldTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    leadingIcon: MDIconsSet?,
+    leadingIcon: MDIconsSet? = null,
     modifier: Modifier = Modifier,
     label: String = "",
     placeholder: String = label,
     showLabelOnEditMode: Boolean = false,
     readOnly: Boolean = false,
-    enabled: Boolean = true,
     focusManager: FocusManager = LocalFocusManager.current,
     onFocusEvent: (FocusState) -> Unit = {},
     colors: TextFieldColors = MDTextFieldDefaults.colors(),
     hasBottomHorizontalDivider: Boolean = false,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     index: Int? = null,
+    showTrailingActionsIfNotFocused: Boolean = true,
     indexFormat: (Int) -> String = { "$it. " },
-    imeAction: MDImeAction = MDImeAction.Done,
-    onKeyboardAction: KeyboardActionScope.() -> Unit = {},
+    imeAction: MDImeAction = MDImeAction.Next,
+    onKeyboardAction: KeyboardActionScope.() -> Unit = {
+        focusManager.moveFocus(FocusDirection.Next)
+    },
 ) {
     var isFocused by remember {
         mutableStateOf(false)
@@ -69,6 +72,11 @@ fun MDWordFieldTextField(
     val textFieldLabel by remember(readOnly, showLabelOnEditMode) {
         derivedStateOf { if (readOnly || showLabelOnEditMode) label else "" }
     }
+    val showTrailingActions by remember(value, showTrailingActionsIfNotFocused, isFocused) {
+        derivedStateOf {
+            value.isNotBlank() && (showTrailingActionsIfNotFocused || isFocused)
+        }
+    }
     MDBasicTextField(
         value = value,
         onValueChange = onValueChange,
@@ -76,12 +84,10 @@ fun MDWordFieldTextField(
             isFocused = it.isFocused
             onFocusEvent(it)
         },
+        hasBottomHorizontalDivider = hasBottomHorizontalDivider,
         maxLines = 1,
         placeholder = placeholder,
         label = textFieldLabel,
-        readOnly = readOnly,
-        enabled = enabled,
-        hasBottomHorizontalDivider = hasBottomHorizontalDivider,
         prefix = index?.let {
             {
                 FieldPrefix(
@@ -99,6 +105,7 @@ fun MDWordFieldTextField(
         },
         trailingIcons = fieldTrailingIcons(
             isFocused = isFocused,
+            showActions = showTrailingActions,
             onValueChange = onValueChange,
             focusManager = focusManager
         ),
@@ -126,6 +133,8 @@ fun <Data : Any> MDWordFieldTextField(
     showLabelOnPreviewMode: Boolean = false,
     fieldReadOnly: Boolean = false,
     menuReadOnly: Boolean = false,
+
+    showTrailingActionsIfNotFocused: Boolean = true,
     enabled: Boolean = true,
     focusManager: FocusManager = LocalFocusManager.current,
     onFocusEvent: (FocusState) -> Unit = {},
@@ -147,6 +156,12 @@ fun <Data : Any> MDWordFieldTextField(
     )
     val textFieldLabel by remember(fieldReadOnly, showLabelOnPreviewMode) {
         derivedStateOf { if (fieldReadOnly || showLabelOnPreviewMode) label else "" }
+    }
+
+    val showTrailingActions by remember(value, showTrailingActionsIfNotFocused, isFocused) {
+        derivedStateOf {
+            value != null && (showTrailingActionsIfNotFocused || isFocused)
+        }
     }
     MDBasicDropDownMenu(
         value = value,
@@ -182,6 +197,7 @@ fun <Data : Any> MDWordFieldTextField(
         },
         trailingIcons = fieldTrailingIcons(
             isFocused = isFocused,
+            showActions = showLabelOnPreviewMode,
             onValueChange = onValueChange,
             focusManager = focusManager
         ),
@@ -211,10 +227,11 @@ private fun FieldPrefix(
 
 private fun fieldTrailingIcons(
     isFocused: Boolean,
+    showActions: Boolean,
     onValueChange: (String) -> Unit,
     focusManager: FocusManager,
 ): (@Composable RowScope.() -> Unit)? {
-    return if (isFocused) {
+    return if (showActions) {
         {
             // clear
             IconButton(
@@ -223,15 +240,17 @@ private fun fieldTrailingIcons(
                 },
                 modifier = Modifier.size(36.dp),
             ) {
-                MDIcon(MDIconsSet.Close) 
+                MDIcon(MDIconsSet.Close)
             }
-            IconButton(
-                onClick = {
-                    focusManager.clearFocus()
-                },
-                modifier = Modifier.size(36.dp),
-            ) {
-                MDIcon(MDIconsSet.Check) 
+            if (isFocused) {
+                IconButton(
+                    onClick = {
+                        focusManager.clearFocus()
+                    },
+                    modifier = Modifier.size(36.dp),
+                ) {
+                    MDIcon(MDIconsSet.Check)
+                }
             }
         }
     } else null
@@ -261,7 +280,7 @@ private fun MDWordFieldTextFieldPreview() {
                     MDWordFieldTextField(
                         value = value,
                         onValueChange = { value = it },
-                        leadingIcon = MDIconsSet.WordMeaning, 
+                        leadingIcon = MDIconsSet.WordMeaning,
                         placeholder = "Normal Field",
                         index = 1,
                         modifier = Modifier.fillMaxWidth(),
@@ -277,7 +296,7 @@ private fun MDWordFieldTextFieldPreview() {
 
                         },
                         suggestionTitle = { this },
-                        leadingIcon = MDIconsSet.WordMeaning, 
+                        leadingIcon = MDIconsSet.WordMeaning,
                         placeholder = "Field With suggestions",
                         index = 1,
                         fieldModifier = Modifier.fillMaxWidth(),

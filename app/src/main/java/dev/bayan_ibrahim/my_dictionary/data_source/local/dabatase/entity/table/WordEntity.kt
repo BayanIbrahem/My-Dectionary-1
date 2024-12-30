@@ -12,15 +12,28 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.Stri
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageCode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordAdditionalTranslations
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordAntonym
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordCollocation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordCreatedAt
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordExamples
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordHolonym
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordHomograph
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordHomonym
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordHomophone
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordHypernym
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordHyponym
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLastTrain
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMeaning
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMemoryDecayFactor
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMeronym
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMetonymy
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedMeaning
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNormalizedTranslation
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordPolysemy
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordPrototype
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordSynonym
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranscription
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
@@ -84,4 +97,30 @@ data class WordEntity(
     val transcription: String = INVALID_TEXT,
     @ColumnInfo(dbWordExamples)
     val examples: List<String> = emptyList(),
+    @ColumnInfo(dbWordSynonym)
+    val synonym: List<String> = emptyList(),
+    @ColumnInfo(dbWordAntonym)
+    val antonym: List<String> = emptyList(),
+    @ColumnInfo(dbWordHyponym)
+    val hyponym: List<String> = emptyList(),
+    @ColumnInfo(dbWordHypernym)
+    val hypernym: List<String> = emptyList(),
+    @ColumnInfo(dbWordMeronym)
+    val meronym: List<String> = emptyList(),
+    @ColumnInfo(dbWordHolonym)
+    val holonym: List<String> = emptyList(),
+    @ColumnInfo(dbWordHomonym)
+    val homonym: List<String> = emptyList(),
+    @ColumnInfo(dbWordPolysemy)
+    val polysemy: List<String> = emptyList(),
+    @ColumnInfo(dbWordPrototype)
+    val prototype: List<String> = emptyList(),
+    @ColumnInfo(dbWordMetonymy)
+    val metonymy: List<String> = emptyList(),
+    @ColumnInfo(dbWordCollocation)
+    val collocation: List<String> = emptyList(),
+    @ColumnInfo(dbWordHomograph)
+    val homograph: List<String> = emptyList(),
+    @ColumnInfo(dbWordHomophone)
+    val homophone: List<String> = emptyList(),
 )

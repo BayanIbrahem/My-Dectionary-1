@@ -63,7 +63,13 @@ sealed class MDDestination {
     }
 
     @Serializable
-    data class WordDetails(
+    data class WordDetailsViewMode(
+        val wordId: Long,
+        val languageCode: String,
+    ) : MDDestination()
+
+    @Serializable
+    data class WordDetailsEditMode(
         val wordId: Long? = null,
         val languageCode: String,
     ) : MDDestination()

@@ -164,9 +164,7 @@ fun MDStatisticsScreen(
                                 trainHistory.time
                             ) {
                                 derivedStateOf {
-                                    trainHistory.time.toDefaultLocalDateTime().format(
-                                        "${MDDateTimeFormat.European.value} ${MDDateTimeFormat.TimeOnly12.value}"
-                                    )
+                                    trainHistory.time.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
                                 }
                             }
                             Text(

@@ -12,6 +12,7 @@ data class Language(
     val code: LanguageCode,
     val selfDisplayName: String,
     val localDisplayName: String,
+    val direction: androidx.compose.ui.unit.LayoutDirection? = null,
 ) {
     val validCode: Boolean
         get() = code.valid
@@ -74,7 +75,8 @@ val allLanguages: Map<LanguageCode, Language> by lazy {
         locale.language.code to Language(
             code = locale.language.code,
             selfDisplayName = locale.displayLanguage,
-            localDisplayName = locale.getDisplayLanguage(defaultLocale)
+            localDisplayName = locale.getDisplayLanguage(defaultLocale),
+            direction = layoutDirection,
         )
     }
 }

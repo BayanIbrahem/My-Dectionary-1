@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
@@ -41,9 +43,14 @@ fun LazyListScope.contextTagsSelectionItem(
      */
     allowEditTags: Boolean = true,
     label: @Composable () -> String = { "Context Tags" },
+    spacedBy: Dp = 0.dp,
+    showHorizontalDivider: Boolean = false,
+    showTitle: Boolean = false,
 ) {
-    item {
-        Text(label(), style = MDTextFieldDefaults.labelStyle)
+    if (showTitle) {
+        item {
+            Text(label(), style = MDTextFieldDefaults.labelStyle)
+        }
     }
     itemsIndexed(state.selectedTags) { i, tag ->
         val onLongClick: () -> Unit by remember(allowEditTags) {
@@ -64,18 +71,24 @@ fun LazyListScope.contextTagsSelectionItem(
             onClick = {}, // must has onClick to be onLongClick enabled
             onLongClick = onLongClick
         )
+        if (i != state.selectedTags.count().dec()) {
+            Spacer(modifier = Modifier.height(spacedBy))
+        }
     }
 
     if (allowEditTags) {
         item {
+            Spacer(modifier = Modifier.height(spacedBy))
             MDNewContextTagListItem(
                 modifier = Modifier.animateItem(),
                 onAddNewTagClick = onAddNewTagClick
             )
         }
     }
-    item {
-        HorizontalDivider()
+    if (showHorizontalDivider) {
+        item {
+            HorizontalDivider()
+        }
     }
 }
 

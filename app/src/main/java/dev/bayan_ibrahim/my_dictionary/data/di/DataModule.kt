@@ -10,7 +10,9 @@ import dev.bayan_ibrahim.my_dictionary.data.MDLanguageSelectionDialogRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDMarkerTagsRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDStatisticsRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDTrainRepoImpl
+import dev.bayan_ibrahim.my_dictionary.data.MDWordDetailsEditModeRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordDetailsRepoImpl
+import dev.bayan_ibrahim.my_dictionary.data.MDWordDetailsViewModeRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordSpaceRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordsListRepoImpl
 import dev.bayan_ibrahim.my_dictionary.data.MDWordsListTrainDialogRepoImpl
@@ -23,7 +25,9 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.MDLanguageSelectionDialogRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDMarkerTagsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDStatisticsRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsEditModeRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsViewModeRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordSpaceRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListTrainDialogRepo
@@ -38,6 +42,20 @@ class DataModule {
     fun providesWordDetailsRepo(
         db: MDDataBase,
     ): MDWordDetailsRepo = MDWordDetailsRepoImpl(db = db)
+
+    @Singleton
+    @Provides
+    fun providesWordDetailsViewModelRepo(
+        db: MDDataBase
+    ): MDWordDetailsViewModeRepo = MDWordDetailsViewModeRepoImpl(
+        wordWithContextTagsAndRelatedWordsDao = db.getWordsWithContextTagAndRelatedWordsDao(),
+        typeTagDao = db.getWordTypeTagDao()
+    )
+    @Singleton
+    @Provides
+    fun providesWordDetailsEditModelRepo(
+        db: MDDataBase
+    ): MDWordDetailsEditModeRepo = MDWordDetailsEditModeRepoImpl(db = db)
 
     @Singleton
     @Provides

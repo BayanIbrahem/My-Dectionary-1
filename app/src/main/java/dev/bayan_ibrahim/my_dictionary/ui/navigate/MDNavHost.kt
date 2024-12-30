@@ -3,6 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.navigate
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -12,7 +13,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.Statis
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordSpace
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordsList
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.Train
-import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.WordDetails
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.WordDetailsEditMode
+import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.WordDetailsViewMode
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.MDExportToFileRoute
@@ -25,7 +27,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.MDAppThemeRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.MDStatisticsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
 import dev.bayan_ibrahim.my_dictionary.ui.screen.train.MDTrainRoute
-import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.WordDetailsRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode.MDWordDetailsEditModeRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.view_mode.MDWordDetailsViewModeRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.MDWordSpaceRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.MDWordsListRoute
 
@@ -48,7 +51,11 @@ fun MDNavHost(
                 appUiState = appUiState,
                 appActions = appActions,
                 navigateToWordsDetails = { id, code ->
-                    navController.navigate(WordDetails(id, code.code))
+                    if (id != null) {
+                        navController.navigate(WordDetailsViewMode(id, code.code))
+                    } else {
+                        navController.navigate(WordDetailsEditMode(id, code.code))
+                    }
                 },
                 navigateToTrainScreen = {
                     navController.navigate(Train)
@@ -71,17 +78,31 @@ fun MDNavHost(
                 appActions = appActions,
             )
         }
-        composable<WordDetails> {
-            val wordDetails: WordDetails = it.toRoute()
-            WordDetailsRoute(
+        composable<WordDetailsViewMode> {
+            val wordDetails: WordDetailsViewMode = it.toRoute()
+            MDWordDetailsViewModeRoute(
                 wordDetails = wordDetails,
                 appUiState = appUiState,
                 appActions = appActions,
-                pop = navController::popBackStack,
                 onNavigateToWordStatistics = { wordId ->
                     val preferences = MDStatisticsViewPreferences.Word(wordId)
                     val route = MDDestination.Statistics(preferences)
                     navController.navigate(route)
+                },
+                onEdit = { id, code ->
+                    navController.navigate(WordDetailsEditMode(id, code.code))
+                }
+            )
+        }
+
+        composable<WordDetailsEditMode> {
+            val wordDetails: WordDetailsEditMode = it.toRoute()
+            MDWordDetailsEditModeRoute(
+                wordDetails = wordDetails,
+                appUiState = appUiState,
+                appActions = appActions,
+                onNavigateToDetailsViewMode = { id, code ->
+                    navController.navigate(route = WordDetailsViewMode(wordId = id, languageCode = code.code))
                 }
             )
         }

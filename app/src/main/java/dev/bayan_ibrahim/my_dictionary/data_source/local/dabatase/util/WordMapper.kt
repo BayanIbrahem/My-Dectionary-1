@@ -13,6 +13,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
 import kotlinx.datetime.Clock
 
 @JvmName("WordWithRelatedWordsAsWordModel")
@@ -41,7 +43,8 @@ fun WordWithContextTagsAndRelatedWordsRelation.asWordModel(
     } ?: emptyList(),
     createdAt = this.word.createdAt.asEpochMillisecondsInstant(),
     lastTrainTime = this.word.lastTrainTime?.asEpochMillisecondsInstant(),
-    updatedAt = this.word.updatedAt.asEpochMillisecondsInstant()
+    updatedAt = this.word.updatedAt.asEpochMillisecondsInstant(),
+    lexicalRelations = word.getLexicalRelations()
 )
 
 @Deprecated("Non Consistent data, tags data is lost")
@@ -59,8 +62,29 @@ fun WordEntity.asWordModel(): Word = Word(
     memoryDecayFactor = this.memoryDecayFactor,
     lastTrainTime = this.lastTrainTime?.asEpochMillisecondsInstant(),
     createdAt = this.createdAt.asEpochMillisecondsInstant(),
-    updatedAt = this.updatedAt.asEpochMillisecondsInstant()
+    updatedAt = this.updatedAt.asEpochMillisecondsInstant(),
+    lexicalRelations = getLexicalRelations()
 )
+
+fun WordEntity.getLexicalRelations(): Map<WordLexicalRelationType, List<WordLexicalRelation>> {
+    val result = mutableMapOf<WordLexicalRelationType, List<WordLexicalRelation>>()
+
+    result[WordLexicalRelationType.Synonym] = this.synonym.map { WordLexicalRelation.Synonym(it) }
+    result[WordLexicalRelationType.Antonym] = this.synonym.map { WordLexicalRelation.Antonym(it) }
+    result[WordLexicalRelationType.Hyponym] = this.synonym.map { WordLexicalRelation.Hyponym(it) }
+    result[WordLexicalRelationType.Hypernym] = this.synonym.map { WordLexicalRelation.Hypernym(it) }
+    result[WordLexicalRelationType.Meronym] = this.synonym.map { WordLexicalRelation.Meronym(it) }
+    result[WordLexicalRelationType.Holonym] = this.synonym.map { WordLexicalRelation.Holonym(it) }
+    result[WordLexicalRelationType.Homonym] = this.synonym.map { WordLexicalRelation.Polysemy(it) }
+    result[WordLexicalRelationType.Polysemy] = this.synonym.map { WordLexicalRelation.Polysemy(it) }
+    result[WordLexicalRelationType.Prototype] = this.synonym.map { WordLexicalRelation.Prototype(it) }
+    result[WordLexicalRelationType.Metonymy] = this.synonym.map { WordLexicalRelation.Meronym(it) }
+    result[WordLexicalRelationType.Collocation] = this.synonym.map { WordLexicalRelation.Collocation(it) }
+    result[WordLexicalRelationType.Homograph] = this.synonym.map { WordLexicalRelation.Homograph(it) }
+    result[WordLexicalRelationType.Homophone] = this.synonym.map { WordLexicalRelation.Homophone(it) }
+
+    return result
+}
 
 fun Word.asWordEntity(
     setUpdateTimeToNow: Boolean = true,
@@ -78,7 +102,21 @@ fun Word.asWordEntity(
     memoryDecayFactor = this.memoryDecayFactor,
     lastTrainTime = this.lastTrainTime?.toEpochMilliseconds(),
     createdAt = this.createdAt.toEpochMilliseconds(),
-    updatedAt = (if (setUpdateTimeToNow) Clock.System.now() else this.updatedAt).toEpochMilliseconds()
+    updatedAt = (if (setUpdateTimeToNow) Clock.System.now() else this.updatedAt).toEpochMilliseconds(),
+    // lexical relations
+    synonym = lexicalRelations[WordLexicalRelationType.Synonym]?.map { it.relatedWord } ?: emptyList(),
+    antonym = lexicalRelations[WordLexicalRelationType.Antonym]?.map { it.relatedWord } ?: emptyList(),
+    hyponym = lexicalRelations[WordLexicalRelationType.Hyponym]?.map { it.relatedWord } ?: emptyList(),
+    hypernym = lexicalRelations[WordLexicalRelationType.Hypernym]?.map { it.relatedWord } ?: emptyList(),
+    meronym = lexicalRelations[WordLexicalRelationType.Meronym]?.map { it.relatedWord } ?: emptyList(),
+    holonym = lexicalRelations[WordLexicalRelationType.Holonym]?.map { it.relatedWord } ?: emptyList(),
+    homonym = lexicalRelations[WordLexicalRelationType.Homonym]?.map { it.relatedWord } ?: emptyList(),
+    polysemy = lexicalRelations[WordLexicalRelationType.Polysemy]?.map { it.relatedWord } ?: emptyList(),
+    prototype = lexicalRelations[WordLexicalRelationType.Prototype]?.map { it.relatedWord } ?: emptyList(),
+    metonymy = lexicalRelations[WordLexicalRelationType.Metonymy]?.map { it.relatedWord } ?: emptyList(),
+    collocation = lexicalRelations[WordLexicalRelationType.Collocation]?.map { it.relatedWord } ?: emptyList(),
+    homograph = lexicalRelations[WordLexicalRelationType.Homograph]?.map { it.relatedWord } ?: emptyList(),
+    homophone = lexicalRelations[WordLexicalRelationType.Homophone]?.map { it.relatedWord } ?: emptyList(),
 )
 
 fun Word.asRelatedWords(): List<WordTypeTagRelatedWordEntity> = this.relatedWords.mapNotNull { word ->

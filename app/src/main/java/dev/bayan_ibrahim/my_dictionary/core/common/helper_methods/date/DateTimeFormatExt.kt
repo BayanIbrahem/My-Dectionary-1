@@ -216,7 +216,12 @@ enum class MDDateTimeFormat(val value: String) {
     /**
      * European format: Day/Month/Year (e.g., 11/06/2024)
      */
-    European("DD/MM/YYYY"),
+    EuropeanDate("DD/MM/YYYY"),
+
+    /**
+     * combine between [EuropeanDate] and [TimeWithMeridiemIndicator]
+     */
+    EuropeanDateTime("DD/MM/YYYY hh:mm a"),
 
     /**
      * ISO 8601 format: Year-Month-Day (e.g., 2024-06-11)
