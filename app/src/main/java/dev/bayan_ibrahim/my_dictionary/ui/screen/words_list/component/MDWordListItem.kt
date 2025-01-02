@@ -131,8 +131,8 @@ fun MDWordListItem(
 
                 ) {
                 Text(
-                    text = word.language.code.uppercaseCode,
-                    style = if (word.language.code.isLong) {
+                    text = word.language.uppercaseCode,
+                    style = if (word.language.isLongCode) {
                         MaterialTheme.typography.titleSmall
                     } else {
                         MaterialTheme.typography.titleLarge
@@ -337,7 +337,7 @@ private fun MDWordListItemPreview() {
                         meaning = "Auge",
                         translation = "Eye",
                         additionalTranslations = listOf("Human Eye", "Human Eye 2"),
-                        language = Language("de".code, "Deutsch", "German"),
+                        language = Language("de", "Deutsch", "German"),
                         tags = setOf(
                             ContextTag(value = "Human body"),
                             ContextTag(value = "Organic")
@@ -349,7 +349,7 @@ private fun MDWordListItemPreview() {
                         wordTypeTag = WordTypeTag(
                             id = 0,
                             name = "name",
-                            language = Language("de".code, "Deutsch", "German"),
+                            language = Language("de", "Deutsch", "German"),
                             relations = listOf(WordTypeTagRelation("relation 1"), WordTypeTagRelation("relation 2")),
                             wordsCount = 30,
                         )

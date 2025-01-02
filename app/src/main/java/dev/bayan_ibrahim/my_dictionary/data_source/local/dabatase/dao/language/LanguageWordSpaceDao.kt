@@ -5,19 +5,16 @@ import androidx.room.Query
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.sub_table.LanguageWordSpaceEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageCode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageTable
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceAverageMemorizingProbability
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceLanguageCode
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageWordSpaceWordsCount
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMemoryDecayFactor
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import kotlinx.coroutines.flow.Flow
 
 private const val select_from = """
             SELECT 
                 $dbLanguageCode as $dbLanguageWordSpaceLanguageCode, 
-                COUNT(*) as $dbLanguageWordSpaceWordsCount, 
-                AVG($dbWordMemoryDecayFactor) $dbLanguageWordSpaceAverageMemorizingProbability
+                COUNT(*) as $dbLanguageWordSpaceWordsCount
             FROM $dbLanguageTable LEFT JOIN $dbWordTable On $dbLanguageTable.$dbLanguageCode = $dbWordTable.$dbWordLanguageCode
     """
 

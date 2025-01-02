@@ -3,7 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithTagsRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 
 /**
@@ -14,7 +14,7 @@ fun WordWithTagsRelation.asWordModel(): Word = Word(
     meaning = this.word.meaning,
     translation = this.word.translation,
     additionalTranslations = this.word.additionalTranslations,
-    language = this.word.languageCode.code.language,
+    language = this.word.languageCode.code.getLanguage(),
     tags = this.tags.asModelSet(),
     transcription = this.word.transcription,
     examples = this.word.examples,

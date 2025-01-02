@@ -161,6 +161,24 @@ interface WordDao {
     )
     fun getAllWords(): Flow<List<WordEntity>>
 
+    @Query(
+        """
+            SELECT * FROM $dbWordTable
+            WHERE (
+                NOT :includeLanguage AND $dbWordLanguageCode IN (:languages)
+            ) AND (
+                NOT :includeTypeTag AND $dbWordTypeTag IN (:typeTags)
+            )
+        """
+    )
+    fun getWordsOf(
+        includeLanguage: Boolean,
+        languages: Set<String>,
+
+        includeTypeTag: Boolean,
+        typeTags: Set<Long>,
+    ): Flow<List<WordEntity>>
+
     fun getSortByColumnName(sortBy: MDWordsListViewPreferencesSortBy): String {
         return when (sortBy) {
             MDWordsListViewPreferencesSortBy.Meaning -> dbWordMeaning

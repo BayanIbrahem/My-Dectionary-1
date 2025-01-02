@@ -67,40 +67,59 @@ data class ContextTag(
         }
     }
 
-    /**
-     * check if [other] contains this and it is opposite of [isContained]
-     * @see isContained
-     */
-    fun contains(other: ContextTag): Boolean = other.isContained(this)
+}
 
-    /**
-     * check if this in contained in [other], is is similar if we check if [this] is some how a sub tag from [other]
-     * return true if the start n segment (where n is [ContextTag.depth] of [other]) from [this] equals
-     * first n segment from the other tag
-     *
-     * ```kotlin
-     * val t1 = "object/food"
-     * val t2 = "object/food/fruit"
-     * val t3 = "object"
-     * val t4 = "object/device"
-     * t1.isContained(t2) // false
-     * t2.isContained(t1) // true
-     * t4.isContained(t3) // true
-     * t4.isContained(t1) // false
-     * ```
-     * @see contains
-     */
-    fun isContained(other: ContextTag): Boolean {
-        if (this.depth < other.depth) return false
+/**
+ * return true if any of [targetTags] [isContained] in any of receiver
+ * @see anyContainedInAny
+ */
+fun Iterable<ContextTag>.anyContainsAny(targetTags: Iterable<ContextTag>): Boolean = targetTags.anyContainedInAny(this)
 
-        repeat(other.depth) { l -> // level
-            if (segments[l] != other.segments[l]) {
-                return false
-            }
+/**
+ * return true if any of receiver [isContained] in any of [targetTags]
+ * @see [anyContainsAny]
+ */
+fun Iterable<ContextTag>.anyContainedInAny(targetTags: Iterable<ContextTag>): Boolean {
+    return this.any { source ->
+        targetTags.any { target ->
+            source.isContained(target)
         }
-        return true
     }
 }
+
+/**
+ * check if this in contained in [other], is is similar if we check if [this] is some how a sub tag from [other]
+ * return true if the start n segment (where n is [ContextTag.depth] of [other]) from [this] equals
+ * first n segment from the other tag
+ *
+ * ```kotlin
+ * val t1 = "object/food"
+ * val t2 = "object/food/fruit"
+ * val t3 = "object"
+ * val t4 = "object/device"
+ * t1.isContained(t2) // false
+ * t2.isContained(t1) // true
+ * t4.isContained(t3) // true
+ * t4.isContained(t1) // false
+ * ```
+ * @see contains
+ */
+fun ContextTag.isContained(other: ContextTag): Boolean {
+    if (this.depth < other.depth) return false
+
+    repeat(other.depth) { l -> // level
+        if (segments[l] != other.segments[l]) {
+            return false
+        }
+    }
+    return true
+}
+
+/**
+ * check if [other] contains this and it is opposite of [isContained]
+ * @see isContained
+ */
+fun ContextTag.contains(other: ContextTag): Boolean = other.isContained(this)
 
 val ContextTag.depth: Int
     get() = segments.count()
@@ -129,6 +148,12 @@ fun ContextTag.parentAtLevelOrNull(level: Int): ContextTag? {
  * return parent that contains [level] segments count, if [level] > [depth] throw an exception
  */
 fun ContextTag.parentAtLevel(level: Int): ContextTag = parentAtLevelOrNull(level)!!
+
+/**
+ * return true if current tag has a color its own
+ */
+val ContextTag.isMarkerTag: Boolean
+    get() = color != null && !currentColorIsPassed
 
 
 /**

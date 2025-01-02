@@ -4,13 +4,15 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableFiel
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 
-interface LanguageWordSpaceState {
-    val isLoading: Boolean
-    val isEditModeOn: Boolean
-    val isEditDialogShown: Boolean
+abstract class LanguageWordSpaceState(code: String, wordsCount: Int = 0): LanguageWordSpace(
+    code = code,
+    wordsCount = wordsCount
+) {
+    abstract val isLoading: Boolean
+    abstract val isEditModeOn: Boolean
+    abstract val isEditDialogShown: Boolean
 
-    val wordSpace: LanguageWordSpace
-    val tags: List<MDEditableField<WordTypeTag>>
+    abstract val tags: List<MDEditableField<WordTypeTag>>
 
     fun toMutableLanguageWordSpaceWithTags(): LanguageWordSpaceMutableState = LanguageWordSpaceMutableState(this)
 }

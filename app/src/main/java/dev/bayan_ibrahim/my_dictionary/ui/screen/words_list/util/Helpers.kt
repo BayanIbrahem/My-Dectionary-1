@@ -71,7 +71,7 @@ enum class MDWordsListSortByOrder(
 }
 
 
-enum class MDWordsListMemorizingProbabilityGroup(override val strLabel: String, val learningRange: ClosedFloatingPointRange<Float>) : LabeledEnum {
+enum class MDWordsListMemorizingProbabilityGroup(override val strLabel: String, val probabilityRange: ClosedFloatingPointRange<Float>) : LabeledEnum {
     NotLearned("Not Learned", 0f..0.25f),
     Known("Known", 0.25f..0.5f),
     Acknowledged("Acknowledged", 0.5f..0.75f),
@@ -81,7 +81,7 @@ enum class MDWordsListMemorizingProbabilityGroup(override val strLabel: String, 
         fun of(percent: Float): MDWordsListMemorizingProbabilityGroup {
             val coercedPercent = percent.coerceIn(0f..1f)
             return entries.first {
-                coercedPercent in it.learningRange
+                coercedPercent in it.probabilityRange
             }
         }
     }

@@ -17,7 +17,7 @@ data class MDJsonFileWordPartV1(
     @SerialName(TRANSCRIPTION_KEY)
     override val transcription: String? = null,
     @SerialName(TAGS_KEY)
-    override val tags: List<Tag> = emptyList(),
+    override val tags: List<MDJsonFileTagPartV1> = emptyList(),
     @SerialName(EXAMPLES_KEY)
     override val examples: List<String> = emptyList(),
     @SerialName(ADDITIONAL_TRANSLATION_KEY)
@@ -32,19 +32,6 @@ data class MDJsonFileWordPartV1(
     @Transient
     override val relatedWords: Map<MDNameWithOptionalId, String> = relatedWordsList.associate {
         (it as MDNameWithOptionalId) to it.relatedWord
-    }
-
-    @Serializable
-    data class Tag(
-        @SerialName(ID_KEY)
-        override val id: Long? = null,
-        @SerialName(VALUE_KEY)
-        override val name: String = "",
-    ) : MDNameWithOptionalId {
-        companion object Companion {
-            const val ID_KEY = "id"
-            const val VALUE_KEY = "value"
-        }
     }
 
     @Serializable

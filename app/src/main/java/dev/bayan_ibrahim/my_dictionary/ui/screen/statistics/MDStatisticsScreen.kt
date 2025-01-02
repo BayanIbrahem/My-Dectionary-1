@@ -58,7 +58,6 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResult
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.components.MDStatisticsTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsChartTypeTab
-import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.bottomOnly
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -79,7 +78,7 @@ fun MDStatisticsScreen(
                 preferences = uiState.preferences,
                 availableTrainHistoryCount = uiState.allTrainHistoryCount,
                 selectedTrainHistoryCount = uiState.selectedTrainHistoryCount,
-                dateUnit = uiState.dateUnit,
+                dateUnit = uiState.preferences.dateUnit,
                 onSelectTrainHistoryCount = uiActions::onSelectTrainHistoryCount,
                 onSelectDateUnit = uiActions::onSelectDateUnit,
                 onNavigationIconClick = uiActions::onOpenNavDrawer,
@@ -95,9 +94,9 @@ fun MDStatisticsScreen(
         LaunchedEffect(selectedChart) {
             pagerState.animateScrollToPage(selectedChart.ordinal)
         }
-        val dateUnit by remember(uiState.dateUnit) {
+        val dateUnit by remember(uiState.preferences) {
             derivedStateOf {
-                uiState.dateUnit ?: MDStatisticsViewPreferences.DEFAULT_DATE_UNIT
+                uiState.preferences.dateUnit
             }
         }
 

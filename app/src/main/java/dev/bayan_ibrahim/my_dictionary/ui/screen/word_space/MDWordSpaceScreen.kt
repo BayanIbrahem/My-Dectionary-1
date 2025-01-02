@@ -33,12 +33,15 @@ fun MDWordSpaceScreen(
     var showAddNewWordSpaceDialog by remember {
         mutableStateOf(false)
     }
-    val wordSpaces by remember(uiState.wordSpacesWithActions) {
+    var query by remember {
+        mutableStateOf("")
+    }
+    val wordSpaces by remember(uiState.wordSpacesWithActions, query) {
         derivedStateOf {
-            val existedCodes = uiState.wordSpacesWithActions.map { it.first.wordSpace.language.code }.toSet()
+            val existedCodes = uiState.wordSpacesWithActions.map { it.first }.toSet()
             allLanguages.mapNotNull {
-                if (it.key !in existedCodes) {
-                    LanguageWordSpace(it.value)
+                if (it.key !in existedCodes && it.value.hasMatchQuery(query)) {
+                    LanguageWordSpace(it.value.code)
                 } else {
                     null
                 }
@@ -55,9 +58,13 @@ fun MDWordSpaceScreen(
             showAddNewWordSpaceDialog = false
         },
         onSelectWordSpace = { wordSpace ->
-            uiActions.onAddNewWordSpace(wordSpace.language.code)
-
-        }
+            uiActions.onAddNewWordSpace(wordSpace)
+        },
+        query = query,
+        onQueryChange = {
+            query = it
+        },
+        secondaryList = emptyList()
     )
     MDScreen(
         uiState = uiState,

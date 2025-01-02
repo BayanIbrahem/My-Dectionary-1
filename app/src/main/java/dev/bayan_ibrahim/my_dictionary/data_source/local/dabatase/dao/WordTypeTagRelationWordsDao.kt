@@ -7,8 +7,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationTagId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -53,6 +55,12 @@ interface WordTypeTagRelationWordsDao {
         """
     )
     suspend fun deleteRelations(ids: List<Long>)
+    @Query(
+        """
+            DELETE FROM $dbTypeTagRelationTable WHERE $dbTypeTagRelationTagId = :tagId AND $dbTypeTagRelationId NOT IN (:ids)
+        """
+    )
+    suspend fun deleteRelationsNotIn(ids: Collection<Long>, tagId: Long)
 
     @Query(
         """

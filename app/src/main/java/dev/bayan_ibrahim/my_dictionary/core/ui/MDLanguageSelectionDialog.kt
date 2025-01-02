@@ -36,17 +36,12 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.horizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.bottomOnly
 import dev.bayan_ibrahim.my_dictionary.ui.theme.topOnly
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun MDLanguageSelectionDialog(
@@ -54,8 +49,8 @@ fun MDLanguageSelectionDialog(
     onDismissRequest: () -> Unit,
     query: String,
     onQueryChange: (String) -> Unit,
-    primaryList: PersistentList<LanguageWordSpace>,
-    secondaryList: PersistentList<LanguageWordSpace>,
+    primaryList: List<LanguageWordSpace>,
+    secondaryList: List<LanguageWordSpace>,
     onSelectWordSpace: (LanguageWordSpace) -> Unit,
     modifier: Modifier = Modifier,
     primaryListCountTitleBuilder: @Composable (count: Int) -> String = {
@@ -74,7 +69,7 @@ fun MDLanguageSelectionDialog(
             { query: String ->
                 onQueryChange(query)
                 // if the selected language filtered out from the selection, it became null
-                if (selectedWordSpace?.language?.hasMatchQuery(query) == false) {
+                if (selectedWordSpace?.hasMatchQuery(query) == false) {
                     selectedWordSpace = null
                 }
             }
@@ -110,7 +105,7 @@ fun MDLanguageSelectionDialog(
         LanguagesContent(
             primaryList = primaryList,
             secondaryList = secondaryList,
-            selectedLanguageCode = selectedWordSpace?.language?.code,
+            selectedLanguageCode = selectedWordSpace,
             onClickWordSpace = { selectedWordSpace = it },
             modifier = Modifier
                 .padding(vertical = 8.dp)
@@ -127,10 +122,12 @@ fun MDLanguageSelectionDialog(
 fun MDSimpleLanguageSelectionDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
+    query: String,
     onSelectWordSpace: (LanguageWordSpace) -> Unit,
+    onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    primaryList: List<LanguageWordSpace>? = null,
-    secondaryList: List<LanguageWordSpace>? = null,
+    primaryList: List<LanguageWordSpace>,
+    secondaryList: List<LanguageWordSpace>,
     primaryListCountTitleBuilder: @Composable (count: Int) -> String = {
         "Primary languages $it" // TODO, string res
     },
@@ -139,31 +136,13 @@ fun MDSimpleLanguageSelectionDialog(
     },
     hideWordCountAndProgress: Boolean = true,
 ) {
-    var query by remember {
-        mutableStateOf("")
-    }
-    val primaryLanguagesList by remember(primaryList, query) {
-        derivedStateOf {
-            (primaryList ?: allLanguages.map { LanguageWordSpace(it.value) }).filter {
-                it.language.hasMatchQuery(query)
-            }.toPersistentList()
-        }
-    }
-
-    val secondaryLanguagesList by remember(primaryList, query) {
-        derivedStateOf {
-            (secondaryList ?: emptyList()).filter {
-                it.language.hasMatchQuery(query)
-            }.toPersistentList()
-        }
-    }
     MDLanguageSelectionDialog(
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
         query = query,
-        onQueryChange = { query = it },
-        primaryList = primaryLanguagesList,
-        secondaryList = secondaryLanguagesList,
+        onQueryChange = onQueryChange,
+        primaryList = primaryList,
+        secondaryList = secondaryList,
         onSelectWordSpace = onSelectWordSpace,
         modifier = modifier,
         primaryListCountTitleBuilder = primaryListCountTitleBuilder,
@@ -195,8 +174,8 @@ private fun LanguageSearchBar(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun LanguagesContent(
-    primaryList: PersistentList<LanguageWordSpace>,
-    secondaryList: PersistentList<LanguageWordSpace>,
+    primaryList: List<LanguageWordSpace>,
+    secondaryList: List<LanguageWordSpace>,
     selectedLanguageCode: LanguageCode?,
     onClickWordSpace: (LanguageWordSpace) -> Unit,
     modifier: Modifier = Modifier,
@@ -245,7 +224,7 @@ private fun LanguagesContent(
             middleShape = middleItemShape,
             colors = cardColors,
             styles = cardStyles
-        ) { i->
+        ) { i ->
             val wordSpace by remember(primaryList, i) {
                 derivedStateOf {
                     primaryList[i]
@@ -278,7 +257,7 @@ private fun LanguagesContent(
             middleShape = middleItemShape,
             colors = cardColors,
             styles = cardStyles
-        ) { i->
+        ) { i ->
             val wordSpace by remember(secondaryList, i) {
                 derivedStateOf {
                     secondaryList[i]
@@ -317,11 +296,11 @@ private fun MDWordSpaceCardItem2(
     selectedColor: MDHorizontalCardColors,
     normalColor: MDHorizontalCardColors,
     onClickWordSpace: (LanguageWordSpace) -> Unit,
-    modifier: Modifier =Modifier,
+    modifier: Modifier = Modifier,
 ) {
     val colors by remember(selectedLanguageCode) {
         derivedStateOf {
-            if (selectedLanguageCode == wordSpace.language.code) {
+            if (selectedLanguageCode?.code == wordSpace.code) {
                 selectedColor
             } else {
                 normalColor
@@ -336,8 +315,8 @@ private fun MDWordSpaceCardItem2(
         colors = colors,
         leadingIcon = {
             Text(
-                text = wordSpace.language.code.uppercaseCode,
-                style = if (wordSpace.language.code.isLong) {
+                text = wordSpace.uppercaseCode,
+                style = if (wordSpace.isLongCode) {
                     MaterialTheme.typography.titleSmall
                 } else {
                     MaterialTheme.typography.titleLarge
@@ -348,7 +327,7 @@ private fun MDWordSpaceCardItem2(
             Text("${wordSpace.wordsCount} words") // TODO string res
         }
     ) {
-        Text(wordSpace.language.localDisplayName)
+        Text(wordSpace.localDisplayName)
     }
 }
 
@@ -388,41 +367,3 @@ private fun LanguageSearchBarPreview() {
     }
 }
 
-@Preview
-@Composable
-private fun MDWordsListLanguageSelectionPageDialogPreview() {
-    MyDictionaryTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
-            var query by remember {
-                mutableStateOf("")
-            }
-            MDLanguageSelectionDialog(
-                showDialog = true,
-                onDismissRequest = {},
-                query = query,
-                onQueryChange = { query = it },
-                primaryList = persistentListOf(
-                    LanguageWordSpace(
-                        language = Language(code = "en".code, selfDisplayName = "English", localDisplayName = "English"),
-                        wordsCount = 100,
-                        averageMemorizingProbability = 0.5f
-                    ),
-
-                    LanguageWordSpace(
-                        language = Language(code = "es".code, selfDisplayName = "Spanish", localDisplayName = "Español"),
-                        wordsCount = 250,
-                        averageMemorizingProbability = 0.1f
-                    )
-                ),
-                secondaryList = persistentListOf(
-                    LanguageWordSpace(
-                        Language(code = "de".code, selfDisplayName = "German", localDisplayName = "Deutsch")
-                    )
-                ),
-                onSelectWordSpace = {}
-            )
-        }
-    }
-}

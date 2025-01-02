@@ -25,6 +25,7 @@ interface MDTrainDataSource {
         return values
     }
 
+    // FIXME, there there is some positions that pass words with some missed data but at time of using it the missed data has no effect
     fun memoryDecayFormula(
         word: Word,
         currentTime: Instant = Clock.System.now(),

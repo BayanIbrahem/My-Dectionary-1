@@ -63,4 +63,11 @@ interface LanguageDao {
         """
     )
     suspend fun hasLanguage(code: String): Boolean
+
+    @Query(
+        """
+            SELECT Count(*) > 0 FROM $dbLanguageTable  WHERE $dbLanguageCode IN (:code)
+        """
+    )
+    suspend fun hasLanguages(code: Collection<String>): Boolean
 }

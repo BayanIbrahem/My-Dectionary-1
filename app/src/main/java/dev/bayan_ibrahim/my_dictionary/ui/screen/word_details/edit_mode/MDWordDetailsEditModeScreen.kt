@@ -17,9 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,16 +28,17 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTitleWithHint
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagExplorerDialog
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActionsImpl
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionMutableUiState
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.contextTagsSelectionItem
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorBusinessUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorMutableUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.contextTagsSelector
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode.component.MDWordDetailsEditModeTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -49,20 +48,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun MDWordDetailsEditModeScreen(
     uiState: MDWordDetailsEditModeUiState,
     uiActions: MDWordDetailsEditModeUiActions,
-    contextTagsState: MDContextTagsSelectionUiState,
-    contextTagsActions: MDContextTagsSelectionActions,
+    contextTagsState: MDContextTagsSelectorUiState,
+    contextTagsActions: MDContextTagsSelectorUiActions,
     modifier: Modifier = Modifier,
     spacedBy: Dp = 8.dp,
 ) {
-    var showContextTagExplorerDialog by remember {
-        mutableStateOf(false)
-    }
-    MDContextTagExplorerDialog(
-        showDialog = showContextTagExplorerDialog,
-        onDismissRequest = { showContextTagExplorerDialog = false },
-        state = contextTagsState,
-        actions = contextTagsActions
-    )
     MDScreen(
         uiState = uiState,
         modifier = modifier,
@@ -126,15 +116,12 @@ fun MDWordDetailsEditModeScreen(
                 title = "Context tags", // TODO, string res
                 icon = MDIconsSet.WordTag,
             ) {
-                contextTagsSelectionItem(
+                contextTagsSelector(
                     state = contextTagsState,
                     actions = contextTagsActions,
                     spacedBy = spacedBy,
                     showTitle = false,
                     showHorizontalDivider = false,
-                    onAddNewTagClick = {
-                        showContextTagExplorerDialog = true
-                    }
                 )
             }
 
@@ -363,12 +350,40 @@ private fun MDWordDetailsEditModeScreenPreview() {
                             override fun onFocusChange(newFocused: Long) {}
                         },
                     ),
-                    contextTagsState = MDContextTagsSelectionMutableUiState(),
-                    contextTagsActions = MDContextTagsSelectionActionsImpl(
-                        state = MDContextTagsSelectionMutableUiState(),
-                        onAddNewTag = {},
-                        onDeleteTag = {}
-                    )
+                    contextTagsState = MDContextTagsSelectorMutableUiState(),
+                    contextTagsActions = MDContextTagsSelectorUiActions(navigationActions = object : MDContextTagsSelectorNavigationUiActions {},
+                        businessActions = object : MDContextTagsSelectorBusinessUiActions {
+                            override fun onClickTag(tag: ContextTag) {}
+
+                            override fun onSelectTag(tag: ContextTag) {}
+
+                            override fun onSelectCurrentTag() {}
+
+                            override fun onUnSelectTag(tag: ContextTag) {}
+
+                            override fun onSetInitialSelectedTags(tags: Collection<ContextTag>) {}
+
+                            override fun clearSelectedTags() {}
+
+                            override fun onAddNewContextTag(tag: ContextTag) {}
+
+                            override fun onAddNewContextTag(segment: String) {}
+
+                            override fun onDeleteContextTag(tag: ContextTag) {}
+
+                            override fun onNavigateUp() {}
+
+                            override fun onResetToRoot() {}
+
+                            override fun onSetAllowedTagsFilter(filter: (ContextTag) -> Boolean) {}
+
+                            override fun onResetAllowedTagsFilter() {}
+                            override fun onSetForbiddenTagsFilter(filter: (ContextTag) -> Boolean) {}
+                            override fun onResetForbiddenTagsFilter() {}
+                            override fun onResetTagsFilter() {}
+                            override fun onSearchQueryChange(query: String) {}
+                            override fun refreshCurrentTree() {}
+                        }),
                 )
             }
         }

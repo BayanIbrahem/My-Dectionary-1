@@ -42,6 +42,13 @@ interface WordTypeTagDao {
     )
     suspend fun deleteTagType(id: Long)
 
+    @Query(
+        """
+            DELETE FROM $dbTypeTagTable WHERE $dbTypeTagId NOT IN (:ids) AND $dbTypeTagLanguage = :language
+        """
+    )
+    suspend fun deleteTypeTagsExclude(language: String, ids: Collection<Long>)
+
     @Transaction
     @Query(
         """

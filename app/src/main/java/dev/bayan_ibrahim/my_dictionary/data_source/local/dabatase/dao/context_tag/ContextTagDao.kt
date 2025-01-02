@@ -11,6 +11,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbContext
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbContextTagId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbContextTagPath
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbContextTagTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageCode
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -97,6 +98,19 @@ interface ContextTagDao {
         """
     )
     fun getAllTagsOfMarkerState(
+        includeMarker: Boolean,
+        includeNotMarker: Boolean,
+    ): Flow<List<ContextTagEntity>>
+
+    @Query(
+        """
+            SELECT * 
+            FROM $dbContextTagTable 
+            WHERE ($dbContextTagColor IS NULL AND :includeNotMarker) 
+            OR ($dbContextTagColor IS NOT NULL AND :includeMarker)
+        """
+    )
+    fun getTagsOfMarkerStateAndLanguage(
         includeMarker: Boolean,
         includeNotMarker: Boolean,
     ): Flow<List<ContextTagEntity>>

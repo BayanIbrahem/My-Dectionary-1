@@ -8,17 +8,20 @@ import kotlinx.serialization.Serializable
 import java.util.Locale
 
 @Serializable(LanguageSerializer::class)
-data class Language(
-    val code: LanguageCode,
+open class Language(
+    code: String,
     val selfDisplayName: String,
     val localDisplayName: String,
     val direction: androidx.compose.ui.unit.LayoutDirection? = null,
-) {
-    val validCode: Boolean
-        get() = code.valid
-
-    val validLanguage: Boolean
-        get() = validCode && code in allLanguages
+) : LanguageCode(code) {
+    /**
+     * @throws [NullPointerException] if [code] is not a valid code or doesn't exist in [allLanguages]
+     */
+    constructor(code: String) : this(
+        code = code,
+        selfDisplayName = allLanguages[code.code]!!.selfDisplayName,
+        localDisplayName = allLanguages[code.code]!!.localDisplayName
+    )
 
     /**
      * code may be 2 or 3 chars this will be true if the code length is 3 this may be used
@@ -28,7 +31,6 @@ data class Language(
         get() = if (selfDisplayName == localDisplayName) selfDisplayName else "$selfDisplayName - $localDisplayName"
 
     fun hasMatchQuery(query: String): Boolean = checkLanguagePartialMatchSearchQuery(this, query)
-
 }
 
 private val queryRegexCacheMap: MutableMap<String, Regex> = mutableMapOf()
@@ -41,7 +43,7 @@ private fun checkLanguagePartialMatchSearchQuery(
         query.searchQueryRegexNormalize.toRegex()
     }
     return sequenceOf(
-        language.code.code,
+        language.code,
         language.selfDisplayName,
         language.localDisplayName
     ).any {
@@ -49,22 +51,13 @@ private fun checkLanguagePartialMatchSearchQuery(
     }
 }
 
-@get:JvmName("LanguageCode_language")
-val LanguageCode.language: Language
-    get() = allLanguages[this]!!
+fun <C: LanguageCode> C.getLanguage(): Language = allLanguages[this]!!
+fun <C: LanguageCode> C.getLanguageWordSpace(wordsCount: Int = 0): LanguageWordSpace = LanguageWordSpace(code, wordsCount)
 
-val LanguageCode.languageOrNull: Language?
-    get() = allLanguages[this]
+val defaultLanguage: Language
+    get() = Locale.getDefault().language.code.getLanguage()
 
-@get:JvmName("LanguageCode_wordSpace")
-val LanguageCode.wordSpace: LanguageWordSpace
-    get() = LanguageWordSpace(language)
-
-@get:JvmName("Language_wordSpace")
-val Language.wordSpace: LanguageWordSpace
-    get() = LanguageWordSpace(this)
-
-val allLanguages: Map<LanguageCode, Language> by lazy {
+val allLanguages: Map<out LanguageCode, Language> by lazy {
     val defaultLocale = Locale.getDefault()
     Locale.getAvailableLocales().associate { locale ->
         val layoutDirection = when (TextUtils.getLayoutDirectionFromLocale(locale)) {
@@ -73,7 +66,7 @@ val allLanguages: Map<LanguageCode, Language> by lazy {
             else -> null
         }
         locale.language.code to Language(
-            code = locale.language.code,
+            code = locale.language,
             selfDisplayName = locale.displayLanguage,
             localDisplayName = locale.getDisplayLanguage(defaultLocale),
             direction = layoutDirection,

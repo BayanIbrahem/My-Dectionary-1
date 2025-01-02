@@ -24,7 +24,11 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.asResult
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.toAnswer
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.toTimeoutAnswer
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDTrainRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.TrainHistoryRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.TrainPreferencesRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.ViewPreferencesRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
@@ -36,6 +40,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -43,7 +48,11 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MDTrainViewModel @Inject constructor(
-    private val repo: MDTrainRepo,
+    private val wordRepo: WordRepo,
+    private val userPreferencesRepo: UserPreferencesRepo,
+    private val viewPreferencesRepo: ViewPreferencesRepo,
+    private val trainPreferencesRepo: TrainPreferencesRepo,
+    private val trainHistoryRepo: TrainHistoryRepo,
     private val timer: MDTimerDataSource,
 ) : ViewModel() {
     private val trainDataSource = MDTrainDataSource.Default
@@ -87,18 +96,20 @@ class MDTrainViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.emit(MDTrainUiState.Loading)
-            val trainPreferences: MDWordsListTrainPreferences = repo.getTrainPreferences()
-            val viewPreferences = repo.getViewPreferences()
-            val selectedLanguage = repo.getSelectedLanguage() ?: let {
+            val trainPreferences: MDWordsListTrainPreferences = trainPreferencesRepo.getTrainPreferences()
+            val viewPreferences = viewPreferencesRepo.getViewPreferences()
+            val selectedLanguage = userPreferencesRepo.getUserPreferences().selectedLanguagePage ?: let {
                 // TODO, handle invalid language
                 _uiState.emit(MDTrainUiState.Finish)
                 return@launch
             }
-            val idsOfAllowedTagsAndProgressRange: Set<Long> = repo.getWordsIdsOfTagsAndMemorizingProbability(
-                language = selectedLanguage,
-                viewPreferences = viewPreferences,
-            )
-            val allWords: Sequence<Word> = repo.getAllSelectedLanguageWords()
+            val idsOfAllowedTagsAndProgressRange: Set<Long> = wordRepo.getWordsIdsOf(
+                languages = setOf(selectedLanguage),
+                contextTags = viewPreferences.selectedTags.map { it.id }.toSet(),
+                memorizingProbabilities = viewPreferences.selectedMemorizingProbabilityGroups
+            ).first()
+
+            val allWords: Sequence<Word> = wordRepo.getWordsOf(setOf(selectedLanguage)).first()
 
             val validWords = allWords.filter { word ->
                 word.id in idsOfAllowedTagsAndProgressRange && viewPreferences.matches(word)
@@ -225,7 +236,7 @@ class MDTrainViewModel @Inject constructor(
                 val newDecayFactor = decayFactorDataSource.calculateDecayOf(ques.word, ans.asResult())
                 ques.word.id to newDecayFactor
             }.toMap()
-            repo.submitTrainHistory(trainHistory, wordsMemoryDecay)
+            trainHistoryRepo.submitTrainHistory(trainHistory, wordsMemoryDecay)
             _uiState.value = MDTrainUiState.Finish
         }
     }

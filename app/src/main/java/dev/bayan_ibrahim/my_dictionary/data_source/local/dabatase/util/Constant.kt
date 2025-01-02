@@ -43,7 +43,7 @@ const val dbTrainHistoryTrainHistoryResult = "trainHistory_TrainResult"
 // LanguageWordSpace :
 const val dbLanguageWordSpaceLanguageCode = "languageWordSpace_code"
 const val dbLanguageWordSpaceWordsCount = "languageWordSpace_wordsCount"
-const val dbLanguageWordSpaceAverageMemorizingProbability = "languageWordSpace_averageMemorizingProbability"
+//const val dbLanguageWordSpaceAverageMemorizingProbability = "languageWordSpace_averageMemorizingProbability"
 
 // Word type tag:
 const val dbTypeTagTable = "typeTags"

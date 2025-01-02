@@ -5,14 +5,13 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.L
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 
 
-fun LanguageEntity.asLanguageModel(): Language = this.code.code.language
+fun LanguageEntity.asLanguageModel(): Language = this.code.code.getLanguage()
 
 fun LanguageWordSpaceEntity.asWordSpaceModel(): LanguageWordSpace = LanguageWordSpace(
-    language = languageCode.code.language,
+    code = languageCode,
     wordsCount = wordsCount,
-    averageMemorizingProbability = averageMemorizingProbability,
 )
 

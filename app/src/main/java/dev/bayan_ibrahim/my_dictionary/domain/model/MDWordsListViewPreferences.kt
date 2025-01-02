@@ -26,7 +26,6 @@ interface MDWordsListViewPreferences {
                 || (selectedMemorizingProbabilityGroups.count() in 1..(MDWordsListMemorizingProbabilityGroup.entries.count()))
 
     fun matches(word: Word): Boolean = matchesSearch(word)
-            && matchesTags(word.tags)
             && matchesMemorizingProbabilityGroup(word)
 
     private fun matchesSearch(word: Word): Boolean {
@@ -39,24 +38,12 @@ interface MDWordsListViewPreferences {
         return matchMeaning || matchTranslation
     }
 
-    fun matchesTags(
-        tags: Set<ContextTag>,
-    ): Boolean {
-        if (selectedTags.isEmpty()) return true
-
-        val anyContained = tags.any { provided ->
-            selectedTags.any { required ->
-                required.contains(provided)
-            }
-        }
-        return !includeSelectedTags.xor(anyContained)
-    }
 
     private fun matchesMemorizingProbabilityGroup(word: Word): Boolean {
         if (selectedMemorizingProbabilityGroups.isEmpty()) return true
         if (selectedMemorizingProbabilityGroups.count() == MDWordsListMemorizingProbabilityGroup.entries.count()) return true
         return selectedMemorizingProbabilityGroups.any { group ->
-            word.memoryDecayFactor in group.learningRange
+            word.memoryDecayFactor in group.probabilityRange
         }
     }
 }

@@ -96,7 +96,7 @@ private fun MDWordsDetailsViewModeTopAppBarPreview() {
                 contentAlignment = Alignment.Center,
             ) {
                 MDWordDetailsEditModeTopAppBar(
-                    language = Language("en".code, "English", "English"),
+                    language = Language("en", "English", "English"),
                     validWord = true,
                     onCancel = {},
                     onSave = {},

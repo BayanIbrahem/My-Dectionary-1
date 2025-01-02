@@ -27,11 +27,11 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardScope
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagColorIcon
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.component.MDContextTagColorIcon
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
@@ -282,7 +282,7 @@ private fun WordDetailsViewModeScreenPreview() {
                                     "Additional translation 1",
                                     "Additional translation 2",
                                 ),
-                                wordTypeTag = WordTypeTag(0, "Type tag", "en".code.language, listOf()),
+                                wordTypeTag = WordTypeTag(0, "Type tag", "en".code.getLanguage(), listOf()),
                                 relatedWords = listOf(
                                     RelatedWord(0, 0, 0, "Relation", "Word"),
                                     RelatedWord(0, 0, 0, "Relation", "Word"),

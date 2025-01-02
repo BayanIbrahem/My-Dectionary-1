@@ -11,7 +11,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
@@ -25,7 +25,7 @@ fun WordWithContextTagsAndRelatedWordsRelation.asWordModel(
     meaning = this.word.meaning.meaningViewNormalize,
     translation = this.word.translation.meaningViewNormalize,
     additionalTranslations = this.word.additionalTranslations,
-    language = this.word.languageCode.code.language,
+    language = this.word.languageCode.code.getLanguage(),
     tags = this.tags.map { it.asModel() }.toSet(),
     transcription = this.word.transcription,
     examples = this.word.examples,
@@ -54,7 +54,7 @@ fun WordEntity.asWordModel(): Word = Word(
     meaning = this.meaning,
     translation = this.translation,
     additionalTranslations = this.additionalTranslations,
-    language = this.languageCode.code.language,
+    language = this.languageCode.code.getLanguage(),
     transcription = this.transcription,
     examples = this.examples,
     wordTypeTag = null,
@@ -95,7 +95,7 @@ fun Word.asWordEntity(
     translation = this.translation,
     normalizedTranslation = this.translation.meaningSearchNormalize,
     additionalTranslations = this.additionalTranslations,
-    languageCode = this.language.code.code,
+    languageCode = this.language.code,
     transcription = this.transcription,
     examples = this.examples,
     wordTypeTagId = this.wordTypeTag?.id?.nullIfInvalid(),

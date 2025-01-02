@@ -23,7 +23,6 @@ interface MDStatisticsUiState : MDUiState {
     val preferences: MDStatisticsViewPreferences
     val allTrainHistoryCount: Int
     val selectedTrainHistoryCount: MDStatisticsMostResentHistoryCount
-    val dateUnit: MDDateUnit?
 
     val barChartData: MDStatisticsBarChartData
     val lineChartData: MDStatisticsLineChartData
@@ -35,7 +34,6 @@ class MDStatisticsMutableUiState : MDStatisticsUiState, MDMutableUiState() {
     override var preferences: MDStatisticsViewPreferences by mutableStateOf(MDStatisticsViewPreferences.Date())
     override var allTrainHistoryCount: Int by mutableIntStateOf(0)
     override var selectedTrainHistoryCount: MDStatisticsMostResentHistoryCount by mutableStateOf(MDStatisticsMostResentHistoryCount._1)
-    override var dateUnit: MDDateUnit? by mutableStateOf(null)
 
     override val barChartData: SnapshotStateMap<MDTrainWordResultType, Int> = mutableStateMapOf()
     override val lineChartData: SnapshotStateMap<MDTrainWordResultType, Map<Int, Int>> = mutableStateMapOf()

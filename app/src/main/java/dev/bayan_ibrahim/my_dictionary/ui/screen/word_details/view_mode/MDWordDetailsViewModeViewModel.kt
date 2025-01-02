@@ -4,21 +4,21 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.view_mode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsViewModeRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MDWordDetailsViewModeViewModel @Inject constructor(
-    private val repo: MDWordDetailsViewModeRepo,
+    private val wordRepo: WordRepo,
 ) : ViewModel() {
     private val _uiState: MDWordDetailsViewModeMutableUiState = MDWordDetailsViewModeMutableUiState()
     val uiState: MDWordDetailsViewModeUiState = _uiState
     fun initWithNavArgs(args: MDDestination.WordDetailsViewMode) {
         viewModelScope.launch {
             _uiState.onExecute {
-                _uiState.word = repo.getWord(args.wordId) ?: return@onExecute false
+                _uiState.word = wordRepo.getWord(args.wordId) ?: return@onExecute false
                 true
             }
         }

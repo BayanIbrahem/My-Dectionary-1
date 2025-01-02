@@ -4,7 +4,6 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,8 +12,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,10 +31,9 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionItem
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -51,8 +47,8 @@ fun MDWordsListViewPreferencesDialog(
     showDialog: Boolean,
     uiState: MDWordsListViewPreferencesUiState,
     uiActions: MDWordsListViewPreferencesUiActions,
-    contextTagsSelectionState: MDContextTagsSelectionUiState,
-    contextTagsSelectionActions: MDContextTagsSelectionActions,
+    contextTagsSelectionState: MDContextTagsSelectorUiState,
+    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember {
@@ -161,18 +157,10 @@ private fun SearchBody(
     }
 }
 
-/*
-
-
-    val selectedTags: Set<String>
-    val includeSelectedTags: Boolean
-    val selectedMemorizingProbabilityGroups: Set<WordsListMemorizingProbabilityGroup>
- */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FilterBody(
-    contextTagsSelectionState: MDContextTagsSelectionUiState,
-    contextTagsSelectionActions: MDContextTagsSelectionActions,
+    contextTagsSelectionState: MDContextTagsSelectorUiState,
+    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
     includeSelectedTags: Boolean,
     selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     onToggleSelectedTags: (Boolean) -> Unit,
@@ -186,7 +174,7 @@ private fun FilterBody(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        MDContextTagsSelectionItem(
+        MDContextTagsSelector(
             state = contextTagsSelectionState,
             actions = contextTagsSelectionActions,
             allowAddTags = false,
@@ -231,9 +219,9 @@ private fun FilterBody(
                     subtitle = {
                         // TODO, string res
                         val text = "from ${
-                            group.learningRange.start.times(100).roundToInt()
+                            group.probabilityRange.start.times(100).roundToInt()
                         }% to ${
-                            group.learningRange.endInclusive.times(100).roundToInt()
+                            group.probabilityRange.endInclusive.times(100).roundToInt()
                         }%"
                         Text(
                             text = text,

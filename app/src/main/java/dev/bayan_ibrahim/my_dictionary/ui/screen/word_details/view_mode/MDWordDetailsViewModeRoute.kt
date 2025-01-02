@@ -37,7 +37,7 @@ fun MDWordDetailsViewModeRoute(
                 }
 
                 override fun onEdit() {
-                    onEdit(uiState.word.id, uiState.word.language.code)
+                    onEdit(uiState.word.id, uiState.word.language)
                 }
 
                 override fun onShare() {

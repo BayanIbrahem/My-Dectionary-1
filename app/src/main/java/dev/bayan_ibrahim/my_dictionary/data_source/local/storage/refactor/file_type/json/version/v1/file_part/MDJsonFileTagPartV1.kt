@@ -11,6 +11,10 @@ data class MDJsonFileTagPartV1(
     override val id: Long? = null,
     @SerialName(VALUE_KEY)
     override val name: String,
+    @SerialName(COLOR_KEY)
+    override val color: String? = null,
+    @SerialName(PASS_COLOR_KEY)
+    override val passColorToChildren: Boolean = false,
 ) : MDJsonFileTagPart {
     @Transient
     override val version: Int = 1
@@ -18,5 +22,7 @@ data class MDJsonFileTagPartV1(
     companion object Companion {
         const val ID_KEY = "id"// TODO, check serial name
         const val VALUE_KEY = "value"// TODO, check serial name
+        const val COLOR_KEY = "color" // TODO, check serial name
+        const val PASS_COLOR_KEY = "pass_color"
     }
 }

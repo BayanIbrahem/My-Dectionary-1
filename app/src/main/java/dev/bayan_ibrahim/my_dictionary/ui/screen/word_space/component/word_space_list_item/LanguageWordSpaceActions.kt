@@ -55,7 +55,7 @@ data class LanguageWordSpaceActions(
                 WordTypeTag(
                     id = INVALID_ID,
                     name = tag,
-                    language = state.wordSpace.language,
+                    language = state,
                     relations = listOf()
                 )
             )

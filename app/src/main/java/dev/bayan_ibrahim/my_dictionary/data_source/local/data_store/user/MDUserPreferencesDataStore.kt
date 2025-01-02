@@ -7,7 +7,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.UserPrefere
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsPack
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrastType
@@ -29,7 +29,7 @@ class MDUserPreferencesDataStoreImpl(
     override fun getUserPreferencesStream(): Flow<MDUserPreferences> = proto.data.map { it: UserPreferencesProto ->
         MDUserPreferences(
             selectedLanguagePage = if (it.hasSelectedLanguagePage()) {
-                it.selectedLanguagePage.code.language
+                it.selectedLanguagePage.code.getLanguage()
             } else {
                 null
             },
@@ -61,7 +61,7 @@ class MDUserPreferencesDataStoreImpl(
                 if (code == null) {
                     this.clearSelectedLanguagePage()
                 } else {
-                    this.selectedLanguagePage = code.code
+                    this.selectedLanguagePage = code
                 }
                 this.themeKey = user.theme.key
                 this.theme = when (user.themeVariant) {

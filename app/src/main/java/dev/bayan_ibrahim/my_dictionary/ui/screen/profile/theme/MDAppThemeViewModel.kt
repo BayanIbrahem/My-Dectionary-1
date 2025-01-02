@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
+import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrast
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MDAppThemeViewModel @Inject constructor(
-    private val dataStore: MDPreferencesDataStore,
+    private val userRepo: UserPreferencesRepo,
 ) : ViewModel() {
     private val _uiState: MDAppThemeMutableUiState = MDAppThemeMutableUiState()
     val uiState: MDAppThemeUiState = _uiState
@@ -43,7 +43,7 @@ class MDAppThemeViewModel @Inject constructor(
         isSystemDarkTheme: Boolean,
     ) {
         viewModelScope.launch {
-            dataStore.getUserPreferences().let {
+            userRepo.getUserPreferences().let {
                 _uiState.selectedTheme = it.theme
                 _uiState.selectedContrast = it.theme.getContrast(
                     contrast = it.themeContrastType,
@@ -73,7 +73,7 @@ class MDAppThemeViewModel @Inject constructor(
             viewModelScope.launch {
                 _uiState.selectedTheme = theme
                 _uiState.selectedContrast = contrast
-                dataStore.writeUserPreferences {
+                userRepo.setUserPreferences {
                     it.copy(
                         theme = theme,
                         themeVariant = contrast.variant,

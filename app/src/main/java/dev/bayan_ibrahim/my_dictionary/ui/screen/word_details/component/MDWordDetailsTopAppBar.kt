@@ -69,7 +69,11 @@ private fun MDWordDetailsTopAppBarPreview() {
                 contentAlignment = Alignment.Center,
             ) {
                 MDWordDetailsTopAppBar(
-                    language = Language("en".code, "English", "English"),
+                    language = Language(
+                        code = "en",
+                        selfDisplayName = "English",
+                        localDisplayName = "English"
+                    ),
                     leading = {},
                     trailing = {}
                 )

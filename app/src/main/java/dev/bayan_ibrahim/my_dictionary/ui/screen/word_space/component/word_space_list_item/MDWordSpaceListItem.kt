@@ -73,7 +73,7 @@ fun MDWordSpaceListItem(
     val isEditable by remember(currentEditableLanguageCode) {
         derivedStateOf {
             currentEditableLanguageCode?.let {
-                state.wordSpace.language.code == it
+                state.code == it.code
             } ?: true
         }
     }
@@ -115,8 +115,8 @@ fun MDWordSpaceListItem(
 
                 ) {
                 Text(
-                    text = state.wordSpace.language.code.uppercaseCode,
-                    style = if (state.wordSpace.language.code.isLong) {
+                    text = state.uppercaseCode,
+                    style = if (state.isLongCode) {
                         MaterialTheme.typography.titleSmall
                     } else {
                         MaterialTheme.typography.titleLarge
@@ -125,9 +125,9 @@ fun MDWordSpaceListItem(
                 Text(
                     text = buildAnnotatedString {
                         pushStyle(MaterialTheme.typography.bodyLarge.toSpanStyle())
-                        append(state.wordSpace.language.selfDisplayName)
+                        append(state.selfDisplayName)
                         pushStyle(MaterialTheme.typography.labelSmall.toSpanStyle())
-                        append("  ${state.wordSpace.wordsCount} Words") // TODO, string res
+                        append("  ${state.wordsCount} Words") // TODO, string res
                     },
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -153,7 +153,7 @@ fun MDWordSpaceListItem(
                     Row {
                         IconButton(
                             onClick = {
-                                navigateToStatistics(state.wordSpace.language)
+                                navigateToStatistics(state)
                             }
                         ) {
                             MDIcon(MDIconsSet.Statistics)
@@ -481,7 +481,7 @@ private fun MDWordSpaceListItemPreview() {
                 MDWordSpaceListItem(
                     state = state,
                     actions = actions,
-                    currentEditableLanguageCode = language.code,
+                    currentEditableLanguageCode = language,
                     navigateToStatistics = {}
                 )
             }
@@ -490,16 +490,12 @@ private fun MDWordSpaceListItemPreview() {
 }
 
 private val language = Language(
-    code = "de".code,
+    code = "de",
     selfDisplayName = "Deutsch",
     localDisplayName = "German"
 )
 private val state = LanguageWordSpaceMutableState(
-    wordSpace = LanguageWordSpace(
-        language = language,
-        wordsCount = 100,
-        averageMemorizingProbability = 0.55f
-    ),
+    "de",
     initialTags = listOf(
         WordTypeTag(
             id = 0,

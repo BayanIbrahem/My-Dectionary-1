@@ -8,7 +8,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import kotlinx.datetime.Instant
 
@@ -43,7 +43,7 @@ fun Word.Companion.invalid() = Word(
     id = INVALID_ID,
     meaning = INVALID_TEXT,
     translation = INVALID_TEXT,
-    language = "en".code.language,
+    language = "en".code.getLanguage(),
     createdAt = INVALID_INSTANT,
     updatedAt = INVALID_INSTANT,
 )

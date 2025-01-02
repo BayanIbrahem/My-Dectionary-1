@@ -3,8 +3,8 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.profile.general
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -13,12 +13,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MDProfileViewModel @Inject constructor(
-//    private val repo: MDProfileRepo
-    private val datastore: MDPreferencesDataStore,
+    private val userRepo: UserPreferencesRepo,
 ) : ViewModel() {
     private val _uiState: MDProfileMutableUiState = MDProfileMutableUiState()
     val uiState: MDProfileUiState = _uiState
-    val userPreferences = datastore.getUserPreferencesStream().stateIn(
+    val userPreferences = userRepo.getUserPreferencesStream().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = MDUserPreferences()
@@ -40,7 +39,7 @@ class MDProfileViewModel @Inject constructor(
     ): MDProfileBusinessUiActions = object : MDProfileBusinessUiActions {
         override fun onToggleLiveTemplate(liveTemplate: Boolean) {
             viewModelScope.launch {
-                datastore.writeUserPreferences {
+                userRepo.setUserPreferences {
                     it.copy(liveMemorizingProbability = liveTemplate)
                 }
             }

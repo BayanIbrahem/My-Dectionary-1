@@ -5,15 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDMutableUiState
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
-import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.flow.StateFlow
 
 interface MDWordsListUiState : MDUiState {
-    val selectedWordSpace: LanguageWordSpace
+    val selectedWordSpace: StateFlow<LanguageWordSpace>
     val isLanguagesWordSpacesDialogShown: Boolean
     val isLanguageWordSpaceDeleteDialogShown: Boolean
     val isLanguageWordSpaceDeleteProcessRunning: Boolean
@@ -37,8 +35,9 @@ interface MDWordsListUiState : MDUiState {
     val showTrainPreferencesDialog: Boolean
 }
 
-class MDWordsListMutableUiState : MDWordsListUiState, MDMutableUiState() {
-    override var selectedWordSpace: LanguageWordSpace by mutableStateOf(LanguageWordSpace())
+class MDWordsListMutableUiState(
+    override val selectedWordSpace: StateFlow<LanguageWordSpace>,
+) : MDWordsListUiState, MDMutableUiState() {
     override var isLanguagesWordSpacesDialogShown: Boolean by mutableStateOf(false)
     override var isLanguageWordSpaceDeleteDialogShown: Boolean by mutableStateOf(false)
     override var isLanguageWordSpaceDeleteProcessRunning: Boolean by mutableStateOf(false)

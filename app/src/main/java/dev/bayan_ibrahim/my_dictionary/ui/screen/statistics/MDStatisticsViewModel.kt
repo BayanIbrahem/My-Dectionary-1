@@ -8,32 +8,38 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.MDStatisticsMostR
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.instantIdentifier
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.startOf
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.TrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResultType
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDStatisticsRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.TrainHistoryRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import javax.inject.Inject
 
 @HiltViewModel
 class MDStatisticsViewModel @Inject constructor(
-    private val repo: MDStatisticsRepo,
+    private val trainHistoryRepo: TrainHistoryRepo,
+    private val wordRepo: WordRepo,
 ) : ViewModel() {
     private val _uiState: MDStatisticsMutableUiState = MDStatisticsMutableUiState()
     val uiState: MDStatisticsUiState = _uiState
     fun initWithNavArgs(args: MDDestination.Statistics) {
         _uiState.preferences = args.preferences
-        _uiState.dateUnit = args.preferences.dateUnit
         onLoadPreferences()
     }
 
     private fun onLoadPreferences() {
         viewModelScope.launch {
             _uiState.onExecute {
+                val endTime = Clock.System.now()
+                val startTime = _uiState.preferences.dateUnit.startOf(endTime)
 
-                val trainHistoryRecords = getTrainHistoryRecord(uiState.preferences)
+                val trainHistoryRecords = getTrainHistoryRecord(uiState.preferences, startTime, endTime)
                 _uiState.trainHistoryRecord.setAll(trainHistoryRecords)
                 val lineData = getBarsData(uiState.preferences, trainHistoryRecords)
                 val barData = lineData.toBarData()
@@ -44,7 +50,7 @@ class MDStatisticsViewModel @Inject constructor(
                 _uiState.lineChartData.putAll(lineData)
                 _uiState.barChartData.putAll(barData)
 
-                val allTrainsCount = repo.getAllTrainsCount()
+                val allTrainsCount = trainHistoryRepo.getAllTrainsCount()
                 _uiState.allTrainHistoryCount = allTrainsCount
 
                 lineData.isNotEmpty()
@@ -52,18 +58,74 @@ class MDStatisticsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getTrainHistoryRecord(preferences: MDStatisticsViewPreferences) = when (preferences) {
-        is MDStatisticsViewPreferences.Date -> {
-            val now = Clock.System.now()
-            val startTime = preferences.dateUnit.startOf(now)
-            repo.getTrainHistoryInDateRange(startTime, now)
-        }
+    private suspend fun getTrainHistoryRecord(
+        preferences: MDStatisticsViewPreferences,
+        startTime: Instant,
+        endTime: Instant,
+    ) = when (preferences) {
+        is MDStatisticsViewPreferences.Date -> trainHistoryRepo.getTrainHistoryOf(startTime, endTime).first()
+        is MDStatisticsViewPreferences.Language -> getTrainHistoryOfLanguage(preferences.language, startTime, endTime)
+        is MDStatisticsViewPreferences.Tag -> getTrainHistoryOfContextTag(preferences.tagId, startTime, endTime)
+        is MDStatisticsViewPreferences.Train -> trainHistoryRepo.getTrainHistoryOf(limit = preferences.count.count).first()
+        is MDStatisticsViewPreferences.TypeTag -> getTrainHistoryOfTypeTag(preferences.typeTagId, startTime, endTime)
+        is MDStatisticsViewPreferences.Word -> getTrainHistoryOfWord(preferences.wordId, startTime, endTime)
+    }
 
-        is MDStatisticsViewPreferences.Language -> repo.getTrainHistoryOfLanguage(preferences.language)
-        is MDStatisticsViewPreferences.Tag -> repo.getTrainHistoryOfTag(preferences.tagId)
-        is MDStatisticsViewPreferences.Train -> repo.getMostRecentTrainHistory(preferences.count.count)
-        is MDStatisticsViewPreferences.TypeTag -> repo.getTrainHistoryOfTypeTag(preferences.typeTagId)
-        is MDStatisticsViewPreferences.Word -> repo.getTrainHistoryOfWord(preferences.wordId)
+    private suspend fun getTrainHistoryOfWord(
+        wordId: Long,
+        startTime: Instant?,
+        endTime: Instant?,
+        limit: Int? = null,
+    ): List<TrainHistory> = trainHistoryRepo.getTrainHistoryOf(
+        startTime = startTime,
+        endTime = endTime,
+        wordsIds = setOf(wordId),
+        limit = limit,
+    ).first()
+
+    private suspend fun getTrainHistoryOfLanguage(
+        language: Language,
+        startTime: Instant?,
+        endTime: Instant?,
+        limit: Int? = null,
+    ): List<TrainHistory> {
+        val wordsIds = wordRepo.getWordsIdsOf(languages = setOf(language)).first()
+        return trainHistoryRepo.getTrainHistoryOf(
+            startTime = startTime,
+            endTime = endTime,
+            wordsIds = wordsIds,
+            limit = limit
+        ).first()
+    }
+
+    private suspend fun getTrainHistoryOfContextTag(
+        contextTag: Long,
+        startTime: Instant?,
+        endTime: Instant?,
+        limit: Int? = null,
+    ): List<TrainHistory> {
+        val wordsIds = wordRepo.getWordsIdsOf(contextTags = setOf(contextTag)).first()
+        return trainHistoryRepo.getTrainHistoryOf(
+            startTime = startTime,
+            endTime = endTime,
+            wordsIds = wordsIds,
+            limit = limit
+        ).first()
+    }
+
+    private suspend fun getTrainHistoryOfTypeTag(
+        typeTagId: Long,
+        startTime: Instant?,
+        endTime: Instant?,
+        limit: Int? = null,
+    ): List<TrainHistory> {
+        val wordsIds = wordRepo.getWordsIdsOf(typeTags = setOf(typeTagId)).first()
+        return trainHistoryRepo.getTrainHistoryOf(
+            startTime = startTime,
+            endTime = endTime,
+            wordsIds = wordsIds,
+            limit = limit
+        ).first()
     }
 
     private suspend fun getBarsData(
@@ -81,34 +143,34 @@ class MDStatisticsViewModel @Inject constructor(
 
     private fun initDatePreferences(
         trainHistoryRecord: List<TrainHistory>,
-        dateUnit: MDDateUnit = uiState.dateUnit ?: MDStatisticsViewPreferences.DEFAULT_DATE_UNIT,
+        dateUnit: MDDateUnit = uiState.preferences.dateUnit
     ): MDStatisticsLineChartData {
         return trainHistoryRecord.asLineChartData(dateUnit)
     }
 
     private fun initTrainHistoryPreferences(
         trainHistoryRecord: List<TrainHistory>,
-        dateUnit: MDDateUnit = uiState.dateUnit ?: MDStatisticsViewPreferences.DEFAULT_DATE_UNIT,
+        dateUnit: MDDateUnit = uiState.preferences.dateUnit,
     ): MDStatisticsLineChartData = trainHistoryRecord.asLineChartData(dateUnit)
 
     private fun initWordPreferences(
         trainHistoryRecord: List<TrainHistory>,
-        dateUnit: MDDateUnit = uiState.dateUnit ?: MDStatisticsViewPreferences.DEFAULT_DATE_UNIT,
+        dateUnit: MDDateUnit = uiState.preferences.dateUnit,
     ): MDStatisticsLineChartData = trainHistoryRecord.asLineChartData(dateUnit)
 
     private fun initLanguagePreferences(
         trainHistoryRecord: List<TrainHistory>,
-        dateUnit: MDDateUnit = uiState.dateUnit ?: MDStatisticsViewPreferences.DEFAULT_DATE_UNIT,
+        dateUnit: MDDateUnit = uiState.preferences.dateUnit,
     ): MDStatisticsLineChartData = trainHistoryRecord.asLineChartData(dateUnit)
 
     private fun initTagPreferences(
         trainHistoryRecord: List<TrainHistory>,
-        dateUnit: MDDateUnit = uiState.dateUnit ?: MDStatisticsViewPreferences.DEFAULT_DATE_UNIT,
+        dateUnit: MDDateUnit = uiState.preferences.dateUnit,
     ): MDStatisticsLineChartData = trainHistoryRecord.asLineChartData(dateUnit)
 
     private fun initTypeTagPreferences(
         trainHistoryRecord: List<TrainHistory>,
-        dateUnit: MDDateUnit = uiState.dateUnit ?: MDStatisticsViewPreferences.DEFAULT_DATE_UNIT,
+        dateUnit: MDDateUnit = uiState.preferences.dateUnit,
     ): MDStatisticsLineChartData = trainHistoryRecord.asLineChartData(dateUnit)
 
     private fun Collection<TrainHistory>.asLineChartData(
@@ -147,7 +209,7 @@ class MDStatisticsViewModel @Inject constructor(
 
         override fun onSelectDateUnit(unit: MDDateUnit) {
             _uiState.preferences = _uiState.preferences.copyWith(unit)
-            
+
             onLoadPreferences()
         }
     }

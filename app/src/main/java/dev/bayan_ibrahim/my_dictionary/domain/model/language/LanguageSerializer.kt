@@ -13,9 +13,9 @@ object LanguageSerializer : KSerializer<Language> {
         kind = PrimitiveKind.STRING
     )
 
-    override fun deserialize(decoder: Decoder): Language = decoder.decodeString().code.language
+    override fun deserialize(decoder: Decoder): Language = decoder.decodeString().code.getLanguage()
 
     override fun serialize(encoder: Encoder, value: Language) {
-        encoder.encodeString(value.code.code)
+        encoder.encodeString(value.code)
     }
 }

@@ -5,32 +5,28 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActionsImpl
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionMutableUiState
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.defaultLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.ViewPreferencesRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -38,18 +34,26 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MDWordsListViewModel @Inject constructor(
-    private val repo: MDWordsListRepo,
+    private val userRepo: UserPreferencesRepo,
+    private val viewPreferencesRepo: ViewPreferencesRepo,
+    private val languageRepo: LanguageRepo,
+    private val wordRepo: WordRepo,
 ) : ViewModel() {
-    private val _uiState: MDWordsListMutableUiState = MDWordsListMutableUiState()
+    private val selectedWordSpaceStream: StateFlow<LanguageWordSpace> = userRepo.getUserPreferencesStream().map {
+        val language = it.selectedLanguagePage ?: let {
+            val defaultLanguage = defaultLanguage
+            userRepo.setUserPreferences { userPreferences ->
+                userPreferences.copy(selectedLanguagePage = defaultLanguage)
+            }
+            defaultLanguage
+        }
+        languageRepo.getLanguageWordSpace(language) ?: LanguageWordSpace(language.code)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), LanguageWordSpace(defaultLanguage.code))
+    private val _uiState: MDWordsListMutableUiState = MDWordsListMutableUiState(selectedWordSpaceStream)
     val uiState: MDWordsListUiState = _uiState
 
-    private val currentLanguageFlow: Flow<Language?> = repo.getSelectedLanguagePageStream().map {
-        it.also {
-            _uiState.validData = it != null
-        }
-    }
 
-    private val viewPreferences = repo.getViewPreferences().stateIn(
+    private val viewPreferences = viewPreferencesRepo.getViewPreferencesStream().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = defaultWordsListViewPreferences
@@ -57,7 +61,7 @@ class MDWordsListViewModel @Inject constructor(
 
     private val _paginatedWordsList: MutableStateFlow<PagingData<Word>> = MutableStateFlow(PagingData.empty())
     val paginatedWordsList: StateFlow<PagingData<Word>> = _paginatedWordsList.asStateFlow()
-    val lifeMemorizingProbability = repo.getUserPreferences().map {
+    val lifeMemorizingProbability = userRepo.getUserPreferencesStream().map {
         it.liveMemorizingProbability
     }.stateIn(
         scope = viewModelScope,
@@ -67,52 +71,34 @@ class MDWordsListViewModel @Inject constructor(
 
     private var paginatedWordsListJob: Job? = null
 
-    private val _tagsState = MDContextTagsSelectionMutableUiState()
-    val contextTagsState: MDContextTagsSelectionUiState = _tagsState
-    val contextTagsActions: MDContextTagsSelectionActions = MDContextTagsSelectionActionsImpl(
-        state = _tagsState,
-        onAddNewTag = ::onAddTagToTree,
-        onDeleteTag = ::onRemoveTagFromTree
-    )
-
-    private fun onAddTagToTree(tag: ContextTag) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.addOrUpdateContextTag(tag)
-        }
-    }
-
-    private fun onRemoveTagFromTree(tag: ContextTag) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.removeContextTag(tag)
-        }
-    }
-
-    private var tagsStateAllTagsStreamCollectorJob: Job? = null
     private fun setPaginatedWordsListJob() {
         viewModelScope.launch {
-            tagsStateAllTagsStreamCollectorJob?.cancel()
-            tagsStateAllTagsStreamCollectorJob = launch {
-                repo.getContextTagsStream().collect { tags ->
-                    _tagsState.allTagsTree.setFrom(tags)
-                    contextTagsActions.refreshCurrentTree()
-                }
-            }
-
             paginatedWordsListJob?.cancel()
             viewPreferences.collectLatest { preferences ->
                 updateUiStateFromViewPreferences(preferences)
-                currentLanguageFlow.collectLatest { language ->
+                selectedWordSpaceStream.collectLatest { language ->
                     if (language != null) {
-                        _uiState.selectedWordSpace = repo.getLanguagesWordSpaces(language.code) ?: LanguageWordSpace()
+//                        _uiState.selectedWordSpace = languageRepo.getLanguageWordSpace(language) ?: let {
+//                            val defaultLanguage = defaultLanguage
+//                            userRepo.setUserPreferences {
+//                                it.copy(selectedLanguagePage = defaultLanguage)
+//                            }
+//                            LanguageWordSpace(defaultLanguage.code)
+//                        }
                         paginatedWordsListJob = launch {
-                            val wordsIds = repo.getWordsIdsOfTagsAndMemorizingProbability(
-                                language = language,
-                                viewPreferences = preferences
-                            )
-                            repo.getPaginatedWordsList(
-                                code = language.code,
-                                wordsIdsOfTagsAndProgressRange = wordsIds,
-                                viewPreferences = preferences,
+                            val targetWords = wordRepo.getWordsIdsOf(
+                                languages = setOf(language),
+                                contextTags = preferences.selectedTags.map { it.id }.toSet(),
+                                memorizingProbabilities = preferences.selectedMemorizingProbabilityGroups
+                            ).first()
+                            wordRepo.getPaginatedWordsList(
+                                code = language,
+                                targetWords = targetWords,
+                                includeMeaning = preferences.searchTarget.includeMeaning,
+                                includeTranslation = preferences.searchTarget.includeTranslation,
+                                searchQuery = preferences.searchQuery,
+                                sortBy = preferences.sortBy,
+                                sortByOrder = preferences.sortByOrder,
                             ).distinctUntilChanged()
                                 .cachedIn(viewModelScope)
                                 .collect { pagingData ->
@@ -140,21 +126,6 @@ class MDWordsListViewModel @Inject constructor(
         setPaginatedWordsListJob()
         viewModelScope.launch {
             _uiState.onExecute {
-                repo.getViewPreferences()
-                val languageCode = args.languageCode?.code ?: repo.getSelectedLanguagePage()?.code
-
-                if (languageCode != null) {
-                    _uiState.selectedWordSpace =
-                        repo.getLanguagesWordSpaces(code = languageCode) ?: LanguageWordSpace(languageCode.language)
-                    repo.setSelectedLanguagePage(languageCode)
-                } else {
-                    _uiState.selectedWordSpace = LanguageWordSpace()
-                    _uiState.validData = false
-                }
-
-                // init languages list
-//                onLanguageWordSpaceSearchQueryChange("")
-
                 true
             }
         }
@@ -181,11 +152,11 @@ class MDWordsListViewModel @Inject constructor(
         }
 
         override fun onSelectLanguageWordSpace(wordSpace: LanguageWordSpace) {
-            _uiState.selectedWordSpace = wordSpace
-
             viewModelScope.launch {
                 launch {
-                    repo.setSelectedLanguagePage(wordSpace.language.code)
+                    userRepo.setUserPreferences {
+                        it.copy(selectedLanguagePage = wordSpace)
+                    }
                 }
             }
         }
@@ -197,8 +168,7 @@ class MDWordsListViewModel @Inject constructor(
         override fun onConfirmDeleteLanguageWordSpace() {
             viewModelScope.launch {
                 _uiState.isLanguageWordSpaceDeleteProcessRunning = true
-                repo.deleteWordSpace(uiState.selectedWordSpace.language.code)
-                repo.setDefaultSelectedLanguagePage()
+                languageRepo.deleteWordSpace(uiState.selectedWordSpace.value)
                 _uiState.isLanguageWordSpaceDeleteProcessRunning = false
                 _uiState.isLanguageWordSpaceDeleteDialogShown = false
                 initWithNavArgs(MDDestination.TopLevel.WordsList())
@@ -226,15 +196,6 @@ class MDWordsListViewModel @Inject constructor(
             navActions.navigateToWordDetails(null)
         }
 
-
-//        override fun onSelectAll() {
-//            viewModelScope.launch {
-//                if (uiState.isSelectModeOn) {
-//                    _uiState.selectedWords = allWordsIds()
-//                }
-//            }
-//        }
-
         override fun onDeselectAll() {
             if (uiState.isSelectModeOn) {
                 _uiState.selectedWords = persistentSetOf()
@@ -242,13 +203,6 @@ class MDWordsListViewModel @Inject constructor(
             }
         }
 
-        //        override fun onInvertSelection() {
-//            if (uiState.isSelectModeOn) {
-//                val allWordsIds = allWordsIds()
-//                _uiState.selectedWords = allWordsIds.removeAll(uiState.selectedWords)
-//            }
-//        }
-//
         override fun onDeleteSelection() {
             _uiState.isSelectedWordsDeleteDialogShown = true
         }
@@ -259,7 +213,7 @@ class MDWordsListViewModel @Inject constructor(
                     _uiState.onExecute {
                         val ids = uiState.selectedWords
 
-                        repo.deleteWords(ids)
+                        wordRepo.deleteWords(ids)
 
                         _uiState.isSelectedWordsDeleteDialogShown = false
                         _uiState.isSelectModeOn = false
@@ -294,15 +248,12 @@ class MDWordsListViewModel @Inject constructor(
             _uiState.showViewPreferencesDialog = false
         }
 
-        override fun onConfirmAppendContextTagsOnSelectedWords() {
+        override fun onConfirmAppendContextTagsOnSelectedWords(selectedTags: List<ContextTag>) {
             if (uiState.isSelectModeOn) {
                 if (uiState.selectedWords.isNotEmpty()) {
-                    val selectedTags = contextTagsState.selectedTags.toList()
                     if (selectedTags.isNotEmpty()) {
-                        contextTagsActions.clearSelectedTags()
-                        contextTagsActions.onResetToRoot()
                         viewModelScope.launch {
-                            repo.appendTagsToWords(
+                            wordRepo.appendTagsToWords(
                                 wordsIds = uiState.selectedWords,
                                 tags = selectedTags
                             )

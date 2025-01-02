@@ -4,30 +4,29 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActionsImpl
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionMutableUiState
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
+import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_LANGUAGE
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordDetailsEditModeRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.TypeTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorMutableUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -35,24 +34,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MDWordDetailsEditModeViewModel @Inject constructor(
-    private val repo: MDWordDetailsEditModeRepo,
+    private val wordRepo: WordRepo,
+    private val userRepo: UserPreferencesRepo,
+    private val typeTagRepo: TypeTagRepo,
 ) : ViewModel() {
-    private val _tagsState = MDContextTagsSelectionMutableUiState()
-    val contextTagsState: MDContextTagsSelectionUiState = _tagsState
-    val contextTagsActions: MDContextTagsSelectionActions = MDContextTagsSelectionActionsImpl(
-        state = _tagsState,
-        onAddNewTag = ::onAddTagToTree,
-        onDeleteTag = ::onRemoveTagFromTree
+    private val _tagsState = MDContextTagsSelectorMutableUiState()
+
+    private val currentLanguageFlow: StateFlow<Language?> = userRepo.getUserPreferencesStream().map { it.selectedLanguagePage }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
     )
-
-    private var tagsStateAllTagsStreamCollectorJob: Job? = null
-
-    private val currentLanguageFlow: MutableStateFlow<String?> = MutableStateFlow(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val typeTags: StateFlow<List<WordTypeTag>> = currentLanguageFlow.flatMapConcat {
-        val language = it ?: ""
-        repo.getLanguageTagsStream(language)
+        val language = it ?: INVALID_LANGUAGE
+        typeTagRepo.getTypeTagsOfLanguage(language)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -66,20 +63,17 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     val uiState: MDWordDetailsEditModeUiState = _uiState
     private var lastLoadedWord: Word? = null
     fun initWithNavArgs(args: MDDestination.WordDetailsEditMode) {
-        tagsStateAllTagsStreamCollectorJob?.cancel()
-        tagsStateAllTagsStreamCollectorJob = viewModelScope.launch {
-            repo.getContextTagsStream().collect { allTags ->
-                _tagsState.allTagsTree.setFrom(allTags)
-                contextTagsActions.refreshCurrentTree()
-            }
-        }
         viewModelScope.launch(Dispatchers.IO) {
-            currentLanguageFlow.value = args.languageCode
+            userRepo.setUserPreferences {
+                it.copy(
+                    selectedLanguagePage = args.languageCode.code.getLanguage()
+                )
+            }
             val id = args.wordId
             if (id == null) {
                 _uiState.reset()
             } else {
-                val word = repo.getWord(id)
+                val word = wordRepo.getWord(id)
                 if (word == null) {
                     _uiState.onExecute { false }
                 } else {
@@ -87,20 +81,8 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
                     _uiState.loadWord(word)
                 }
             }
-            _uiState.language = args.languageCode.code.language
+            _uiState.language = args.languageCode.code.getLanguage()
             _uiState.ensureBlankTrailingField()
-        }
-    }
-
-    private fun onAddTagToTree(tag: ContextTag) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.addOrUpdateContextTag(tag)
-        }
-    }
-
-    private fun onRemoveTagFromTree(tag: ContextTag) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.removeContextTag(tag)
         }
     }
 
@@ -148,14 +130,12 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
                             createdAt = lastWord?.createdAt ?: Clock.System.now(),
                             updatedAt = Clock.System.now()
                         )
-                        val newId = if (newWord.id == INVALID_ID) {
-                            repo.saveNewWord(newWord)
-                        } else {
-                            repo.saveExistedWord(newWord)
-                            newWord.id
-                        }
+                        val newId = wordRepo.saveOrUpdateWord(newWord)
                         launch(Dispatchers.Main.immediate) {
-                            navActions.onNavigateToViewMode(newId, uiState.language.code)
+                            navActions.onNavigateToViewMode(
+                                newWordId = newId,
+                                language = uiState.language
+                            )
                         }
                         true
                     }

@@ -20,13 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagExplorerDialog
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActionsImpl
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionMutableUiState
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagExplorerDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorBusinessUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorMutableUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.marker_tags.component.MDMarkerTagListItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.marker_tags.component.MDMarkerTagsTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -37,8 +38,8 @@ import kotlinx.collections.immutable.persistentListOf
 fun MDMarkerTagsScreen(
     uiState: MDMarkerTagsUiState,
     markerTags: PersistentList<ContextTag>,
-    nonMarkerTagsState: MDContextTagsSelectionUiState,
-    nonMarkerTagsActions: MDContextTagsSelectionActions,
+    nonMarkerTagsState: MDContextTagsSelectorUiState,
+    nonMarkerTagsActions: MDContextTagsSelectorUiActions,
     uiActions: MDMarkerTagsUiActions,
     modifier: Modifier = Modifier,
 ) {
@@ -50,14 +51,12 @@ fun MDMarkerTagsScreen(
         modifier = modifier,
         topBar = {
             MDMarkerTagsTopAppBar(
-                onAddTag = { showExplorerDialog = true },
-                onNavigateBack = uiActions::onPop
+                onAddTag = { showExplorerDialog = true }, onNavigateBack = uiActions::onPop
             )
         },
     ) {
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(vertical = 8.dp)
         ) {
             if (markerTags.isEmpty()) {
                 item {
@@ -65,22 +64,15 @@ fun MDMarkerTagsScreen(
                 }
             }
             items(items = markerTags) { tag ->
-                MDMarkerTagListItem(
-                    modifier = Modifier.animateItem(),
-                    tag = tag,
-                    onChangeColor = {
-                        uiActions.updateTag(tag.copy(color = it))
-                    },
-                    onToggleInheritedMarkerColor = {
-                        uiActions.updateTag(tag.copy(passColorToChildren = it))
-                    },
-                    onRemoveTag = {
-                        uiActions.removeTag(tag)
-                    },
-                    onRemoveMarker = {
-                        uiActions.updateTag(tag.copy(color = null))
-                    }
-                )
+                MDMarkerTagListItem(modifier = Modifier.animateItem(), tag = tag, onChangeColor = {
+                    uiActions.updateTag(tag.copy(color = it))
+                }, onToggleInheritedMarkerColor = {
+                    uiActions.updateTag(tag.copy(passColorToChildren = it))
+                }, onRemoveTag = {
+                    uiActions.removeTag(tag)
+                }, onRemoveMarker = {
+                    uiActions.updateTag(tag.copy(color = null))
+                })
             }
         }
         // dialog:
@@ -109,8 +101,40 @@ private fun MDMarkerTagsScreenPreview() {
                         onExecute { true }
                     },
                     markerTags = persistentListOf(),
-                    nonMarkerTagsState = MDContextTagsSelectionMutableUiState(),
-                    nonMarkerTagsActions = MDContextTagsSelectionActionsImpl(MDContextTagsSelectionMutableUiState(), {}, {}),
+                    nonMarkerTagsState = MDContextTagsSelectorMutableUiState(),
+                    nonMarkerTagsActions = MDContextTagsSelectorUiActions(navigationActions = object : MDContextTagsSelectorNavigationUiActions {},
+                        businessActions = object : MDContextTagsSelectorBusinessUiActions {
+                            override fun onClickTag(tag: ContextTag) {}
+
+                            override fun onSelectTag(tag: ContextTag) {}
+
+                            override fun onSelectCurrentTag() {}
+
+                            override fun onUnSelectTag(tag: ContextTag) {}
+
+                            override fun onSetInitialSelectedTags(tags: Collection<ContextTag>) {}
+
+                            override fun clearSelectedTags() {}
+
+                            override fun onAddNewContextTag(tag: ContextTag) {}
+
+                            override fun onAddNewContextTag(segment: String) {}
+
+                            override fun onDeleteContextTag(tag: ContextTag) {}
+
+                            override fun onNavigateUp() {}
+
+                            override fun onResetToRoot() {}
+
+                            override fun onSetAllowedTagsFilter(filter: (ContextTag) -> Boolean) {}
+
+                            override fun onResetAllowedTagsFilter() {}
+                            override fun onSetForbiddenTagsFilter(filter: (ContextTag) -> Boolean) {}
+                            override fun onResetForbiddenTagsFilter() {}
+                            override fun onResetTagsFilter() {}
+                            override fun onSearchQueryChange(query: String) {}
+                            override fun refreshCurrentTree() {}
+                        }),
                     uiActions = MDMarkerTagsUiActions(
                         object : MDMarkerTagsNavigationUiActions, MDAppNavigationUiActions {
                             override fun onOpenNavDrawer() {}

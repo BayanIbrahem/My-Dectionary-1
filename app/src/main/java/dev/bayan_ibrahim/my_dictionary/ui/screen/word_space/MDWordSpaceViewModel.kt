@@ -5,45 +5,50 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.toMDEditableField
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordSpaceRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.TypeTagRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.LanguageWordSpaceMutableState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.LanguageWordSpaceState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MDWordSpaceViewModel @Inject constructor(
-    private val repo: MDWordSpaceRepo,
+    private val languageRepo: LanguageRepo,
+    private val typeTagRepo: TypeTagRepo,
 ) : ViewModel() {
     private val _uiState: MDWordSpaceMutableUiState = MDWordSpaceMutableUiState()
     val uiState: MDWordSpaceUiState = _uiState
 
     fun initWithNavArgs(args: MDDestination.TopLevel.WordSpace) {
         viewModelScope.launch(Dispatchers.IO) {
-                _uiState.onExecute {
-                    _uiState.wordSpacesWithActions.clear()
-                    repo.getLanguagesWordSpacesWithTags().forEach { (wordSpace, tags) ->
-                        _uiState.wordSpacesWithActions.add(
-                            LanguageWordSpaceMutableState(
-                                wordSpace = wordSpace,
-                                initialTags = tags.map { it.toMDEditableField(false) }
-                            ).let {
-                                it to it.getActions(
-                                    scope = viewModelScope,
-                                    onSubmitRequest = ::onSubmitWordSpaceState,
-                                    onEditCapture = {
-                                        _uiState.currentEditableWordSpaceLanguageCode = it.wordSpace.language.code
-                                    },
-                                    onEditRelease = ::onEditWordSpaceFinish
-                                )
-                            }
-                        )
-                    }
-                    true
+            _uiState.onExecute {
+                _uiState.wordSpacesWithActions.clear()
+                val allWordSpaces = languageRepo.getAllLanguagesWordSpaces(false).first().associate {
+                    (it as LanguageCode) to it.wordsCount
+                }
+                typeTagRepo.getAllTypeTags().first().forEach { (language, tags) ->
+                    _uiState.wordSpacesWithActions.add(
+                        LanguageWordSpaceMutableState(
+                            code = language.code,
+                            initialTags = tags.map { it.toMDEditableField(false) },
+                            wordsCount = allWordSpaces[language] ?: 0,
+                        ).let {
+                            it to it.getActions(
+                                scope = viewModelScope,
+                                onSubmitRequest = ::onSubmitWordSpaceState,
+                                onEditCapture = {
+                                    _uiState.currentEditableWordSpaceLanguageCode = it
+                                },
+                                onEditRelease = ::onEditWordSpaceFinish
+                            )
+                        }
+                    )
+                }
+                true
             }
         }
     }
@@ -53,8 +58,8 @@ class MDWordSpaceViewModel @Inject constructor(
     }
 
     private suspend fun onSubmitWordSpaceState(state: LanguageWordSpaceState) {
-        repo.editLanguageTags(
-            code = state.wordSpace.language.code,
+        typeTagRepo.setLanguageTypeTags(
+            code = state,
             tags = state.tags.map { it.current }
         )
     }
@@ -72,18 +77,18 @@ class MDWordSpaceViewModel @Inject constructor(
         override fun onAddNewWordSpace(code: LanguageCode) {
             viewModelScope.launch {
                 _uiState.onExecute {
-                    val added  =repo.addNewWordSpace(code.code)
+                    val added = languageRepo.insertLanguage(code)
                     if (added) {
                         _uiState.wordSpacesWithActions.add(
                             LanguageWordSpaceMutableState(
-                                wordSpace = LanguageWordSpace(code.language),
+                                code = code.code,
                                 initialTags = emptyList()
                             ).let {
                                 it to it.getActions(
                                     scope = viewModelScope,
                                     onSubmitRequest = ::onSubmitWordSpaceState,
                                     onEditCapture = {
-                                        _uiState.currentEditableWordSpaceLanguageCode = it.wordSpace.language.code
+                                        _uiState.currentEditableWordSpaceLanguageCode = it
                                     },
                                     onEditRelease = ::onEditWordSpaceFinish
                                 )

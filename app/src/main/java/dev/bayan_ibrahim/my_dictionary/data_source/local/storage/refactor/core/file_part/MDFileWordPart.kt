@@ -5,7 +5,7 @@ interface MDFileWordPart : MDFilePart {
     val meaning: String
     val translation: String
     val transcription: String?
-    val tags: List<MDNameWithOptionalId>
+    val tags: List<MDFileTagPart>
     val examples: List<String>
     val additionalTranslations: List<String>
     val typeTag: MDNameWithOptionalId?

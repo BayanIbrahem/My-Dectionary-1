@@ -22,9 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Composable
@@ -68,8 +66,8 @@ fun MDLanguageWordSpaceListItem(
     ) {
         Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
             Text(
-                text = wordSpace.language.code.uppercaseCode,
-                style = if (wordSpace.language.code.isLong) {
+                text = wordSpace.uppercaseCode,
+                style = if (wordSpace.isLongCode) {
                     MaterialTheme.typography.titleSmall
                 } else {
                     MaterialTheme.typography.titleLarge
@@ -82,23 +80,17 @@ fun MDLanguageWordSpaceListItem(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Text(
-                text = if (hideWordCountAndProgress) wordSpace.language.selfDisplayName else wordSpace.language.fullDisplayName,
+                text = if (hideWordCountAndProgress) wordSpace.selfDisplayName else wordSpace.fullDisplayName,
                 style = MaterialTheme.typography.bodyLarge,
                 color = animatedContentColor
             )
             Row {
                 Text(
-                    text = if (hideWordCountAndProgress) wordSpace.language.localDisplayName else "${wordSpace.wordsCount} words", // TODO, string res
+                    text = if (hideWordCountAndProgress) wordSpace.localDisplayName else "${wordSpace.wordsCount} words", // TODO, string res
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f),
                     color = animatedContentVariantColor,
                 )
-                if (!hideWordCountAndProgress)
-                    Text(
-                        text = "progress ${wordSpace.averageMemorizingProbability.times(1000).toInt().div(10f)}%", // TODO, string res, TODO, format
-                        style = MaterialTheme.typography.bodySmall,
-                        color = animatedContentVariantColor,
-                    )
             }
         }
     }
@@ -112,15 +104,7 @@ private fun LanguagesContentPreview() {
             color = MaterialTheme.colorScheme.background
         ) {
             MDLanguageWordSpaceListItem(
-                LanguageWordSpace(
-                    language = Language(
-                        "en".code,
-                        "English",
-                        "English"
-                    ),
-                    wordsCount = 100,
-                    averageMemorizingProbability = 0.1f
-                ),
+                LanguageWordSpace(code = "en", wordsCount = 100),
                 isSelected = false,
                 onClick = {}
             )

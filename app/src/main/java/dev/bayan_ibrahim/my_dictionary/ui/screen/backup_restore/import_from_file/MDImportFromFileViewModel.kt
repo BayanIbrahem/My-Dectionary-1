@@ -11,7 +11,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStr
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingMutableSummary
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummary
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsImpl
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDImportFromFileRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.ImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,7 +21,7 @@ import javax.inject.Named
 
 @HiltViewModel
 class MDImportFromFileViewModel @Inject constructor(
-    private val repo: MDImportFromFileRepo,
+    private val repo: ImportFromFileRepo,
     @Named("available_versions")
     val availableVersions: List<Int>,
 ) : ViewModel() {
@@ -30,10 +30,6 @@ class MDImportFromFileViewModel @Inject constructor(
     fun initWithNavArgs(args: MDDestination.ImportFromFile) {
         _uiState.onExecute { true }
     }
-
-//    private val _importSummaryFlow: MutableStateFlow<MDFileProcessingSummary> = MutableStateFlow(MDFileProcessingSummary())
-//
-//    val importSummary: StateFlow<MDFileProcessingSummary> = _importSummaryFlow.asStateFlow()
 
     private val _importSummary: MDFileProcessingMutableSummary = MDFileProcessingMutableSummary()
     private val importSummaryActions = MDFileProcessingSummaryActionsImpl(_importSummary)

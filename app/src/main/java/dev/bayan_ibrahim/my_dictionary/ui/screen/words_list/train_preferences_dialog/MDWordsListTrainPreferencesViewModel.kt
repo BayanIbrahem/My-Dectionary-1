@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListTrainPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListTrainDialogRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.TrainPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.WordsListTrainTarget
@@ -15,14 +15,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MDWordsListTrainPreferencesViewModel @Inject constructor(
-    private val repo: MDWordsListTrainDialogRepo,
+    private val trainPreferencesRepo: TrainPreferencesRepo,
 ) : ViewModel() {
     private val _uiState: MDWordsListTrainPreferencesMutableUiState = MDWordsListTrainPreferencesMutableUiState()
     val uiState: MDWordsListTrainPreferencesUiState = _uiState
     fun initWithNavArgs() {
         viewModelScope.launch {
             _uiState.onExecute {
-                val data = repo.getTrainPreferences()
+                val data = trainPreferencesRepo.getTrainPreferences()
                 _uiState.onApplyPreferences(data)
                 true
             }
@@ -74,7 +74,7 @@ class MDWordsListTrainPreferencesViewModel @Inject constructor(
         _uiState.body()
         viewModelScope.launch {
             launch {
-                repo.setTrainPreferences(uiState)
+                trainPreferencesRepo.setTrainPreferences(uiState)
             }
         }
     }

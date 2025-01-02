@@ -10,10 +10,11 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import kotlinx.coroutines.CoroutineScope
 
-data class LanguageWordSpaceMutableState(
-    override val wordSpace: LanguageWordSpace,
+class LanguageWordSpaceMutableState(
+    code: String,
     private val initialTags: List<MDEditableField<WordTypeTag>>,
-) : LanguageWordSpaceState {
+    wordsCount: Int = 0,
+) : LanguageWordSpaceState(code, wordsCount) {
     override var isLoading: Boolean by mutableStateOf(false)
     override var isEditModeOn: Boolean by mutableStateOf(false)
     override var isEditDialogShown: Boolean by mutableStateOf(false)
@@ -29,7 +30,7 @@ data class LanguageWordSpaceMutableState(
         reset()
     }
 
-    constructor(state: LanguageWordSpaceState) : this(state.wordSpace, state.tags)
+    constructor(state: LanguageWordSpaceState) : this(state.code, state.tags)
 
     fun getActions(
         scope: CoroutineScope,

@@ -9,10 +9,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.isMarkerTag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorViewModel
 
 @Composable
 fun MDMarkerTagsRoute(
@@ -20,16 +23,19 @@ fun MDMarkerTagsRoute(
     appUiState: MDAppUiState,
     appActions: MDAppUiActions,
     modifier: Modifier = Modifier,
-    viewModel: MDMarkerTagsViewModel = hiltViewModel(),
+    markerTagsViewModel: MDMarkerTagsViewModel = hiltViewModel(),
+    contextTagsSelectorViewModel: MDContextTagsSelectorViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(args) {
-        viewModel.initWithNavArgs(args)
+        markerTagsViewModel.initWithNavArgs(args)
+        contextTagsSelectorViewModel.init(
+            allowedFilter = { it.isMarkerTag }
+        )
     }
 
-    val uiState = viewModel.uiState
-    val markerTags by viewModel.markerTags.collectAsStateWithLifecycle()
-    val nonMarkerTagsState = viewModel.nonMarkerTagsExplorerState
-    val nonMarkerTagsActions = viewModel.nonMarkerTagsExplorerActions
+    val uiState = markerTagsViewModel.uiState
+    val markerTags by markerTagsViewModel.markerTags.collectAsStateWithLifecycle()
+    val tagsSelectorUiState = contextTagsSelectorViewModel.uiState
 
     val navActions by remember {
         derivedStateOf {
@@ -39,14 +45,24 @@ fun MDMarkerTagsRoute(
     }
     val uiActions by remember {
         derivedStateOf {
-            viewModel.getUiActions(navActions)
+            markerTagsViewModel.getUiActions(navActions)
+        }
+    }
+    val tagsSelectorNavActions by remember {
+        derivedStateOf {
+            object : MDContextTagsSelectorNavigationUiActions {}
+        }
+    }
+    val tagsSelectorUiActions by remember {
+        derivedStateOf {
+            contextTagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
         }
     }
     MDMarkerTagsScreen(
         uiState = uiState,
         markerTags = markerTags,
-        nonMarkerTagsState = nonMarkerTagsState,
-        nonMarkerTagsActions = nonMarkerTagsActions,
+        nonMarkerTagsState = tagsSelectorUiState,
+        nonMarkerTagsActions = tagsSelectorUiActions,
         uiActions = uiActions,
         modifier = modifier,
     )

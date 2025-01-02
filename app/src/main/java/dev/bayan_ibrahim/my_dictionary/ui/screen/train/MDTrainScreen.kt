@@ -85,7 +85,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainSubmitOption
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordQuestion
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -702,7 +702,7 @@ private fun ExtraInfoPagePartPreview() {
                         transcription = "Transcription",
                         examples = listOf("Example 1", "Example 2"),
                         wordTypeTag = WordTypeTag(
-                            1, name = "Type tag", "en".code.language,
+                            1, name = "Type tag", "en".code.getLanguage(),
                             relations = listOf(
                                 WordTypeTagRelation("label")
                             ),
@@ -712,7 +712,7 @@ private fun ExtraInfoPagePartPreview() {
                             RelatedWord(0, 0, 0, "label", "related 2"),
                             RelatedWord(0, 0, 0, "label", "related 3"),
                         ),
-                        language = "en".code.language,
+                        language = "en".code.getLanguage(),
                         createdAt = Clock.System.now(),
                         updatedAt = Clock.System.now(),
                     ),

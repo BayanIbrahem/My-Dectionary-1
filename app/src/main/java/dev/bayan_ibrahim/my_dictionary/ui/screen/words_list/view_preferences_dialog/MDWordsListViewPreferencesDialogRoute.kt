@@ -5,6 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog.MDWordsListViewPreferencesDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog.MDWordsListViewPreferencesNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog.MDWordsListViewPreferencesViewModel
@@ -14,13 +16,16 @@ fun MDWordsListViewPreferencesDialogRoute(
     showDialog: Boolean,
     onDismissDialog: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MDWordsListViewPreferencesViewModel = hiltViewModel(),
+    viewPreferencesViewModel: MDWordsListViewPreferencesViewModel = hiltViewModel(),
+    contextTagsSelectorViewModel: MDContextTagsSelectorViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(Unit) {
-        viewModel.initWithNavArgs()
+        viewPreferencesViewModel.initWithNavArgs()
     }
 
-    val uiState = viewModel.uiState
+    val uiState = viewPreferencesViewModel.uiState
+    val tagsSelectorUiState = contextTagsSelectorViewModel.uiState
+
     val navActions by remember {
         derivedStateOf {
             object : MDWordsListViewPreferencesNavigationUiActions {
@@ -30,19 +35,28 @@ fun MDWordsListViewPreferencesDialogRoute(
             }
         }
     }
-    val contextTagsSelectionState = viewModel.contextTagsState
-    val contextTagsSelectionActions = viewModel.contextTagsActions
     val uiActions by remember {
         derivedStateOf {
-            viewModel.getUiActions(navActions)
+            viewPreferencesViewModel.getUiActions(navActions)
+        }
+    }
+
+    val tagsSelectorNavActions by remember {
+        derivedStateOf {
+            object : MDContextTagsSelectorNavigationUiActions {}
+        }
+    }
+    val tagsSelectorUiActions by remember {
+        derivedStateOf {
+            contextTagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
         }
     }
     MDWordsListViewPreferencesDialog(
         showDialog = showDialog,
         uiState = uiState,
         uiActions = uiActions,
-        contextTagsSelectionState = contextTagsSelectionState,
-        contextTagsSelectionActions = contextTagsSelectionActions,
+        contextTagsSelectionState = tagsSelectorUiState,
+        contextTagsSelectionActions = tagsSelectorUiActions,
         modifier = modifier,
     )
 }

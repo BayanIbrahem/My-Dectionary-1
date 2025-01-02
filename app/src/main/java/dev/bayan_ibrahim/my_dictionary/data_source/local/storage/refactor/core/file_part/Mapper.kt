@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.file_part
 
+import androidx.compose.ui.graphics.Color
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableField
 import dev.bayan_ibrahim.my_dictionary.core.util.invalidIfNull
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
@@ -13,19 +14,20 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.validateWith
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.LanguageWordSpaceMutableState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.LanguageWordSpaceState
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.strHex
 import kotlinx.datetime.Clock
 
 // language
-fun MDFileLanguagePart.toLanguage(): Language = this.code.code.language
+fun MDFileLanguagePart.toLanguage(): Language = this.code.code.getLanguage()
 fun MDFileLanguagePart.toLanguageWordSpaceState(): LanguageWordSpaceState {
     val language = this.toLanguage()
     return LanguageWordSpaceMutableState(
-        wordSpace = LanguageWordSpace(language),
+        code = this.code,
         initialTags = this.typeTags.map { typeTag ->
             MDEditableField.of(
                 WordTypeTag(
@@ -49,7 +51,9 @@ fun MDFileLanguagePart.toLanguageWordSpaceState(): LanguageWordSpaceState {
 // context tag:
 fun MDFileTagPart.toContextTag() = ContextTag(
     value = this.name,
-    id = this.id.invalidIfNull()
+    id = this.id.invalidIfNull(),
+    color = this.color?.let { Color.strHex(it) },
+    passColorToChildren = this.passColorToChildren,
 )
 
 // Word
@@ -63,7 +67,7 @@ inline fun MDFileWordPart.toWord(
     dbWordSource: Word? = null,
     dbWordStrategy: MDPropertyConflictStrategy,
     corruptedStrategy: MDPropertyCorruptionStrategy,
-    getContextTagOfFilePart: (MDNameWithOptionalId) -> ContextTag,
+    getContextTagOfFilePart: (MDFileTagPart) -> ContextTag,
     getTypeTag: (MDNameWithOptionalId) -> WordTypeTag?,
 ): Word {
     return Word(
@@ -72,7 +76,7 @@ inline fun MDFileWordPart.toWord(
         translation = dbWordStrategy.applyString(dbWordSource?.translation) { this.translation.validateWith(corruptedStrategy) },
         additionalTranslations = dbWordStrategy.applyComputedCollection(dbWordSource?.additionalTranslations) { this.additionalTranslations }
             .toList(),
-        language = this.language.code.language,
+        language = this.language.code.getLanguage(),
         tags = dbWordStrategy.applyComputedCollection(dbWordSource?.tags) { this.tags.map(getContextTagOfFilePart) }.toSet(),
         transcription = dbWordStrategy.applyString(dbWordSource?.transcription) { this.transcription },
         examples = dbWordStrategy.applyComputedCollection(dbWordSource?.examples) { this.examples }.toList(),

@@ -5,38 +5,59 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDLanguageSelectionDialogRepo
-import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.first
+import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MDLanguageSelectionDialogViewModel @Inject constructor(
-    private val repo: MDLanguageSelectionDialogRepo,
+    private val userRepo: UserPreferencesRepo,
+    private val languageRepo: LanguageRepo,
 ) : ViewModel() {
-    private val _uiState: MDLanguageSelectionDialogMutableUiState = MDLanguageSelectionDialogMutableUiState()
-    val uiState: MDLanguageSelectionDialogUiState = _uiState
-    private val languageFlow = repo.getSelectedLanguagePageStream()
-    private var languageFlowListener: Job? = null
-    fun initWithNavArgs() {
-        languageFlowListener?.cancel()
-        languageFlowListener = viewModelScope.launch {
-            languageFlow.collect { language ->
-                val currentLanguage = repo.getSelectedLanguagePage() ?: return@collect
-                val currentWordSpace = repo.getLanguagesWordSpaces(currentLanguage.code) ?: return@collect
-                _uiState.selectedWordSpace = currentWordSpace
-                onLanguageQueryChange(uiState.query)
-            }
+    private val languagesWordSpacesStream = languageRepo.getAllLanguagesWordSpaces(true)
+    private val searchQueryStream = MutableStateFlow("")
+    private val selectedWordSpaceStream = userRepo.getUserPreferencesStream().map {
+        it.selectedLanguagePage?.let { language ->
+            languageRepo.getLanguageWordSpace(language)
         }
-        viewModelScope.launch {
-            val currentLanguage = repo.getSelectedLanguagePage() ?: return@launch
-            val currentWordSpace = repo.getLanguagesWordSpaces(currentLanguage.code) ?: return@launch
-            _uiState.selectedWordSpace = currentWordSpace
-            onLanguageQueryChange("")
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null,
+    )
+
+
+    val uiState: StateFlow<MDLanguageSelectionDialogUiState> = combine(
+        languagesWordSpacesStream,
+        selectedWordSpaceStream,
+        searchQueryStream
+    ) { wordSpaces, selectedLanguage, query ->
+        val selectedWordSpace = wordSpaces.firstNotNullOfOrNull { if (it.code == selectedLanguage?.code) it else null }
+        val groupedSpaces = wordSpaces.filter {
+            query.isBlank() || it.hasMatchQuery(query)
+        }.groupBy {
+            it.wordsCount > 0
         }
-    }
+        MDLanguageSelectionDialogUiState.Data(
+            selectedWordSpace = selectedWordSpace,
+            query = query,
+            languagesWithWords = groupedSpaces[true] ?: emptyList(),
+            languagesWithoutWords = groupedSpaces[false] ?: emptyList()
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = MDLanguageSelectionDialogUiState.Loading,
+    )
+
+    fun initWithNavArgs() {}
 
     fun getUiActions(
         navActions: MDLanguageSelectionDialogNavigationUiActions,
@@ -50,29 +71,15 @@ class MDLanguageSelectionDialogViewModel @Inject constructor(
         navActions: MDLanguageSelectionDialogNavigationUiActions,
     ): MDLanguageSelectionDialogBusinessUiActions = object : MDLanguageSelectionDialogBusinessUiActions {
         override fun onSelectWordSpace(languageWordSpace: LanguageWordSpace) {
-            _uiState.selectedWordSpace = languageWordSpace
             viewModelScope.launch {
-                repo.setSelectedLanguagePage(languageWordSpace.language.code)
+                userRepo.setUserPreferences {
+                    it.copy(selectedLanguagePage = languageWordSpace)
+                }
             }
         }
 
         override fun onQueryChange(query: String) {
-            onLanguageQueryChange(query)
-        }
-    }
-
-    private fun onLanguageQueryChange(query: String) {
-        _uiState.query = query
-        viewModelScope.launch {
-            val searchQueryMatchedLanguages = repo.getAllLanguagesWordSpaces().first().run {
-                if (query.isBlank()) this
-                else filter {
-                    it.language.hasMatchQuery(query)
-                }
-            }
-
-            _uiState.languagesWithWords = searchQueryMatchedLanguages.filter { it.wordsCount > 0 }.toPersistentList()
-            _uiState.languagesWithoutWords = searchQueryMatchedLanguages.filter { it.wordsCount == 0 }.toPersistentList()
+            searchQueryStream.value = query
         }
     }
 }

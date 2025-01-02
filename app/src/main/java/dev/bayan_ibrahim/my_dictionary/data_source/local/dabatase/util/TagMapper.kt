@@ -7,12 +7,12 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 
 fun TypeTagWithRelation.asTagModel(): WordTypeTag = WordTypeTag(
     id = this.tag.id!!,
     name = this.tag.name,
-    language = this.tag.language.code.language,
+    language = this.tag.language.code.getLanguage(),
     relations = this.relations.map { it.asModelRelation() }
 )
 
@@ -23,7 +23,7 @@ fun TypeTagWithRelation.asTagModelWithCount(relationsCount: Map<Long, Int>): Wor
     return WordTypeTag(
         id = this.tag.id!!,
         name = this.tag.name,
-        language = this.tag.language.code.language,
+        language = this.tag.language.code.getLanguage(),
         relations = this.relations.map {
             it.asModelRelation(
                 wordsCount = relationsCount[it.id]?.also { relationWordCount ->
@@ -40,7 +40,7 @@ fun WordTypeTag.asTagEntity(
 ) = WordTypeTagEntity(
     id = id,
     name = name,
-    language = language.code.code,
+    language = language.code,
 )
 
 fun WordTypeTagRelation.asRelationEntity(

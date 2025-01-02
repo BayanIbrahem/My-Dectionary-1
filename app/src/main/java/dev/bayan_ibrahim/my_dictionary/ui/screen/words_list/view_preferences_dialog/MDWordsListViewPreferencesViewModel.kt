@@ -3,58 +3,30 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActionsImpl
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionMutableUiState
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.asTree
-import dev.bayan_ibrahim.my_dictionary.domain.repo.MDWordsListViewPreferencesRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.ViewPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MDWordsListViewPreferencesViewModel @Inject constructor(
-    private val repo: MDWordsListViewPreferencesRepo,
+    private val repo: ViewPreferencesRepo,
 ) : ViewModel() {
 
     private val _uiState: MDWordsListViewPreferencesMutableUiState = MDWordsListViewPreferencesMutableUiState()
     val uiState: MDWordsListViewPreferencesUiState = _uiState
 
 
-    private val _tagsState = MDContextTagsSelectionMutableUiState()
-    val contextTagsState: MDContextTagsSelectionUiState = _tagsState
-    val contextTagsActions: MDContextTagsSelectionActions = MDContextTagsSelectionActionsImpl(
-        state = _tagsState,
-        onAddNewTag = {},
-        onDeleteTag = {},
-        onUpdateSelectedTags = { tags ->
-            editViewByPreferences {
-                this.selectedTags = tags.toSet()
-            }
-        }
-    )
-
-    private var tagsStateAllTagsStreamCollectorJob: Job? = null
     fun initWithNavArgs() {
         viewModelScope.launch {
-            tagsStateAllTagsStreamCollectorJob?.cancel()
-            tagsStateAllTagsStreamCollectorJob = launch {
-                repo.getSelectedLanguageTags().collect { tags ->
-                    _tagsState.allTagsTree.setFrom(tags.asTree())
-                    contextTagsActions.refreshCurrentTree()
-                }
-            }
             _uiState.onExecute {
                 val data = repo.getViewPreferences()
-                contextTagsActions.onSetInitialSelectedTags(data.selectedTags)
                 _uiState.onApplyPreferences(data)
                 true
             }

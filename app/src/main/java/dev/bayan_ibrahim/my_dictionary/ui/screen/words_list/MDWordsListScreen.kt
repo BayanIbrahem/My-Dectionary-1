@@ -20,13 +20,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyPagingGridItems
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordListItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
@@ -42,8 +43,8 @@ fun MDWordsListScreen(
     uiState: MDWordsListUiState,
     wordsList: LazyPagingItems<Word>,
     uiActions: MDWordsListUiActions,
-    contextTagsSelectionState: MDContextTagsSelectionUiState,
-    contextTagsSelectionActions: MDContextTagsSelectionActions,
+    contextTagsSelectionState: MDContextTagsSelectorUiState,
+    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
     modifier: Modifier = Modifier,
     lifeMemorizingProbability: Boolean = false,
 ) {
@@ -52,6 +53,7 @@ fun MDWordsListScreen(
             uiState.selectedWords.count()
         }
     }
+    val selectedWordSpace by uiState.selectedWordSpace.collectAsStateWithLifecycle()
     var now by remember {
         mutableStateOf(Clock.System.now())
     }
@@ -70,7 +72,7 @@ fun MDWordsListScreen(
         topBar = {
             MDWordsListTopAppBar(
                 isSelectionModeOn = uiState.isSelectModeOn,
-                language = uiState.selectedWordSpace.language,
+                language = selectedWordSpace,
                 selectedWordsCount = selectedWordsCount,
                 visibleWordsCount = wordsList.itemCount,
                 onTrainVisibleWords = uiActions::onShowTrainDialog,
@@ -87,13 +89,13 @@ fun MDWordsListScreen(
             )
         },
         floatingActionButton = {
-            if (uiState.selectedWordSpace.valid) {
+            if (selectedWordSpace.valid) {
                 FloatingActionButton(
                     onClick = {
                         uiActions.navigateToWordDetails(null)
                     }
                 ) {
-                    MDIcon(MDIconsSet.Add) 
+                    MDIcon(MDIconsSet.Add)
                 }
             }
         }
@@ -196,6 +198,6 @@ fun MDWordsListScreen(
         onConfirm = uiActions::onConfirmDeleteLanguageWordSpace,
         title = "Delete Language", // TODO, string res
         runningDeleteMessage = "Deletion process is running please wait...",// TODO, string res
-        confirmDeleteMessage = "Are you sure you want to delete ${uiState.selectedWordSpace.language.fullDisplayName} (${uiState.selectedWordSpace.wordsCount} words)?\n\n this action can not be undone."
+        confirmDeleteMessage = "Are you sure you want to delete ${selectedWordSpace.fullDisplayName} (${selectedWordSpace.wordsCount} words)?\n\n this action can not be undone."
     )
 }

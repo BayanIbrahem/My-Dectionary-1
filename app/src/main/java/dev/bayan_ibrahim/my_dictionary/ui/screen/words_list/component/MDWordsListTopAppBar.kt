@@ -29,18 +29,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActions
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionActionsImpl
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionItem
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionMutableUiState
-import dev.bayan_ibrahim.my_dictionary.core.ui.context_tag.MDContextTagsSelectionUiState
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorMutableUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
@@ -60,11 +62,11 @@ fun MDWordsListTopAppBar(
     onDeleteWordSpace: () -> Unit,
     onNavigationIconClick: () -> Unit,
     // selection mode actions
-    contextTagsSelectionState: MDContextTagsSelectionUiState,
-    contextTagsSelectionActions: MDContextTagsSelectionActions,
+    contextTagsSelectionState: MDContextTagsSelectorUiState,
+    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
     onClearSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
-    onConfirmAppendContextTagsOnSelectedWords: () -> Unit,
+    onConfirmAppendContextTagsOnSelectedWords: (selectedTags: List<ContextTag>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -205,9 +207,9 @@ private fun WordsListTopAppBarSelectionMode(
     totalWordsCount: Int,
     onClearSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
-    contextTagsSelectionState: MDContextTagsSelectionUiState,
-    contextTagsSelectionActions: MDContextTagsSelectionActions,
-    onConfirmAppendContextTagsOnSelectedWords: () -> Unit,
+    contextTagsSelectionState: MDContextTagsSelectorUiState,
+    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
+    onConfirmAppendContextTagsOnSelectedWords: (selectedTags: List<ContextTag>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hasSelected by remember(selectedWordsCount) {
@@ -296,9 +298,9 @@ private fun ExtraTagsDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
     selectedWordsCount: Int,
-    contextTagsSelectionState: MDContextTagsSelectionUiState,
-    contextTagsSelectionActions: MDContextTagsSelectionActions,
-    onConfirm: () -> Unit,
+    contextTagsSelectionState: MDContextTagsSelectorUiState,
+    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
+    onConfirm: (selectedTags: List<ContextTag>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     MDAlertDialog(
@@ -321,7 +323,12 @@ private fun ExtraTagsDialog(
         actions = {
             MDAlertDialogActions(
                 onDismissRequest = onDismissRequest,
-                onPrimaryClick = onConfirm,
+                primaryClickEnabled = contextTagsSelectionState.selectedTags.isNotEmpty(),
+                onPrimaryClick = {
+                    onConfirm(contextTagsSelectionState.selectedTags)
+                    contextTagsSelectionActions.clearSelectedTags()
+                    contextTagsSelectionActions.onResetToRoot()
+                },
             )
         }
     ) {
@@ -329,7 +336,7 @@ private fun ExtraTagsDialog(
             modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            MDContextTagsSelectionItem(
+            MDContextTagsSelector(
                 state = contextTagsSelectionState,
                 actions = contextTagsSelectionActions
             )
@@ -381,9 +388,10 @@ private fun WordsListTopAppBarPreview() {
                 var selectionMode by remember {
                     mutableStateOf(true)
                 }
+                val viewModel: MDContextTagsSelectorViewModel = hiltViewModel()
                 MDWordsListTopAppBar(
                     isSelectionModeOn = selectionMode,
-                    language = Language("ar".code, "العربية", "Arabic"),
+                    language = Language(code = "ar", selfDisplayName = "العربية", localDisplayName = "Arabic"),
                     selectedWordsCount = 5,
                     visibleWordsCount = 100,
                     onAdjustFilterPreferences = {
@@ -396,11 +404,8 @@ private fun WordsListTopAppBarPreview() {
                     },
                     onDeleteSelection = {},
                     onTrainVisibleWords = {},
-                    contextTagsSelectionState = MDContextTagsSelectionMutableUiState(),
-                    contextTagsSelectionActions = MDContextTagsSelectionActionsImpl(
-                        state = MDContextTagsSelectionMutableUiState(),
-                        onAddNewTag = {},
-                        onDeleteTag = {}),
+                    contextTagsSelectionState = MDContextTagsSelectorMutableUiState(),
+                    contextTagsSelectionActions = viewModel.getUiActions(object : MDContextTagsSelectorNavigationUiActions {}),
                     onConfirmAppendContextTagsOnSelectedWords = {},
                     onNavigationIconClick = {},
                 )
