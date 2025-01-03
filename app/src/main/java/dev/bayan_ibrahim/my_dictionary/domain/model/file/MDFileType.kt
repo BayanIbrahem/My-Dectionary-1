@@ -7,27 +7,28 @@ enum class MDFileType(
     private val typeExtensionValue: String,
     val mimeType: String,
 ) {
-    Unknown("", "*/*"),
-    Excel("xls", "application/excel"),
+//    Unknown("", "*/*"),
+//    Excel("xls", "application/excel"),
     Json("json", "application/json"),
-    Xml("xml", "application/xml"),
-    CSV("csv", "text/csv");
+//    Xml("xml", "application/xml"),
+//    CSV("csv", "text/csv");
+    ;
 
     val typeName: String
         @Composable
         @ReadOnlyComposable
         get() = when (this) {
-            Unknown -> "General"
-            Excel -> "Excel file"
+//            Unknown -> "General"
+//            Excel -> "Excel file"
             Json -> "Json file"
-            Xml -> "Xml file"
-            CSV -> "CSV file"
+//            Xml -> "Xml file"
+//            CSV -> "CSV file"
         }
     val typeExtension = if (typeExtensionValue.isBlank()) "*" else "*.$typeExtensionValue"
 
     companion object {
-        val entriesMimeType: Array<String> = MDFileType.entries.mapNotNull {
-            if (it == Unknown) null else it.mimeType
-        }.toTypedArray()
+//        val entriesMimeType: Array<String> = MDFileType.entries.mapNotNull {
+//            if (it == Unknown) null else it.mimeType
+//        }.toTypedArray()
     }
 }

@@ -1,8 +1,8 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
 import androidx.room.withTransaction
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableField
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.and
+import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagRelatedWordDao
@@ -11,29 +11,23 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.context_ta
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.ContextTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.LanguageEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordCrossContextTagEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelatedWords
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.MDFileReaderAbstractFactory
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.file_part.MDFileWordPart
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.file_part.MDNameWithOptionalId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.file_part.applyCollection
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.file_part.toContextTag
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.file_part.toLanguageWordSpaceState
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.file_part.toWord
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.file_part_reader.MDFilePartReader
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.refactor.core.file_reader.MDFileReader
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFileWordPart
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.validateWithDatabase
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFilePartReader
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFileReader
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFileReaderAbstractFactory
+import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
@@ -45,6 +39,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcess
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryStepException
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryStepWarning
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -132,7 +128,7 @@ class MDRoomImportFromFileRepo(
         val fileReader: MDFileReader,
         val allowedParts: Set<MDFilePartType>,
     ) {
-        val languagesWordSpaces = mutableListOf<LanguageWordSpaceState>()
+        val languagesWordSpaces = mutableMapOf<Language, List<WordTypeTag>>()
         val allLanguages = mutableSetOf<String>()
         val typeTagIdMapper = mutableMapOf<Long, Long>()
         val typeTagNameMapper = mutableMapOf<String, MutableMap<String, Long>>()
@@ -198,13 +194,13 @@ class MDRoomImportFromFileRepo(
         if (MDFilePartType.Language in scope.allowedParts) {
             scope.outputSummaryActions.onStep(MDFileProcessingSummaryActionsStep.ParseSaveLanguages)
             val languageReader = scope.fileReader.getReaderOfPart(MDFilePartType.Language) as MDFilePartReader.Language
-            val fileLanguages = languageReader.readFile().map {
-                it.toLanguageWordSpaceState()
+            val fileLanguages = languageReader.readFile().associate {
+                it.toLanguage() to it.toTypeTags()
             }.toList()
             if (fileLanguages.isEmpty()) {
                 scope.outputSummaryActions.onWarning(MDFileProcessingSummaryStepWarning.BlankLanguages)
             }
-            scope.languagesWordSpaces.addAll(fileLanguages)
+            scope.languagesWordSpaces.putAll(fileLanguages)
         }
     }
 
@@ -217,11 +213,11 @@ class MDRoomImportFromFileRepo(
         val dbLanguages = languageDao.getAllLanguages().first().map { it.code }
 
         languageDao.insertAllLanguages(
-            languages = scope.languagesWordSpaces.map {
-                LanguageEntity(it.code)
+            languages = scope.languagesWordSpaces.map { (language) ->
+                LanguageEntity(language.code)
             }
         )
-        scope.languagesWordSpaces.forEach { code ->
+        scope.languagesWordSpaces.forEach { (code) ->
             scope.outputSummaryActions.recognizeLanguage(
                 code = code,
                 new = code.code !in dbLanguages
@@ -240,13 +236,13 @@ class MDRoomImportFromFileRepo(
         scope: FileProcessingScope,
     ) {
         scope.outputSummaryActions.onStep(MDFileProcessingSummaryActionsStep.ParseAndSaveTypeTags)
-        scope.languagesWordSpaces.forEach {
-            val code = it.code
+        scope.languagesWordSpaces.forEach { (space, tags) ->
+            val code = space.code
             val tagsOfLanguage = typeTagDao.getTagTypesOfLanguage(code).first().associate { (tag, relations) ->
                 tag.name to (tag.id!! to relations.associate { it.label to it.id!! }.toMutableMap())
             }.toMutableMap()
 
-            it.tags.forEach { tagData ->
+            tags.forEach { tagData ->
                 processSingleTag(scope, code, tagData, tagsOfLanguage)
             }
         }
@@ -280,34 +276,34 @@ class MDRoomImportFromFileRepo(
     private suspend fun processSingleTag(
         scope: FileProcessingScope,
         languageCode: String,
-        tagData: MDEditableField<WordTypeTag>,
+        tagData: WordTypeTag,
         tagsOfLanguage: MutableMap<String, Pair<Long, MutableMap<String, Long>>>,
     ) {
-        val dbTag = tagsOfLanguage[tagData.current.name]
-        val tagId = dbTag?.first ?: typeTagDao.insertTagType(tagData.current.asTagEntity(null))
+        val dbTag = tagsOfLanguage[tagData.name]
+        val tagId = dbTag?.first ?: typeTagDao.insertTagType(tagData.asTagEntity(null))
         scope.outputSummaryActions.recognizeTypeTag(
             languageCode = languageCode.code,
-            name = tagData.current.name,
+            name = tagData.name,
             new = dbTag == null
         )
 
-        tagData.current.id.nullIfInvalid()?.let { scope.typeTagIdMapper[it] = tagId }
-        scope.typeTagNameMapper.getOrPut(tagData.current.name) { mutableMapOf() }[languageCode] = tagId
+        tagData.id.nullIfInvalid()?.let { scope.typeTagIdMapper[it] = tagId }
+        scope.typeTagNameMapper.getOrPut(tagData.name) { mutableMapOf() }[languageCode] = tagId
 
         val dbTagRelations = dbTag?.second ?: mutableMapOf()
 
-        tagData.current.relations.forEach { relation ->
+        tagData.relations.forEach { relation ->
             val relationId = dbTagRelations[relation.label]?.also {
                 scope.outputSummaryActions.recognizeTypeTagRelation(
                     languageCode = languageCode.code,
-                    typeTagName = tagData.current.name,
+                    typeTagName = tagData.name,
                     relationLabel = relation.label,
                     new = false
                 )
             } ?: let {
                 scope.outputSummaryActions.recognizeTypeTagRelation(
                     languageCode = languageCode.code,
-                    typeTagName = tagData.current.name,
+                    typeTagName = tagData.name,
                     relationLabel = relation.label,
                     new = true
                 )
@@ -316,7 +312,7 @@ class MDRoomImportFromFileRepo(
             relation.id.nullIfInvalid()?.let { scope.typeRelationIdMapper[it] = relationId }
             scope.typeRelationNameMapper.getOrPut(relation.label) { mutableMapOf() }[tagId] = relationId
         }
-        tagsOfLanguage[tagData.current.name] = tagId to dbTagRelations
+        tagsOfLanguage[tagData.name] = tagId to dbTagRelations
     }
 
     /**
@@ -386,12 +382,16 @@ class MDRoomImportFromFileRepo(
         scope.outputSummaryActions.recognizeWord(wordPart.language.code, wordPart.meaning, wordPart.translation, dbWordId == null)
 
         val word = try {
-            wordPart.toWord(
-                dbWordSource = dbWordSource,
+            wordPart.toWord().validateWithDatabase(
+                dbWord = dbWordSource,
                 dbWordStrategy = scope.existedWordStrategy,
                 corruptedStrategy = scope.corruptedWordStrategy,
-                getContextTagOfFilePart = { providedContextTag -> resolveContextTag(scope, providedContextTag) },
-                getTypeTag = { providedTypeTagData -> resolveTypeTag(scope, wordPart, providedTypeTagData) }
+                getDBContextTag = { contextTagData ->
+                    resolveContextTag(scope, contextTagData)
+                },
+                getDBTypeTag = { typeTagData ->
+                    resolveTypeTag(scope, typeTagData)
+                },
             )
         } catch (e: MDPropertyCorruptionException) {
             when (e) {
@@ -433,7 +433,10 @@ class MDRoomImportFromFileRepo(
 
         if (word == null) return
         val wordId = handleWordEntity(scope, word)
-        handleRelatedWords(scope, wordPart, word.copy(id = wordId), dbWordSource)
+        handleRelatedWords(
+            scope = scope,
+            word = word.copy(id = wordId)
+        )
     }
 
     /**
@@ -462,17 +465,17 @@ class MDRoomImportFromFileRepo(
      */
     private suspend fun resolveContextTag(
         scope: FileProcessingScope,
-        providedContextTag: MDNameWithOptionalId,
+        providedContextTagData: ContextTag,
     ): ContextTag {
-        return if (providedContextTag.id != null) {
-            scope.contextTagIdMapper[providedContextTag.id]
+        return if (providedContextTagData.id != INVALID_ID) {
+            scope.contextTagIdMapper[providedContextTagData.id]
         } else {
-            scope.contextTagNameMapper[providedContextTag.name]
+            scope.contextTagNameMapper[providedContextTagData.value]
         }?.let { id ->
             contextTagDao.getContextTag(id)?.asModel()?.also {
                 scope.outputSummaryActions.recognizeContextTag(it.value, false)
             }
-        } ?: createNewContextTag(scope, providedContextTag)
+        } ?: createNewContextTag(scope, providedContextTagData)
     }
 
     /**
@@ -480,15 +483,14 @@ class MDRoomImportFromFileRepo(
      */
     private suspend fun createNewContextTag(
         scope: FileProcessingScope,
-        providedContextTag: MDNameWithOptionalId,
+        providedContextTagData: ContextTag,
     ): ContextTag {
-        val newTagId = contextTagDao.insertContextTag(ContextTagEntity(null, providedContextTag.name))
-        providedContextTag.id?.let { scope.contextTagIdMapper[it] = newTagId }
-        scope.contextTagNameMapper[providedContextTag.name] = newTagId
-        scope.outputSummaryActions.recognizeContextTag(providedContextTag.name, true)
-        return ContextTag(id = newTagId, value = providedContextTag.name)
+        val newTagId = contextTagDao.insertContextTag(providedContextTagData.asEntity(null))
+        providedContextTagData.id.nullIfInvalid()?.let { scope.contextTagIdMapper[it] = newTagId }
+        scope.contextTagNameMapper[providedContextTagData.value] = newTagId
+        scope.outputSummaryActions.recognizeContextTag(providedContextTagData.value, true)
+        return providedContextTagData.copy(id = newTagId)
     }
-
 
     /**
      * get type tag of the word
@@ -498,36 +500,33 @@ class MDRoomImportFromFileRepo(
      */
     private suspend fun resolveTypeTag(
         scope: FileProcessingScope,
-        wordPart: MDFileWordPart,
-        providedTypeTagData: MDNameWithOptionalId,
-    ): WordTypeTag? {
-        return if (providedTypeTagData.id != null) {
+        providedTypeTagData: WordTypeTag,
+    ): WordTypeTag {
+        return if (providedTypeTagData.id != INVALID_ID) {
             scope.typeTagIdMapper[providedTypeTagData.id]
         } else {
-            scope.typeTagNameMapper[providedTypeTagData.name]?.get(wordPart.language)
-        }?.let {
-            typeTagDao.getTagType(it)?.asTagModel()
-        } ?: createNewTypeTag(scope, wordPart, providedTypeTagData)
+            scope.typeTagNameMapper[providedTypeTagData.name]?.get(providedTypeTagData.language.code)
+        }?.let { id ->
+            typeTagDao.getTagType(id)?.asTagModel()
+        } ?: createNewTypeTag(scope, providedTypeTagData)
     }
 
     /**
      * create a new tag id and cache it in id/name cache maps for type tags
      */
+
     private suspend fun createNewTypeTag(
         scope: FileProcessingScope,
-        wordPart: MDFileWordPart,
-        providedTypeTagData: MDNameWithOptionalId,
-    ): WordTypeTag? {
+        providedTypeTagData: WordTypeTag,
+    ): WordTypeTag {
         val dbTagId = typeTagDao.insertTagType(
-            tag = WordTypeTagEntity(
-                id = null,
-                name = providedTypeTagData.name,
-                language = wordPart.language
-            )
+            tag = providedTypeTagData.asTagEntity(null)
         )
-        providedTypeTagData.id?.let { scope.typeTagIdMapper[it] = dbTagId }
-        scope.typeTagNameMapper.getOrPut(providedTypeTagData.name) { mutableMapOf() }[wordPart.language] = dbTagId
-        return typeTagDao.getTagType(dbTagId)?.asTagModel()
+        providedTypeTagData.id.nullIfInvalid()?.let { scope.typeTagIdMapper[it] = dbTagId }
+        scope.typeTagNameMapper.getOrPut(providedTypeTagData.name) {
+            mutableMapOf()
+        }[providedTypeTagData.language.code] = dbTagId
+        return providedTypeTagData.copy(id = dbTagId)
     }
 
     /**
@@ -555,25 +554,23 @@ class MDRoomImportFromFileRepo(
      */
     private suspend fun handleRelatedWords(
         scope: FileProcessingScope,
-        wordPart: MDFileWordPart,
         word: Word,
-        dbWordSource: Word?,
     ) {
         if (word.wordTypeTag != null) {
-            val relatedWordData = scope.existedWordStrategy.applyCollection(
-                old = { dbWordSource?.asRelatedWords() },
-                new = {
-                    wordPart.relatedWords.map { (relation, relatedWord) ->
-                        val relationId = resolveRelationId(scope, word, relation)
-                        WordTypeTagRelatedWordEntity(
-                            id = null,
-                            baseWordId = word.id,
-                            relationId = relationId,
-                            word = relatedWord
-                        )
-                    }
-                }
-            )
+            val relatedWordData = word.relatedWords.map { relatedWord ->
+                val relationId = resolveRelationId(
+                    scope = scope, language = word.language,
+                    typeTagId = word.wordTypeTag.id,
+                    typeTagName = word.wordTypeTag.name,
+                    relatedWord = relatedWord,
+                )
+                WordTypeTagRelatedWordEntity(
+                    id = null,
+                    relationId = relationId,
+                    baseWordId = word.id,
+                    word = relatedWord.value
+                )
+            }
             relatedWordDao.deleteRelatedWordsOfWord(word.id)
             relatedWordDao.insertRelatedWords(relatedWordData)
         }
@@ -581,44 +578,56 @@ class MDRoomImportFromFileRepo(
 
     private suspend fun resolveRelationId(
         scope: FileProcessingScope,
-        word: Word,
-        relation: MDNameWithOptionalId,
+        language: LanguageCode,
+        typeTagId: Long,
+        typeTagName: String,
+        relatedWord: RelatedWord,
     ): Long {
-        return if (relation.id == null) {
-            scope.typeRelationIdMapper[relation.id]
+        return if (relatedWord.relationId != INVALID_ID) {
+            scope.typeRelationIdMapper[relatedWord.relationId]
         } else {
-            scope.typeRelationNameMapper[relation.name]?.get(word.wordTypeTag?.id)
+            scope.typeRelationNameMapper[relatedWord.relationLabel]?.get(typeTagId)
         }?.also {
             scope.outputSummaryActions.recognizeTypeTagRelation(
-                languageCode = word.language,
-                typeTagName = word.wordTypeTag!!.name,
-                relationLabel = relation.name,
+                languageCode = language,
+                typeTagName = typeTagName,
+                relationLabel = relatedWord.relationLabel,
                 new = false
             )
-        } ?: createNewRelation(scope, word, relation)
+        } ?: createNewRelation(
+            scope = scope,
+            language = language,
+            typeTagId = typeTagId,
+            typeTagName = typeTagName,
+            label = relatedWord.relationLabel,
+            localId = relatedWord.relationId.nullIfInvalid(),
+        )
     }
 
     private suspend fun createNewRelation(
         scope: FileProcessingScope,
-        word: Word,
-        relation: MDNameWithOptionalId,
+        language: LanguageCode,
+        typeTagId: Long,
+        typeTagName: String,
+        label: String,
+        localId: Long?,
     ): Long {
         val dbRelationId = typeRelationDao.insertRelation(
             relation = WordTypeTagRelationEntity(
                 id = null,
-                label = relation.name,
-                tagId = word.wordTypeTag!!.id
+                label = label,
+                tagId = typeTagId,
             )
         )
-        relation.id?.let {
+        localId?.let {
             scope.typeRelationIdMapper[it] = dbRelationId
         }
-        scope.typeRelationNameMapper.getOrPut(relation.name) { mutableMapOf() }[word.wordTypeTag.id] = dbRelationId
+        scope.typeRelationNameMapper.getOrPut(label) { mutableMapOf() }[typeTagId] = dbRelationId
 
         scope.outputSummaryActions.recognizeTypeTagRelation(
-            languageCode = word.language,
-            typeTagName = word.wordTypeTag.name,
-            relationLabel = relation.name,
+            languageCode = language,
+            typeTagName = typeTagName,
+            relationLabel = label,
             new = true
         )
 

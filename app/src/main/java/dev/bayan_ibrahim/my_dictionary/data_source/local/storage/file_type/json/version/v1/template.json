@@ -1,0 +1,60 @@
+{
+  "languages": [
+    {
+      "id": "string - iso code (en, ar, ...)",
+      "typeTags": [
+        {
+          "id": "number - nullable (local PK)",
+          "typeTagName": "string - not blank",
+          "relations": [
+            {
+              "id": "number - nullable (local PK)",
+              "relationLabel": "string - not blank"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "id": "number - nullable (local PK)",
+      "value": "string - not blank",
+      "color": "string (hex value) - nullable ",
+      "pass_color": "boolean - nullable (takes false if null)"
+    }
+  ],
+  "words": [
+    {
+      "language": "string - not blank",
+      "meaning": "string - not blank",
+      "translation": "string - not blank",
+      "transcription": "string - nullable",
+      "tags": [
+        {
+          "id": "number - nullable, FK of tags.id",
+          "value": "string - not blank",
+          "color": "string (hex value) - nullable ",
+          "pass_color": "boolean - nullable (takes false if null)"
+        }
+      ],
+      "examples": [
+        "string - not blank"
+      ],
+      "additionalTranslations": [
+        "string - not blank"
+      ],
+      "typeTag": {
+        "id": "number - nullable, FK of Languages.typeTags.id",
+        "typeTagName": "string - not blank"
+      },
+      "relatedWords": [
+        {
+          "id": "number - nullable, FK of Languages.typeTags.relations.id",
+          "relation": "string - not blank",
+          "word": "string - not blank"
+        }
+      ]
+    }
+  ]
+}
