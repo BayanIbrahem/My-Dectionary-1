@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import java.io.OutputStream
 import java.io.Writer
 
-interface MDFilePartWriter<Data : MDFilePart> {
+interface MDFilePartWriter<out Data : MDFilePart> {
     val type: MDFilePartType
     val version: Int
     suspend fun writePart(writer: Writer)

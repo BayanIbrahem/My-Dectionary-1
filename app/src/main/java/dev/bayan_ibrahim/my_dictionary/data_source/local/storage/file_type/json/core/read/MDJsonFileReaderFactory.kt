@@ -5,7 +5,7 @@ import android.util.JsonToken
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFileReaderFactory
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.JSON_VERSION_KEY
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.read.file_reader.MDJsonFileReaderV1
-import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -13,15 +13,15 @@ import kotlin.math.roundToInt
 
 class MDJsonFileReaderFactory(
     val json: Json,
-    private val openInputStreamCallback: (fileData: MDFileData) -> InputStream,
+    private val openInputStreamCallback: (fileData: MDDocumentData) -> InputStream,
 ) : MDFileReaderFactory<MDJsonFileReader> {
     override val availableVersions: List<Int> = listOf(1)
     override val name: String = "Json Factory"
     override suspend fun openInputStream(
-        fileData: MDFileData,
+        fileData: MDDocumentData,
     ): InputStream = openInputStreamCallback(fileData)
 
-    override suspend fun getVersion(fileData: MDFileData): Int {
+    override suspend fun getVersion(fileData: MDDocumentData): Int {
         return getValueOfKey(
             key = JSON_VERSION_KEY,
             jsonInputStream = openInputStream(fileData),

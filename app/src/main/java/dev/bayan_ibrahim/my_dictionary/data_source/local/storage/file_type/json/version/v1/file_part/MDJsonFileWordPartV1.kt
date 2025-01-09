@@ -1,13 +1,16 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.file_part
 
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDNameWithOptionalId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFileWordPart
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.StrIdentifiable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.file_part.MDJsonFileWordPart
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
 import kotlinx.datetime.Clock
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -25,8 +28,8 @@ data class MDJsonFileWordPartV1(
     override val translation: String,
     @SerialName(TRANSCRIPTION_KEY)
     override val transcription: String? = null,
-    @SerialName(TAGS_KEY)
-    override val tags: List<MDJsonFileTagPartV1> = emptyList(),
+    @SerialName(CONTEXT_TAGS_KEY)
+    override val contextTags: List<MDJsonFileTagPartV1> = emptyList(),
     @SerialName(EXAMPLES_KEY)
     override val examples: List<String> = emptyList(),
     @SerialName(ADDITIONAL_TRANSLATION_KEY)
@@ -34,7 +37,9 @@ data class MDJsonFileWordPartV1(
     @SerialName(TYPE_TAG_KEY)
     override val typeTag: TypeTag? = null,
     @SerialName(RELATED_WORDS_KEY)
-    private val relatedWordsList: List<RelatedWord>,
+    private val relatedWordsList: List<RelatedWord> = emptyList(),
+    @SerialName(LEXICAL_RELATED_WORDS_KEY)
+    override val lexicalRelatedWords: List<LexicalRelation> = emptyList(),
 ) : MDJsonFileWordPart {
 
     override suspend fun jsonStringify(json: Json): String {
@@ -42,8 +47,8 @@ data class MDJsonFileWordPartV1(
     }
 
     @Transient
-    override val relatedWords: Map<MDNameWithOptionalId, String> = relatedWordsList.associate {
-        (it as MDNameWithOptionalId) to it.relatedWord
+    override val relatedWords: Map<StrIdentifiable, String> = relatedWordsList.associate {
+        (it as StrIdentifiable) to it.relatedWord
     }
 
     override fun toWord(): Word {
@@ -53,14 +58,14 @@ data class MDJsonFileWordPartV1(
             translation = translation,
             additionalTranslations = additionalTranslations,
             language = language.code.getLanguage(),
-            tags = tags.map { it.toContextTag() }.toSet(),
+            tags = contextTags.mapNotNull { it.toContextTag() }.toSet(),
             transcription = transcription ?: "",
             examples = examples,
             wordTypeTag = typeTag?.toModelTypeTag(language)?.copy(
                 relations = relatedWordsList.map {
                     WordTypeTagRelation(
                         label = it.name,
-                        id = it.id ?: INVALID_ID,
+                        id = INVALID_ID,
                         wordsCount = 0,
                     )
                 }
@@ -69,7 +74,7 @@ data class MDJsonFileWordPartV1(
                 ModelRelatedWord(
                     id = INVALID_ID,
                     baseWordId = INVALID_ID,
-                    relationId = it.id ?: INVALID_ID,
+                    relationId = INVALID_ID,
                     relationLabel = it.name,
                     value = it.relatedWord,
                 )
@@ -77,19 +82,27 @@ data class MDJsonFileWordPartV1(
             // no related words
             createdAt = Clock.System.now(),
             updatedAt = Clock.System.now(),
+            lexicalRelations = this.lexicalRelatedWords.groupBy {
+                it.type
+            }.mapValues { (_, values) ->
+                values.map { relation ->
+                    WordLexicalRelation.invoke(
+                        type = relation.type,
+                        relatedWord = relation.value
+                    )
+                }
+            }
         )
     }
 
     @Serializable
     data class TypeTag(
-        @SerialName(ID_KEY)
-        override val id: Long? = null,
         @SerialName(NAME_KEY)
         override val name: String,
-    ) : MDNameWithOptionalId {
+    ) : StrIdentifiable {
         fun toModelTypeTag(language: String): WordTypeTag {
             return WordTypeTag(
-                id = id ?: INVALID_ID,
+                id = INVALID_ID,
                 name = name,
                 language = language.code.getLanguage(),
                 relations = emptyList(),
@@ -98,37 +111,48 @@ data class MDJsonFileWordPartV1(
         }
 
         companion object Companion {
-            const val ID_KEY = "id"// TODO, check serial name
-            const val NAME_KEY = "typeTagName"// TODO, check serial name
+            const val NAME_KEY = "typeTagName"
         }
     }
 
     @Serializable
     data class RelatedWord(
-        @SerialName(ID_KEY)
-        override val id: Long? = null,
         @SerialName(RELATION_LABEL_KEY)
-        override val name: String = "",
+        override val name: String,
         @SerialName(RELATED_WORD_KEY)
         val relatedWord: String,
-    ) : MDNameWithOptionalId {
+    ) : StrIdentifiable {
 
         companion object Companion {
-            const val ID_KEY = "id"// TODO, check serial name
-            const val RELATION_LABEL_KEY = "relation"// TODO, check serial name
-            const val RELATED_WORD_KEY = "word"// TODO, check serial name
+            const val RELATION_LABEL_KEY = "relation"
+            const val RELATED_WORD_KEY = "word"
         }
     }
 
+    @Serializable
+    data class LexicalRelation(
+        @SerialName(TYPE_KEY)
+        override val type: WordLexicalRelationType,
+        @SerialName(VALUE_KEY)
+        override val value: String,
+    ) : MDFileWordPart.LexicalRelation {
+        companion object {
+            const val TYPE_KEY = "lexicalRelationType"
+            const val VALUE_KEY = "lexicalRelationValue"
+        }
+
+    }
+
     companion object Companion {
-        const val LANGUAGE_KEY = "language"// TODO, check serial name
-        const val MEANING_KEY = "meaning"// TODO, check serial name
-        const val TRANSLATION_KEY = "translation"// TODO, check serial name
-        const val TRANSCRIPTION_KEY = "transcription"// TODO, check serial name
-        const val TAGS_KEY = "tags"// TODO, check serial name
-        const val EXAMPLES_KEY = "examples"// TODO, check serial name
-        const val ADDITIONAL_TRANSLATION_KEY = "additionalTranslations" // TODO, check serial name
-        const val TYPE_TAG_KEY = "typeTag"// TODO, check serial name
-        const val RELATED_WORDS_KEY = "relatedWords"// TODO, check serial name
+        const val LANGUAGE_KEY = "language"
+        const val MEANING_KEY = "meaning"
+        const val TRANSLATION_KEY = "translation"
+        const val TRANSCRIPTION_KEY = "transcription"
+        const val CONTEXT_TAGS_KEY = "contextTags"
+        const val EXAMPLES_KEY = "examples"
+        const val ADDITIONAL_TRANSLATION_KEY = "additionalTranslations"
+        const val TYPE_TAG_KEY = "typeTag"
+        const val RELATED_WORDS_KEY = "relatedWords"
+        const val LEXICAL_RELATED_WORDS_KEY = "lexicalRelatedWords"
     }
 }

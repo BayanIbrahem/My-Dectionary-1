@@ -1,34 +1,31 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.file
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
+import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 enum class MDFileType(
     private val typeExtensionValue: String,
     val mimeType: String,
-) {
-//    Unknown("", "*/*"),
-//    Excel("xls", "application/excel"),
+) : LabeledEnum {
+    Unknown("", "*/*"),
+
+    //    Excel("xls", "application/excel"),
     Json("json", "application/json"),
 //    Xml("xml", "application/xml"),
 //    CSV("csv", "text/csv");
     ;
 
-    val typeName: String
-        @Composable
-        @ReadOnlyComposable
+    override val strLabel: String
         get() = when (this) {
-//            Unknown -> "General"
+            Unknown -> "General"
 //            Excel -> "Excel file"
             Json -> "Json file"
 //            Xml -> "Xml file"
 //            CSV -> "CSV file"
         }
-    val typeExtension = if (typeExtensionValue.isBlank()) "*" else "*.$typeExtensionValue"
+    val typeExtensionWithDot = if (typeExtensionValue.isBlank()) "" else ".$typeExtensionValue"
+    val typeExtensionLabel = "*$typeExtensionWithDot"
 
     companion object {
-//        val entriesMimeType: Array<String> = MDFileType.entries.mapNotNull {
-//            if (it == Unknown) null else it.mimeType
-//        }.toTypedArray()
+        val validEntries = entries.filterNot { it == Unknown }
     }
 }

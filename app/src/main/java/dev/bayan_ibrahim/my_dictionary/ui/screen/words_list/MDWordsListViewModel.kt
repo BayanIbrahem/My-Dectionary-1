@@ -35,9 +35,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MDWordsListViewModel @Inject constructor(
     private val userRepo: UserPreferencesRepo,
-    private val viewPreferencesRepo: ViewPreferencesRepo,
     private val languageRepo: LanguageRepo,
     private val wordRepo: WordRepo,
+    viewPreferencesRepo: ViewPreferencesRepo,
 ) : ViewModel() {
     private val selectedWordSpaceStream: StateFlow<LanguageWordSpace> = userRepo.getUserPreferencesStream().map {
         val language = it.selectedLanguagePage ?: let {
@@ -77,34 +77,25 @@ class MDWordsListViewModel @Inject constructor(
             viewPreferences.collectLatest { preferences ->
                 updateUiStateFromViewPreferences(preferences)
                 selectedWordSpaceStream.collectLatest { language ->
-                    if (language != null) {
-//                        _uiState.selectedWordSpace = languageRepo.getLanguageWordSpace(language) ?: let {
-//                            val defaultLanguage = defaultLanguage
-//                            userRepo.setUserPreferences {
-//                                it.copy(selectedLanguagePage = defaultLanguage)
-//                            }
-//                            LanguageWordSpace(defaultLanguage.code)
-//                        }
-                        paginatedWordsListJob = launch {
-                            val targetWords = wordRepo.getWordsIdsOf(
-                                languages = setOf(language),
-                                contextTags = preferences.selectedTags.map { it.id }.toSet(),
-                                memorizingProbabilities = preferences.selectedMemorizingProbabilityGroups
-                            ).first()
-                            wordRepo.getPaginatedWordsList(
-                                code = language,
-                                targetWords = targetWords,
-                                includeMeaning = preferences.searchTarget.includeMeaning,
-                                includeTranslation = preferences.searchTarget.includeTranslation,
-                                searchQuery = preferences.searchQuery,
-                                sortBy = preferences.sortBy,
-                                sortByOrder = preferences.sortByOrder,
-                            ).distinctUntilChanged()
-                                .cachedIn(viewModelScope)
-                                .collect { pagingData ->
-                                    _paginatedWordsList.value = pagingData
-                                }
-                        }
+                    paginatedWordsListJob = launch {
+                        val targetWords = wordRepo.getWordsIdsOf(
+                            languages = setOf(language),
+                            contextTags = preferences.selectedTags.map { it.id }.toSet(),
+                            memorizingProbabilities = preferences.selectedMemorizingProbabilityGroups
+                        ).first()
+                        wordRepo.getPaginatedWordsList(
+                            code = language,
+                            targetWords = targetWords,
+                            includeMeaning = preferences.searchTarget.includeMeaning,
+                            includeTranslation = preferences.searchTarget.includeTranslation,
+                            searchQuery = preferences.searchQuery,
+                            sortBy = preferences.sortBy,
+                            sortByOrder = preferences.sortByOrder,
+                        ).distinctUntilChanged()
+                            .cachedIn(viewModelScope)
+                            .collect { pagingData ->
+                                _paginatedWordsList.value = pagingData
+                            }
                     }
                 }
             }

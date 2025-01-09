@@ -131,3 +131,9 @@ inline fun <T : Any> T.validateWith(
         }
     }
 }
+
+enum class MDExtraTagsStrategy(override val strLabel: String): LabeledEnum {
+    All("All Words"),
+    New("New Words"),
+    Updated("Updated Words"),
+}

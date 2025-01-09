@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json
 
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFileLanguagePart
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDNameWithOptionalId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.StrIdentifiable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.file_part.MDJsonFileLanguagePart
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
@@ -28,8 +28,6 @@ data class MDJsonFileLanguagePartV1(
 
     @Serializable
     data class TypeTag(
-        @SerialName(ID_KEY)
-        override val id: Long?,
         @SerialName(NAME_KEY)
         override val name: String,
         @SerialName(RELATIONS_KEY)
@@ -37,31 +35,26 @@ data class MDJsonFileLanguagePartV1(
     ) : MDFileLanguagePart.LanguageTypeTag {
         @Serializable
         data class Relation(
-            @SerialName(ID_KEY)
-            override val id: Long? = null,
             @SerialName(NAME_KEY)
             override val name: String,
-        ) : MDNameWithOptionalId {
+        ) : StrIdentifiable {
             companion object Companion {
-                const val ID_KEY = "id"// TODO, check serial name
-                const val NAME_KEY = "relationLabel"// TODO, check serial name
+                const val NAME_KEY = "relationLabel"
             }
         }
 
         companion object Companion {
-            const val ID_KEY = "id"// TODO, check serial name
-            const val NAME_KEY = "typeTagName"// TODO, check serial name
-            const val RELATIONS_KEY = "relations"// TODO, check serial name
+            const val NAME_KEY = "typeTagName"
+            const val RELATIONS_KEY = "relations"
         }
 
         override fun toTypeTag(language: Language): WordTypeTag = WordTypeTag(
-            id = id ?: INVALID_ID,
+            id = INVALID_ID,
             name = name,
             language = language,
             relations = relations.map { relation ->
                 WordTypeTagRelation(
                     label = relation.name,
-                    id = id ?: INVALID_ID,
                     wordsCount = 0
                 )
             },
@@ -70,7 +63,7 @@ data class MDJsonFileLanguagePartV1(
     }
 
     companion object Companion {
-        const val CODE_KEY = "id"// TODO, check serial name
-        const val TYPE_TAGS_KEY = "typeTags"// TODO, check serial name
+        const val CODE_KEY = "id"
+        const val TYPE_TAGS_KEY = "typeTags"
     }
 }

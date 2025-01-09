@@ -34,6 +34,7 @@ fun MDWordsListRoute(
 ) {
     DisposableEffect(Unit) {
         wordsListViewModel.initWithNavArgs(navArgs)
+        contextTagsSelectorViewModel.init()
         this.onDispose { }
     }
 

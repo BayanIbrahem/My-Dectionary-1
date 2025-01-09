@@ -9,6 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.data.MDDataStoreTrainPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDDataStoreUserPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDDataStoreViewPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomContextTagRepo
+import dev.bayan_ibrahim.my_dictionary.data.MDRoomExportToFileRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomLanguageRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomTrainHistoryRepo
@@ -17,7 +18,10 @@ import dev.bayan_ibrahim.my_dictionary.data.MDRoomWordRepo
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFileReaderAbstractFactory
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.write.MDFileWriterFactory
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.FileManager
 import dev.bayan_ibrahim.my_dictionary.domain.repo.ContextTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.ExportToFileRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.ImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.TrainHistoryRepo
@@ -71,6 +75,20 @@ class DataModule {
         db = db,
         abstractFactory = abstractFactory,
         appVersion = Build.VERSION.RELEASE
+    )
+
+    @Singleton
+    @Provides
+    fun provideExportToFileRepo(
+        fileWriterFactory: MDFileWriterFactory,
+        wordRepo: WordRepo,
+        typeTagRepo: TypeTagRepo,
+        fileManager: FileManager,
+    ): ExportToFileRepo = MDRoomExportToFileRepo(
+        fileWriterFactory = fileWriterFactory,
+        wordRepo = wordRepo,
+        typeTagRepo = typeTagRepo,
+        fileManager = fileManager
     )
 
     @Singleton

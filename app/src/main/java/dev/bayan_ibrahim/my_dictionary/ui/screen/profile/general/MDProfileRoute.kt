@@ -36,7 +36,7 @@ fun MDProfileRoute(
                 }
 
                 override fun navigateToExportToFile() {
-                    navigateToScreen(MDDestination.ExportToFile)
+                    navigateToScreen(MDDestination.ExportToFile())
                 }
 
                 override fun navigateToSync() {

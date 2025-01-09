@@ -1,12 +1,13 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.import_from_file
 
-import android.content.Context
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,13 +53,16 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabData
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDExtraTagsStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStrategy
-import dev.bayan_ibrahim.my_dictionary.domain.model.file.readFileData
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummary
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryLog
@@ -67,8 +70,12 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcess
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryStepException
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryStepWarning
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.ImportFromFileTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFileFileIdentifier
-import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDPropertyStrategyGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFilePartsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFilePicker
+import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDOptionSelectionGroup
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagExplorerDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import kotlinx.coroutines.delay
@@ -78,89 +85,131 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
-val corruptedFields = listOf(
-    MDPropertyConflictStrategy.IgnoreProperty,
-    MDPropertyConflictStrategy.AbortTransaction,
-)
-
 @Composable
 fun MDImportFromFileScreen(
     uiState: MDImportFromFileUiState,
     summary: MDFileProcessingSummary,
+    tagsSelectorUiState: MDContextTagsSelectorUiState,
     uiActions: MDImportFromFileUiActions,
+    tagsSelectorUiActions: MDContextTagsSelectorUiActions,
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
 ) {
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        context.readFileData(uri)?.let {
-            uiActions.onSelectFile(it)
-        }
-    }
-    val isImportInProgress by remember(summary.status) {
-        derivedStateOf {
-            summary.status.isRunning
-        }
-    }
+    val scrollState = rememberScrollState()
 
+    var showTagsExplorerDialog by remember {
+        mutableStateOf(false)
+    }
     MDScreen(
         uiState = uiState,
         modifier = modifier,
         topBar = {
             ImportFromFileTopAppBar(onNavigationIconClick = uiActions::onPop)
         },
+        floatingActionButton = {
+            AnimatedVisibility(
+                uiState.validSelectedFileParts,
+            ) {
+                ExtendedFloatingActionButton(
+                    onClick = uiActions::onStartImportProcess,
+                ) {
+                    MDIcon(MDIconsSet.ImportFromFile) // TODO, icon res
+                    AnimatedVisibility(
+                        visible = !scrollState.canScrollForward,
+                        enter = fadeIn() + slideInHorizontally(),
+                        exit = fadeOut() + slideOutHorizontally(),
+                    ) {
+                        Text("Import") // TODO, string res
+                    }
+                }
+            }
+        }
     ) {
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
+            modifier = Modifier.verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            MDFileFileIdentifier(
-                selectedFileName = uiState.selectedFileData?.name,
-                selectedFileType = uiState.selectedFileType,
-                detectedFileType = uiState.detectedFileType,
-                fileInputFieldClickable = uiState.fileInputFieldClickable,
-                overrideFileTypeChecked = uiState.overrideFileTypeChecked,
-                overrideFileTypeEnabled = uiState.overrideFileTypeEnabled,
-                onClickFileInputField = {
-                    launcher.launch(arrayOf("*/*"))
-//                    launcher.launch(MDFileType.entriesMimeType)
-                },
-                validFile = uiState.validFile,
-                fileValidationInProgress = uiState.fileValidationInProgress,
-                onSelectFileType = uiActions::onSelectFileType,
-                onOverrideFileTypeCheckChange = uiActions::onOverrideFileTypeCheckChange
+            MDFilePicker(
+                data = uiState.fileData,
+                type = uiState.fileType,
+                enabled = !uiState.isFetchingAvailablePartsInProgress,
+                onPickFile = uiActions::onPickFile,
+                onRemove = uiActions::onRemoveFile,
             )
-            MDPropertyStrategyGroup(
-                selectedStrategy = uiState.corruptedWordStrategy,
-                availableStrategies = MDPropertyCorruptionStrategy.entries,
-                onSelectStrategy = uiActions::onChangeCorruptedWordStrategy,
+            MDFilePartsSelector(
+                selectedParts = uiState.selectedParts,
+                visible = uiState.selectedParts.isNotEmpty() && !uiState.isFetchingAvailablePartsInProgress,
+                onToggleAvailablePart = uiActions::onToggleSelectAvailablePart
+            )
+            val primaryColors = MDHorizontalCardDefaults.primaryColors
+            MDHorizontalCardGroup {
+                item(
+                    colors = primaryColors,
+                    onClick = {
+                        showTagsExplorerDialog = true
+                    },
+                    subtitle = { Text("Tags that added to each imported word") }
+                ) {
+                    Text("Extra Context Tags") // TODO, string res
+                }
+                tagsSelectorUiState.selectedTags.forEach { tag ->
+                    item(
+                        onLongClick = {
+                            tagsSelectorUiActions.onDeleteContextTag(tag)
+                        },
+                        leadingIcon = {
+                            MDIcon(MDIconsSet.WordTag)
+                        }
+                    ) {
+                        Text(tag.value)
+                    }
+                }
+            }
+            val hasSelectedTags by remember {
+                derivedStateOf {
+                    tagsSelectorUiState.selectedTags.isNotEmpty()
+                }
+            }
+            AnimatedVisibility(
+                visible = hasSelectedTags,
+                enter = fadeIn() + slideInVertically(),
+                exit = fadeOut() + slideOutVertically(),
+            ) {
+                MDOptionSelectionGroup(
+                    selectedOption = uiState.extraTagsStrategy,
+                    availableOptions = MDExtraTagsStrategy.entries,
+                    onSelectOption = uiActions::onChangeExtraTagsStrategy,
+                    title = "Extra Tags Strategy", // TODO, string res
+                    subtitle = "What words should extra tags add to", // TODO, string res
+                )
+            }
+            MDOptionSelectionGroup(
+                selectedOption = uiState.corruptedWordStrategy,
+                availableOptions = MDPropertyCorruptionStrategy.entries,
+                onSelectOption = uiActions::onChangeCorruptedWordStrategy,
                 title = "Corrupted Word", // TODO, string res
                 subtitle = "Action when an invalid word appears in the new file", // TODO, string res
             )
-            MDPropertyStrategyGroup(
-                selectedStrategy = uiState.existedWordStrategy,
-                availableStrategies = MDPropertyConflictStrategy.entries,
-                onSelectStrategy = uiActions::onChangeExistedWordStrategy,
+            MDOptionSelectionGroup(
+                selectedOption = uiState.existedWordStrategy,
+                availableOptions = MDPropertyConflictStrategy.entries,
+                onSelectOption = uiActions::onChangeExistedWordStrategy,
                 title = "Existed Word", // TODO, string res
                 subtitle = "Action when a word with the same meaning and translation is already stored", // TODO, string res
             )
-            AnimatedVisibility(
-                visible = !isImportInProgress
-            ) {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = uiActions::onStartImportProcess,
-                    enabled = uiState.validFile && !uiState.fileValidationInProgress,
-                ) {
-                    Text("Import File") // TODO, string res
-                }
-            }
         }
         FileProgressDialog(
             summary = summary,
             onCancel = uiActions::onCancelImportProcess
         )
+        MDContextTagExplorerDialog(
+            showDialog = showTagsExplorerDialog,
+            onDismissRequest = { showTagsExplorerDialog = false },
+            state = tagsSelectorUiState,
+            actions = tagsSelectorUiActions
+        )
     }
 }
+
 
 @Composable
 private fun FileProgressDialog(

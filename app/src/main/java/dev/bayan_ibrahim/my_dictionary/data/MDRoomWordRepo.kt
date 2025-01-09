@@ -33,6 +33,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
@@ -147,7 +148,12 @@ class MDRoomWordRepo(
         .getWordsWithContextTagsAndRelatedWordsRelations(
             ids = ids
         ).map { list ->
-            list.asSequence().map { entity -> entity.asWordModel() }
+            val typeTags = typeTagDao.getAllTagTypes().first().associate {
+                it.tag.id to it.asTagModel()
+            }
+            list.asSequence().map { entity ->
+                entity.asWordModel(typeTags[entity.word.wordTypeTagId])
+            }
         }
 
     override fun getPaginatedWordsList(

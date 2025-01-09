@@ -16,10 +16,10 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 @Composable
-fun <E : LabeledEnum> MDPropertyStrategyGroup(
-    selectedStrategy: E,
-    availableStrategies: List<E>,
-    onSelectStrategy: (E) -> Unit,
+fun <E : LabeledEnum> MDOptionSelectionGroup(
+    selectedOption: E,
+    availableOptions: List<E>,
+    onSelectOption: (E) -> Unit,
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
@@ -40,12 +40,12 @@ fun <E : LabeledEnum> MDPropertyStrategyGroup(
             }
         }
     ) {
-        availableStrategies.forEach { strategy ->
-            val selected = selectedStrategy == strategy
+        availableOptions.forEach { strategy ->
+            val selected = selectedOption == strategy
             radioItem(
                 selected = selected,
                 onClick = {
-                    onSelectStrategy(strategy)
+                    onSelectOption(strategy)
                 },
             ) {
                 Text(label(strategy))
@@ -65,10 +65,10 @@ private fun MDFileStrategyRadioGroupPreview() {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                MDPropertyStrategyGroup(
-                    selectedStrategy = MDPropertyConflictStrategy.IgnoreProperty,
-                    availableStrategies = MDPropertyConflictStrategy.entries,
-                    onSelectStrategy = {},
+                MDOptionSelectionGroup(
+                    selectedOption = MDPropertyConflictStrategy.IgnoreProperty,
+                    availableOptions = MDPropertyConflictStrategy.entries,
+                    onSelectOption = {},
                     title = "Corrupted File",
                 )
             }

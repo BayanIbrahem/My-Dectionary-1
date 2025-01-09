@@ -7,10 +7,8 @@ interface MDFileLanguagePart : MDFilePart {
     val code: String
     val typeTags: List<LanguageTypeTag>
 
-    interface LanguageTypeTag {
-        val id: Long?
-        val name: String
-        val relations: List<MDNameWithOptionalId>
+    interface LanguageTypeTag: StrIdentifiable {
+        val relations: List<StrIdentifiable>
         fun toTypeTag(language: Language): WordTypeTag
     }
 

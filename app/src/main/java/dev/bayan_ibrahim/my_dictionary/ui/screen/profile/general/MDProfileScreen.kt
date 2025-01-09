@@ -81,7 +81,7 @@ private fun BackupAndRestoreGroup(
 
         item(
             onClick = onClickExportToFile,
-            enabled = false, // TODO, not implemented yet
+            enabled = true, // TODO, not implemented yet
             leadingIcon = {
                 MDIcon(MDIconsSet.ExportToFile, contentDescription = null)
             }

@@ -10,16 +10,16 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.read.file_part_reader.MDJsonFileLanguagePartReaderV1
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.read.file_part_reader.MDJsonFileTagPartReaderV1
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.read.file_part_reader.MDJsonFileWordPartReaderV1
-import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileData
+import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 
 data class MDJsonFileReaderV1(
     val json: Json,
-    private val openInputStreamCallback: (data: MDFileData) -> InputStream,
+    private val openInputStreamCallback: (data: MDDocumentData) -> InputStream,
 ) : MDJsonFileReader(version = 1, json = json) {
     override suspend fun openInputStream(
-        data: MDFileData,
+        data: MDDocumentData,
     ): InputStream = openInputStreamCallback(data)
 
     override suspend fun getReaderOfPart(part: MDFilePartType): MDFilePartReader<out MDFilePart> {

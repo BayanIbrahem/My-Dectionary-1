@@ -22,6 +22,18 @@ data class ContextTag(
      */
     val currentColorIsPassed: Boolean = true,
 ) {
+    /**
+     * return [color] if it is not passed [currentColorIsPassed]
+     */
+    val originalColor: Color?
+        get() = color?.let {
+            if (currentColorIsPassed) {
+                null
+            } else {
+                it
+            }
+        }
+
     constructor(
         segments: Iterable<String>,
         id: Long = INVALID_ID,
@@ -193,3 +205,12 @@ object InheritedTagsComparable : Comparator<ContextTag> {
         return 0
     }
 }
+
+/**
+ * return a copy of the context that with validated segment text
+ */
+fun ContextTag.validate(): ContextTag = ContextTag(
+    segments = segments.map { it.trim() },
+    id = id,
+    wordsCount = wordsCount
+)

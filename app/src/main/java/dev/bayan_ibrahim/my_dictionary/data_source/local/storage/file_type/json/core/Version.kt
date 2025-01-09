@@ -14,7 +14,7 @@ fun getJsonPartKeyOfVersion(part: MDFilePartType, version: Int): String = when (
     }
 
     MDFilePartType.Tag -> when (version) {
-        1 -> "tags"
+        1 -> "contextTags"
         else -> throw IllegalArgumentException("invalid version $version for tag key") // TODO, custom exception
     }
 

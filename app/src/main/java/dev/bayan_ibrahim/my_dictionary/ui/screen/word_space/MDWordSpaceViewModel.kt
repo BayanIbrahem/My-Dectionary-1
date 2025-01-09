@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.toMDEditableField
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.TypeTagRepo
@@ -32,25 +33,51 @@ class MDWordSpaceViewModel @Inject constructor(
                 }
                 typeTagRepo.getAllTypeTags().first().forEach { (language, tags) ->
                     _uiState.wordSpacesWithActions.add(
-                        LanguageWordSpaceMutableState(
-                            code = language.code,
-                            initialTags = tags.map { it.toMDEditableField(false) },
+                        buildWordSpaceStateWithActions(
+                            language = language,
+                            tags = tags,
                             wordsCount = allWordSpaces[language] ?: 0,
-                        ).let {
-                            it to it.getActions(
-                                scope = viewModelScope,
-                                onSubmitRequest = ::onSubmitWordSpaceState,
-                                onEditCapture = {
-                                    _uiState.currentEditableWordSpaceLanguageCode = it
-                                },
-                                onEditRelease = ::onEditWordSpaceFinish
-                            )
-                        }
+                        )
                     )
                 }
+                val languagesWithoutTypeTags: List<LanguageCode> = allWordSpaces.mapNotNull { (language) ->
+                    if (uiState.wordSpacesWithActions.any { it.first.code == language.code }) {
+                        null
+                    } else {
+                        language
+                    }
+                }
+                _uiState.wordSpacesWithActions.addAll(
+                    languagesWithoutTypeTags.map { language ->
+                        buildWordSpaceStateWithActions(
+                            language = language,
+                            tags = emptyList(),
+                            wordsCount = allWordSpaces[language] ?: 0,
+                        )
+                    }
+                )
                 true
             }
         }
+    }
+
+    private fun buildWordSpaceStateWithActions(
+        language: LanguageCode,
+        tags: List<WordTypeTag>,
+        wordsCount: Int,
+    ) = LanguageWordSpaceMutableState(
+        code = language.code,
+        initialTags = tags.map { it.toMDEditableField(false) },
+        wordsCount = wordsCount,
+    ).let {
+        it to it.getActions(
+            scope = viewModelScope,
+            onSubmitRequest = ::onSubmitWordSpaceState,
+            onEditCapture = {
+                _uiState.currentEditableWordSpaceLanguageCode = it
+            },
+            onEditRelease = ::onEditWordSpaceFinish
+        )
     }
 
     private fun onEditWordSpaceFinish() {

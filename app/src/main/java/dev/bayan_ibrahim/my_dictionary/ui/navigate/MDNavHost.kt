@@ -3,7 +3,6 @@ package dev.bayan_ibrahim.my_dictionary.ui.navigate
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -73,7 +72,7 @@ fun MDNavHost(
         }
         composable<Statistics> { backStackEntry ->
             MDStatisticsRoute(
-                args = MDDestination.Statistics(),
+                args = MDDestination.Statistics(null),
                 appUiState = appUiState,
                 appActions = appActions,
             )

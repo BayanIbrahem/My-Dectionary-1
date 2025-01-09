@@ -165,9 +165,9 @@ interface WordDao {
         """
             SELECT * FROM $dbWordTable
             WHERE (
-                NOT :includeLanguage AND $dbWordLanguageCode IN (:languages)
+                (NOT :includeLanguage) OR $dbWordLanguageCode IN (:languages)
             ) AND (
-                NOT :includeTypeTag AND $dbWordTypeTag IN (:typeTags)
+                (NOT :includeTypeTag) OR $dbWordTypeTag IN (:typeTags)
             )
         """
     )

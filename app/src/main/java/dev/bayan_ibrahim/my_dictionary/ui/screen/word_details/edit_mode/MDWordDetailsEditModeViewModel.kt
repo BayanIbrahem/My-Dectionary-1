@@ -4,6 +4,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_LANGUAGE
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
@@ -13,6 +14,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
@@ -42,7 +44,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
 
     private val currentLanguageFlow: StateFlow<Language?> = userRepo.getUserPreferencesStream().map { it.selectedLanguagePage }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Eagerly,
         initialValue = null
     )
 
@@ -64,6 +66,12 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     private var lastLoadedWord: Word? = null
     fun initWithNavArgs(args: MDDestination.WordDetailsEditMode) {
         viewModelScope.launch(Dispatchers.IO) {
+            launch {
+                // TODO, fix this extra collect, try if sharing started works
+                currentLanguageFlow.collect{
+                    it
+                }
+            }
             userRepo.setUserPreferences {
                 it.copy(
                     selectedLanguagePage = args.languageCode.code.getLanguage()
@@ -96,6 +104,9 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     private fun getBusinessUiActions(
         navActions: MDWordDetailsEditModeNavigationUiActions,
     ): MDWordDetailsEditModeBusinessUiActions = object : MDWordDetailsEditModeBusinessUiActions {
+        override fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {
+            _uiState.tags.setAll(selectedTags)
+        }
         override fun onSave() {
             val lastWord = lastLoadedWord
             if (uiState.valid) {
@@ -112,6 +123,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
                             wordTypeTag = uiState.selectedTypeTag,
                             relatedWords = uiState.relatedWords.values.mapNotNull {
                                 if (it.second.isBlank()) return@mapNotNull null
+                                // FIXME, only last relation is stored
                                 RelatedWord(
                                     id = INVALID_ID,
                                     baseWordId = uiState.id,

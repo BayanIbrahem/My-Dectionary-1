@@ -3,6 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.navigate
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordsList
+import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.util.MDExportToFilePreferences
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
@@ -78,7 +79,25 @@ sealed class MDDestination {
     data object ImportFromFile : MDDestination()
 
     @Serializable
-    data object ExportToFile : MDDestination()
+    data class ExportToFile(
+        val preferencesData: String? = null,
+    ) : MDDestination() {
+        val preferences: MDExportToFilePreferences
+            get() = preferencesData?.let {
+                Json.decodeFromString(
+                    deserializer = MDExportToFilePreferences.serializer(),
+                    string = preferencesData
+                )
+            } ?: MDExportToFilePreferences.Default
+
+        constructor(preferences: MDExportToFilePreferences) : this(
+            Json.encodeToString(
+                serializer = MDExportToFilePreferences.serializer(),
+                value = preferences
+            )
+        )
+
+    }
 
     @Serializable
     data object Sync : MDDestination()
@@ -95,22 +114,23 @@ sealed class MDDestination {
      */
     @Serializable
     data class Statistics(
-        val preferencesData: String,
-//        val preferences: MDStatisticsViewPreferences = MDStatisticsViewPreferences.Date()
+        val preferencesData: String ? = null,
     ) : MDDestination() {
 
         val preferences: MDStatisticsViewPreferences
-            get() = Json.decodeFromString(
-                MDStatisticsViewPreferences.serializer(),
-                preferencesData,
-            )
+            get() = preferencesData?.let {
+                Json.decodeFromString(
+                    MDStatisticsViewPreferences.serializer(),
+                    preferencesData,
+                )
+            } ?: MDStatisticsViewPreferences.Default
 
         constructor(
             preferences: MDStatisticsViewPreferences = MDStatisticsViewPreferences.Date(),
         ) : this(
             Json.encodeToString(
-                MDStatisticsViewPreferences.serializer(),
-                preferences,
+                serializer = MDStatisticsViewPreferences.serializer(),
+                value = preferences,
             )
         )
     }

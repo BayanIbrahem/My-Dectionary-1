@@ -77,5 +77,7 @@ sealed interface MDStatisticsViewPreferences {
 
     companion object {
         val DEFAULT_DATE_UNIT: MDDateUnit = MDDateUnit.Day
+        val Default: MDStatisticsViewPreferences
+            get() = Date()
     }
 }
