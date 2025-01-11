@@ -1,6 +1,5 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.write
 
-import com.google.protobuf.any
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFilePart
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.write.MDFilePartWriter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.write.MDFileWriter
@@ -68,7 +67,7 @@ class MDJsonFileWriter(
 
                 anyDecoded = anyDecoded || result
 
-                if (i < indexOfLast) {
+                if (i < indexOfLast && result) {
                     writer.write(",")
                 }
             }
