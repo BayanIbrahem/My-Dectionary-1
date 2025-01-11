@@ -14,6 +14,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.util.MDExportToFilePreferences
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,7 +32,6 @@ class MDExportToFileViewModel @Inject constructor(
             _uiState.exportPreferences = args.preferences
             true
         }
-
     }
 
     fun getUiActions(
@@ -57,14 +57,13 @@ class MDExportToFileViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     Log.d("export", "export started...")
                     val wordsIds = getWordsIdsOfPreferences()
-                    val result = exportToFileRepo.export(
+                    startExportProgress(
                         wordsIds = wordsIds,
-                        parts = selectedParts,
-                        exportDirectory = dir,
-                        exportFileType = type,
-                        exportFileName = name
+                        selectedParts = selectedParts,
+                        dir = dir,
+                        type = type,
+                        name = name
                     )
-                    Log.d("export", "export ended, result $result")
                 }
             }
         }
@@ -83,6 +82,34 @@ class MDExportToFileViewModel @Inject constructor(
                 _uiState.exportDirectory = fileData
             }
         }
+
+        private var exportJob: Job? = null
+        override fun onCancelExport() {
+            exportJob?.cancel()
+            exportJob = null
+            _uiState.exportProgress = null
+        }
+
+        private fun startExportProgress(
+            wordsIds: Set<Long>,
+            selectedParts: Set<MDFilePartType>,
+            dir: MDDocumentData,
+            type: MDFileType,
+            name: String,
+        ) {
+            exportJob?.cancel()
+            exportJob = viewModelScope.launch {
+                exportToFileRepo.export(
+                    wordsIds = wordsIds,
+                    parts = selectedParts,
+                    exportDirectory = dir,
+                    exportFileType = type,
+                    exportFileName = name
+                ).collect { progress ->
+                    _uiState.exportProgress = progress
+                }
+            }
+        }
     }
 
     private suspend fun getWordsIdsOfPreferences(
@@ -94,4 +121,5 @@ class MDExportToFileViewModel @Inject constructor(
         is MDExportToFilePreferences.TypeTags -> wordRepo.getWordsIdsOf(typeTags = preferences.ids.toSet()).first()
         is MDExportToFilePreferences.Words -> preferences.ids.toSet()
     }
+
 }

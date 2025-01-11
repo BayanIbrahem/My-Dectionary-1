@@ -66,12 +66,6 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     private var lastLoadedWord: Word? = null
     fun initWithNavArgs(args: MDDestination.WordDetailsEditMode) {
         viewModelScope.launch(Dispatchers.IO) {
-            launch {
-                // TODO, fix this extra collect, try if sharing started works
-                currentLanguageFlow.collect{
-                    it
-                }
-            }
             userRepo.setUserPreferences {
                 it.copy(
                     selectedLanguagePage = args.languageCode.code.getLanguage()
@@ -123,7 +117,6 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
                             wordTypeTag = uiState.selectedTypeTag,
                             relatedWords = uiState.relatedWords.values.mapNotNull {
                                 if (it.second.isBlank()) return@mapNotNull null
-                                // FIXME, only last relation is stored
                                 RelatedWord(
                                     id = INVALID_ID,
                                     baseWordId = uiState.id,

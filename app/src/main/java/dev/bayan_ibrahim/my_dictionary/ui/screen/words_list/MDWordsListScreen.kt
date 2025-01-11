@@ -47,6 +47,7 @@ fun MDWordsListScreen(
     contextTagsSelectionActions: MDContextTagsSelectorUiActions,
     modifier: Modifier = Modifier,
     lifeMemorizingProbability: Boolean = false,
+    currentSpeakingWordId: String? = null,
 ) {
     val selectedWordsCount by remember(uiState.selectedWords) {
         derivedStateOf {
@@ -170,6 +171,10 @@ fun MDWordsListScreen(
                     onLongClick = {
                         uiActions.onLongClickWord(word.id)
                     },
+                    isSpeakInProgress = currentSpeakingWordId == word.id.toString(),
+                    onSpeak = {
+                        uiActions.onSpeakWord(word)
+                    }
                 )
             }
         }

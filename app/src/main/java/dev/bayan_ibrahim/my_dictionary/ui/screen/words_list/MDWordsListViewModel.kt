@@ -6,6 +6,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
+import dev.bayan_ibrahim.my_dictionary.data_source.local.text_to_speech.TextToSpeechData
+import dev.bayan_ibrahim.my_dictionary.data_source.local.text_to_speech.TextToSpeechDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
@@ -37,6 +39,7 @@ class MDWordsListViewModel @Inject constructor(
     private val userRepo: UserPreferencesRepo,
     private val languageRepo: LanguageRepo,
     private val wordRepo: WordRepo,
+    private val textToSpeech: TextToSpeechDataSource,
     viewPreferencesRepo: ViewPreferencesRepo,
 ) : ViewModel() {
     private val selectedWordSpaceStream: StateFlow<LanguageWordSpace> = userRepo.getUserPreferencesStream().map {
@@ -52,6 +55,7 @@ class MDWordsListViewModel @Inject constructor(
     private val _uiState: MDWordsListMutableUiState = MDWordsListMutableUiState(selectedWordSpaceStream)
     val uiState: MDWordsListUiState = _uiState
 
+    val currentSpeakingWordId = textToSpeech.runningId
 
     private val viewPreferences = viewPreferencesRepo.getViewPreferencesStream().stateIn(
         scope = viewModelScope,
@@ -251,6 +255,19 @@ class MDWordsListViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+        }
+
+        override fun onSpeakWord(word: Word) {
+            if (currentSpeakingWordId.value != word.id.toString()) {
+                textToSpeech.pushData(
+                    TextToSpeechData(
+                        id = word.id.toString(),
+                        text = word.translation,
+                        language = word.language,
+                        flushPrev = true
+                    )
+                )
             }
         }
     }

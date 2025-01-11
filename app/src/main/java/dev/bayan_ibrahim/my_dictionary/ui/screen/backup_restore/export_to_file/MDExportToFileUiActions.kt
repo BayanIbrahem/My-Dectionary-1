@@ -12,6 +12,7 @@ interface MDExportToFileBusinessUiActions {
     fun onSelectExportFileType(type: MDFileType)
     fun onExportFileNameChange(newName: String)
     fun onExportDirectoryChange(uri: Uri)
+    fun onCancelExport()
 }
 
 interface MDExportToFileNavigationUiActions: MDAppNavigationUiActions {

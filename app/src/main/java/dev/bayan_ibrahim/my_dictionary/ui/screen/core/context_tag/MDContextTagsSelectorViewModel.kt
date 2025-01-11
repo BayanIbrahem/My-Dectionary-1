@@ -64,27 +64,20 @@ class MDContextTagsSelectorViewModel @Inject constructor(
         businessActions = getBusinessUiActions(navActions)
     )
 
+    private fun onUpdateDisabledTags() {
+        val query = _uiState.searchQuery
+        _uiState.disabledTags = _uiState.currentTagsTree.nextLevel.mapNotNull {
+            val matchQuery = it.key.tagMatchNormalize.startsWith(query.tagMatchNormalize)
+            val isSelected = _uiState.selectedTags.contains(it.value.tag)
+            if (!matchQuery || isSelected) {
+                it.value.tag
+            } else null
+        }.toPersistentSet()
+    }
+
     private fun getBusinessUiActions(
         navActions: MDContextTagsSelectorNavigationUiActions,
     ): MDContextTagsSelectorBusinessUiActions = object : MDContextTagsSelectorBusinessUiActions {
-        private fun setCurrentTree(tree: ContextTagsTree) {
-            this@MDContextTagsSelectorViewModel.setCurrentTree(tree)
-        }
-
-        private fun onUpdateSelectEnableState() {
-            this@MDContextTagsSelectorViewModel.onUpdateSelectEnableState()
-        }
-
-        private fun onUpdateDisabledTags() {
-            val query = _uiState.searchQuery
-            _uiState.disabledTags = _uiState.currentTagsTree.nextLevel.mapNotNull {
-                val matchQuery = it.key.tagMatchNormalize.startsWith(query.tagMatchNormalize)
-                val isSelected = _uiState.selectedTags.contains(it.value.tag)
-                if (!matchQuery || isSelected) {
-                    it.value.tag
-                } else null
-            }.toPersistentSet()
-        }
 
         private fun onUpdateSelectedTags() {
             navActions.onUpdateSelectedTags(_uiState.selectedTags)
@@ -206,6 +199,7 @@ class MDContextTagsSelectorViewModel @Inject constructor(
     private fun setCurrentTree(tree: ContextTagsTree) {
         _uiState.currentTagsTree.setFrom(tree)
         onUpdateSelectEnableState()
+        onUpdateDisabledTags()
     }
 
     private fun onUpdateSelectEnableState() {

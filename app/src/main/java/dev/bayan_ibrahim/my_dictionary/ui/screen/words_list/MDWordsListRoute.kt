@@ -43,6 +43,7 @@ fun MDWordsListRoute(
     val lifeMemorizingProbability by wordsListViewModel.lifeMemorizingProbability.collectAsStateWithLifecycle()
     val tagsSelectorUiState = contextTagsSelectorViewModel.uiState
     val selectedWordSpace by uiState.selectedWordSpace.collectAsStateWithLifecycle()
+    val currentSpeakingWordId by wordsListViewModel.currentSpeakingWordId.collectAsStateWithLifecycle()
 
     val navActions by remember(selectedWordSpace) {
         derivedStateOf {
@@ -79,6 +80,7 @@ fun MDWordsListRoute(
         wordsList = wordsList,
         contextTagsSelectionState = tagsSelectorUiState,
         contextTagsSelectionActions = tagsSelectorUiActions,
+        currentSpeakingWordId =currentSpeakingWordId,
         modifier = modifier,
         lifeMemorizingProbability = lifeMemorizingProbability,
     )

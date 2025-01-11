@@ -77,4 +77,39 @@ interface FileManager {
     suspend fun openOutputStream(
         fileData: MDDocumentData?,
     ): Result<OutputStream> = openOutputStream(fileData?.uri)
+
+    suspend fun deleteDocument(
+        data: MDDocumentData,
+    ): Result<Boolean>
+
+    /**
+     * @param key key of this file, used later if it we need to delete or restore file
+     * add a file to trash that it could be deleted later,
+     * used if we want to delete files in uncompleted process after facing a problem
+     */
+    suspend fun addToTrash(
+        key: String,
+        document: MDDocumentData,
+        deleteOldIfExisted: Boolean = true,
+    )
+
+    /**
+     * restore a file from trash if existed, call this method before [clearTrash] to mark file
+     */
+    fun restoreFromTrash(key: String): Boolean
+
+    /**
+     * remove all files in trash according to [filter]
+     * @see [clearTrash]
+     */
+    suspend fun clearTrash(filter: suspend (String, MDDocumentData) -> Boolean = { _, _ -> true }): Result<Int>
+
+    /**
+     * remove files in trash according to [keys]
+     * @see [clearTrash]
+     */
+    suspend fun clearTrash(keys: Collection<String>) = clearTrash { key, _ ->
+        key in keys
+    }
+
 }

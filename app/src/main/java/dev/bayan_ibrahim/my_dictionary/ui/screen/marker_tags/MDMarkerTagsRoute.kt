@@ -6,9 +6,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.isMarkerTag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
@@ -29,7 +31,9 @@ fun MDMarkerTagsRoute(
     LaunchedEffect(args) {
         markerTagsViewModel.initWithNavArgs(args)
         contextTagsSelectorViewModel.init(
-            allowedFilter = { it.isMarkerTag }
+            allowedFilter = {
+                !it.isMarkerTag
+            }
         )
     }
 
@@ -50,7 +54,11 @@ fun MDMarkerTagsRoute(
     }
     val tagsSelectorNavActions by remember {
         derivedStateOf {
-            object : MDContextTagsSelectorNavigationUiActions {}
+            object : MDContextTagsSelectorNavigationUiActions {
+                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<ContextTag>) {
+                    uiActions.onUpdateSelectedTags(selectedTags)
+                }
+            }
         }
     }
     val tagsSelectorUiActions by remember {

@@ -144,6 +144,7 @@ private fun MDMarkerTagsScreenPreview() {
                         object : MDMarkerTagsBusinessUiActions {
                             override fun updateTag(tag: ContextTag) {}
                             override fun removeTag(tag: ContextTag) {}
+                            override fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {}
                         },
                     )
                 )

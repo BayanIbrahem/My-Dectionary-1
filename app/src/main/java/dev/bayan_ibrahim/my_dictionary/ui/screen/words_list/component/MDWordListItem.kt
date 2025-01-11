@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -21,8 +22,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -55,7 +58,6 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -83,6 +85,8 @@ fun MDWordListItem(
     onLongClickHeader: () -> Unit = {},
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {},
+    isSpeakInProgress: Boolean = false,
+    onSpeak: () -> Unit = {},
     primaryAction: @Composable RowScope.() -> Unit = {},
     secondaryAction: @Composable RowScope.() -> Unit = {},
 ) {
@@ -130,14 +134,28 @@ fun MDWordListItem(
                 verticalAlignment = Alignment.CenterVertically,
 
                 ) {
-                Text(
-                    text = word.language.uppercaseCode,
-                    style = if (word.language.isLongCode) {
-                        MaterialTheme.typography.titleSmall
-                    } else {
-                        MaterialTheme.typography.titleLarge
-                    },
-                )
+                IconButton(
+                    enabled = !isSpeakInProgress,
+                    onClick = onSpeak
+                ) {
+                    AnimatedContent(
+                        targetState = isSpeakInProgress,
+                    ) {
+                        if (it) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                        } else {
+                            MDIcon(MDIconsSet.WordTranscription) // TODO, icon res
+                        }
+                    }
+                }
+//                Text(
+//                    text = word.language.uppercaseCode,
+//                    style = if (word.language.isLongCode) {
+//                        MaterialTheme.typography.titleSmall
+//                    } else {
+//                        MaterialTheme.typography.titleLarge
+//                    },
+//                )
                 Text(
                     text = buildAnnotatedString {
                         val meaning = word.meaning.formatBySearchQuery(

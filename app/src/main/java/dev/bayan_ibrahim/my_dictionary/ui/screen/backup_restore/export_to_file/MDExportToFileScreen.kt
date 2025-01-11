@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -14,13 +15,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,17 +35,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDPlainTooltip
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.data.ExportProgress
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
@@ -50,6 +60,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFile
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDOptionSelectionGroup
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import kotlin.math.roundToInt
 
 @Composable
 fun MDExportToFileScreen(
@@ -70,8 +81,13 @@ fun MDExportToFileScreen(
                 onClick = uiActions::onStartExportProcess,
             ) {
                 MDIcon(MDIconsSet.ExportToFile) // TODO, icon res
+                val visible by remember(scrollState, uiState) {
+                    derivedStateOf {
+                        !scrollState.canScrollForward && uiState.validExportData && uiState.isExportIdle
+                    }
+                }
                 AnimatedVisibility(
-                    visible = !scrollState.canScrollForward,
+                    visible = visible,
                     enter = fadeIn() + slideInHorizontally(),
                     exit = fadeOut() + slideOutHorizontally(),
                 ) {
@@ -80,7 +96,14 @@ fun MDExportToFileScreen(
             }
         }
     ) {
-        Column(modifier = Modifier.verticalScroll(scrollState)) {
+        ExportProgressDialog(
+            exportProgress = uiState.exportProgress,
+            onCancelProgress = uiActions::onCancelExport
+        )
+        Column(
+            modifier = Modifier.verticalScroll(scrollState),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Column {
                 Text(
                     text = "Export Preferences",
@@ -134,7 +157,17 @@ fun MDExportToFileScreen(
             }
             val directoryValue by remember(uiState) {
                 derivedStateOf {
-                    uiState.exportDirectory?.name?.plus('/') ?: ""
+                    uiState.exportDirectory?.name?.plus('/') ?: "Choose directory"
+                }
+            }
+            val onPrimaryContainer = MaterialTheme.colorScheme.onPrimaryContainer
+            val directoryColor by remember(uiState) {
+                derivedStateOf {
+                    if (uiState.exportDirectory == null) {
+                        onPrimaryContainer.copy(alpha = 0.5f)
+                    } else {
+                        onPrimaryContainer
+                    }
                 }
             }
             MDVerticalCard(
@@ -164,6 +197,7 @@ fun MDExportToFileScreen(
                         Text(
                             text = directoryValue,
                             style = MDTextFieldDefaults.textStyle,
+                            color = directoryColor,
                             modifier = Modifier.weight(1f),
                         )
                     }
@@ -183,6 +217,165 @@ fun MDExportToFileScreen(
                     onValueChange = uiActions::onExportFileNameChange,
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ExportProgressDialog(
+    exportProgress: ExportProgress?,
+    onCancelProgress: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val show by remember(exportProgress) {
+        derivedStateOf {
+            exportProgress != null
+        }
+    }
+    MDAlertDialog(
+        modifier = modifier
+            .widthIn(250.dp, 300.dp)
+            .fillMaxWidth(),
+        showDialog = show,
+        onDismissRequest = {},
+        contentModifier = Modifier.padding(16.dp),
+        title = {
+            Row(
+                modifier = Modifier.fillMaxHeight(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                MDIcon(MDIconsSet.ExportToFile) // TODO, icon res
+                val text = when (exportProgress) {
+                    is ExportProgress.Done -> "Export Done"
+                    is ExportProgress.Error -> "Export Error"
+                    is ExportProgress.Running -> "Export Running - ${exportProgress.partIndex.inc()} of ${exportProgress.availableParts.count()}"
+                    null -> ""
+                } // TODO, string res
+                Text(text) // TODO, string res
+            }
+        },
+        actions = {
+            MDAlertDialogActions(
+                primaryClickEnabled = true,
+                onPrimaryClick = onCancelProgress,
+                primaryActionLabel = if (exportProgress?.isRunning == true) {
+                    "Cancel"
+                } else {
+                    "Close"
+                },// TODO, string res
+                hasPrimaryAction = true,
+                hasSecondaryAction = false,
+                hasTertiaryAction = false,
+                colors = MDDialogDefaults.colors(primaryActionColor = MaterialTheme.colorScheme.error),
+            )
+        },
+    ) {
+        // TODO, string res
+        when (exportProgress) {
+            is ExportProgress.Done -> {
+                Column {
+                    Text(
+                        text = "Export Done",
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "Output",
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val path by remember(exportProgress) {
+                            derivedStateOf {
+                                exportProgress.outputFile.filePath ?: "${exportProgress.outputDir.name}/${exportProgress.outputFile.name}"
+                            }
+                        }
+                        Text(
+                            text = path, // TODO, trim from start if long instead of trim from end
+                            modifier = Modifier.weight(1f),
+                            maxLines = 1
+                        )
+                        IconButton(
+                            onClick = {
+                                // TODO, open export file location
+                            }
+                        ) {
+                            MDIcon(MDIconsSet.ExportToFile) // TODO, icon res
+                        }
+                    }
+                }
+            }
+
+            is ExportProgress.Error -> {
+                Column {
+                    Text(
+                        text = exportProgress.errorName,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+
+                    Text(
+                        text = exportProgress.label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+
+            is ExportProgress.Running -> {
+                Column {
+                    val parts by remember(exportProgress.availableParts) {
+                        derivedStateOf {
+                            exportProgress.availableParts.sorted()
+                        }
+                    }
+                    parts.forEach { part ->
+                        val isCurrentPart by remember(part, exportProgress.currentFilePart) {
+                            derivedStateOf { exportProgress.currentFilePart == part }
+                        }
+                        val scale by animateFloatAsState(if (isCurrentPart) 1f else 0.67f)
+                        val alpha by animateFloatAsState(if (isCurrentPart) 1f else 0.5f)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .graphicsLayer {
+                                    this.scaleX = scale
+                                    this.scaleY = scale
+                                    this.alpha = alpha
+                                },
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(part.label)
+                            AnimatedVisibility(
+                                modifier = Modifier.weight(1f),
+                                visible = isCurrentPart,
+                                enter = fadeIn(),
+                                exit = fadeOut(),
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    MDLinearProgressIndicator(
+                                        progress = exportProgress.progress,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Text(
+                                        text = "${exportProgress.progress.times(100).roundToInt()}%",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            null -> {}
         }
     }
 }
@@ -213,6 +406,7 @@ private fun MDExportToFileScreenPreview() {
                             override fun onSelectExportFileType(type: MDFileType) {}
                             override fun onExportFileNameChange(newName: String) {}
                             override fun onExportDirectoryChange(uri: Uri) {}
+                            override fun onCancelExport() {}
                         },
                     )
                 )

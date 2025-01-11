@@ -18,22 +18,34 @@ class MDJsonFilePartWriter(
     private suspend fun writeDataToStream(
         data: List<MDFilePart>,
         writer: Writer,
-    ) {
+        onProgress: suspend (Int, Int) -> Unit = { _, _ -> },
+    ): Boolean {
+        if (data.isEmpty()) return false
         val key = getPartKey()
         writer.write("\"$key\":[")
-        val lastIndex = data.count().dec()
+        val count = data.count()
+        val lastIndex = count.dec()
         data.forEachIndexed { i, item ->
             val stringifiedItem = item.stringify(JsonStringifier(json))
             writer.write(stringifiedItem)
             if (i < lastIndex) {
                 writer.write(",")
             }
+            onProgress(i, count)
         }
         writer.write("]")
+        return true
     }
 
-    override suspend fun writePart(writer: Writer) {
-        writeDataToStream(getData(), writer)
+    override suspend fun writePart(
+        writer: Writer,
+        onProgress: suspend (Int, Int) -> Unit,
+    ): Boolean {
+        return writeDataToStream(
+            data = getData(),
+            writer = writer,
+            onProgress = onProgress
+        )
     }
 
     private fun getPartKey(): String {

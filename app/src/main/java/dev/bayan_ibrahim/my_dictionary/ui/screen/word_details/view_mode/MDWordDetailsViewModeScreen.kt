@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,7 +26,6 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardScope
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.component.MDContextTagColorIcon
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
@@ -37,6 +35,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.invalid
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.component.MDContextTagColorIcon
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.view_mode.component.MDWordDetailsViewModeTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -168,17 +167,19 @@ fun MDWordDetailsViewModeScreen(
                     }
                 }
             }
-            items(uiState.word.lexicalRelations.toList()) { (type, relations) ->
+            uiState.word.lexicalRelations.forEach { (type, relations) ->
                 if (relations.isNotEmpty()) {
-                    WordInfoGroup(
-                        title = type.relationName,
-                        titleHint = type.strLabel,
-                        icon = MDIconsSet.WordRelatedWords
-                    ) {
-                        relations.forEach { relation ->
-                            wordPropertyItem(
-                                value = relation.relatedWord,
-                            )
+                    item {
+                        WordInfoGroup(
+                            title = type.relationName,
+                            titleHint = type.strLabel,
+                            icon = MDIconsSet.WordRelatedWords
+                        ) {
+                            relations.forEach { relation ->
+                                wordPropertyItem(
+                                    value = relation.relatedWord,
+                                )
+                            }
                         }
                     }
                 }

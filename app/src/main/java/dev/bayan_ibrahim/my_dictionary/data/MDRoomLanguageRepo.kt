@@ -47,16 +47,15 @@ class MDRoomLanguageRepo(
             entity.asWordSpaceModel()
         }
     }.let {
-        if(includeNotUsedLanguages) {
-            it.flatMapLatest { spaces->
+        if (includeNotUsedLanguages) {
+            it.flatMapLatest { spaces ->
                 flow {
-                    allLanguages.values.mapNotNull { language ->
-                        if (language in spaces) {
-                            null
-                        } else {
-                            language.getLanguageWordSpace()
-                        }
+                    val allSpaces = spaces.plus(allLanguages.values.map { language ->
+                        language.getLanguageWordSpace()
+                    }).distinctBy {
+                        it.code
                     }
+                    emit(allSpaces)
                 }
             }
         } else {

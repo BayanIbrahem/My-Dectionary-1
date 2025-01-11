@@ -34,7 +34,6 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
     indices = [
         Index(dbTypeTagRelatedWordRelationId),
         Index(dbTypeTagRelatedWordBaseWordId),
-        Index(dbTypeTagRelatedWordBaseWordId, dbTypeTagRelatedWordRelationId, unique = true),
     ]
 )
 data class WordTypeTagRelatedWordEntity(

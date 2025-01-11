@@ -20,6 +20,7 @@ class MDAndroidFileManager(
 ) : FileManager {
     private val contentResolver
         get() = context.contentResolver
+    private val trash = mutableMapOf<String, MDDocumentData>()
 
     override suspend fun getDocumentData(
         uri: Uri?,
@@ -130,5 +131,45 @@ class MDAndroidFileManager(
     override suspend fun openOutputStream(uri: Uri?): Result<OutputStream> = runCatching {
         uri ?: throw IllegalArgumentException("Can not open output stream form null uri")
         contentResolver.openOutputStream(uri) ?: throw IOException("Can not open output stream uri $uri")
+    }
+
+    override suspend fun addToTrash(
+        key: String,
+        document: MDDocumentData,
+        deleteOldIfExisted: Boolean,
+    ) {
+        if (deleteOldIfExisted) {
+            trash[key]?.let {
+                deleteDocument(it)
+            }
+        }
+        trash[key] = document
+    }
+
+    override fun restoreFromTrash(key: String): Boolean {
+        return trash.remove(key) != null
+    }
+
+    override suspend fun deleteDocument(data: MDDocumentData): Result<Boolean> {
+        return runCatching {
+            DocumentsContract.deleteDocument(contentResolver, data.uri)
+        }
+    }
+
+    override suspend fun clearTrash(
+        filter: suspend (String, MDDocumentData) -> Boolean,
+    ): Result<Int> = runCatching {
+        var count = 0
+        val trashSnapshot = trash.filter {
+            filter(it.key, it.value)
+        }
+        trashSnapshot.map {
+            val result = deleteDocument(it.value).getOrThrow()
+            if (result) {
+                count++
+            }
+            trash.remove(it.key)
+        }
+        count
     }
 }

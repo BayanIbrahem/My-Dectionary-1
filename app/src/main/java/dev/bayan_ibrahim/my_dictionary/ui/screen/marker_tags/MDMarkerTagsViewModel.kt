@@ -72,6 +72,11 @@ class MDMarkerTagsViewModel @Inject constructor(
             }
         }
 
+        override fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {
+            val tag = selectedTags.lastOrNull() ?: return
+            updateTag(tag.copy(color = Color.Red, currentColorIsPassed = false, passColorToChildren = true))
+        }
+
         override fun removeTag(tag: ContextTag) {
             viewModelScope.launch(Dispatchers.IO) {
                 repo.removeContextTag(tag)

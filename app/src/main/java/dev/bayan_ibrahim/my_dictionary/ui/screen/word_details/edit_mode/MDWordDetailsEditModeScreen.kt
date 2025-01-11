@@ -348,6 +348,7 @@ private fun MDWordDetailsEditModeScreenPreview() {
                             override fun onTypeRelationFocusChange(newFocused: Long) {}
                             override fun onLexicalRelationFocusChange(newFocused: Long) {}
                             override fun onFocusChange(newFocused: Long) {}
+                            override fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {}
                         },
                     ),
                     contextTagsState = MDContextTagsSelectorMutableUiState(),

@@ -161,7 +161,7 @@ class MDTrainMemoryDecayFactorAnswerDurationBasedDataSourceTest {
         meaning: String = "",
         translation: String = "",
         additionalTranslations: List<String> = emptyList(),
-        language: Language = Language("en".code, "English", "English"),
+        language: Language = Language("en", "English", "English"),
         tags: Set<ContextTag> = emptySet(),
         transcription: String = INVALID_TEXT,
         examples: List<String> = emptyList(),

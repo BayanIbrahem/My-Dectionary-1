@@ -70,18 +70,18 @@ fun WordEntity.getLexicalRelations(): Map<WordLexicalRelationType, List<WordLexi
     val result = mutableMapOf<WordLexicalRelationType, List<WordLexicalRelation>>()
 
     result[WordLexicalRelationType.Synonym] = this.synonym.map { WordLexicalRelation.Synonym(it) }
-    result[WordLexicalRelationType.Antonym] = this.synonym.map { WordLexicalRelation.Antonym(it) }
-    result[WordLexicalRelationType.Hyponym] = this.synonym.map { WordLexicalRelation.Hyponym(it) }
-    result[WordLexicalRelationType.Hypernym] = this.synonym.map { WordLexicalRelation.Hypernym(it) }
-    result[WordLexicalRelationType.Meronym] = this.synonym.map { WordLexicalRelation.Meronym(it) }
-    result[WordLexicalRelationType.Holonym] = this.synonym.map { WordLexicalRelation.Holonym(it) }
-    result[WordLexicalRelationType.Homonym] = this.synonym.map { WordLexicalRelation.Polysemy(it) }
-    result[WordLexicalRelationType.Polysemy] = this.synonym.map { WordLexicalRelation.Polysemy(it) }
-    result[WordLexicalRelationType.Prototype] = this.synonym.map { WordLexicalRelation.Prototype(it) }
-    result[WordLexicalRelationType.Metonymy] = this.synonym.map { WordLexicalRelation.Meronym(it) }
-    result[WordLexicalRelationType.Collocation] = this.synonym.map { WordLexicalRelation.Collocation(it) }
-    result[WordLexicalRelationType.Homograph] = this.synonym.map { WordLexicalRelation.Homograph(it) }
-    result[WordLexicalRelationType.Homophone] = this.synonym.map { WordLexicalRelation.Homophone(it) }
+    result[WordLexicalRelationType.Antonym] = this.antonym.map { WordLexicalRelation.Antonym(it) }
+    result[WordLexicalRelationType.Hyponym] = this.hyponym.map { WordLexicalRelation.Hyponym(it) }
+    result[WordLexicalRelationType.Hypernym] = this.hypernym.map { WordLexicalRelation.Hypernym(it) }
+    result[WordLexicalRelationType.Meronym] = this.meronym.map { WordLexicalRelation.Meronym(it) }
+    result[WordLexicalRelationType.Holonym] = this.holonym.map { WordLexicalRelation.Holonym(it) }
+    result[WordLexicalRelationType.Homonym] = this.homonym.map { WordLexicalRelation.Polysemy(it) }
+    result[WordLexicalRelationType.Polysemy] = this.polysemy.map { WordLexicalRelation.Polysemy(it) }
+    result[WordLexicalRelationType.Prototype] = this.prototype.map { WordLexicalRelation.Prototype(it) }
+    result[WordLexicalRelationType.Metonymy] = this.meronym.map { WordLexicalRelation.Meronym(it) }
+    result[WordLexicalRelationType.Collocation] = this.collocation.map { WordLexicalRelation.Collocation(it) }
+    result[WordLexicalRelationType.Homograph] = this.homograph.map { WordLexicalRelation.Homograph(it) }
+    result[WordLexicalRelationType.Homophone] = this.homophone.map { WordLexicalRelation.Homophone(it) }
 
     return result
 }

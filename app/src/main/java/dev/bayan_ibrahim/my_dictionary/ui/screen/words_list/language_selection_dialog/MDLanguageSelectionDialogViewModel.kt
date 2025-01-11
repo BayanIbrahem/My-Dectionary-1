@@ -21,7 +21,13 @@ class MDLanguageSelectionDialogViewModel @Inject constructor(
     private val userRepo: UserPreferencesRepo,
     private val languageRepo: LanguageRepo,
 ) : ViewModel() {
-    private val languagesWordSpacesStream = languageRepo.getAllLanguagesWordSpaces(true)
+    private val languagesWordSpacesStream = languageRepo.getAllLanguagesWordSpaces(
+        includeNotUsedLanguages = true
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
     private val searchQueryStream = MutableStateFlow("")
     private val selectedWordSpaceStream = userRepo.getUserPreferencesStream().map {
         it.selectedLanguagePage?.let { language ->
