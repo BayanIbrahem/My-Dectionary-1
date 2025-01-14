@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.repo.ViewPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
@@ -83,6 +84,12 @@ class MDWordsListViewPreferencesViewModel @Inject constructor(
 
         override fun onSelectWordsSortByOrder(order: MDWordsListSortByOrder) = editViewByPreferences {
             this.sortByOrder = order
+        }
+
+        override fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {
+            editViewByPreferences {
+                this.selectedTags = selectedTags.toSet()
+            }
         }
     }
 

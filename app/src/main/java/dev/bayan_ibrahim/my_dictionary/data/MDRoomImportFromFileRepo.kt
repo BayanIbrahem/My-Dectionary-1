@@ -323,12 +323,13 @@ class MDRoomImportFromFileRepo(
             return
         }
 
-        val dbTags = contextTagDao.getAllContextTags().first().associate { it.path to it.tagId!! }.toMutableMap()
+        val dbTags = contextTagDao.getAllContextTags().first().associate { it.path.lowercase() to it.tagId!! }.toMutableMap()
+        scope.contextTagNameMapper.putAll(dbTags)
         contextTags.forEach { tag ->
             if (tag == null) {
                 // TODO, facing invalid context tag
             } else {
-                val tagId = dbTags[tag.value]?.also {
+                val tagId = dbTags[tag.value.lowercase()]?.also {
                     scope.outputSummaryActions.recognizeContextTag(tag.value, false)
                 } ?: let {
                     scope.outputSummaryActions.recognizeContextTag(tag.value, true)

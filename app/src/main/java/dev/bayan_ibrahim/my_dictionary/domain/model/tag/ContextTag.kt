@@ -42,18 +42,18 @@ data class ContextTag(
         /**
          * if true then its color would be passed to any children
          */
-        passMarkerColorToChildren: Boolean = true,
+        passColorToChildren: Boolean = true,
         /**
          * if the current value is its parent color or its own color
          */
-        currentColorIsInherited: Boolean = true,
+        currentColorIsPassed: Boolean = true,
     ) : this(
         value = segments.joinToString(ContextTagSegmentSeparator),
         id = id,
         wordsCount = wordsCount,
         color = markerColor,
-        passColorToChildren = passMarkerColorToChildren,
-        currentColorIsPassed = currentColorIsInherited
+        passColorToChildren = passColorToChildren,
+        currentColorIsPassed = currentColorIsPassed
     )
 
     constructor(
@@ -79,6 +79,7 @@ data class ContextTag(
         }
     }
 
+    companion object
 }
 
 /**
@@ -125,6 +126,18 @@ fun ContextTag.isContained(other: ContextTag): Boolean {
         }
     }
     return true
+}
+
+private const val CONTEXT_TAG_SEPARATOR = "|"
+
+/**
+ * generate a simple string from id and tag id and tag value
+ * notice that this method drop all params like color and wordsCount and keep only [id], and [value]
+ * */
+fun ContextTag.simpleSerialize(separator: String = CONTEXT_TAG_SEPARATOR): String = "$id$separator$value"
+fun ContextTag.Companion.simpleString(value: String, separator: String = CONTEXT_TAG_SEPARATOR): ContextTag {
+    val (strId, v) = value.split(separator)
+    return ContextTag(id = strId.toLong(), value = v)
 }
 
 /**
@@ -212,5 +225,8 @@ object InheritedTagsComparable : Comparator<ContextTag> {
 fun ContextTag.validate(): ContextTag = ContextTag(
     segments = segments.map { it.trim() },
     id = id,
-    wordsCount = wordsCount
+    wordsCount = wordsCount,
+    markerColor = this.color,
+    passColorToChildren = this.passColorToChildren,
+    currentColorIsPassed= this.currentColorIsPassed,
 )

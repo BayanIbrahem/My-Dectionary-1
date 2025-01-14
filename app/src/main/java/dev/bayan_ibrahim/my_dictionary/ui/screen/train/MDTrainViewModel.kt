@@ -105,8 +105,9 @@ class MDTrainViewModel @Inject constructor(
             }
             val idsOfAllowedTagsAndProgressRange: Set<Long> = wordRepo.getWordsIdsOf(
                 languages = setOf(selectedLanguage),
-                contextTags = viewPreferences.selectedTags.map { it.id }.toSet(),
-                memorizingProbabilities = viewPreferences.selectedMemorizingProbabilityGroups
+                contextTags = viewPreferences.selectedTags,
+                includeContextTags = viewPreferences.includeSelectedTags,
+                memorizingProbabilities = viewPreferences.selectedMemorizingProbabilityGroups,
             ).first()
 
             val allWords: Sequence<Word> = wordRepo.getWordsOf(setOf(selectedLanguage)).first()

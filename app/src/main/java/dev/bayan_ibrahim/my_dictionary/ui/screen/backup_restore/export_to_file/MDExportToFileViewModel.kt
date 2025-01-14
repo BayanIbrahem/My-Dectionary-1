@@ -116,7 +116,7 @@ class MDExportToFileViewModel @Inject constructor(
         preferences: MDExportToFilePreferences = uiState.exportPreferences,
     ): Set<Long> = when (preferences) {
         MDExportToFilePreferences.All -> wordRepo.getWordsIdsOf().first()
-        is MDExportToFilePreferences.ContextTags -> wordRepo.getWordsIdsOf(contextTags = preferences.ids.toSet()).first()
+        is MDExportToFilePreferences.ContextTags -> wordRepo.getWordsIdsOf(contextTags = preferences.tags.toSet()).first()
         is MDExportToFilePreferences.Languages -> wordRepo.getWordsIdsOf(languages = preferences.codes.toSet()).first()
         is MDExportToFilePreferences.TypeTags -> wordRepo.getWordsIdsOf(typeTags = preferences.ids.toSet()).first()
         is MDExportToFilePreferences.Words -> preferences.ids.toSet()

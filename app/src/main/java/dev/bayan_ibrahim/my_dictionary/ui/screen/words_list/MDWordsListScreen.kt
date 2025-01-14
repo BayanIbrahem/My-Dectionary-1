@@ -11,6 +11,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
@@ -104,78 +106,84 @@ fun MDWordsListScreen(
         var expandedWordId: Long? by remember {
             mutableStateOf(null)
         }
-        LazyVerticalGrid(
-            GridCells.Adaptive(250.dp), Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+
+        CompositionLocalProvider(
+            LocalLayoutDirection provides selectedWordSpace.direction
         ) {
-            lazyPagingGridItems(
-                items = wordsList,
-                key = {
-                    it.id
-                },
-                emptyItemsPlaceHolder = {
-                    Text(
-                        text = if (uiState.isViewPreferencesEffectiveFilter) {
-                            "No words matches your filters..."
-                        } else {
-                            "No words yet, add some words first"
-                        }, // TODO, string res
-                        style = MaterialTheme.typography.bodyLarge,
+
+            LazyVerticalGrid(
+                GridCells.Adaptive(250.dp), Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                lazyPagingGridItems(
+                    items = wordsList,
+                    key = {
+                        it.id
+                    },
+                    emptyItemsPlaceHolder = {
+                        Text(
+                            text = if (uiState.isViewPreferencesEffectiveFilter) {
+                                "No words matches your filters..."
+                            } else {
+                                "No words yet, add some words first"
+                            }, // TODO, string res
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+                ) { i, word ->
+                    val isSelected by remember(uiState.selectedWords) {
+                        derivedStateOf { word.id in uiState.selectedWords }
+                    }
+
+                    val isExpanded by remember(expandedWordId) {
+                        derivedStateOf { expandedWordId == word.id }
+                    }
+
+                    val liveMemorizingProbability by remember(
+                        key1 = now,
+                        key2 = word.memoryDecayFactor,
+                        key3 = word.lastTrainTime
+                    ) {
+                        derivedStateOf {
+                            word
+                                .getMemorizingProbabilityOfTime(now)
+                                .times(1000)
+                                .roundToInt()
+                                .div(10f)
+                        }
+                    }
+                    MDWordListItem(
+                        word = word,
+                        searchQuery = uiState.viewPreferencesQuery,
+                        expanded = isExpanded,
+                        primaryAction = {
+                            if (uiState.isSelectModeOn) {
+                                Checkbox(checked = isSelected, onCheckedChange = null)
+                            } else {
+                                Text("$liveMemorizingProbability%")
+                            }
+                        },
+                        onClickHeader = {
+                            if (expandedWordId == word.id) {
+                                expandedWordId = null
+                            } else {
+                                expandedWordId = word.id
+                            }
+                        },
+                        onClick = {
+                            uiActions.onClickWord(word.id)
+                        },
+                        onLongClick = {
+                            uiActions.onLongClickWord(word.id)
+                        },
+                        isSpeakInProgress = currentSpeakingWordId == word.id.toString(),
+                        onSpeak = {
+                            uiActions.onSpeakWord(word)
+                        }
                     )
                 }
-            ) { i, word ->
-                val isSelected by remember(uiState.selectedWords) {
-                    derivedStateOf { word.id in uiState.selectedWords }
-                }
-
-                val isExpanded by remember(expandedWordId) {
-                    derivedStateOf { expandedWordId == word.id }
-                }
-
-                val liveMemorizingProbability by remember(
-                    key1 = now,
-                    key2 = word.memoryDecayFactor,
-                    key3 = word.lastTrainTime
-                ) {
-                    derivedStateOf {
-                        word
-                            .getMemorizingProbabilityOfTime(now)
-                            .times(1000)
-                            .roundToInt()
-                            .div(10f)
-                    }
-                }
-                MDWordListItem(
-                    word = word,
-                    searchQuery = uiState.viewPreferencesQuery,
-                    expanded = isExpanded,
-                    primaryAction = {
-                        if (uiState.isSelectModeOn) {
-                            Checkbox(checked = isSelected, onCheckedChange = null)
-                        } else {
-                            Text("$liveMemorizingProbability%")
-                        }
-                    },
-                    onClickHeader = {
-                        if (expandedWordId == word.id) {
-                            expandedWordId = null
-                        } else {
-                            expandedWordId = word.id
-                        }
-                    },
-                    onClick = {
-                        uiActions.onClickWord(word.id)
-                    },
-                    onLongClick = {
-                        uiActions.onLongClickWord(word.id)
-                    },
-                    isSpeakInProgress = currentSpeakingWordId == word.id.toString(),
-                    onSpeak = {
-                        uiActions.onSpeakWord(word)
-                    }
-                )
             }
         }
     }

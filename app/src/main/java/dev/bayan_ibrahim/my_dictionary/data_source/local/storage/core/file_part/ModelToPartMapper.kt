@@ -10,6 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.applyNonMergable
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.validateWith
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
+import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
 import kotlinx.datetime.Clock
 
 // Word
@@ -42,6 +43,19 @@ inline fun Word.validateWithDatabase(
             this.relatedWords
         }.toList(),
         // no related words
+        lexicalRelations = dbWordStrategy.applyMergable(
+            oldData = {
+                dbWord?.lexicalRelations
+            },
+            newData = {
+                this.lexicalRelations
+            },
+            merge = { map1, map2 ->
+                WordLexicalRelationType.entries.associateWith {
+                    (map1[it] ?: emptyList()) + (map2[it] ?: emptyList())
+                }
+            }
+        ) ?: emptyMap(),
         createdAt = dbWord?.createdAt ?: Clock.System.now(),
         updatedAt = Clock.System.now()
     )

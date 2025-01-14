@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -53,8 +55,6 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import kotlinx.coroutines.CoroutineScope
@@ -91,170 +91,205 @@ fun MDWordSpaceListItem(
     var isTagEditField by remember {
         mutableStateOf(true)
     }
-    WordsSpaceFieldEditDialog(
-        isTag = isTagEditField,
-        showDialog = state.isEditDialogShown,
-        onDismiss = actions::onHideDialog,
-        onConfirm = { newValue ->
-            onConfirmEditField(newValue)
-        },
-        getInitialValue = {
-            editingTextFieldInitialValue
-        }
-    )
-    MDVerticalCard(
-        modifier = modifier,
-        contentModifier = MDCardDefaults.contentModifier.padding(vertical = 8.dp),
-        headerClickable = false,
-        cardClickable = false,
-        header = {
-            Row(
-                modifier = Modifier.align(Alignment.CenterStart),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+    CompositionLocalProvider(
+        LocalLayoutDirection provides state.direction
+    ) {
+        WordsSpaceFieldEditDialog(
+            isTag = isTagEditField,
+            showDialog = state.isEditDialogShown,
+            onDismiss = actions::onHideDialog,
+            onConfirm = { newValue ->
+                onConfirmEditField(newValue)
+            },
+            getInitialValue = {
+                editingTextFieldInitialValue
+            }
+        )
+        MDVerticalCard(
+            modifier = modifier,
+            contentModifier = MDCardDefaults.contentModifier.padding(vertical = 8.dp),
+            headerClickable = false,
+            cardClickable = false,
+            header = {
+                Row(
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
 
-                ) {
-                Text(
-                    text = state.uppercaseCode,
-                    style = if (state.isLongCode) {
-                        MaterialTheme.typography.titleSmall
-                    } else {
-                        MaterialTheme.typography.titleLarge
-                    },
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        pushStyle(MaterialTheme.typography.bodyLarge.toSpanStyle())
-                        append(state.selfDisplayName)
-                        pushStyle(MaterialTheme.typography.labelSmall.toSpanStyle())
-                        append("  ${state.wordsCount} Words") // TODO, string res
-                    },
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                if (state.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                } else if (state.isEditModeOn) {
-                    Row {
-                        IconButton(
-                            onClick = actions::onCancel,
-                            enabled = isEditable,
-                        ) {
-                            MDIcon(MDIconsSet.Close)
-                        }
-
-                        IconButton(
-                            onClick = actions::onSubmit,
-                            enabled = isEditable,
-                        ) {
-                            MDIcon(MDIconsSet.Check)
-                        }
-                    }
-                } else {
-                    Row {
-                        IconButton(
-                            onClick = {
-                                navigateToStatistics(state)
+                    ) {
+                    Text(
+                        text = state.uppercaseCode,
+                        style = if (state.isLongCode) {
+                            MaterialTheme.typography.titleSmall
+                        } else {
+                            MaterialTheme.typography.titleLarge
+                        },
+                    )
+                    Text(
+                        text = buildAnnotatedString {
+                            pushStyle(MaterialTheme.typography.bodyLarge.toSpanStyle())
+                            append(state.selfDisplayName)
+                            pushStyle(MaterialTheme.typography.labelSmall.toSpanStyle())
+                            append("  ${state.wordsCount} Words") // TODO, string res
+                        },
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    if (state.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    } else if (state.isEditModeOn) {
+                        Row {
+                            IconButton(
+                                onClick = actions::onCancel,
+                                enabled = isEditable,
+                            ) {
+                                MDIcon(MDIconsSet.Close)
                             }
-                        ) {
-                            MDIcon(MDIconsSet.Statistics)
+
+                            IconButton(
+                                onClick = actions::onSubmit,
+                                enabled = isEditable,
+                            ) {
+                                MDIcon(MDIconsSet.Check)
+                            }
                         }
-                        IconButton(
-                            onClick = actions::onEnableEditMode,
-                            enabled = isEditable,
-                        ) {
-                            MDIcon(MDIconsSet.Edit)
+                    } else {
+                        Row {
+                            IconButton(
+                                onClick = {
+                                    navigateToStatistics(state)
+                                }
+                            ) {
+                                MDIcon(MDIconsSet.Statistics)
+                            }
+                            IconButton(
+                                onClick = actions::onEnableEditMode,
+                                enabled = isEditable,
+                            ) {
+                                MDIcon(MDIconsSet.Edit)
+                            }
                         }
                     }
                 }
             }
-        }
-    ) {
-        if (state.tags.isEmpty() && !state.isEditModeOn) {
-            Text(
-                text = "No tags yet in this language, press edit button on the card to add some",
-                style = MaterialTheme.typography.bodyLarge
-            ) // TODO, string res
-        }
-        Column(
-            modifier = Modifier
-                .heightIn(max = 300.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            state.tags.forEachIndexed { tagIndex, tag ->
-                WordSpaceEditableTagListItem(
-                    label = {
-                        val value = if (state.isEditModeOn) tag.current.name else "${tag.current.name} x${tag.current.wordsCount}" // TODO, string res
-                        Text(
-                            text = value,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Italic
-                        )
-                    },
-                    editMode = state.isEditModeOn,
-                    status = tag.status,
-                    onClick = {
-                        onConfirmEditField = { newValue ->
-                            actions.onEditTag(tagIndex, newValue)
+            if (state.tags.isEmpty() && !state.isEditModeOn) {
+                Text(
+                    text = "No tags yet in this language, press edit button on the card to add some",
+                    style = MaterialTheme.typography.bodyLarge
+                ) // TODO, string res
+            }
+            Column(
+                modifier = Modifier
+                    .heightIn(max = 300.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                state.tags.forEachIndexed { tagIndex, tag ->
+                    WordSpaceEditableTagListItem(
+                        label = {
+                            val value =
+                                if (state.isEditModeOn) tag.current.name else "${tag.current.name} x${tag.current.wordsCount}" // TODO, string res
+                            Text(
+                                text = value,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Italic
+                            )
+                        },
+                        editMode = state.isEditModeOn,
+                        status = tag.status,
+                        onClick = {
+                            onConfirmEditField = { newValue ->
+                                actions.onEditTag(tagIndex, newValue)
+                            }
+                            editingTextFieldInitialValue = tag.current.name
+                            isTagEditField = true
+                            actions.onShowDialog()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        onDelete = {
+                            actions.onRemoveTag(tagIndex)
+                        },
+                        onReset = {
+                            actions.onResetTag(tagIndex)
                         }
-                        editingTextFieldInitialValue = tag.current.name
-                        isTagEditField = true
-                        actions.onShowDialog()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    onDelete = {
-                        actions.onRemoveTag(tagIndex)
-                    },
-                    onReset = {
-                        actions.onResetTag(tagIndex)
-                    }
-                )
-                FlowRow(
-                    modifier = Modifier.padding(start = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    tag.current.relations.forEachIndexed { relationIndex, relation ->
-                        WordSpaceEditableTagListItem(
-                            label = {
-                                val value =
-                                    if (state.isEditModeOn) relation.label else "${relation.label} x${relation.wordsCount}" // TODO, string res
-                                Text(
-                                    text = value,
-                                    style = MaterialTheme.typography.bodyMedium,
+                    )
+                    FlowRow(
+                        modifier = Modifier.padding(start = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        tag.current.relations.forEachIndexed { relationIndex, relation ->
+                            WordSpaceEditableTagListItem(
+                                label = {
+                                    val value =
+                                        if (state.isEditModeOn) relation.label else "${relation.label} x${relation.wordsCount}" // TODO, string res
+                                    Text(
+                                        text = value,
+                                        style = MaterialTheme.typography.bodyMedium,
 //                                    fontWeight = FontWeight.Bold,
 //                                    fontStyle = FontStyle.Italic
+                                    )
+                                },
+                                editMode = state.isEditModeOn,
+                                status = actions.relationStatus(tagIndex, relationIndex),
+                                onClick = {
+                                    onConfirmEditField = { newValue ->
+                                        actions.onEditTagRelation(tagIndex, relationIndex, newValue)
+                                    }
+                                    isTagEditField = false
+                                    editingTextFieldInitialValue = relation.label
+                                    actions.onShowDialog()
+                                },
+                                onDelete = {
+                                    actions.onRemoveTagRelation(tagIndex, relationIndex)
+                                },
+                                onReset = {
+                                    actions.onResetTagRelation(tagIndex, relationIndex)
+                                },
+                            )
+                        }
+                    }
+                    if (state.isEditModeOn) {
+                        WordSpaceEditableTagListItem(
+                            label = {
+                                val value = "New Relation" // TODO, string res
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = value,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
                                 )
                             },
-                            editMode = state.isEditModeOn,
-                            status = actions.relationStatus(tagIndex, relationIndex),
+                            editMode = true,
+                            hasActions = false,
+                            status = MDEditableFieldStatus.NEW,
                             onClick = {
                                 onConfirmEditField = { newValue ->
-                                    actions.onEditTagRelation(tagIndex, relationIndex, newValue)
+                                    actions.onAddTagRelation(tagIndex, newValue)
                                 }
+                                editingTextFieldInitialValue = ""
                                 isTagEditField = false
-                                editingTextFieldInitialValue = relation.label
                                 actions.onShowDialog()
                             },
-                            onDelete = {
-                                actions.onRemoveTagRelation(tagIndex, relationIndex)
-                            },
-                            onReset = {
-                                actions.onResetTagRelation(tagIndex, relationIndex)
-                            },
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .fillMaxWidth(),
                         )
                     }
+                    Spacer(modifier = Modifier.size(16.dp))
                 }
                 if (state.isEditModeOn) {
                     WordSpaceEditableTagListItem(
                         label = {
-                            val value = "New Relation" // TODO, string res
+                            val value = "New Tag" // TODO, string res
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = value,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Italic,
                                 textAlign = TextAlign.Center
                             )
                         },
@@ -263,45 +298,15 @@ fun MDWordSpaceListItem(
                         status = MDEditableFieldStatus.NEW,
                         onClick = {
                             onConfirmEditField = { newValue ->
-                                actions.onAddTagRelation(tagIndex, newValue)
+                                actions.onAddTag(newValue)
                             }
+                            isTagEditField = true
                             editingTextFieldInitialValue = ""
-                            isTagEditField = false
                             actions.onShowDialog()
                         },
-                        modifier = Modifier
-                            .padding(start = 16.dp)
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                Spacer(modifier = Modifier.size(16.dp))
-            }
-            if (state.isEditModeOn) {
-                WordSpaceEditableTagListItem(
-                    label = {
-                        val value = "New Tag" // TODO, string res
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = value,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Italic,
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                    editMode = true,
-                    hasActions = false,
-                    status = MDEditableFieldStatus.NEW,
-                    onClick = {
-                        onConfirmEditField = { newValue ->
-                            actions.onAddTag(newValue)
-                        }
-                        isTagEditField = true
-                        editingTextFieldInitialValue = ""
-                        actions.onShowDialog()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
             }
         }
     }
@@ -495,7 +500,7 @@ private val language = Language(
     localDisplayName = "German"
 )
 private val state = LanguageWordSpaceMutableState(
-    "de",
+    "ar",
     initialTags = listOf(
         WordTypeTag(
             id = 0,

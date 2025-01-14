@@ -25,6 +25,7 @@ data class MDJsonFileTagPartV1(
             value = this.name,
             color = this.color?.let { Color.strHex(it) },
             passColorToChildren = this.passColorToChildren == true,
+            currentColorIsPassed = false,
         ).validate()
     }
 

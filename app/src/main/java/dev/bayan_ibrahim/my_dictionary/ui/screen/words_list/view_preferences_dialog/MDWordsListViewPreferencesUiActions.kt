@@ -1,5 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog
 
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -14,6 +16,7 @@ interface MDWordsListViewPreferencesBusinessUiActions {
     fun onToggleAllMemorizingProbabilityGroups(selected: Boolean)
     fun onSelectWordsSortBy(sortBy: MDWordsListViewPreferencesSortBy)
     fun onSelectWordsSortByOrder(order: MDWordsListSortByOrder)
+    fun onUpdateSelectedTags(selectedTags: List<ContextTag>)
 }
 
 interface MDWordsListViewPreferencesNavigationUiActions {

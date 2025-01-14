@@ -148,22 +148,14 @@ fun MDWordListItem(
                         }
                     }
                 }
-//                Text(
-//                    text = word.language.uppercaseCode,
-//                    style = if (word.language.isLongCode) {
-//                        MaterialTheme.typography.titleSmall
-//                    } else {
-//                        MaterialTheme.typography.titleLarge
-//                    },
-//                )
                 Text(
                     text = buildAnnotatedString {
                         val meaning = word.meaning.formatBySearchQuery(
                             searchQuery = searchQuery.first,
                             style = MaterialTheme.typography.bodyLarge.toSpanStyle(),
                             mayNotMatch = mayNotMatchMeaningOrTranslation,
-                            textColor = colors.headerContentColor,
-                            backgroundColor = colors.headerContainerColor,
+                            textColor = updatedColors.headerContentColor,
+                            backgroundColor = updatedColors.headerContainerColor
                         )
                         append(meaning)
                         pushStyle(MaterialTheme.typography.labelSmall.toSpanStyle())

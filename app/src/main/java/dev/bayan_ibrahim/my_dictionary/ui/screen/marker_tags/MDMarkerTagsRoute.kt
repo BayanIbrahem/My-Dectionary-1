@@ -33,7 +33,8 @@ fun MDMarkerTagsRoute(
         contextTagsSelectorViewModel.init(
             allowedFilter = {
                 !it.isMarkerTag
-            }
+            },
+            selectedTagsMaxSize = 1,
         )
     }
 

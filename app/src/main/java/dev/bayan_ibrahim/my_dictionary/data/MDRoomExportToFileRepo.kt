@@ -139,7 +139,6 @@ class MDRoomExportToFileRepo(
             stream = outputStream,
             parts = parts,
             onProgress = { index, total, part ->
-                delay(1.seconds)
                 emit(
                     value = ExportProgress.Running(
                         currentFilePart = part,

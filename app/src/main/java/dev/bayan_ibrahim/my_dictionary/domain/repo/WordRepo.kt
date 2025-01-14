@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.flatMapConcat
 interface WordRepo {
     fun getWordsIdsOf(
         languages: Set<LanguageCode> = emptySet(),
-        contextTags: Set<Long> = emptySet(),
+        contextTags: Set<ContextTag> = emptySet(),
+        includeContextTags: Boolean = true,
         typeTags: Set<Long> = emptySet(),
         memorizingProbabilities: Set<MDWordsListMemorizingProbabilityGroup> = emptySet(),
     ): Flow<Set<Long>>
@@ -22,12 +23,14 @@ interface WordRepo {
 
     fun getWordsOf(
         languages: Set<LanguageCode> = emptySet(),
-        contextTags: Set<Long> = emptySet(),
+        contextTags: Set<ContextTag> = emptySet(),
+        includeContextTags: Boolean = true,
         typeTags: Set<Long> = emptySet(),
         memorizingProbabilities: Set<MDWordsListMemorizingProbabilityGroup> = emptySet(),
     ): Flow<Sequence<Word>> = getWordsIdsOf(
         languages = languages,
         contextTags = contextTags,
+        includeContextTags = includeContextTags,
         typeTags = typeTags,
         memorizingProbabilities = memorizingProbabilities
     ).flatMapConcat(::getWordsOfIds)

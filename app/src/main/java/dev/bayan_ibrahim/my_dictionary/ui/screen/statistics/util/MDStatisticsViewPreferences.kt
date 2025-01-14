@@ -3,6 +3,8 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.MDStatisticsMostResentHistoryCount
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.simpleString
 import kotlinx.serialization.Serializable
 
 private typealias MDLanguage = Language
@@ -62,9 +64,12 @@ sealed interface MDStatisticsViewPreferences {
      */
     @Serializable
     data class Tag(
-        val tagId: Long,
+        val simpleSerializedTag: String,
         override val dateUnit: MDDateUnit = DEFAULT_DATE_UNIT,
-    ) : MDStatisticsViewPreferences
+    ) : MDStatisticsViewPreferences {
+        val tag: ContextTag
+            get() = ContextTag.simpleString(simpleSerializedTag)
+    }
 
     /**
      * show history of type tag

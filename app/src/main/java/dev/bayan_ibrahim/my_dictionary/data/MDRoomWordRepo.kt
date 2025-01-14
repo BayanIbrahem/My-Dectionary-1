@@ -20,6 +20,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.LanguageEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordCrossContextTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelatedWords
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordEntity
@@ -27,6 +28,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordMod
 import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.contains
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
@@ -72,18 +74,19 @@ class MDRoomWordRepo(
 
     override fun getWordsIdsOf(
         languages: Set<LanguageCode>,
-        contextTags: Set<Long>,
+        contextTags: Set<ContextTag>,
+        includeContextTags: Boolean,
         typeTags: Set<Long>,
         memorizingProbabilities: Set<MDWordsListMemorizingProbabilityGroup>,
     ): Flow<Set<Long>> {
         val includeLanguages = languages.isNotEmpty()
-        val includeContextTags = contextTags.isNotEmpty()
+        val effectiveIncludeContextTags = contextTags.isNotEmpty()
         val includeTypeTags = typeTags.isNotEmpty()
         val includeMemorizingProbabilities = memorizingProbabilities.count() in (1..<MDWordsListMemorizingProbabilityGroup.entries.count())
         if (
             listOf(
                 includeLanguages,
-                includeContextTags,
+                effectiveIncludeContextTags,
                 includeTypeTags,
                 includeMemorizingProbabilities
             ).none { it }
@@ -96,14 +99,22 @@ class MDRoomWordRepo(
             includeTypeTag = includeTypeTags,
             typeTags = typeTags
         ).let { flow ->
-            if (includeContextTags) {
+            if (effectiveIncludeContextTags) {
                 flow.flatMapConcat { entities ->
                     wordWithTagsDao.getWordsWithTagsRelations(
                         ids = entities.mapNotNull { it.id }
                     ).map { entitiesWithTags ->
                         entitiesWithTags.mapNotNull { (word, tags) ->
-                            val matchTags = tags.any {
-                                it.tagId in contextTags
+                            val matchTags = if (includeContextTags) tags.any { target ->
+                                contextTags.any { source ->
+                                    source.contains(target.asModel())
+                                }
+                            } else {
+                                tags.none {  target ->
+                                    contextTags.any { source ->
+                                        source.contains(target.asModel())
+                                    }
+                                }
                             }
                             word.takeIf { matchTags }
                         }

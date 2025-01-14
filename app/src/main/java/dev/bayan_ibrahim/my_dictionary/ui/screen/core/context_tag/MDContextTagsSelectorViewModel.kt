@@ -30,10 +30,13 @@ class MDContextTagsSelectorViewModel @Inject constructor(
     private var allowedFilter: (ContextTag) -> Boolean = { true }
     private var forbiddenFilter: (ContextTag) -> Boolean = { false }
 
+    private var selectedTagsMaxSize: Int = Int.MAX_VALUE
     fun init(
         allowedFilter: (ContextTag) -> Boolean = { true },
         forbiddenFilter: (ContextTag) -> Boolean = { false },
+        selectedTagsMaxSize: Int = Int.MAX_VALUE,
     ) {
+        this.selectedTagsMaxSize = selectedTagsMaxSize.coerceAtLeast(1)
         tagsStateAllTagsStreamCollectorJob?.cancel()
         tagsStateAllTagsStreamCollectorJob = viewModelScope.launch {
             repo.getContextTagsStream().collect { allTags ->
@@ -97,7 +100,10 @@ class MDContextTagsSelectorViewModel @Inject constructor(
 
 
         override fun onSelectTag(tag: ContextTag) {
-            if (_uiState.selectedTags.any { it.contains(tag) }) {
+            val indexOfLastContainer = _uiState.selectedTags.indexOfLast { it.contains(tag) }
+            val firstValidIndexAfterTrim = _uiState.selectedTags.size.inc().minus(selectedTagsMaxSize).coerceAtLeast(0)
+
+            if (indexOfLastContainer >= firstValidIndexAfterTrim) {
                 // if a parent of this tag already exists then we don't add this tag
                 return
             }
@@ -105,6 +111,9 @@ class MDContextTagsSelectorViewModel @Inject constructor(
                 it.isContained(tag) // current param tag return true in isContained so we make adding after removing
             }
             _uiState.selectedTags.add(tag)
+            if (firstValidIndexAfterTrim > 0) {
+                _uiState.selectedTags.removeRange(0, firstValidIndexAfterTrim.dec())
+            }
             onUpdateSelectedTags()
             onResetToRoot()
         }

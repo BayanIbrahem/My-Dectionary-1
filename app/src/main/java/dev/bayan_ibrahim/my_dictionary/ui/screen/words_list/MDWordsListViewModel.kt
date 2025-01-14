@@ -84,7 +84,8 @@ class MDWordsListViewModel @Inject constructor(
                     paginatedWordsListJob = launch {
                         val targetWords = wordRepo.getWordsIdsOf(
                             languages = setOf(language),
-                            contextTags = preferences.selectedTags.map { it.id }.toSet(),
+                            contextTags = preferences.selectedTags,
+                            includeContextTags = preferences.includeSelectedTags,
                             memorizingProbabilities = preferences.selectedMemorizingProbabilityGroups
                         ).first()
                         wordRepo.getPaginatedWordsList(
@@ -117,7 +118,9 @@ class MDWordsListViewModel @Inject constructor(
         }
     }
 
-    fun initWithNavArgs(args: MDDestination.TopLevel.WordsList) {
+    fun initWithNavArgs(
+        args: MDDestination.TopLevel.WordsList,
+    ) {
         setPaginatedWordsListJob()
         viewModelScope.launch {
             _uiState.onExecute {

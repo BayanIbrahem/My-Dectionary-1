@@ -108,7 +108,7 @@ fun MDMarkerTagListItem(
             )
             item(onClick = onRemoveTag) {
                 Text(
-                    text = "Remove Tag",
+                    text = "Remove Tag", // TODO, string res
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.error,
@@ -116,7 +116,7 @@ fun MDMarkerTagListItem(
             }
             item(onClick = onRemoveMarker) {
                 Text(
-                    text = "Remove Marker (color only)",
+                    text = "Remove Marker color", // TODO, string res
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                 )

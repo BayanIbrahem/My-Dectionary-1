@@ -9,6 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.instantIdentifier
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.startOf
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.TrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResultType
 import dev.bayan_ibrahim.my_dictionary.domain.repo.TrainHistoryRepo
@@ -65,7 +66,7 @@ class MDStatisticsViewModel @Inject constructor(
     ) = when (preferences) {
         is MDStatisticsViewPreferences.Date -> trainHistoryRepo.getTrainHistoryOf(startTime, endTime).first()
         is MDStatisticsViewPreferences.Language -> getTrainHistoryOfLanguage(preferences.language, startTime, endTime)
-        is MDStatisticsViewPreferences.Tag -> getTrainHistoryOfContextTag(preferences.tagId, startTime, endTime)
+        is MDStatisticsViewPreferences.Tag -> getTrainHistoryOfContextTag(preferences.tag, startTime, endTime)
         is MDStatisticsViewPreferences.Train -> trainHistoryRepo.getTrainHistoryOf(limit = preferences.count.count).first()
         is MDStatisticsViewPreferences.TypeTag -> getTrainHistoryOfTypeTag(preferences.typeTagId, startTime, endTime)
         is MDStatisticsViewPreferences.Word -> getTrainHistoryOfWord(preferences.wordId, startTime, endTime)
@@ -99,7 +100,7 @@ class MDStatisticsViewModel @Inject constructor(
     }
 
     private suspend fun getTrainHistoryOfContextTag(
-        contextTag: Long,
+        contextTag: ContextTag,
         startTime: Instant?,
         endTime: Instant?,
         limit: Int? = null,

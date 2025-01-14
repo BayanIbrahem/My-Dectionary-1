@@ -49,5 +49,7 @@ fun Float.to8BitHexString(
         outputRangeEnd = 255f
     ).roundToInt()
         .coerceIn(0, 255)
-        .toHexString(HexFormat.UpperCase).padStart(2, '0')
+        .toHexString(HexFormat.UpperCase)
+        .trim('0')
+        .padStart(2, '0')
 }
