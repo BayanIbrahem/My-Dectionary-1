@@ -2,26 +2,33 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
 private const val separator = ", "
 
-private const val emptyJsonString = "\"\""
+private const val emptyJsonString = "\'\'"
 
 abstract class ListConverter<T>(
-    private val serializer: KSerializer<T>,
+    serializer: KSerializer<T>,
+    private val onCorruptedString: (String) -> List<T> = {emptyList()}
 ) {
+    private val listSerializer = ListSerializer(serializer)
+
     @TypeConverter
     fun listToStringConverter(
         list: List<T>,
-    ): String = if(list.isEmpty()) "" else list.joinToString(separator = separator) { listItem ->
-        Json.encodeToString(serializer = serializer, value = listItem)
+    ): String {
+        return Json.encodeToString(listSerializer, list)
     }
 
     @TypeConverter
     fun stringToListConverter(
         string: String,
-    ): List<T> = if (string.isEmpty() || string == emptyJsonString) emptyList() else string.split(separator).map { listItem ->
-        Json.decodeFromString(deserializer = serializer, string = listItem)
+    ): List<T> = try {
+        // TODO, issue detected at version 2.0.0-beta02, and some users may have corrupted data, remove, this try catch on releasing first stable version
+        Json.decodeFromString(deserializer = listSerializer, string = string)
+    } catch (e: Exception) {
+        onCorruptedString(string)
     }
 }

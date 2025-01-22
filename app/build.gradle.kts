@@ -23,7 +23,7 @@ android {
         applicationId = "dev.bayan_ibrahim.my_dictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 8
+        versionCode = 10
         versionName = "2.0.0-beta02"
 
         multiDexEnabled = true
