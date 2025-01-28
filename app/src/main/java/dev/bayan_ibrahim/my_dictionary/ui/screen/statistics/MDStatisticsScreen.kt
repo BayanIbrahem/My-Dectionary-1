@@ -15,7 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -49,6 +51,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.h
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.MDBarChart
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.line_chart.MDLineChart
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.core.ui.toFormattedString
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.MDStatisticsMostResentHistoryCount
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.labelOfIdentifier
@@ -239,7 +242,7 @@ fun MDStatisticsScreen(
                                         Text(wordHistory.trainResult.submitOption.label)
                                         Spacer(modifier = Modifier.weight(1f))
                                         MDIcon(MDIconsSet.TrainTime, modifier = Modifier.size(16.dp)) // TODO, icon res
-                                        Text(wordHistory.trainResult.consumedDuration.toIsoString()) // TODO, string res
+                                        Text(wordHistory.trainResult.consumedDuration.toFormattedString()) // TODO, string res
                                     }
                                 }
                             ) {
@@ -276,37 +279,39 @@ private fun MDWordHistoryContent(
         is MDTrainWordResult.Pass -> {
             MDWordHistoryContent(
                 question = wordHistory.questionWord,
-                label = "PASS",
+                mainLabel = "PASS",
                 modifier = modifier,
-                color = color
+                mainLabelColor = color
             ) // TODO, string res
         }
 
         is MDTrainWordResult.Timeout -> {
             MDWordHistoryContent(
                 question = wordHistory.questionWord,
-                label = "TIMEOUT",
+                mainLabel = "TIMEOUT",
                 modifier = modifier,
-                color = color
+                mainLabelColor = color
             )  // TODO, string res
         }
 
         is MDTrainWordResult.Right -> {
             MDWordHistoryContent(
                 question = wordHistory.questionWord,
-                label = wordHistory.trainResult.correctAnswer,
+                mainLabel = wordHistory.trainResult.correctAnswer,
                 modifier = modifier,
-                color = color
+                mainLabelColor = color
             )
         }
 
         is MDTrainWordResult.Wrong -> {
             MDWordHistoryContent(
                 question = wordHistory.questionWord,
-                label = wordHistory.trainResult.selectedAnswer,
+                mainLabel = wordHistory.trainResult.selectedAnswer,
                 modifier = modifier,
-                color = color,
-                textDecoration = TextDecoration.LineThrough,
+                mainLabelColor = color,
+                mainLabelTextDecoration = TextDecoration.LineThrough,
+                secondLabel = wordHistory.trainResult.correctAnswer,
+                secondLabelColor = getTrainResultTypeColor(MDTrainWordResult.Right.type)
             )
         }
     }
@@ -315,71 +320,47 @@ private fun MDWordHistoryContent(
 @Composable
 private fun MDWordHistoryContent(
     question: String,
-    label: String,
+    mainLabel: String,
     modifier: Modifier = Modifier,
-    color: Color? = null,
-    fontWeight: FontWeight? = FontWeight.Bold,
-    fontStyle: FontStyle? = FontStyle.Italic,
-    textDecoration: TextDecoration = TextDecoration.None,
+    defaultStyle: TextStyle = LocalTextStyle.current,
+    secondLabel: String? = null,
+    mainLabelColor: Color? = null,
+    mainLabelFontWeight: FontWeight? = FontWeight.Bold,
+    mainLabelFontStyle: FontStyle? = FontStyle.Italic,
+    mainLabelTextDecoration: TextDecoration = TextDecoration.None,
+    secondLabelColor: Color? = null,
+    secondLabelFontWeight: FontWeight? = FontWeight.Bold,
+    secondLabelFontStyle: FontStyle? = FontStyle.Italic,
+    secondLabelTextDecoration: TextDecoration = TextDecoration.None,
 ) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = question)
-        Text(
-            text = label,
-            color = color ?: LocalContentColor.current,
-            fontStyle = fontStyle,
-            fontWeight = fontWeight,
-            textDecoration = textDecoration,
-        ) // TODO string res
-    }
-}
-
-@Composable
-private fun MDWordRightHistoryContent(
-    question: String,
-    result: MDTrainWordResult.Right,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = question)
-        Text(
-            text = result.correctAnswer,
-            color = MaterialTheme.colorScheme.primary
-        ) // TODO string res
-    }
-}
-
-@Composable
-private fun MDWordWrongHistoryContent(
-    question: String,
-    result: MDTrainWordResult.Wrong,
-    modifier: Modifier = Modifier,
-) {
-    Row(
+    Text(
+        text = buildAnnotatedString {
+            append(question)
+            append("  ")
+            pushStyle(
+                defaultStyle.copy(
+                    fontWeight = mainLabelFontWeight,
+                    fontStyle = mainLabelFontStyle,
+                    textDecoration = mainLabelTextDecoration,
+                    color = mainLabelColor ?: LocalTextStyle.current.color,
+                ).toSpanStyle()
+            )
+            append(mainLabel)
+            if (secondLabel != null) {
+                append("  ")
+                pushStyle(
+                    defaultStyle.copy(
+                        fontWeight = secondLabelFontWeight,
+                        fontStyle = secondLabelFontStyle,
+                        textDecoration = secondLabelTextDecoration,
+                        color = secondLabelColor ?: LocalTextStyle.current.color,
+                    ).toSpanStyle()
+                )
+                append(secondLabel)
+            }
+        },
         modifier = modifier.basicMarquee(Int.MAX_VALUE),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = question)
-        Text(
-            text = result.selectedAnswer,
-            color = MaterialTheme.colorScheme.error,
-            textDecoration = TextDecoration.LineThrough
-        )
-
-        Text(
-            text = "(${result.correctAnswer})",
-            color = MaterialTheme.colorScheme.primary
-        )
-    }
+    )
 }
 
 @Composable

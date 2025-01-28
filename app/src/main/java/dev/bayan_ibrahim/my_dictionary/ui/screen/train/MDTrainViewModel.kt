@@ -322,7 +322,7 @@ class MDTrainViewModel @Inject constructor(
                         train = question,
                         answer = question.toAnswer(
                             answer = answer,
-                            consumedDuration = time.remainingTime,
+                            consumedDuration = time.totalTime - time.remainingTime,
                             submitOption = submitOption,
                         )
                     )

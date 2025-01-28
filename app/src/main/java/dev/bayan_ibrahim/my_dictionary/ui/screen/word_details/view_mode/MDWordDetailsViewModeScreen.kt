@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.view_mode
 
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -11,9 +12,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,157 +49,162 @@ fun MDWordDetailsViewModeScreen(
     uiActions: MDWordDetailsViewModeUiActions,
     modifier: Modifier = Modifier,
 ) {
-    MDScreen(
-        uiState = uiState,
-        modifier = modifier,
-        topBar = {
-            MDWordDetailsViewModeTopAppBar(
-                language = uiState.word.language,
-                onShare = uiActions::onShare,
-                onEdit = uiActions::onEdit,
-                onClickWordStatistics = uiActions::onClickWordStatistics,
-            )
-        },
+    CompositionLocalProvider(
+        LocalLayoutDirection provides uiState.word.language.direction,
     ) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            item {
-                WordInfoGroup(
-                    title = "Basic", // TODO, string res
-                    icon = MDIconsSet.WordMeaning, // TODO, icon res
 
-                ) {
-                    wordPropertyItem(
-                        label = "Meaning",/* TODO, string res */
-                        value = uiState.word.meaning,
-                    )
-                    wordPropertyItem(
-                        label = "Translation",/* TODO, string res */
-                        value = uiState.word.translation,
-                    )
-                    wordPropertyItem(
-                        label = "Language",/* TODO, string res */
-                        value = uiState.word.language.fullDisplayName,
-                    )
-                }
-            }
-            item {
-                WordInfoGroup(
-                    title = "Phonetic", // TODO, string res
-                    icon = MDIconsSet.WordTranscription,
-                ) {
-                    wordPropertyItem(
-                        label = "Transcription",/* TODO, string res */
-                        value = uiState.word.transcription.ifBlank { "-" },
-                        trailingIcon = {
-                            IconButton(
-                                onClick = {
-                                    // TODO, on pronounce word
-                                }
-                            ) {
-                                MDIcon(MDIconsSet.WordTranscription/* TODO, icon res */)
-                            }
-                        }
-                    )
-                }
-            }
-            item {
-                if (uiState.word.tags.isNotEmpty()) {
+        MDScreen(
+            uiState = uiState,
+            modifier = modifier,
+            topBar = {
+                MDWordDetailsViewModeTopAppBar(
+                    language = uiState.word.language,
+                    onShare = uiActions::onShare,
+                    onEdit = uiActions::onEdit,
+                    onClickWordStatistics = uiActions::onClickWordStatistics,
+                )
+            },
+        ) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                item {
                     WordInfoGroup(
-                        title = "Context tags", // TODO, string res
-                        icon = MDIconsSet.WordTag,
+                        title = "Basic", // TODO, string res
+                        icon = MDIconsSet.WordMeaning, // TODO, icon res
+
                     ) {
-                        uiState.word.tags.forEach { tag ->
-                            wordPropertyItem(
-                                value = tag.value,
-                                trailingIcon = tag.color?.let { color ->
-                                    {
-                                        MDContextTagColorIcon(
-                                            color = color,
-                                            isPassed = tag.currentColorIsPassed,
-                                            canPassable = tag.passColorToChildren
-                                        )
+                        wordPropertyItem(
+                            label = "Meaning",/* TODO, string res */
+                            value = uiState.word.meaning,
+                        )
+                        wordPropertyItem(
+                            label = "Translation",/* TODO, string res */
+                            value = uiState.word.translation,
+                        )
+                        wordPropertyItem(
+                            label = "Language",/* TODO, string res */
+                            value = uiState.word.language.fullDisplayName,
+                        )
+                    }
+                }
+                item {
+                    WordInfoGroup(
+                        title = "Phonetic", // TODO, string res
+                        icon = MDIconsSet.WordTranscription,
+                    ) {
+                        wordPropertyItem(
+                            label = "Transcription",/* TODO, string res */
+                            value = uiState.word.transcription.ifBlank { "-" },
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        // TODO, on pronounce word
                                     }
+                                ) {
+                                    MDIcon(MDIconsSet.WordTranscription/* TODO, icon res */)
                                 }
-                            )
-                        }
-                    }
-                }
-            }
-            item {
-                if (uiState.word.additionalTranslations.isNotEmpty()) {
-                    WordInfoGroup(
-                        title = "Additional Translations", // TODO, string res
-                        icon = MDIconsSet.WordAdditionalTranslation
-                    ) {
-                        uiState.word.additionalTranslations.forEach { example ->
-                            wordPropertyItem(value = example)
-                        }
-                    }
-                }
-            }
-            item {
-                if (uiState.word.examples.isNotEmpty()) {
-                    WordInfoGroup(
-                        title = "Examples", // TODO, string res
-                        icon = MDIconsSet.WordExample,
-                    ) {
-                        uiState.word.examples.forEach { example ->
-                            wordPropertyItem(value = example)
-                        }
-                    }
-                }
-            }
-
-            item {
-                uiState.word.wordTypeTag?.let { typeTag ->
-                    WordInfoGroup(
-                        title = "Word Class ${typeTag.name}", // TODO, string res
-                        icon = MDIconsSet.WordRelatedWords,
-                    ) {
-                        if (uiState.word.relatedWords.isEmpty()) {
-                            // TODO, string res
-                            wordPropertyItem(label = "No Relations", value = "")
-                        } else {
-                            uiState.word.relatedWords.forEach { relation ->
-                                wordPropertyItem(
-                                    label = relation.relationLabel,
-                                    value = relation.value,
-                                )
                             }
-                        }
+                        )
                     }
                 }
-            }
-            uiState.word.lexicalRelations.forEach { (type, relations) ->
-                if (relations.isNotEmpty()) {
-                    item {
+                item {
+                    if (uiState.word.tags.isNotEmpty()) {
                         WordInfoGroup(
-                            title = type.relationName,
-                            titleHint = type.strLabel,
-                            icon = MDIconsSet.WordRelatedWords
+                            title = "Context tags", // TODO, string res
+                            icon = MDIconsSet.WordTag,
                         ) {
-                            relations.forEach { relation ->
+                            uiState.word.tags.forEach { tag ->
                                 wordPropertyItem(
-                                    value = relation.relatedWord,
+                                    value = tag.value,
+                                    trailingIcon = tag.color?.let { color ->
+                                        {
+                                            MDContextTagColorIcon(
+                                                color = color,
+                                                isPassed = tag.currentColorIsPassed,
+                                                canPassable = tag.passColorToChildren
+                                            )
+                                        }
+                                    }
                                 )
                             }
                         }
                     }
                 }
-            }
-            item {
-                WordInfoGroup(
-                    title = "Creation",
-                    icon = MDIconsSet.CreateTime
-                ) {
-                    wordPropertyItem(
-                        label = "Created at",
-                        value = uiState.word.createdAt.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
-                    )
-                    wordPropertyItem(
-                        label = "Updated at",
-                        value = uiState.word.updatedAt.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
-                    )
+                item {
+                    if (uiState.word.additionalTranslations.isNotEmpty()) {
+                        WordInfoGroup(
+                            title = "Additional Translations", // TODO, string res
+                            icon = MDIconsSet.WordAdditionalTranslation
+                        ) {
+                            uiState.word.additionalTranslations.forEach { example ->
+                                wordPropertyItem(value = example)
+                            }
+                        }
+                    }
+                }
+                item {
+                    if (uiState.word.examples.isNotEmpty()) {
+                        WordInfoGroup(
+                            title = "Examples", // TODO, string res
+                            icon = MDIconsSet.WordExample,
+                        ) {
+                            uiState.word.examples.forEach { example ->
+                                wordPropertyItem(value = example)
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    uiState.word.wordTypeTag?.let { typeTag ->
+                        WordInfoGroup(
+                            title = "Word Class ${typeTag.name}", // TODO, string res
+                            icon = MDIconsSet.WordRelatedWords,
+                        ) {
+                            if (uiState.word.relatedWords.isEmpty()) {
+                                // TODO, string res
+                                wordPropertyItem(label = "No Relations", value = "")
+                            } else {
+                                uiState.word.relatedWords.forEach { relation ->
+                                    wordPropertyItem(
+                                        label = relation.relationLabel,
+                                        value = relation.value,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                uiState.word.lexicalRelations.forEach { (type, relations) ->
+                    if (relations.isNotEmpty()) {
+                        item {
+                            WordInfoGroup(
+                                title = type.relationName,
+                                titleHint = type.strLabel,
+                                icon = MDIconsSet.WordRelatedWords
+                            ) {
+                                relations.forEach { relation ->
+                                    wordPropertyItem(
+                                        value = relation.relatedWord,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                item {
+                    WordInfoGroup(
+                        title = "Creation",
+                        icon = MDIconsSet.CreateTime
+                    ) {
+                        wordPropertyItem(
+                            label = "Created at",
+                            value = uiState.word.createdAt.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
+                        )
+                        wordPropertyItem(
+                            label = "Updated at",
+                            value = uiState.word.updatedAt.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
+                        )
+                    }
                 }
             }
         }
@@ -224,7 +232,7 @@ private fun MDHorizontalCardScope.wordPropertyItem(
             label?.let {
                 Text(text = label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
             }
-            Text(text = value, style = MaterialTheme.typography.bodyLarge)
+            Text(text = value, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.basicMarquee(Int.MAX_VALUE))
         }
     }
 }

@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.train_word
 
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import kotlin.time.Duration
 
@@ -39,7 +40,7 @@ fun MDTrainWordAnswer.asResult(): MDTrainWordResult = if (isTimeOut) {
     MDTrainWordResult.Timeout(consumedDuration = consumedDuration)
 } else if (selectedAnswer == null || submitOption == MDTrainSubmitOption.Pass) {
     MDTrainWordResult.Pass(consumedDuration = consumedDuration)
-} else if (selectedAnswer == correctAnswer) {
+} else if (selectedAnswer?.meaningViewNormalize == correctAnswer.meaningViewNormalize) {
     MDTrainWordResult.Right(
         consumedDuration = consumedDuration,
         correctAnswer = correctAnswer,
