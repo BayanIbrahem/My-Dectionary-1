@@ -22,9 +22,8 @@ enum class MDWordsListViewPreferencesSortBy(
 ) : LabeledEnum, IconedEnum {
     Meaning("Meaning", MDIconsSet.WordMeaning),// TODO, string res 
     Translation("Translation", MDIconsSet.WordTranslation),// TODO, string res 
-    MemorizingProbability("Learning Progress", MDIconsSet.MemorizingProbability);// TODO, string res 
-//    CreatedAt, // TODO, coming soon
-//    UpdatedAt
+    CreatedAt("Created At", MDIconsSet.CreateTime), // TODO, string res
+    UpdatedAt("Updated At", MDIconsSet.Edit) // TODO, string res, TODO, icon res
 }
 
 enum class WordsListTrainPreferencesSortBy(

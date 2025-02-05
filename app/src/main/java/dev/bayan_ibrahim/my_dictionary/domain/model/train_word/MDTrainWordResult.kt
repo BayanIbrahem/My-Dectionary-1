@@ -7,6 +7,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -15,9 +16,10 @@ import kotlinx.serialization.encoding.encodeStructure
 import kotlin.time.Duration
 
 @Serializable(TrainWordResultSerializer::class)
-sealed interface MDTrainWordResult: IconedEnum {
+sealed interface MDTrainWordResult : IconedEnum {
     val consumedDuration: Duration
     val submitOption: MDTrainSubmitOption
+    val correctAnswer: String
 
     val type: MDTrainWordResultType
         get() = when (this) {
@@ -32,7 +34,7 @@ sealed interface MDTrainWordResult: IconedEnum {
     @Serializable
     data class Wrong(
         val selectedAnswer: String,
-        val correctAnswer: String,
+        override val correctAnswer: String,
         override val consumedDuration: Duration,
         override val submitOption: MDTrainSubmitOption,
     ) : MDTrainWordResult {
@@ -50,7 +52,7 @@ sealed interface MDTrainWordResult: IconedEnum {
     @Serializable
     data class Right(
         override val consumedDuration: Duration,
-        val correctAnswer: String,
+        override val correctAnswer: String,
         override val submitOption: MDTrainSubmitOption,
     ) : MDTrainWordResult {
         init {
@@ -67,6 +69,7 @@ sealed interface MDTrainWordResult: IconedEnum {
     @Serializable
     data class Pass(
         override val consumedDuration: Duration,
+        override val correctAnswer: String = "-",
     ) : MDTrainWordResult {
         override val submitOption: MDTrainSubmitOption = MDTrainSubmitOption.Pass
 
@@ -78,6 +81,7 @@ sealed interface MDTrainWordResult: IconedEnum {
     @Serializable
     data class Timeout(
         override val consumedDuration: Duration,
+        override val correctAnswer: String = "-",
     ) : MDTrainWordResult {
         override val submitOption: MDTrainSubmitOption = MDTrainSubmitOption.Answer
 
@@ -183,9 +187,8 @@ data object TrainWordResultSerializer : KSerializer<MDTrainWordResult> {
                         value = value
                     )
                 }
-
             }
         }
     }
-
 }
+

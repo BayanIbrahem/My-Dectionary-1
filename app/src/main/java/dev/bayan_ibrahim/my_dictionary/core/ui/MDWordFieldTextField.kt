@@ -56,6 +56,7 @@ fun MDWordFieldTextField(
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     index: Int? = null,
     showTrailingActionsIfNotFocused: Boolean = true,
+    showTrailingActionsIfBlank: Boolean = true,
     indexFormat: (Int) -> String = { "$it. " },
     imeAction: MDImeAction = MDImeAction.Next,
     onKeyboardAction: KeyboardActionScope.() -> Unit = {
@@ -74,7 +75,7 @@ fun MDWordFieldTextField(
     }
     val showTrailingActions by remember(value, showTrailingActionsIfNotFocused, isFocused) {
         derivedStateOf {
-            value.isNotBlank() && (showTrailingActionsIfNotFocused || isFocused)
+            (showTrailingActionsIfBlank || value.isNotBlank()) && (showTrailingActionsIfNotFocused || isFocused)
         }
     }
     MDBasicTextField(

@@ -9,6 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrast
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeVariant
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -72,12 +73,35 @@ class MDAppThemeViewModel @Inject constructor(
         override fun onClickContrast(theme: MDTheme, contrast: MDThemeContrast) {
             viewModelScope.launch {
                 _uiState.selectedTheme = theme
-                _uiState.selectedContrast = contrast
+                _uiState.selectedContrast = when (uiState.selectedContrast.variant) {
+                        MDThemeVariant.System -> contrast.copy2(isDark = null)
+                        else -> contrast
+                    }
                 userRepo.setUserPreferences {
                     it.copy(
                         theme = theme,
-                        themeVariant = contrast.variant,
+                        themeVariant = when (uiState.selectedContrast.variant) {
+                            MDThemeVariant.System -> MDThemeVariant.System
+                            else -> contrast.variant
+                        },
                         themeContrastType = contrast.type
+                    )
+                }
+            }
+        }
+
+        override fun onToggleVariant(isDark: Boolean?) {
+            viewModelScope.launch {
+                _uiState.selectedContrast = _uiState.selectedContrast.copy2(
+                    isDark = isDark
+                )
+                userRepo.setUserPreferences {
+                    it.copy(
+                        themeVariant = when(isDark){
+                            true -> MDThemeVariant.Dark
+                            false -> MDThemeVariant.Light
+                            null -> MDThemeVariant.System
+                        },
                     )
                 }
             }

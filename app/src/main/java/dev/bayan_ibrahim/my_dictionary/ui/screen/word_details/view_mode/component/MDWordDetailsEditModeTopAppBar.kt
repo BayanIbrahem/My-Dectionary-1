@@ -12,9 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.MDWordDetailsTopAppBar
-import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode.component.MDWordDetailsEditModeTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
@@ -22,7 +20,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 fun MDWordDetailsViewModeTopAppBar(
     language: Language,
     onShare: () -> Unit,
-    onEdit: () -> Unit,
+    onNavigateUp: () -> Unit,
     onClickWordStatistics: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -35,7 +33,7 @@ fun MDWordDetailsViewModeTopAppBar(
         trailing = {
             TrailingActions(
                 onShare = onShare,
-                onEdit = onEdit
+                onNavigateUp = onNavigateUp
             )
         }
     )
@@ -57,7 +55,7 @@ private fun LeadingActions(
 @Composable
 private fun TrailingActions(
     onShare: () -> Unit,
-    onEdit: () -> Unit,
+    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -72,11 +70,11 @@ private fun TrailingActions(
             ) // TODO, string res
         }
         IconButton(
-            onClick = onEdit
+            onClick = onNavigateUp
         ) {
             MDIcon(
-                icon = MDIconsSet.Edit,
-                contentDescription = "edit word",
+                icon = MDIconsSet.ArrowForward,
+                contentDescription = "Navigate back",
             ) // TODO, string res
         }
     }
@@ -96,7 +94,7 @@ private fun MDWordsDetailsViewModeTopAppBarPreview() {
                 MDWordDetailsViewModeTopAppBar(
                     language = Language("en", "English", "English"),
                     onShare = {},
-                    onEdit = {},
+                    onNavigateUp = {},
                     onClickWordStatistics = {},
                 )
             }

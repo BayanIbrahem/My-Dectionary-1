@@ -28,10 +28,10 @@ fun MDAppThemeRoute(
     LaunchedEffect(args) {
         viewModel.initWithNavArgs(args, context)
     }
-    val isSystemDarkTheme = isSystemInDarkTheme()
-    LaunchedEffect(isSystemDarkTheme) {
-        viewModel.onIsSystemDarkThemeChanged(isSystemDarkTheme)
-    }
+//    val isSystemDarkTheme = isSystemInDarkTheme()
+//    LaunchedEffect(isSystemDarkTheme) {
+//        viewModel.onIsSystemDarkThemeChanged(isSystemDarkTheme)
+//    }
 
     val uiState = viewModel.uiState
     val navActions by remember {

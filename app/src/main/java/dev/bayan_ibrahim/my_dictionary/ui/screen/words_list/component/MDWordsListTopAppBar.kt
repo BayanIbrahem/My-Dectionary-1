@@ -1,14 +1,26 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -25,6 +37,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
@@ -35,6 +50,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
+import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelector
@@ -56,7 +72,6 @@ fun MDWordsListTopAppBar(
     selectedWordsCount: Int,
     visibleWordsCount: Int,
     // normal mode actions,
-    onTrainVisibleWords: () -> Unit,
     onAdjustFilterPreferences: () -> Unit,
     onSelectLanguagePage: () -> Unit,
     onDeleteWordSpace: () -> Unit,
@@ -67,6 +82,8 @@ fun MDWordsListTopAppBar(
     onClearSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
     onConfirmAppendContextTagsOnSelectedWords: (selectedTags: List<ContextTag>) -> Unit,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -74,9 +91,10 @@ fun MDWordsListTopAppBar(
     ) {
         AnimatedVisibility(!isSelectionModeOn) {
             WordsListTopAppBarNormalMode(
+                searchQuery = searchQuery,
+                onSearchQueryChange = onSearchQueryChange,
                 language = language,
                 visibleWordsCount = visibleWordsCount,
-                onTrainVisibleWords = onTrainVisibleWords,
                 onAdjustFilterPreferences = onAdjustFilterPreferences,
                 onSelectLanguagePage = onSelectLanguagePage,
                 onDeleteWordSpace = onDeleteWordSpace,
@@ -109,20 +127,53 @@ private val menuOffset = defaultMenuOffset + DpOffset(-defaultMenuPadding, defau
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WordsListTopAppBarNormalMode(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     language: Language,
     visibleWordsCount: Int,
-    onTrainVisibleWords: () -> Unit,
     onAdjustFilterPreferences: () -> Unit,
     onSelectLanguagePage: () -> Unit,
     onDeleteWordSpace: () -> Unit,
     onNavigationIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MDTopAppBar(
-        isTopLevel = true,
-        onNavigationIconClick = onNavigationIconClick,
-        title = {
+    var searchQuery by remember {
+        mutableStateOf(searchQuery)
+    }
+    val searchFieldFocusRequester by remember {
+        derivedStateOf {
+            FocusRequester()
+        }
+    }
+    var searchFieldHasFocus by remember {
+        mutableStateOf(false)
+    }
+    val searchFieldVisible by remember(searchQuery, searchFieldHasFocus) {
+        derivedStateOf {
+            searchFieldHasFocus
+        }
+    }
+    val searchFieldNotEmpty by remember(searchQuery) {
+        derivedStateOf {
+            searchQuery.isNotBlank()
+        }
+    }
+
+    Column(
+        modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainer),
+    ) {
+        Row(
+            modifier = Modifier.height(64.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = onNavigationIconClick
+            ) {
+                MDIcon(MDIconsSet.Menu)
+            }
             Row(
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.Bottom,
             ) {
                 Text("${language.localDisplayName} ") // has a trailing space
@@ -132,22 +183,26 @@ private fun WordsListTopAppBarNormalMode(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-        },
-        modifier = modifier,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-        expandedHeight = topAppBarHeight,
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-        actions = {
-            IconButton(
-                onClick = {
-                    onTrainVisibleWords()
-                    // adjust filter preferences
-                },
+            AnimatedVisibility(
+                visible = !searchFieldVisible,
+                enter = fadeIn() + slideInVertically { it },
+                exit = fadeOut() + slideOutVertically { it },
             ) {
-                MDIcon(MDIconsSet.Train)
+                IconButton(
+                    onClick = {
+                        searchFieldFocusRequester.requestFocus()
+                    }
+                ) {
+                    BadgedBox(
+                        badge = {
+                            if(searchFieldNotEmpty) {
+                                Badge()
+                            }
+                        }
+                    ) {
+                        MDIcon(MDIconsSet.Search)
+                    }
+                }
             }
             IconButton(
                 onClick = {
@@ -196,8 +251,115 @@ private fun WordsListTopAppBarNormalMode(
                     )
                 }
             }
-        },
-    )
+        }
+        val factor by animateFloatAsState(if(searchFieldVisible) 1f else 0f)
+        val height by animateDpAsState(if(searchFieldVisible)92.dp else 0.dp)
+        MDWordFieldTextField(
+            value = searchQuery,
+            onValueChange = {
+                onSearchQueryChange(it)
+                searchQuery = it
+            },
+            leadingIcon = MDIconsSet.SearchList,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .height(height)
+                .graphicsLayer {
+                    alpha = factor
+                }
+                .fillMaxWidth()
+                .focusRequester(searchFieldFocusRequester),
+            onFocusEvent = {
+                searchFieldHasFocus = it.isFocused
+            },
+            showLabelOnEditMode = true,
+            label = "Search Query", // TODO, string res
+            placeholder = "Eg. Car", // TODO, string res
+            showTrailingActionsIfNotFocused = true,
+            showTrailingActionsIfBlank = true,
+            onKeyboardAction = {searchFieldFocusRequester.freeFocus()}
+        )
+    }
+//    MDTopAppBar(
+//        isTopLevel = true,
+//        onNavigationIconClick = onNavigationIconClick,
+//        title = {
+//            Row(
+//                verticalAlignment = Alignment.Bottom,
+//            ) {
+//                Text("${language.localDisplayName} ") // has a trailing space
+//                Text(
+//                    text = "$visibleWordsCount words", // TODO, string res
+//                    style = MaterialTheme.typography.labelLarge,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant
+//                )
+//            }
+//        },
+//        modifier = modifier,
+//        colors = TopAppBarDefaults.topAppBarColors(
+//            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+//            titleContentColor = MaterialTheme.colorScheme.onSurface,
+//        ),
+//        expandedHeight = topAppBarHeight,
+//        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+//        actions = {
+////            IconButton(
+////                onClick = {
+////                    onTrainVisibleWords()
+////                    // adjust filter preferences
+////                },
+////            ) {
+////                MDIcon(MDIconsSet.Train)
+////            }
+//            IconButton(
+//                onClick = {
+//                    onAdjustFilterPreferences()
+//                    // adjust filter preferences
+//                },
+//            ) {
+//                MDIcon(MDIconsSet.Filter)
+//            }
+//            var expanded by remember {
+//                mutableStateOf(false)
+//            }
+//            val dismiss: () -> Unit by remember {
+//                derivedStateOf { { expanded = false } }
+//            }
+//            IconButton(
+//                onClick = {
+//                    expanded = true
+//                }
+//            ) {
+//                MDBasicIconDropDownMenu(
+//                    expanded = expanded,
+//                    onDismissRequest = dismiss,
+//                    menuOffset = menuOffset,
+//                    icon = {
+//                        MDIcon(MDIconsSet.MoreVert)
+//                    }
+//                ) {
+//                    MenuItem(
+//                        leadingIcon = MDIconsSet.LanguageWordSpace,
+//                        text = "Select language page", // TODO, string res
+//                        onClick = {
+//                            dismiss()
+//                            onSelectLanguagePage()
+//                        },
+//                    )
+//
+//                    MenuItem(
+//                        leadingIcon = MDIconsSet.DeletePermanent,
+//                        text = "Delete word space", // TODO, string res
+//                        onClick = {
+//                            dismiss()
+//                            onDeleteWordSpace()
+//                        },
+//                        important = true,
+//                    )
+//                }
+//            }
+//        },
+//    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -403,11 +565,12 @@ private fun WordsListTopAppBarPreview() {
                         selectionMode = false
                     },
                     onDeleteSelection = {},
-                    onTrainVisibleWords = {},
                     contextTagsSelectionState = MDContextTagsSelectorMutableUiState(),
                     contextTagsSelectionActions = viewModel.getUiActions(object : MDContextTagsSelectorNavigationUiActions {}),
                     onConfirmAppendContextTagsOnSelectedWords = {},
                     onNavigationIconClick = {},
+                    searchQuery =  "",
+                    onSearchQueryChange = {}
                 )
 //                WordsListTopAppBar(
 //                    isSelectionModeOn = false,

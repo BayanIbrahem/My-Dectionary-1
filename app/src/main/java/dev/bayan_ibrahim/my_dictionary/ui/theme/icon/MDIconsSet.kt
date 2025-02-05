@@ -12,6 +12,8 @@ enum class MDIconsSet {
     Add,
     ArrowDropdown,
     ArrowForward,
+    ArrowUp,
+    ArrowDown,
     AscSort,
     BarChart,
     Check,
@@ -60,6 +62,9 @@ enum class MDIconsSet {
     WordTranslation,
     WordTypeTag,
     WordsList,
+    DarkTheme,
+    LightTheme,
+    SystemTheme,
 }
 
 /**

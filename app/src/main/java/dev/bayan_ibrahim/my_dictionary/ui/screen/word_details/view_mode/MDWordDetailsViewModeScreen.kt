@@ -1,12 +1,19 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.view_mode
 
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -49,10 +56,11 @@ fun MDWordDetailsViewModeScreen(
     uiActions: MDWordDetailsViewModeUiActions,
     modifier: Modifier = Modifier,
 ) {
+    val lazyListState = rememberLazyListState()
+
     CompositionLocalProvider(
         LocalLayoutDirection provides uiState.word.language.direction,
     ) {
-
         MDScreen(
             uiState = uiState,
             modifier = modifier,
@@ -60,12 +68,27 @@ fun MDWordDetailsViewModeScreen(
                 MDWordDetailsViewModeTopAppBar(
                     language = uiState.word.language,
                     onShare = uiActions::onShare,
-                    onEdit = uiActions::onEdit,
+                    onNavigateUp = uiActions::onPop,
                     onClickWordStatistics = uiActions::onClickWordStatistics,
                 )
             },
+            floatingActionButton = {
+                AnimatedVisibility(
+                    visible = lazyListState.lastScrolledBackward || !lazyListState.canScrollBackward,
+                    enter = fadeIn() + expandIn(),
+                    exit = fadeOut() + shrinkOut(),
+
+                ) {
+                    FloatingActionButton(uiActions::onEdit) {
+                        MDIcon(MDIconsSet.Edit)
+                    }
+                }
+            }
         ) {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                state = lazyListState
+            ) {
                 item {
                     WordInfoGroup(
                         title = "Basic", // TODO, string res

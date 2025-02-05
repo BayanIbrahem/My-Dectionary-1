@@ -179,14 +179,6 @@ interface WordDao {
         typeTags: Set<Long>,
     ): Flow<List<WordEntity>>
 
-    fun getSortByColumnName(sortBy: MDWordsListViewPreferencesSortBy): String {
-        return when (sortBy) {
-            MDWordsListViewPreferencesSortBy.Meaning -> dbWordMeaning
-            MDWordsListViewPreferencesSortBy.Translation -> dbWordTranslation
-            MDWordsListViewPreferencesSortBy.MemorizingProbability -> dbWordMemoryDecayFactor
-        }
-    }
-
     fun getQueryPatternOfQuery(query: String): String {
         if (query.isEmpty()) return "%"
         return query.searchQueryDbNormalize

@@ -5,14 +5,24 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component.MDAppThemeTopAppBar
@@ -21,6 +31,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrast
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeVariant
 
 @Composable
 fun MDAppThemeScreen(
@@ -33,10 +44,21 @@ fun MDAppThemeScreen(
         modifier = modifier,
         topBar = {
             MDAppThemeTopAppBar(
-                onNavigationIconClick = uiActions::onPop
+                isDark = uiState.selectedContrast.isDark,
+                onNavigationIconClick = uiActions::onPop,
+                onToggleDarkVariance = uiActions::onToggleVariant,
             )
         },
     ) {
+        val darkVariantToggleState by remember(uiState.selectedContrast.isDark) {
+            derivedStateOf {
+                when (uiState.selectedContrast.isDark) {
+                    true -> ToggleableState.On
+                    false -> ToggleableState.Off
+                    null -> ToggleableState.Indeterminate
+                }
+            }
+        }
         LazyVerticalGrid(
             columns = GridCells.Adaptive(MDThemeCardDefaults.cardWidth),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -82,6 +104,7 @@ private fun MDAppThemeScreenPreview() {
 
                         },
                         object : MDAppThemeBusinessUiActions {
+                            override fun onToggleVariant(isDark: Boolean?) {}
                             override fun onClickContrast(theme: MDTheme, contrast: MDThemeContrast) {}
                         },
                     )

@@ -9,6 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.text_to_speech.TextToSpeechData
 import dev.bayan_ibrahim.my_dictionary.data_source.local.text_to_speech.TextToSpeechDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferencesBuilder
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.defaultLanguage
@@ -40,7 +41,7 @@ class MDWordsListViewModel @Inject constructor(
     private val languageRepo: LanguageRepo,
     private val wordRepo: WordRepo,
     private val textToSpeech: TextToSpeechDataSource,
-    viewPreferencesRepo: ViewPreferencesRepo,
+    private val  viewPreferencesRepo: ViewPreferencesRepo,
 ) : ViewModel() {
     private val selectedWordSpaceStream: StateFlow<LanguageWordSpace> = userRepo.getUserPreferencesStream().map {
         val language = it.selectedLanguagePage ?: let {
@@ -61,6 +62,13 @@ class MDWordsListViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = defaultWordsListViewPreferences
+    )
+    val searchQueryFlow = viewPreferences.map {
+        it.searchQuery
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = ""
     )
 
     private val _paginatedWordsList: MutableStateFlow<PagingData<Word>> = MutableStateFlow(PagingData.empty())
@@ -260,13 +268,20 @@ class MDWordsListViewModel @Inject constructor(
                 }
             }
         }
+        override fun onSearchQueryChange(query :String ){
+            viewModelScope.launch {
+                viewPreferencesRepo.setViewPreferences {
+                    WordsListViewPreferencesBuilder(it).copy(searchQuery = query)
+                }
+            }
+        }
 
         override fun onSpeakWord(word: Word) {
             if (currentSpeakingWordId.value != word.id.toString()) {
                 textToSpeech.pushData(
                     TextToSpeechData(
                         id = word.id.toString(),
-                        text = word.translation,
+                        text = word.meaning,
                         language = word.language,
                         flushPrev = true
                     )

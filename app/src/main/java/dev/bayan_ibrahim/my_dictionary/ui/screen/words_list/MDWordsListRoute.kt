@@ -20,6 +20,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesDialogRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog.MDWordsListViewPreferencesViewModel
 
 @Composable
 fun MDWordsListRoute(
@@ -74,6 +75,7 @@ fun MDWordsListRoute(
         }
     }
 
+    val searchQuery by wordsListViewModel.searchQueryFlow.collectAsStateWithLifecycle()
     MDWordsListScreen(
         uiState = uiState,
         uiActions = uiActions,
@@ -83,6 +85,7 @@ fun MDWordsListRoute(
         currentSpeakingWordId =currentSpeakingWordId,
         modifier = modifier,
         lifeMemorizingProbability = lifeMemorizingProbability,
+        searchQuery = searchQuery,
     )
     // Dialog:
     // train preferences dialog:
@@ -92,7 +95,7 @@ fun MDWordsListRoute(
         showDialog = uiState.showTrainPreferencesDialog
     )
     MDWordsListViewPreferencesDialogRoute(
-        uiState.showViewPreferencesDialog,
-        onDismissDialog = uiActions::onDismissViewPreferencesDialog
+        showDialog = uiState.showViewPreferencesDialog,
+        onDismissDialog = uiActions::onDismissViewPreferencesDialog,
     )
 }

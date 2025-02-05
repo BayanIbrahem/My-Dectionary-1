@@ -37,20 +37,20 @@ sealed interface MDTrainWordAnswer {
 }
 
 fun MDTrainWordAnswer.asResult(): MDTrainWordResult = if (isTimeOut) {
-    MDTrainWordResult.Timeout(consumedDuration = consumedDuration)
+    MDTrainWordResult.Timeout(consumedDuration = this.consumedDuration, correctAnswer = this.correctAnswer)
 } else if (selectedAnswer == null || submitOption == MDTrainSubmitOption.Pass) {
-    MDTrainWordResult.Pass(consumedDuration = consumedDuration)
+    MDTrainWordResult.Pass(consumedDuration = this.consumedDuration, correctAnswer = this.correctAnswer)
 } else if (selectedAnswer?.meaningViewNormalize == correctAnswer.meaningViewNormalize) {
     MDTrainWordResult.Right(
-        consumedDuration = consumedDuration,
-        correctAnswer = correctAnswer,
-        submitOption = submitOption
+        consumedDuration = this.consumedDuration,
+        correctAnswer = this.correctAnswer,
+        submitOption = this.submitOption
     )
 } else {
     MDTrainWordResult.Wrong(
-        consumedDuration = consumedDuration,
-        selectedAnswer = selectedAnswer ?: "-",
-        correctAnswer = correctAnswer,
-        submitOption = submitOption
+        consumedDuration = this.consumedDuration,
+        selectedAnswer = this.selectedAnswer ?: "-",
+        correctAnswer = this.correctAnswer,
+        submitOption = this.submitOption
     )
 }

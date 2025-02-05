@@ -134,15 +134,15 @@ private fun SearchBody(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        MDWordFieldTextField(
-            value = searchQuery,
-            onValueChange = onSearchQueryChange,
-            leadingIcon = MDIconsSet.SearchList,
-            modifier = Modifier.fillMaxWidth(),
-            showLabelOnEditMode = true,
-            label = "Search Query", // TODO, string res
-            placeholder = "Eg. Car" // TODO, string res
-        )
+//        MDWordFieldTextField(
+//            value = searchQuery,
+//            onValueChange = onSearchQueryChange,
+//            leadingIcon = MDIconsSet.SearchList,
+//            modifier = Modifier.fillMaxWidth(),
+//            showLabelOnEditMode = true,
+//            label = "Search Query", // TODO, string res
+//            placeholder = "Eg. Car" // TODO, string res
+//        )
         MDHorizontalCardGroup {
             MDWordsListSearchTarget.entries.forEach { target ->
                 radioItem(
@@ -246,7 +246,7 @@ private fun SortBody(
     modifier: Modifier = Modifier,
 ) {
     val colors = MDHorizontalCardDefaults.primaryColors
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
         MDHorizontalCardGroup(
             // TODO, string res
             title = { Text("Sorted By") }

@@ -11,6 +11,7 @@ class MDDataStoreViewPreferencesRepo(
     override suspend fun setViewPreferences(preferences: MDWordsListViewPreferences) {
         dataStore.writeWordsListViewPreferences { preferences }
     }
+    override suspend fun setViewPreferences(buildPreferences: (MDWordsListViewPreferences) -> MDWordsListViewPreferences) = dataStore.writeWordsListViewPreferences(buildPreferences)
 
     override fun getViewPreferencesStream(): Flow<MDWordsListViewPreferences> = dataStore.getWordsListViewPreferencesStream()
 }

@@ -65,6 +65,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.bottomOnly
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import dev.bayan_ibrahim.my_dictionary.ui.theme.topOnly
+import kotlin.math.roundToInt
 
 @Composable
 fun MDStatisticsScreen(
@@ -187,7 +188,7 @@ fun MDStatisticsScreen(
                                     trainHistory.words.groupBy {
                                         it.trainResult.type
                                     }.mapValues { (_, results) ->
-                                        results.count().div(trainHistory.words.count()).times(100).coerceIn(0, 100)
+                                        results.count().times(100f).div(trainHistory.words.count()).roundToInt().coerceIn(0, 100)
                                     }.entries.sortedBy { it.key.ordinal }
                                 }
                             }
@@ -205,7 +206,7 @@ fun MDStatisticsScreen(
                                 },
                                 subtitle = {
                                     val stringifiedList = resultsPercentages.map {
-                                        it.key.label + ": %${it.value}"
+                                        "${it.key.label} %${it.value}"
                                     }
                                     Text(
                                         text = stringifiedList.joinToString(" - "),
@@ -281,16 +282,20 @@ private fun MDWordHistoryContent(
                 question = wordHistory.questionWord,
                 mainLabel = "PASS",
                 modifier = modifier,
-                mainLabelColor = color
+                mainLabelColor = color,
+                secondLabel = wordHistory.trainResult.correctAnswer,
+                secondLabelColor = getTrainResultTypeColor(MDTrainWordResult.Right.type)
             ) // TODO, string res
         }
 
         is MDTrainWordResult.Timeout -> {
             MDWordHistoryContent(
                 question = wordHistory.questionWord,
-                mainLabel = "TIMEOUT",
                 modifier = modifier,
-                mainLabelColor = color
+                mainLabel = "TIMEOUT",
+                mainLabelColor = color,
+                secondLabel = wordHistory.trainResult.correctAnswer,
+                secondLabelColor = getTrainResultTypeColor(MDTrainWordResult.Right.type)
             )  // TODO, string res
         }
 
@@ -347,6 +352,7 @@ private fun MDWordHistoryContent(
             )
             append(mainLabel)
             if (secondLabel != null) {
+                pushStyle(defaultStyle.toSpanStyle())
                 append("  ")
                 pushStyle(
                     defaultStyle.copy(

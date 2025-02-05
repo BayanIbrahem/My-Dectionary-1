@@ -37,6 +37,7 @@ interface MDWordsListBusinessUiActions {
     fun onDismissViewPreferencesDialog()
     fun onConfirmAppendContextTagsOnSelectedWords(selectedTags: List<ContextTag>)
     fun onSpeakWord(word: Word)
+    fun onSearchQueryChange(query: String)
 }
 
 interface MDWordsListNavigationUiActions: MDAppNavigationUiActions {

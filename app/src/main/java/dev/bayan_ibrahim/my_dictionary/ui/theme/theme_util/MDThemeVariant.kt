@@ -22,6 +22,12 @@ enum class MDThemeVariant {
         @Composable
         @ReadOnlyComposable
         get() = isDarkTheme(isSystemInDarkTheme())
+    val darkOrNull: Boolean?
+        get() = when (this) {
+            System -> null
+            Light -> false
+            Dark -> true
+        }
 
     companion object {
         fun of(isDark: Boolean) = if (isDark) {

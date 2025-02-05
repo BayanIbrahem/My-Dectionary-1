@@ -110,7 +110,7 @@ class MDRoomWordRepo(
                                     source.contains(target.asModel())
                                 }
                             } else {
-                                tags.none {  target ->
+                                tags.none { target ->
                                     contextTags.any { source ->
                                         source.contains(target.asModel())
                                     }
@@ -183,24 +183,78 @@ class MDRoomWordRepo(
             wordWithRelation.asWordModel(wordTypeTag)
         }
     ) {
-        when (sortByOrder) {
-            MDWordsListSortByOrder.Asc -> wordsPaginatedDao.getPaginatedWordsAscOf(
-                languageCode = code.code,
-                targetWords = targetWords,
-                includeMeaning = includeMeaning,
-                includeTranslation = includeTranslation,
-                queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
-                sortBy = wordDao.getSortByColumnName(sortBy)
-            )
+        when (sortBy) {
+            MDWordsListViewPreferencesSortBy.Meaning -> when (sortByOrder) {
+                MDWordsListSortByOrder.Asc -> wordsPaginatedDao.getPaginatedWordsAscOfMeaning(
+                    languageCode = code.code,
+                    targetWords = targetWords,
+                    includeMeaning = includeMeaning,
+                    includeTranslation = includeTranslation,
+                    queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
+                )
 
-            MDWordsListSortByOrder.Desc -> wordsPaginatedDao.getPaginatedWordsDescOf(
-                languageCode = code.code,
-                targetWords = targetWords,
-                includeMeaning = includeMeaning,
-                includeTranslation = includeTranslation,
-                queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
-                sortBy = wordDao.getSortByColumnName(sortBy)
-            )
+                MDWordsListSortByOrder.Desc -> wordsPaginatedDao.getPaginatedWordsDescOfMeaning(
+                    languageCode = code.code,
+                    targetWords = targetWords,
+                    includeMeaning = includeMeaning,
+                    includeTranslation = includeTranslation,
+                    queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
+                )
+            }
+
+            MDWordsListViewPreferencesSortBy.Translation -> when (sortByOrder) {
+                MDWordsListSortByOrder.Asc -> wordsPaginatedDao.getPaginatedWordsAscOfTranslation(
+                    languageCode = code.code,
+                    targetWords = targetWords,
+                    includeMeaning = includeMeaning,
+                    includeTranslation = includeTranslation,
+                    queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
+                )
+
+                MDWordsListSortByOrder.Desc -> wordsPaginatedDao.getPaginatedWordsDescOfTranslation(
+                    languageCode = code.code,
+                    targetWords = targetWords,
+                    includeMeaning = includeMeaning,
+                    includeTranslation = includeTranslation,
+                    queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
+                )
+            }
+
+            MDWordsListViewPreferencesSortBy.CreatedAt -> when (sortByOrder) {
+                MDWordsListSortByOrder.Asc -> wordsPaginatedDao.getPaginatedWordsAscOfCreatedAt(
+                    languageCode = code.code,
+                    targetWords = targetWords,
+                    includeMeaning = includeMeaning,
+                    includeTranslation = includeTranslation,
+                    queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
+                )
+
+                MDWordsListSortByOrder.Desc -> wordsPaginatedDao.getPaginatedWordsDescOfCreatedAt(
+                    languageCode = code.code,
+                    targetWords = targetWords,
+                    includeMeaning = includeMeaning,
+                    includeTranslation = includeTranslation,
+                    queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
+                )
+            }
+
+            MDWordsListViewPreferencesSortBy.UpdatedAt -> when (sortByOrder) {
+                MDWordsListSortByOrder.Asc -> wordsPaginatedDao.getPaginatedWordsAscOfUpdatedAt(
+                    languageCode = code.code,
+                    targetWords = targetWords,
+                    includeMeaning = includeMeaning,
+                    includeTranslation = includeTranslation,
+                    queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
+                )
+
+                MDWordsListSortByOrder.Desc -> wordsPaginatedDao.getPaginatedWordsDescOfUpdatedAt(
+                    languageCode = code.code,
+                    targetWords = targetWords,
+                    includeMeaning = includeMeaning,
+                    includeTranslation = includeTranslation,
+                    queryPattern = wordDao.getQueryPatternOfQuery(searchQuery),
+                )
+            }
         }
     }
 

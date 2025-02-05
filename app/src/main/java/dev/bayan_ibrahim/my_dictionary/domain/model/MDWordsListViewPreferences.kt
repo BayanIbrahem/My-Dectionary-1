@@ -56,7 +56,17 @@ data class WordsListViewPreferencesBuilder(
     override val selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     override val sortBy: MDWordsListViewPreferencesSortBy,
     override val sortByOrder: MDWordsListSortByOrder,
-) : MDWordsListViewPreferences
+) : MDWordsListViewPreferences {
+    constructor(preferences: MDWordsListViewPreferences ): this(
+        searchQuery = preferences.searchQuery,
+        searchTarget = preferences.searchTarget,
+        selectedTags = preferences.selectedTags,
+        includeSelectedTags = preferences. includeSelectedTags,
+        selectedMemorizingProbabilityGroups = preferences.selectedMemorizingProbabilityGroups,
+        sortBy = preferences.sortBy,
+        sortByOrder = preferences.sortByOrder
+    )
+}
 
 val defaultWordsListViewPreferences by lazy {
     WordsListViewPreferencesBuilder(

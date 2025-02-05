@@ -19,18 +19,17 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.items
@@ -79,7 +78,6 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.i
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreenDefaults
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDTrainQuestionExtraInfo
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
@@ -109,13 +107,13 @@ fun MDTrainScreen(
     MDScreen(
         uiState = uiState,
         modifier = modifier,
-        contentWindowInsets = MDScreenDefaults.contentWindowInsets.add(WindowInsets.ime), // adding software keyboard window insets
         topBar = {
             MDTrainTopAppBar(
                 uiActions::onPop
             )
         },
     ) {
+        val imePadding = WindowInsets.ime
         if (uiState is MDTrainUiState.AnswerWord) {
             val totalCount by remember {
                 derivedStateOf {
@@ -131,7 +129,7 @@ fun MDTrainScreen(
                     uiState.trainWordsListQuestion[uiState.currentIndex].type
                 }
             }
-            Column {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 ScreenHeader(
                     currentIndex = uiState.currentIndex,
                     totalCount = totalCount,
@@ -139,11 +137,12 @@ fun MDTrainScreen(
                     remainingTime = remainingTime,
                 )
                 HorizontalPager(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier,
                     state = pagerState,
                     userScrollEnabled = false,
                 ) { i ->
                     WordTrainPage(
+                        modifier = Modifier,
                         train = uiState.trainWordsListQuestion[i],
                         onSelectAnswerSubmit = uiActions::onSelectAnswerSubmit,
                         onWriteWordSubmit = uiActions::onWriteWordSubmit,
@@ -151,6 +150,11 @@ fun MDTrainScreen(
                 }
             }
         }
+
+        Text(
+            text = imePadding.asPaddingValues().calculateBottomPadding().toString(),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
@@ -342,7 +346,7 @@ private fun WordSelectAnswerTrainPage(
                     },
                     leadingIcon = {
                         if (i == selectedAnswerIndex) {
-                            MDIcon(MDIconsSet.Check) 
+                            MDIcon(MDIconsSet.Check)
                         } else {
                             Box(modifier = Modifier.width(24.dp))
                         }
@@ -364,7 +368,6 @@ private fun WordSelectAnswerTrainPage(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun WordWriteTrainPage(
     train: MDTrainWordQuestion.WriteWord,
@@ -376,11 +379,9 @@ private fun WordWriteTrainPage(
     }
     Column(
         modifier = modifier,
-//            modifier = modifier/*.windowInsetsPadding(WindowInsets.safeContent)*/,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         QuestionPagePart(
-            modifier = Modifier.weight(1f),
             question = train.question,
             currentAnswer = answer,
             onSubmit = {
@@ -390,17 +391,14 @@ private fun WordWriteTrainPage(
         var selectedVisibleInfo: MDTrainQuestionExtraInfo? by remember {
             mutableStateOf(null)
         }
-        ExtraInfoPagePart(
-            word = train.word,
-            selectedVisibleInfo = selectedVisibleInfo,
-            availableExtraInfo = MDTrainQuestionExtraInfo.entries,
-            onSelectVisibleInfo = { selectedVisibleInfo = it },
-            modifier = Modifier.weight(1f),
-        )
-        Box(
-//            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.Center
-        ) {
+        Column {
+            ExtraInfoPagePart(
+                word = train.word,
+                selectedVisibleInfo = selectedVisibleInfo,
+                availableExtraInfo = MDTrainQuestionExtraInfo.entries,
+                onSelectVisibleInfo = { selectedVisibleInfo = it },
+                modifier = Modifier.weight(1f),
+            )
             MDBasicTextField(
                 value = answer,
                 modifier = Modifier.fillMaxWidth(),

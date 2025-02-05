@@ -3,6 +3,8 @@
     <string name="content_description_add">Add</string>
     <string name="content_description_arrow_dropdown">Arrow dropdown</string>
     <string name="content_description_arrow_forward">Arrow forward</string>
+    <string name="content_description_arrow_up">Arrow up</string>
+    <string name="content_description_arrow_down">Arrow down</string>
     <string name="content_description_asc_sort">Ascending sort</string>
     <string name="content_description_bar_chart">Bar chart</string>
     <string name="content_description_check">Check</string>
@@ -40,6 +42,9 @@
     <string name="content_description_train_type">Train type</string>
     <string name="content_description_train_words_order">Train words order</string>
     <string name="content_description_verified">Verified</string>
+    <string name="content_description_dark_theme">Dark Theme</string>
+    <string name="content_description_light_theme">Light Theme</string>
+    <string name="content_description_system_theme">System Theme</string>
     <string name="content_description_word_additional_translation">Word additional translation</string>
     <string name="content_description_word_example">Word example</string>
     <string name="content_description_word_meaning">Word meaning</string>

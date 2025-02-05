@@ -52,6 +52,8 @@ fun MDIconsSet.getDefaultIcon() = when (this) {
     MDIconsSet.Add -> MDIcon(default = D.add, contentDescription = S.content_description_add)
     MDIconsSet.ArrowDropdown -> MDIcon(default = D.arrow_dropdown, contentDescription = S.content_description_arrow_dropdown)
     MDIconsSet.ArrowForward -> MDIcon(default = D.arrow_forward, contentDescription = S.content_description_arrow_forward)
+    MDIconsSet.ArrowUp -> MDIcon(default = D.arrow_upward, contentDescription = S.content_description_arrow_up)
+    MDIconsSet.ArrowDown -> MDIcon(default = D.arrow_downward, contentDescription = S.content_description_arrow_down)
     MDIconsSet.Check -> MDIcon(default = D.check, contentDescription = S.content_description_check)
     MDIconsSet.Close -> MDIcon(default = D.close, contentDescription = S.content_description_close)
     MDIconsSet.Edit -> MDIcon(outlinedRes = D.edit_outline, filledRes = D.edit_fill, contentDescription = S.content_description_edit)
@@ -60,4 +62,7 @@ fun MDIconsSet.getDefaultIcon() = when (this) {
     MDIconsSet.Save -> MDIcon(outlinedRes = D.save_outline, filledRes = D.save_fill, contentDescription = S.content_description_save)
     MDIconsSet.Share -> MDIcon(outlinedRes = D.share_outline, filledRes = D.share_fill, contentDescription = S.content_description_share)
     MDIconsSet.Verified -> MDIcon(outlinedRes = D.verify_outline, filledRes = D.verify_fill, contentDescription = S.content_description_verified)
+    MDIconsSet.DarkTheme -> MDIcon(outlinedRes = D.dark_mode_outline, filledRes = D.dark_mode_fill, contentDescription = S.content_description_dark_theme)
+    MDIconsSet.LightTheme -> MDIcon(outlinedRes = D.light_mode_outline, filledRes = D.dark_mode_fill, contentDescription = S.content_description_light_theme)
+    MDIconsSet.SystemTheme -> MDIcon(outlinedRes = D.contrast, filledRes = D.contrast, contentDescription = S.content_description_system_theme)
 }

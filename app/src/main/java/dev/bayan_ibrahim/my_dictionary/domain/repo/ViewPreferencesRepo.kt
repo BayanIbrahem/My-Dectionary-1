@@ -8,4 +8,5 @@ interface ViewPreferencesRepo {
     fun getViewPreferencesStream(): Flow<MDWordsListViewPreferences>
     suspend fun getViewPreferences(): MDWordsListViewPreferences = getViewPreferencesStream().first()
     suspend fun setViewPreferences(preferences: MDWordsListViewPreferences)
+    suspend fun setViewPreferences(buildPreferences: (MDWordsListViewPreferences) -> MDWordsListViewPreferences)
 }

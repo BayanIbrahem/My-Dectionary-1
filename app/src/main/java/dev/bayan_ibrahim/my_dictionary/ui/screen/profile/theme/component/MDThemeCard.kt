@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,9 +65,10 @@ fun MDThemeCard(
             }
         }
     }
-    val similarPrimaryColor by remember(selectedContrast, darkVariants, lightVariants) {
+    val isSystemDarkTheme = isSystemInDarkTheme()
+    val similarPrimaryColor by remember(selectedContrast, darkVariants, lightVariants, isSystemDarkTheme) {
         derivedStateOf {
-            if (selectedContrast.isDark) {
+            if (selectedContrast.isDark ?: isSystemDarkTheme) {
                 darkVariants
             } else {
                 lightVariants

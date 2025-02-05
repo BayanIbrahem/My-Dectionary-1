@@ -54,6 +54,7 @@ class MDTllTextToSpeechDataSource(
 
             @Deprecated("Deprecated in Java")
             override fun onError(utteranceId: String?) {
+                Log.d(TAG, "on error")
                 _runningId.value = null
             }
         })
@@ -85,7 +86,16 @@ class MDTllTextToSpeechDataSource(
 
     override fun isSupportedLocale(
         locale: Locale,
-    ): Boolean = textToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE
+    ): Boolean {
+        val isLanguageAvailable = textToSpeech.isLanguageAvailable(locale)
+        val isSupportedLanguage = isLanguageAvailable in setOf(
+            TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE,
+            TextToSpeech.LANG_AVAILABLE,
+            TextToSpeech.LANG_COUNTRY_AVAILABLE,
+        )
+        Log.d(TAG, "Is language (${locale.language}) supported: $isSupportedLanguage - availability: $isLanguageAvailable")
+        return isSupportedLanguage
+    }
 
     private fun textToSpeech(
         data: TextToSpeechData,

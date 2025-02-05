@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
@@ -65,10 +68,11 @@ fun MDScreen(
                 floatingActionButton()
             }
         },
-    ) {
+    ) { padding ->
         Box(
             modifier = Modifier
-                .padding(it)
+                .padding(padding)
+                .consumeWindowInsets(padding)
                 .fillMaxSize(),
             contentAlignment = contentAlignment
         ) {

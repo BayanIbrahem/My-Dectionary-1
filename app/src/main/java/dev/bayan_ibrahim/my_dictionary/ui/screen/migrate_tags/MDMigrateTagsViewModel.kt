@@ -13,7 +13,7 @@ class MDMigrateTagsViewModel @Inject constructor(
     private val _uiState: MDMigrateTagsMutableUiState = MDMigrateTagsMutableUiState()
     val uiState: MDMigrateTagsUiState = _uiState
     fun initWithNavArgs(args: MDDestination) {
-
+        _uiState.onExecute { true }
     }
 
     fun getUiActions(

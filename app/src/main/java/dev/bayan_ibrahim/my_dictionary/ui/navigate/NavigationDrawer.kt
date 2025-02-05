@@ -173,30 +173,30 @@ private fun DrawerContentMigrationGroup(
     onNavigate: (MDDestination) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MDDrawerContentGroup(
-        title = "Migration",// TODO, string res
-        modifier = modifier,
-    ) {
-        ContentGroupListItem(
-            label = "Migrate Tags",// TODO, string res
-            leadingIcon = MDIconsSet.WordTag,// TODO, icon res
-            currentDestination = currentDestination,
-            associatedDestination = MDDestination.MigrateTags::class,
-            onClick = {
-                onNavigate(MDDestination.MigrateTags)
-            },
-        )
-
-        ContentGroupListItem(
-            label = "Migrate Similar Words", // TODO, string res
-            leadingIcon = MDIconsSet.WordMeaning, // TODO, icon res
-            currentDestination = currentDestination,
-            associatedDestination = MDDestination.MigrateSimilarWords::class,
-            onClick = {
-                onNavigate(MDDestination.MigrateSimilarWords)
-            },
-        )
-    }
+//    MDDrawerContentGroup(
+//        title = "Migration",// TODO, string res
+//        modifier = modifier,
+//    ) {
+//        ContentGroupListItem(
+//            label = "Migrate Tags",// TODO, string res
+//            leadingIcon = MDIconsSet.WordTag,// TODO, icon res
+//            currentDestination = currentDestination,
+//            associatedDestination = MDDestination.MigrateTags::class,
+//            onClick = {
+//                onNavigate(MDDestination.MigrateTags)
+//            },
+//        )
+//
+//        ContentGroupListItem(
+//            label = "Migrate Similar Words", // TODO, string res
+//            leadingIcon = MDIconsSet.WordMeaning, // TODO, icon res
+//            currentDestination = currentDestination,
+//            associatedDestination = MDDestination.MigrateSimilarWords::class,
+//            onClick = {
+//                onNavigate(MDDestination.MigrateSimilarWords)
+//            },
+//        )
+//    }
 }
 
 @Composable
