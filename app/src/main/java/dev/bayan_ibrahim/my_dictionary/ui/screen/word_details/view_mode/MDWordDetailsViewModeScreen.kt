@@ -37,7 +37,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
@@ -178,9 +178,9 @@ fun MDWordDetailsViewModeScreen(
                 }
 
                 item {
-                    uiState.word.wordTypeTag?.let { typeTag ->
+                    uiState.word.wordWordClass?.let { wordClass ->
                         WordInfoGroup(
-                            title = "Word Class ${typeTag.name}", // TODO, string res
+                            title = "Word Class ${wordClass.name}", // TODO, string res
                             icon = MDIconsSet.WordRelatedWords,
                         ) {
                             if (uiState.word.relatedWords.isEmpty()) {
@@ -314,7 +314,7 @@ private fun WordDetailsViewModeScreenPreview() {
                                     "Additional translation 1",
                                     "Additional translation 2",
                                 ),
-                                wordTypeTag = WordTypeTag(0, "Type tag", "en".code.getLanguage(), listOf()),
+                                wordWordClass = WordWordClass(0, "Type tag", "en".code.getLanguage(), listOf()),
                                 relatedWords = listOf(
                                     RelatedWord(0, 0, 0, "Relation", "Word"),
                                     RelatedWord(0, 0, 0, "Relation", "Word"),

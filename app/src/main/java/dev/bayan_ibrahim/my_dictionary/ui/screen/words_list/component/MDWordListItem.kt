@@ -55,8 +55,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDC
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -181,7 +181,7 @@ fun MDWordListItem(
             }
             Text(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                text = word.wordTypeTag?.name ?: "",
+                text = word.wordWordClass?.name ?: "",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -356,11 +356,11 @@ private fun MDWordListItemPreview() {
                         examples = listOf("I habe zwei auge", "some other example"),
                         createdAt = INVALID_INSTANT,
                         updatedAt = INVALID_INSTANT,
-                        wordTypeTag = WordTypeTag(
+                        wordWordClass = WordWordClass(
                             id = 0,
                             name = "name",
                             language = Language("de", "Deutsch", "German"),
-                            relations = listOf(WordTypeTagRelation("relation 1"), WordTypeTagRelation("relation 2")),
+                            relations = listOf(WordWordClassRelation("relation 1"), WordWordClassRelation("relation 2")),
                             wordsCount = 30,
                         )
                     ),

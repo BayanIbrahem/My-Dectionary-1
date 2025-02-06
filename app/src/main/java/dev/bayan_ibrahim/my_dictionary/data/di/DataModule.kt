@@ -13,7 +13,7 @@ import dev.bayan_ibrahim.my_dictionary.data.MDRoomExportToFileRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomLanguageRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomTrainHistoryRepo
-import dev.bayan_ibrahim.my_dictionary.data.MDRoomTypeTagRepo
+import dev.bayan_ibrahim.my_dictionary.data.MDRoomWordClassRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomWordRepo
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreferencesDataStore
@@ -26,7 +26,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.ImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.TrainHistoryRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.TrainPreferencesRepo
-import dev.bayan_ibrahim.my_dictionary.domain.repo.TypeTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.ViewPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
@@ -82,12 +82,12 @@ class DataModule {
     fun provideExportToFileRepo(
         fileWriterFactory: MDFileWriterFactory,
         wordRepo: WordRepo,
-        typeTagRepo: TypeTagRepo,
+        wordClassRepo: WordClassRepo,
         fileManager: FileManager,
     ): ExportToFileRepo = MDRoomExportToFileRepo(
         fileWriterFactory = fileWriterFactory,
         wordRepo = wordRepo,
-        typeTagRepo = typeTagRepo,
+        wordClassRepo = wordClassRepo,
         fileManager = fileManager
     )
 
@@ -106,7 +106,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideTypeTagRepo(db: MDDataBase): TypeTagRepo = MDRoomTypeTagRepo(db = db)
+    fun provideWordClassRepo(db: MDDataBase): WordClassRepo = MDRoomWordClassRepo(db = db)
 
     @Singleton
     @Provides

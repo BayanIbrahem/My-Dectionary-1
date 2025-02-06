@@ -11,7 +11,7 @@ interface MDFileWordPart : MDFilePart {
     val contextTags: List<MDFileTagPart>
     val examples: List<String>
     val additionalTranslations: List<String>
-    val typeTag: StrIdentifiable?
+    val wordClass: StrIdentifiable?
     val relatedWords: Map<StrIdentifiable, String>
     val lexicalRelatedWords: List<LexicalRelation>
 

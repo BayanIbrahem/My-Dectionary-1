@@ -51,8 +51,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -429,9 +429,9 @@ private fun WordsSpaceFieldEditDialog(
         title = {
             Text(
                 text = if (isTag) {
-                    if (isNew) "Add Word Type Tag" /* TODO, string res */ else "Edit Word Type Tag" /* TODO, string res */
+                    if (isNew) "Add Word Word Class" /* TODO, string res */ else "Edit Word Word Class" /* TODO, string res */
                 } else {
-                    if (isNew) "Add Word Type Tag Relation" /* TODO, string res */ else "Edit Word Type Tag Relation" /* TODO, string res */
+                    if (isNew) "Add Word Word Class Relation" /* TODO, string res */ else "Edit Word Word Class Relation" /* TODO, string res */
                 },
                 style = MaterialTheme.typography.titleMedium
             )
@@ -443,11 +443,11 @@ private fun WordsSpaceFieldEditDialog(
             value = value,
             onChangeValue = { value = it },
             leadingIcon = if (isTag) {
-                MDIconsSet.WordTypeTag
+                MDIconsSet.WordWordClass
             } else {
                 MDIconsSet.WordRelatedWords
             },
-            placeholder = if (isTag) "Word Type Tag name" else "Word Type Tag Relation label", // TODO, string res
+            placeholder = if (isTag) "Word Word Class name" else "Word Word Class Relation label", // TODO, string res
         )
     }
 }
@@ -502,23 +502,23 @@ private val language = Language(
 private val state = LanguageWordSpaceMutableState(
     "ar",
     initialTags = listOf(
-        WordTypeTag(
+        WordWordClass(
             id = 0,
             name = "Tag Name 1",
             language = language,
             relations = listOf(
-                WordTypeTagRelation("Relation 1", 15),
-                WordTypeTagRelation("Relation 2", 10),
+                WordWordClassRelation("Relation 1", 15),
+                WordWordClassRelation("Relation 2", 10),
             ),
             wordsCount = 25
         ),
-        WordTypeTag(
+        WordWordClass(
             id = 0,
             name = "Tag Name 2",
             language = language,
             relations = listOf(
-                WordTypeTagRelation("Relation 3", 15),
-                WordTypeTagRelation("Relation 4", 10),
+                WordWordClassRelation("Relation 3", 15),
+                WordWordClassRelation("Relation 4", 10),
             ),
             wordsCount = 25
         )

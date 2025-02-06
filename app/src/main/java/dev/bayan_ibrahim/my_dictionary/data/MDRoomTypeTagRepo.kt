@@ -2,33 +2,33 @@ package dev.bayan_ibrahim.my_dictionary.data
 
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagRelationWordsDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassRelationWordsDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.repo.TypeTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class MDRoomTypeTagRepo(
+class MDRoomWordClassRepo(
     private val db: MDDataBase,
-) : TypeTagRepo {
-    private val typeTagDao: WordTypeTagDao = db.getWordTypeTagDao()
-    private val typeRelationDao: WordTypeTagRelationWordsDao = db.getWordTypeTagRelationDao()
+) : WordClassRepo {
+    private val wordClassDao: WordWordClassDao = db.getWordWordClassDao()
+    private val typeRelationDao: WordWordClassRelationWordsDao = db.getWordWordClassRelationDao()
 
-    override fun getTypeTagsOfLanguage(
+    override fun getWordsClassesOfLanguage(
         code: LanguageCode,
-    ): Flow<List<WordTypeTag>> = typeTagDao.getTagTypesOfLanguage(code.code).map {
+    ): Flow<List<WordWordClass>> = wordClassDao.getTagTypesOfLanguage(code.code).map {
         it.map { it.asTagModel() }
     }
 
-    override fun getAllTypeTags(): Flow<Map<LanguageCode, List<WordTypeTag>>> = typeTagDao.getAllTagTypes().map {
+    override fun getAllWordsClasses(): Flow<Map<LanguageCode, List<WordWordClass>>> = wordClassDao.getAllTagTypes().map {
         it.map {
             it.asTagModel()
         }.groupBy {
@@ -36,18 +36,18 @@ class MDRoomTypeTagRepo(
         }
     }
 
-    override suspend fun getTypeTag(
+    override suspend fun getWordClass(
         id: Long,
-    ): WordTypeTag? = typeTagDao.getTagType(id)?.asTagModel()
+    ): WordWordClass? = wordClassDao.getTagType(id)?.asTagModel()
 
-    private suspend fun insertTypeTagsWithRelationsTransaction(
-        tags: List<WordTypeTag>,
+    private suspend fun insertWordsClassesWithRelationsTransaction(
+        tags: List<WordWordClass>,
         deleteOthers: Boolean,
     ) {
         db.withTransaction {
             tags.groupBy { it.language }.forEach { (code, tags) ->
                 if (tags.isNotEmpty()) {
-                    insertTypeTagsWithRelationsOfLanguage(
+                    insertWordsClassesWithRelationsOfLanguage(
                         languageCode = code,
                         tags = tags,
                         deleteOthers = deleteOthers,
@@ -57,19 +57,19 @@ class MDRoomTypeTagRepo(
         }
     }
 
-    private suspend fun insertTypeTagsWithRelationsOfLanguage(
+    private suspend fun insertWordsClassesWithRelationsOfLanguage(
         languageCode: LanguageCode,
-        tags: List<WordTypeTag>,
+        tags: List<WordWordClass>,
         deleteOthers: Boolean,
     ) {
-        val newRelationsEntities = mutableListOf<WordTypeTagRelationEntity>()
-        val existedRelationsEntities = mutableListOf<WordTypeTagRelationEntity>()
-        val existedTagsEntities = mutableListOf<WordTypeTagEntity>()
+        val newRelationsEntities = mutableListOf<WordWordClassRelationEntity>()
+        val existedRelationsEntities = mutableListOf<WordWordClassRelationEntity>()
+        val existedTagsEntities = mutableListOf<WordWordClassEntity>()
         val allNewTagsIds = mutableSetOf<Long>()
 
         tags.forEach { tag ->
             val tagId = if (tag.id == INVALID_ID) {
-                typeTagDao.insertTagType(tag.asTagEntity())
+                wordClassDao.insertTagType(tag.asTagEntity())
             } else {
                 existedTagsEntities.add(tag.asTagEntity())
                 tag.id
@@ -83,18 +83,18 @@ class MDRoomTypeTagRepo(
                 }
             }
         }
-        typeTagDao.updateTagTypes(existedTagsEntities)
+        wordClassDao.updateTagTypes(existedTagsEntities)
         typeRelationDao.insertRelations(newRelationsEntities)
         typeRelationDao.updateRelations(existedRelationsEntities)
         if (deleteOthers) {
-            typeTagDao.deleteTypeTagsExclude(languageCode.code, allNewTagsIds)
+            wordClassDao.deleteWordsClassesExclude(languageCode.code, allNewTagsIds)
         }
     }
 
-    override suspend fun setLanguageTypeTags(
+    override suspend fun setLanguageWordsClasses(
         code: LanguageCode,
-        tags: List<WordTypeTag>,
+        tags: List<WordWordClass>,
     ) {
-        insertTypeTagsWithRelationsTransaction(tags, true)
+        insertWordsClassesWithRelationsTransaction(tags, true)
     }
 }

@@ -1,26 +1,26 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.TypeTagWithRelation
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelationEntity
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordClassWithRelation
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 
-fun TypeTagWithRelation.asTagModel(): WordTypeTag = WordTypeTag(
+fun WordClassWithRelation.asTagModel(): WordWordClass = WordWordClass(
     id = this.tag.id!!,
     name = this.tag.name,
     language = this.tag.language.code.getLanguage(),
     relations = this.relations.map { it.asModelRelation() }
 )
 
-private fun WordTypeTagRelationEntity.asModelRelation(wordsCount: Int = 0) = WordTypeTagRelation(label = label, id = id!!, wordsCount = wordsCount)
+private fun WordWordClassRelationEntity.asModelRelation(wordsCount: Int = 0) = WordWordClassRelation(label = label, id = id!!, wordsCount = wordsCount)
 
-fun TypeTagWithRelation.asTagModelWithCount(relationsCount: Map<Long, Int>): WordTypeTag {
+fun WordClassWithRelation.asTagModelWithCount(relationsCount: Map<Long, Int>): WordWordClass {
     var tagWordsCount = 0
-    return WordTypeTag(
+    return WordWordClass(
         id = this.tag.id!!,
         name = this.tag.name,
         language = this.tag.language.code.getLanguage(),
@@ -35,18 +35,18 @@ fun TypeTagWithRelation.asTagModelWithCount(relationsCount: Map<Long, Int>): Wor
     )
 }
 
-fun WordTypeTag.asTagEntity(
+fun WordWordClass.asTagEntity(
     id: Long? = this.id.nullIfInvalid(),
-) = WordTypeTagEntity(
+) = WordWordClassEntity(
     id = id,
     name = name,
     language = language.code,
 )
 
-fun WordTypeTagRelation.asRelationEntity(
+fun WordWordClassRelation.asRelationEntity(
     tagId: Long,
     id: Long? = this.id.nullIfInvalid(),
-) = WordTypeTagRelationEntity(
+) = WordWordClassRelationEntity(
     id = id,
     label = label,
     tagId = tagId,

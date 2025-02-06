@@ -6,7 +6,7 @@
     "entities": [
       {
         "tableName": "words",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`word_id` INTEGER PRIMARY KEY AUTOINCREMENT, `word_meaning` TEXT NOT NULL, `word_createdAt` INTEGER NOT NULL, `word_updatedAt` INTEGER NOT NULL, `word_normalized_meaning` TEXT NOT NULL, `word_translation` TEXT NOT NULL, `word_normalized_translation` TEXT NOT NULL, `word_languageCode` TEXT NOT NULL, `word_additionalTranslations` TEXT NOT NULL, `words_tags` TEXT NOT NULL, `word_typeTag` INTEGER, `word_memoryDecayFactor` REAL NOT NULL DEFAULT 1, `word_lastTrain` INTEGER DEFAULT NULL, `word_transcription` TEXT NOT NULL, `word_examples` TEXT NOT NULL, FOREIGN KEY(`word_typeTag`) REFERENCES `tags`(`tag_id`) ON UPDATE SET NULL ON DELETE SET NULL , FOREIGN KEY(`word_languageCode`) REFERENCES `languages`(`language_code`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`word_id` INTEGER PRIMARY KEY AUTOINCREMENT, `word_meaning` TEXT NOT NULL, `word_createdAt` INTEGER NOT NULL, `word_updatedAt` INTEGER NOT NULL, `word_normalized_meaning` TEXT NOT NULL, `word_translation` TEXT NOT NULL, `word_normalized_translation` TEXT NOT NULL, `word_languageCode` TEXT NOT NULL, `word_additionalTranslations` TEXT NOT NULL, `words_tags` TEXT NOT NULL, `word_wordClass` INTEGER, `word_memoryDecayFactor` REAL NOT NULL DEFAULT 1, `word_lastTrain` INTEGER DEFAULT NULL, `word_transcription` TEXT NOT NULL, `word_examples` TEXT NOT NULL, FOREIGN KEY(`word_wordClass`) REFERENCES `tags`(`tag_id`) ON UPDATE SET NULL ON DELETE SET NULL , FOREIGN KEY(`word_languageCode`) REFERENCES `languages`(`language_code`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -69,8 +69,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "wordTypeTagId",
-            "columnName": "word_typeTag",
+            "fieldPath": "wordWordClassId",
+            "columnName": "word_wordClass",
             "affinity": "INTEGER",
             "notNull": false
           },
@@ -109,13 +109,13 @@
         },
         "indices": [
           {
-            "name": "index_words_word_typeTag",
+            "name": "index_words_word_wordClass",
             "unique": false,
             "columnNames": [
-              "word_typeTag"
+              "word_wordClass"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_words_word_typeTag` ON `${TABLE_NAME}` (`word_typeTag`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_words_word_wordClass` ON `${TABLE_NAME}` (`word_wordClass`)"
           },
           {
             "name": "index_words_word_languageCode",
@@ -151,7 +151,7 @@
             "onDelete": "SET NULL",
             "onUpdate": "SET NULL",
             "columns": [
-              "word_typeTag"
+              "word_wordClass"
             ],
             "referencedColumns": [
               "tag_id"

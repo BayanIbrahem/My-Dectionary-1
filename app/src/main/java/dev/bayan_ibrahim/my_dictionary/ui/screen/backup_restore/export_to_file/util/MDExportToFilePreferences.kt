@@ -14,7 +14,7 @@ sealed interface MDExportToFilePreferences : LabeledEnum {
             All -> "All Words"
             is ContextTags -> "Context Tags (x${simpleSerializedTags.size})"
             is Languages -> "Languages (x${codes.size})"
-            is TypeTags -> "TypeTags (x${ids.size})"
+            is WordsClasses -> "WordsClasses (x${ids.size})"
             is Words -> "Words (x${ids.size})"
         }
 
@@ -29,7 +29,7 @@ sealed interface MDExportToFilePreferences : LabeledEnum {
     }
 
     data class Words(val ids: Collection<Long>) : MDExportToFilePreferences
-    data class TypeTags(val ids: Collection<Long>) : MDExportToFilePreferences
+    data class WordsClasses(val ids: Collection<Long>) : MDExportToFilePreferences
     data object All : MDExportToFilePreferences
     companion object {
         val Default: MDExportToFilePreferences

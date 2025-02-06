@@ -15,7 +15,7 @@ interface WordRepo {
         languages: Set<LanguageCode> = emptySet(),
         contextTags: Set<ContextTag> = emptySet(),
         includeContextTags: Boolean = true,
-        typeTags: Set<Long> = emptySet(),
+        wordsClasses: Set<Long> = emptySet(),
         memorizingProbabilities: Set<MDWordsListMemorizingProbabilityGroup> = emptySet(),
     ): Flow<Set<Long>>
 
@@ -25,13 +25,13 @@ interface WordRepo {
         languages: Set<LanguageCode> = emptySet(),
         contextTags: Set<ContextTag> = emptySet(),
         includeContextTags: Boolean = true,
-        typeTags: Set<Long> = emptySet(),
+        wordsClasses: Set<Long> = emptySet(),
         memorizingProbabilities: Set<MDWordsListMemorizingProbabilityGroup> = emptySet(),
     ): Flow<Sequence<Word>> = getWordsIdsOf(
         languages = languages,
         contextTags = contextTags,
         includeContextTags = includeContextTags,
-        typeTags = typeTags,
+        wordsClasses = wordsClasses,
         memorizingProbabilities = memorizingProbabilities
     ).flatMapConcat(::getWordsOfIds)
 

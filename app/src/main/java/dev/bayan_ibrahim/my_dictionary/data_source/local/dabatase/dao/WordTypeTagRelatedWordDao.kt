@@ -7,72 +7,72 @@ import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordBaseWordId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordRelationId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordBaseWordId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordRelationId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WordTypeTagRelatedWordDao {
+interface WordWordClassRelatedWordDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelatedWord(word: WordTypeTagRelatedWordEntity): Long
+    suspend fun insertRelatedWord(word: WordWordClassRelatedWordEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelatedWords(words: Collection<WordTypeTagRelatedWordEntity>)
+    suspend fun insertRelatedWords(words: Collection<WordWordClassRelatedWordEntity>)
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun updateRelatedWord(word: WordTypeTagRelatedWordEntity)
+    suspend fun updateRelatedWord(word: WordWordClassRelatedWordEntity)
 
     @Delete
-    suspend fun deleteRelatedWord(word: WordTypeTagRelatedWordEntity)
+    suspend fun deleteRelatedWord(word: WordWordClassRelatedWordEntity)
 
     @Delete
-    suspend fun deleteRelatedWords1(words: List<WordTypeTagRelatedWordEntity>)
+    suspend fun deleteRelatedWords1(words: List<WordWordClassRelatedWordEntity>)
 
     @Query(
         """
-            DELETE FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordId = :id
+            DELETE FROM $dbWordClassRelatedWordTable WHERE $dbWordClassRelatedWordId = :id
         """
     )
     suspend fun deleteRelatedWord(id: Long)
 
     @Query(
         """
-            DELETE FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordBaseWordId = :baseWordId
+            DELETE FROM $dbWordClassRelatedWordTable WHERE $dbWordClassRelatedWordBaseWordId = :baseWordId
         """
     )
     suspend fun deleteRelatedWordsOfWord(baseWordId: Long)
 
     @Query(
         """
-            DELETE FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordId IN (:ids)
+            DELETE FROM $dbWordClassRelatedWordTable WHERE $dbWordClassRelatedWordId IN (:ids)
         """
     )
     suspend fun deleteRelatedWords2(ids: List<Long>)
 
     @Query(
         """
-            SELECT * FROM $dbTypeTagRelatedWordTable 
+            SELECT * FROM $dbWordClassRelatedWordTable 
         """
     )
-    fun getAllRelatedWords(): Flow<List<WordTypeTagRelatedWordEntity>>
+    fun getAllRelatedWords(): Flow<List<WordWordClassRelatedWordEntity>>
 
     @Query(
         """
-            SELECT * FROM $dbTypeTagRelatedWordTable WHERE $dbTypeTagRelatedWordBaseWordId IN (:baseWordIds)
+            SELECT * FROM $dbWordClassRelatedWordTable WHERE $dbWordClassRelatedWordBaseWordId IN (:baseWordIds)
         """
     )
-    fun getAllRelatedWordsOfWords(baseWordIds: Collection<Long>): Flow<List<WordTypeTagRelatedWordEntity>>
+    fun getAllRelatedWordsOfWords(baseWordIds: Collection<Long>): Flow<List<WordWordClassRelatedWordEntity>>
 
     @Query(
         """
             SELECT 
-                $dbTypeTagRelatedWordRelationId as id,
+                $dbWordClassRelatedWordRelationId as id,
                 COUNT(*) as count
-            FROM $dbTypeTagRelatedWordTable 
-            GROUP BY $dbTypeTagRelatedWordRelationId
+            FROM $dbWordClassRelatedWordTable 
+            GROUP BY $dbWordClassRelatedWordRelationId
         """
     )
     fun getRelatedWordsCount(): Map<@MapColumn("id") Long, @MapColumn("count") Int>

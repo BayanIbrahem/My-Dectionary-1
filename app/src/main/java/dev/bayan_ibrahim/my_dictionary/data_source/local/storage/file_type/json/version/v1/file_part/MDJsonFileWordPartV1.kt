@@ -4,8 +4,8 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFileWordPart
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.StrIdentifiable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.file_part.MDJsonFileWordPart
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -34,8 +34,8 @@ data class MDJsonFileWordPartV1(
     override val examples: List<String> = emptyList(),
     @SerialName(ADDITIONAL_TRANSLATION_KEY)
     override val additionalTranslations: List<String> = emptyList(),
-    @SerialName(TYPE_TAG_KEY)
-    override val typeTag: TypeTag? = null,
+    @SerialName(WORD_CLASS_KEY)
+    override val wordClass: WordClass? = null,
     @SerialName(RELATED_WORDS_KEY)
     private val relatedWordsList: List<RelatedWord> = emptyList(),
     @SerialName(LEXICAL_RELATED_WORDS_KEY)
@@ -61,9 +61,9 @@ data class MDJsonFileWordPartV1(
             tags = contextTags.mapNotNull { it.toContextTag() }.toSet(),
             transcription = transcription ?: "",
             examples = examples,
-            wordTypeTag = typeTag?.toModelTypeTag(language)?.copy(
+            wordWordClass = wordClass?.toModelWordClass(language)?.copy(
                 relations = relatedWordsList.map {
-                    WordTypeTagRelation(
+                    WordWordClassRelation(
                         label = it.name,
                         id = INVALID_ID,
                         wordsCount = 0,
@@ -96,12 +96,12 @@ data class MDJsonFileWordPartV1(
     }
 
     @Serializable
-    data class TypeTag(
+    data class WordClass(
         @SerialName(NAME_KEY)
         override val name: String,
     ) : StrIdentifiable {
-        fun toModelTypeTag(language: String): WordTypeTag {
-            return WordTypeTag(
+        fun toModelWordClass(language: String): WordWordClass {
+            return WordWordClass(
                 id = INVALID_ID,
                 name = name,
                 language = language.code.getLanguage(),
@@ -111,7 +111,7 @@ data class MDJsonFileWordPartV1(
         }
 
         companion object Companion {
-            const val NAME_KEY = "typeTagName"
+            const val NAME_KEY = "wordClassName"
         }
     }
 
@@ -151,7 +151,7 @@ data class MDJsonFileWordPartV1(
         const val CONTEXT_TAGS_KEY = "contextTags"
         const val EXAMPLES_KEY = "examples"
         const val ADDITIONAL_TRANSLATION_KEY = "additionalTranslations"
-        const val TYPE_TAG_KEY = "typeTag"
+        const val WORD_CLASS_KEY = "wordClass"
         const val RELATED_WORDS_KEY = "relatedWords"
         const val LEXICAL_RELATED_WORDS_KEY = "lexicalRelatedWords"
     }

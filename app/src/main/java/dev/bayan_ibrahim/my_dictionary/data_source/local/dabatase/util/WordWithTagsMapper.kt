@@ -7,7 +7,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 
 /**
- * this method return null for [Word.wordTypeTag] and [Word.relatedWords]
+ * this method return null for [Word.wordWordClass] and [Word.relatedWords]
  */
 fun WordWithTagsRelation.asWordModel(): Word = Word(
     id = this.word.id!!,
@@ -18,7 +18,7 @@ fun WordWithTagsRelation.asWordModel(): Word = Word(
     tags = this.tags.asModelSet(),
     transcription = this.word.transcription,
     examples = this.word.examples,
-    wordTypeTag = null,
+    wordWordClass = null,
     relatedWords = emptyList(),
     memoryDecayFactor = this.word.memoryDecayFactor,
     lastTrainTime = this.word.lastTrainTime?.asEpochMillisecondsInstant(),

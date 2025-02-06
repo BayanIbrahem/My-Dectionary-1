@@ -6,7 +6,7 @@
     "entities": [
       {
         "tableName": "words",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`word_id` INTEGER PRIMARY KEY AUTOINCREMENT, `word_meaning` TEXT NOT NULL, `word_createdAt` INTEGER NOT NULL, `word_updatedAt` INTEGER NOT NULL, `word_normalized_meaning` TEXT NOT NULL, `word_translation` TEXT NOT NULL, `word_normalized_translation` TEXT NOT NULL, `word_languageCode` TEXT NOT NULL, `word_additionalTranslations` TEXT NOT NULL, `word_typeTag` INTEGER, `word_memoryDecayFactor` REAL NOT NULL DEFAULT 1, `word_lastTrain` INTEGER DEFAULT NULL, `word_transcription` TEXT NOT NULL, `word_examples` TEXT NOT NULL, `word_Synonym` TEXT NOT NULL, `word_Antonym` TEXT NOT NULL, `word_Hyponym` TEXT NOT NULL, `word_Hypernym` TEXT NOT NULL, `word_Meronym` TEXT NOT NULL, `word_Holonym` TEXT NOT NULL, `word_Homonym` TEXT NOT NULL, `word_Polysemy` TEXT NOT NULL, `word_Prototype` TEXT NOT NULL, `word_Metonymy` TEXT NOT NULL, `word_Collocation` TEXT NOT NULL, `word_Homograph` TEXT NOT NULL, `word_Homophone` TEXT NOT NULL, FOREIGN KEY(`word_typeTag`) REFERENCES `typeTags`(`typeTag_id`) ON UPDATE SET NULL ON DELETE SET NULL , FOREIGN KEY(`word_languageCode`) REFERENCES `languages`(`language_code`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`word_id` INTEGER PRIMARY KEY AUTOINCREMENT, `word_meaning` TEXT NOT NULL, `word_createdAt` INTEGER NOT NULL, `word_updatedAt` INTEGER NOT NULL, `word_normalized_meaning` TEXT NOT NULL, `word_translation` TEXT NOT NULL, `word_normalized_translation` TEXT NOT NULL, `word_languageCode` TEXT NOT NULL, `word_additionalTranslations` TEXT NOT NULL, `word_wordClass` INTEGER, `word_memoryDecayFactor` REAL NOT NULL DEFAULT 1, `word_lastTrain` INTEGER DEFAULT NULL, `word_transcription` TEXT NOT NULL, `word_examples` TEXT NOT NULL, `word_Synonym` TEXT NOT NULL, `word_Antonym` TEXT NOT NULL, `word_Hyponym` TEXT NOT NULL, `word_Hypernym` TEXT NOT NULL, `word_Meronym` TEXT NOT NULL, `word_Holonym` TEXT NOT NULL, `word_Homonym` TEXT NOT NULL, `word_Polysemy` TEXT NOT NULL, `word_Prototype` TEXT NOT NULL, `word_Metonymy` TEXT NOT NULL, `word_Collocation` TEXT NOT NULL, `word_Homograph` TEXT NOT NULL, `word_Homophone` TEXT NOT NULL, FOREIGN KEY(`word_wordClass`) REFERENCES `wordsClasses`(`wordClass_id`) ON UPDATE SET NULL ON DELETE SET NULL , FOREIGN KEY(`word_languageCode`) REFERENCES `languages`(`language_code`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -63,8 +63,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "wordTypeTagId",
-            "columnName": "word_typeTag",
+            "fieldPath": "wordWordClassId",
+            "columnName": "word_wordClass",
             "affinity": "INTEGER",
             "notNull": false
           },
@@ -181,13 +181,13 @@
         },
         "indices": [
           {
-            "name": "index_words_word_typeTag",
+            "name": "index_words_word_wordClass",
             "unique": false,
             "columnNames": [
-              "word_typeTag"
+              "word_wordClass"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_words_word_typeTag` ON `${TABLE_NAME}` (`word_typeTag`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_words_word_wordClass` ON `${TABLE_NAME}` (`word_wordClass`)"
           },
           {
             "name": "index_words_word_languageCode",
@@ -219,14 +219,14 @@
         ],
         "foreignKeys": [
           {
-            "table": "typeTags",
+            "table": "wordsClasses",
             "onDelete": "SET NULL",
             "onUpdate": "SET NULL",
             "columns": [
-              "word_typeTag"
+              "word_wordClass"
             ],
             "referencedColumns": [
-              "typeTag_id"
+              "wordClass_id"
             ]
           },
           {
@@ -315,24 +315,24 @@
         ]
       },
       {
-        "tableName": "typeTags",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`typeTag_id` INTEGER PRIMARY KEY AUTOINCREMENT, `typeTag_name` TEXT NOT NULL, `typeTag_language` TEXT NOT NULL, FOREIGN KEY(`typeTag_language`) REFERENCES `languages`(`language_code`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "tableName": "wordsClasses",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wordClass_id` INTEGER PRIMARY KEY AUTOINCREMENT, `wordClass_name` TEXT NOT NULL, `wordClass_language` TEXT NOT NULL, FOREIGN KEY(`wordClass_language`) REFERENCES `languages`(`language_code`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
-            "columnName": "typeTag_id",
+            "columnName": "wordClass_id",
             "affinity": "INTEGER",
             "notNull": false
           },
           {
             "fieldPath": "name",
-            "columnName": "typeTag_name",
+            "columnName": "wordClass_name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "language",
-            "columnName": "typeTag_language",
+            "columnName": "wordClass_language",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -340,18 +340,18 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "typeTag_id"
+            "wordClass_id"
           ]
         },
         "indices": [
           {
-            "name": "index_typeTags_typeTag_language",
+            "name": "index_wordsClasses_wordClass_language",
             "unique": false,
             "columnNames": [
-              "typeTag_language"
+              "wordClass_language"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_typeTags_typeTag_language` ON `${TABLE_NAME}` (`typeTag_language`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wordsClasses_wordClass_language` ON `${TABLE_NAME}` (`wordClass_language`)"
           }
         ],
         "foreignKeys": [
@@ -360,7 +360,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "typeTag_language"
+              "wordClass_language"
             ],
             "referencedColumns": [
               "language_code"
@@ -460,7 +460,7 @@
       },
       {
         "tableName": "tagRelations",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`relation_id` INTEGER PRIMARY KEY AUTOINCREMENT, `relation_label` TEXT NOT NULL, `relation_tagId` INTEGER NOT NULL, FOREIGN KEY(`relation_tagId`) REFERENCES `typeTags`(`typeTag_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`relation_id` INTEGER PRIMARY KEY AUTOINCREMENT, `relation_label` TEXT NOT NULL, `relation_tagId` INTEGER NOT NULL, FOREIGN KEY(`relation_tagId`) REFERENCES `wordsClasses`(`wordClass_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -500,14 +500,14 @@
         ],
         "foreignKeys": [
           {
-            "table": "typeTags",
+            "table": "wordsClasses",
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
               "relation_tagId"
             ],
             "referencedColumns": [
-              "typeTag_id"
+              "wordClass_id"
             ]
           }
         ]

@@ -28,8 +28,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTitleWithHint
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
@@ -65,7 +65,7 @@ fun MDWordDetailsEditModeScreen(
             )
         },
     ) {
-        val availableTypeTags by uiState.availableTypeTags.collectAsStateWithLifecycle()
+        val availableWordsClasses by uiState.availableWordsClasses.collectAsStateWithLifecycle()
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(spacedBy)
         ) {
@@ -187,17 +187,17 @@ fun MDWordDetailsEditModeScreen(
             ) {
                 item {
                     MDBasicDropDownMenu(
-                        value = uiState.selectedTypeTag,
-                        suggestions = availableTypeTags,
+                        value = uiState.selectedWordClass,
+                        suggestions = availableWordsClasses,
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = "Select type tag", // TODO, string res
+                        placeholder = "Select word class", // TODO, string res
                         fieldReadOnly = true,
                         onValueChange = {},
                         suggestionTitle = {
                             this.name
                         },
                         onSelectSuggestion = { i, it ->
-                            uiActions.onEditTypeTag(it)
+                            uiActions.onEditWordClass(it)
                         },
                     )
                 }
@@ -214,7 +214,7 @@ fun MDWordDetailsEditModeScreen(
                         MDBasicDropDownMenu(
                             modifier = Modifier.weight(1f),
                             value = label,
-                            suggestions = uiState.selectedTypeTag?.relations ?: emptyList(),
+                            suggestions = uiState.selectedWordClass?.relations ?: emptyList(),
                             fieldReadOnly = true,
                             onValueChange = {},
                             allowCancelSelection = false,
@@ -323,7 +323,7 @@ private fun MDWordDetailsEditModeScreenPreview() {
                         tags = remember {
                             mutableStateListOf()
                         },
-                        availableTypeTags = MutableStateFlow(emptyList())
+                        availableWordsClasses = MutableStateFlow(emptyList())
                     ).apply {
                         onExecute { true }
                     },
@@ -339,8 +339,8 @@ private fun MDWordDetailsEditModeScreenPreview() {
                             override fun onEditTranscription(newTranscription: String) {}
                             override fun onEditAdditionalTranslations(id: Long, newValue: String) {}
                             override fun onEditExamples(id: Long, newValue: String) {}
-                            override fun onEditTypeTag(newTypeTag: WordTypeTag?) {}
-                            override fun onEditTypeRelationLabel(id: Long, relation: WordTypeTagRelation) {}
+                            override fun onEditWordClass(newWordClass: WordWordClass?) {}
+                            override fun onEditTypeRelationLabel(id: Long, relation: WordWordClassRelation) {}
                             override fun onEditTypeRelationValue(id: Long, newValue: String) {}
                             override fun onEditLexicalRelation(type: WordLexicalRelationType, id: Long, newValue: String) {}
                             override fun onAdditionalTranslationsFocusChange(newFocused: Long) {}

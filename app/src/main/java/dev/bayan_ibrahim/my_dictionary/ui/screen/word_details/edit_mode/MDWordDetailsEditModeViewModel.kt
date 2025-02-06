@@ -9,8 +9,8 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_LANGUAGE
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
@@ -18,7 +18,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
-import dev.bayan_ibrahim.my_dictionary.domain.repo.TypeTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
@@ -38,7 +38,7 @@ import javax.inject.Inject
 class MDWordDetailsEditModeViewModel @Inject constructor(
     private val wordRepo: WordRepo,
     private val userRepo: UserPreferencesRepo,
-    private val typeTagRepo: TypeTagRepo,
+    private val wordClassRepo: WordClassRepo,
 ) : ViewModel() {
     private val _tagsState = MDContextTagsSelectorMutableUiState()
 
@@ -49,9 +49,9 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val typeTags: StateFlow<List<WordTypeTag>> = currentLanguageFlow.flatMapConcat {
+    val wordsClasses: StateFlow<List<WordWordClass>> = currentLanguageFlow.flatMapConcat {
         val language = it ?: INVALID_LANGUAGE
-        typeTagRepo.getTypeTagsOfLanguage(language)
+        wordClassRepo.getWordsClassesOfLanguage(language)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -60,7 +60,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
 
     private val _uiState: MDWordDetailsEditModeMutableUiState = MDWordDetailsEditModeMutableUiState(
         tags = _tagsState.selectedTags,
-        availableTypeTags = typeTags
+        availableWordsClasses = wordsClasses
     )
     val uiState: MDWordDetailsEditModeUiState = _uiState
     private var lastLoadedWord: Word? = null
@@ -114,7 +114,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
                             tags = uiState.tags.toSet(),
                             transcription = uiState.transcription,
                             examples = uiState.examples.values.toList().filter { it.isNotBlank() },
-                            wordTypeTag = uiState.selectedTypeTag,
+                            wordWordClass = uiState.selectedWordClass,
                             relatedWords = uiState.relatedWords.values.mapNotNull {
                                 if (it.second.isBlank()) return@mapNotNull null
                                 RelatedWord(
@@ -172,13 +172,13 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
             _uiState.ensureBlankExamplesTrailingField()
         }
 
-        override fun onEditTypeTag(newTypeTag: WordTypeTag?) {
-            _uiState.selectedTypeTag = newTypeTag
+        override fun onEditWordClass(newWordClass: WordWordClass?) {
+            _uiState.selectedWordClass = newWordClass
 //            _uiState.filterBlankRelatedWordsFields()
             _uiState.ensureBlankTypeRelationsTrailingField()
         }
 
-        override fun onEditTypeRelationLabel(id: Long, relation: WordTypeTagRelation) {
+        override fun onEditTypeRelationLabel(id: Long, relation: WordWordClassRelation) {
             val old = _uiState.relatedWords[id]?.second ?: INVALID_TEXT
             _uiState.relatedWords[id] = Pair(relation, old)
 //            _uiState.filterBlankRelatedWordsFields(id)
@@ -186,7 +186,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
         }
 
         override fun onEditTypeRelationValue(id: Long, newValue: String) {
-            val old = _uiState.relatedWords[id]?.first ?: _uiState.selectedTypeTag?.relations?.firstOrNull() ?: return
+            val old = _uiState.relatedWords[id]?.first ?: _uiState.selectedWordClass?.relations?.firstOrNull() ?: return
             _uiState.relatedWords[id] = Pair(old, newValue)
 //            _uiState.filterBlankRelatedWordsFields(id)
             _uiState.ensureBlankTypeRelationsTrailingField()

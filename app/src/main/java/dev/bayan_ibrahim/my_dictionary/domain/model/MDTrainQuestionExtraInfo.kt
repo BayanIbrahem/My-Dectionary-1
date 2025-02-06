@@ -10,7 +10,7 @@ enum class MDTrainQuestionExtraInfo(
 ) : LabeledEnum, IconedEnum {
     Transcription("Transcription", MDIconsSet.WordTranscription),
     Tag("Tag", MDIconsSet.WordTag),
-    TypeTag("Type Tag", MDIconsSet.WordTypeTag),
+    WordClass("Word Class", MDIconsSet.WordWordClass),
     RelatedWords("Related Words", MDIconsSet.WordRelatedWords),
     Example("Examples", MDIconsSet.WordExample),
     AdditionalTranslation("Additional Translations", MDIconsSet.WordAdditionalTranslation),

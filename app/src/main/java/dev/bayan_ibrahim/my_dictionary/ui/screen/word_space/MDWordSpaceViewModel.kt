@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.toMDEditableField
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
-import dev.bayan_ibrahim.my_dictionary.domain.repo.TypeTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.LanguageWordSpaceMutableState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.LanguageWordSpaceState
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MDWordSpaceViewModel @Inject constructor(
     private val languageRepo: LanguageRepo,
-    private val typeTagRepo: TypeTagRepo,
+    private val wordClassRepo: WordClassRepo,
 ) : ViewModel() {
     private val _uiState: MDWordSpaceMutableUiState = MDWordSpaceMutableUiState()
     val uiState: MDWordSpaceUiState = _uiState
@@ -31,7 +31,7 @@ class MDWordSpaceViewModel @Inject constructor(
                 val allWordSpaces = languageRepo.getAllLanguagesWordSpaces(false).first().associate {
                     (it as LanguageCode) to it.wordsCount
                 }
-                typeTagRepo.getAllTypeTags().first().forEach { (language, tags) ->
+                wordClassRepo.getAllWordsClasses().first().forEach { (language, tags) ->
                     _uiState.wordSpacesWithActions.add(
                         buildWordSpaceStateWithActions(
                             language = language,
@@ -40,7 +40,7 @@ class MDWordSpaceViewModel @Inject constructor(
                         )
                     )
                 }
-                val languagesWithoutTypeTags: List<LanguageCode> = allWordSpaces.mapNotNull { (language) ->
+                val languagesWithoutWordsClasses: List<LanguageCode> = allWordSpaces.mapNotNull { (language) ->
                     if (uiState.wordSpacesWithActions.any { it.first.code == language.code }) {
                         null
                     } else {
@@ -48,7 +48,7 @@ class MDWordSpaceViewModel @Inject constructor(
                     }
                 }
                 _uiState.wordSpacesWithActions.addAll(
-                    languagesWithoutTypeTags.map { language ->
+                    languagesWithoutWordsClasses.map { language ->
                         buildWordSpaceStateWithActions(
                             language = language,
                             tags = emptyList(),
@@ -63,7 +63,7 @@ class MDWordSpaceViewModel @Inject constructor(
 
     private fun buildWordSpaceStateWithActions(
         language: LanguageCode,
-        tags: List<WordTypeTag>,
+        tags: List<WordWordClass>,
         wordsCount: Int,
     ) = LanguageWordSpaceMutableState(
         code = language.code,
@@ -85,7 +85,7 @@ class MDWordSpaceViewModel @Inject constructor(
     }
 
     private suspend fun onSubmitWordSpaceState(state: LanguageWordSpaceState) {
-        typeTagRepo.setLanguageTypeTags(
+        wordClassRepo.setLanguageWordsClasses(
             code = state,
             tags = state.tags.map { it.current }
         )

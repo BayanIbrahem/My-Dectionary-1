@@ -5,33 +5,33 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationLabel
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationTable
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationTagId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationLabel
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationTagId
 
 @Entity(
-    tableName = dbTypeTagRelationTable,
+    tableName = dbWordClassRelationTable,
     foreignKeys = [
         ForeignKey(
-            entity = WordTypeTagEntity::class,
-            parentColumns = [dbTypeTagId],
-            childColumns = [dbTypeTagRelationTagId],
+            entity = WordWordClassEntity::class,
+            parentColumns = [dbWordClassId],
+            childColumns = [dbWordClassRelationTagId],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE,
         )
     ],
     indices = [
-        Index(dbTypeTagRelationTagId),
+        Index(dbWordClassRelationTagId),
     ]
 )
-data class WordTypeTagRelationEntity(
+data class WordWordClassRelationEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = dbTypeTagRelationId)
+    @ColumnInfo(name = dbWordClassRelationId)
     val id: Long? = null,
-    @ColumnInfo(name = dbTypeTagRelationLabel)
+    @ColumnInfo(name = dbWordClassRelationLabel)
     val label: String,
-    @ColumnInfo(name = dbTypeTagRelationTagId)
+    @ColumnInfo(name = dbWordClassRelationTagId)
     val tagId: Long,
 )

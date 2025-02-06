@@ -23,7 +23,7 @@ sealed interface MDStatisticsViewPreferences {
         is Language -> copy(dateUnit = dateUnit)
         is Tag -> copy(dateUnit = dateUnit)
         is Train -> copy(dateUnit = dateUnit)
-        is TypeTag -> copy(dateUnit = dateUnit)
+        is WordClass -> copy(dateUnit = dateUnit)
         is Word -> copy(dateUnit = dateUnit)
     }
 
@@ -60,7 +60,7 @@ sealed interface MDStatisticsViewPreferences {
     ) : MDStatisticsViewPreferences
 
     /**
-     * show history of tag (not type tag but the normal tag in the word
+     * show history of tag (not word class but the normal tag in the word
      */
     @Serializable
     data class Tag(
@@ -72,11 +72,11 @@ sealed interface MDStatisticsViewPreferences {
     }
 
     /**
-     * show history of type tag
+     * show history of word class
      */
     @Serializable
-    data class TypeTag(
-        val typeTagId: Long,
+    data class WordClass(
+        val wordClassId: Long,
         override val dateUnit: MDDateUnit = DEFAULT_DATE_UNIT,
     ) : MDStatisticsViewPreferences
 

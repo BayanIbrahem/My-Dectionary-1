@@ -4,8 +4,8 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFileLanguagePart
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.StrIdentifiable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.file_part.MDJsonFileLanguagePart
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTagRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
@@ -17,8 +17,8 @@ import kotlinx.serialization.json.Json
 data class MDJsonFileLanguagePartV1(
     @SerialName(CODE_KEY)
     override val code: String,
-    @SerialName(TYPE_TAGS_KEY)
-    override val typeTags: List<TypeTag>,
+    @SerialName(WORDS_CLASSES_KEY)
+    override val wordsClasses: List<WordClass>,
 ) : MDJsonFileLanguagePart {
     override fun toLanguage(): Language = code.code.getLanguage()
 
@@ -27,12 +27,12 @@ data class MDJsonFileLanguagePartV1(
     }
 
     @Serializable
-    data class TypeTag(
+    data class WordClass(
         @SerialName(NAME_KEY)
         override val name: String,
         @SerialName(RELATIONS_KEY)
         override val relations: List<Relation>,
-    ) : MDFileLanguagePart.LanguageTypeTag {
+    ) : MDFileLanguagePart.LanguageWordClass {
         @Serializable
         data class Relation(
             @SerialName(NAME_KEY)
@@ -44,16 +44,16 @@ data class MDJsonFileLanguagePartV1(
         }
 
         companion object Companion {
-            const val NAME_KEY = "typeTagName"
+            const val NAME_KEY = "wordClassName"
             const val RELATIONS_KEY = "relations"
         }
 
-        override fun toTypeTag(language: Language): WordTypeTag = WordTypeTag(
+        override fun toWordClass(language: Language): WordWordClass = WordWordClass(
             id = INVALID_ID,
             name = name,
             language = language,
             relations = relations.map { relation ->
-                WordTypeTagRelation(
+                WordWordClassRelation(
                     label = relation.name,
                     wordsCount = 0
                 )
@@ -64,6 +64,6 @@ data class MDJsonFileLanguagePartV1(
 
     companion object Companion {
         const val CODE_KEY = "id"
-        const val TYPE_TAGS_KEY = "typeTags"
+        const val WORDS_CLASSES_KEY = "wordsClasses"
     }
 }

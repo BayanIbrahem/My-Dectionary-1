@@ -6,80 +6,80 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelationEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationTable
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationTagId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationTagId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WordTypeTagRelationWordsDao {
+interface WordWordClassRelationWordsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelation(relation: WordTypeTagRelationEntity): Long
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelations(relations: List<WordTypeTagRelationEntity>): List<Long>
+    suspend fun insertRelation(relation: WordWordClassRelationEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelations(vararg relations: WordTypeTagRelationEntity): List<Long>
+    suspend fun insertRelations(relations: List<WordWordClassRelationEntity>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertRelations(vararg relations: WordWordClassRelationEntity): List<Long>
 
     @Update
-    suspend fun updateRelation(relation: WordTypeTagRelationEntity)
+    suspend fun updateRelation(relation: WordWordClassRelationEntity)
 
     @Update
-    suspend fun updateRelations(relations: List<WordTypeTagRelationEntity>)
+    suspend fun updateRelations(relations: List<WordWordClassRelationEntity>)
 
     @Update
-    suspend fun updateRelations(vararg relations: WordTypeTagRelationEntity)
+    suspend fun updateRelations(vararg relations: WordWordClassRelationEntity)
 
     @Delete
-    suspend fun deleteRelation(relation: WordTypeTagRelationEntity)
+    suspend fun deleteRelation(relation: WordWordClassRelationEntity)
 
     @Delete
-    suspend fun deleteRelations1(relations: List<WordTypeTagRelationEntity>)
+    suspend fun deleteRelations1(relations: List<WordWordClassRelationEntity>)
 
     @Delete
-    suspend fun deleteRelations2(vararg relations: WordTypeTagRelationEntity)
+    suspend fun deleteRelations2(vararg relations: WordWordClassRelationEntity)
 
     @Query(
         """
-            DELETE FROM $dbTypeTagRelationTable WHERE $dbTypeTagRelationId = :id
+            DELETE FROM $dbWordClassRelationTable WHERE $dbWordClassRelationId = :id
         """
     )
     suspend fun deleteRelation(id: Long)
 
     @Query(
         """
-            DELETE FROM $dbTypeTagRelationTable WHERE $dbTypeTagRelationId IN (:ids)
+            DELETE FROM $dbWordClassRelationTable WHERE $dbWordClassRelationId IN (:ids)
         """
     )
     suspend fun deleteRelations(ids: List<Long>)
     @Query(
         """
-            DELETE FROM $dbTypeTagRelationTable WHERE $dbTypeTagRelationTagId = :tagId AND $dbTypeTagRelationId NOT IN (:ids)
+            DELETE FROM $dbWordClassRelationTable WHERE $dbWordClassRelationTagId = :tagId AND $dbWordClassRelationId NOT IN (:ids)
         """
     )
     suspend fun deleteRelationsNotIn(ids: Collection<Long>, tagId: Long)
 
     @Query(
         """
-            DELETE FROM $dbTypeTagRelationTable WHERE $dbTypeTagRelationId IN (:ids)
+            DELETE FROM $dbWordClassRelationTable WHERE $dbWordClassRelationId IN (:ids)
         """
     )
     suspend fun deleteRelations(vararg ids: Long)
 
     @Query(
         """
-            SELECT * FROM $dbTypeTagRelationTable 
+            SELECT * FROM $dbWordClassRelationTable 
         """
     )
-    fun getAllRelations(): Flow<List<WordTypeTagRelationEntity>>
+    fun getAllRelations(): Flow<List<WordWordClassRelationEntity>>
 
     @Query(
         """
-            SELECT * FROM $dbTypeTagRelationTable WHERE $dbTypeTagRelationId = :id
+            SELECT * FROM $dbWordClassRelationTable WHERE $dbWordClassRelationId = :id
         """
     )
-    suspend fun getAllRelation(id: Long): WordTypeTagRelationEntity?
+    suspend fun getAllRelation(id: Long): WordWordClassRelationEntity?
 }

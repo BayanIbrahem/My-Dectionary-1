@@ -2,20 +2,20 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relati
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelationEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordRelationId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationLabel
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordRelationId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationLabel
 
-data class WordTypeTagRelatedWordWithRelationEntity(
+data class WordWordClassRelatedWordWithRelationEntity(
     @Embedded
-    val related: WordTypeTagRelatedWordEntity,
+    val related: WordWordClassRelatedWordEntity,
     @Relation(
-        WordTypeTagRelationEntity::class,
-        parentColumn = dbTypeTagRelatedWordRelationId,
-        entityColumn = dbTypeTagRelationId,
-        projection = [dbTypeTagRelationLabel]
+        WordWordClassRelationEntity::class,
+        parentColumn = dbWordClassRelatedWordRelationId,
+        entityColumn = dbWordClassRelationId,
+        projection = [dbWordClassRelationLabel]
     )
     val relationLabel: String,
 )

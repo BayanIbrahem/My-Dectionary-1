@@ -7,9 +7,9 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithContextTagsAndRelatedWordsRelation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -19,7 +19,7 @@ import kotlinx.datetime.Clock
 
 @JvmName("WordWithRelatedWordsAsWordModel")
 fun WordWithContextTagsAndRelatedWordsRelation.asWordModel(
-    tag: WordTypeTag? = null,
+    tag: WordWordClass? = null,
 ): Word = Word(
     id = this.word.id!!,
     meaning = this.word.meaning.meaningViewNormalize,
@@ -29,7 +29,7 @@ fun WordWithContextTagsAndRelatedWordsRelation.asWordModel(
     tags = this.tags.map { it.asModel() }.toSet(),
     transcription = this.word.transcription,
     examples = this.word.examples,
-    wordTypeTag = tag,
+    wordWordClass = tag,
     relatedWords = tag?.let {
         relatedWords.map { word ->
             RelatedWord(
@@ -57,7 +57,7 @@ fun WordEntity.asWordModel(): Word = Word(
     language = this.languageCode.code.getLanguage(),
     transcription = this.transcription,
     examples = this.examples,
-    wordTypeTag = null,
+    wordWordClass = null,
     relatedWords = emptyList(),
     memoryDecayFactor = this.memoryDecayFactor,
     lastTrainTime = this.lastTrainTime?.asEpochMillisecondsInstant(),
@@ -98,7 +98,7 @@ fun Word.asWordEntity(
     languageCode = this.language.code,
     transcription = this.transcription,
     examples = this.examples,
-    wordTypeTagId = this.wordTypeTag?.id?.nullIfInvalid(),
+    wordWordClassId = this.wordWordClass?.id?.nullIfInvalid(),
     memoryDecayFactor = this.memoryDecayFactor,
     lastTrainTime = this.lastTrainTime?.toEpochMilliseconds(),
     createdAt = this.createdAt.toEpochMilliseconds(),
@@ -119,9 +119,9 @@ fun Word.asWordEntity(
     homophone = lexicalRelations[WordLexicalRelationType.Homophone]?.map { it.relatedWord } ?: emptyList(),
 )
 
-fun Word.asRelatedWords(): List<WordTypeTagRelatedWordEntity> = this.relatedWords.mapNotNull { word ->
+fun Word.asRelatedWords(): List<WordWordClassRelatedWordEntity> = this.relatedWords.mapNotNull { word ->
     word.relationId.nullIfInvalid()?.let {
-        WordTypeTagRelatedWordEntity(
+        WordWordClassRelatedWordEntity(
             id = word.id.nullIfInvalid(),
             relationId = word.relationId,
             baseWordId = this.id,

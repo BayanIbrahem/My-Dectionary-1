@@ -68,7 +68,7 @@ class MDStatisticsViewModel @Inject constructor(
         is MDStatisticsViewPreferences.Language -> getTrainHistoryOfLanguage(preferences.language, startTime, endTime)
         is MDStatisticsViewPreferences.Tag -> getTrainHistoryOfContextTag(preferences.tag, startTime, endTime)
         is MDStatisticsViewPreferences.Train -> trainHistoryRepo.getTrainHistoryOf(limit = preferences.count.count).first()
-        is MDStatisticsViewPreferences.TypeTag -> getTrainHistoryOfTypeTag(preferences.typeTagId, startTime, endTime)
+        is MDStatisticsViewPreferences.WordClass -> getTrainHistoryOfWordClass(preferences.wordClassId, startTime, endTime)
         is MDStatisticsViewPreferences.Word -> getTrainHistoryOfWord(preferences.wordId, startTime, endTime)
     }
 
@@ -114,13 +114,13 @@ class MDStatisticsViewModel @Inject constructor(
         ).first()
     }
 
-    private suspend fun getTrainHistoryOfTypeTag(
-        typeTagId: Long,
+    private suspend fun getTrainHistoryOfWordClass(
+        wordClassId: Long,
         startTime: Instant?,
         endTime: Instant?,
         limit: Int? = null,
     ): List<TrainHistory> {
-        val wordsIds = wordRepo.getWordsIdsOf(typeTags = setOf(typeTagId)).first()
+        val wordsIds = wordRepo.getWordsIdsOf(wordsClasses = setOf(wordClassId)).first()
         return trainHistoryRepo.getTrainHistoryOf(
             startTime = startTime,
             endTime = endTime,
@@ -138,7 +138,7 @@ class MDStatisticsViewModel @Inject constructor(
         is MDStatisticsViewPreferences.Word -> initWordPreferences(trainHistoryRecord)
         is MDStatisticsViewPreferences.Language -> initLanguagePreferences(trainHistoryRecord)
         is MDStatisticsViewPreferences.Tag -> initTagPreferences(trainHistoryRecord)
-        is MDStatisticsViewPreferences.TypeTag -> initTypeTagPreferences(trainHistoryRecord)
+        is MDStatisticsViewPreferences.WordClass -> initWordClassPreferences(trainHistoryRecord)
     }
 
 
@@ -169,7 +169,7 @@ class MDStatisticsViewModel @Inject constructor(
         dateUnit: MDDateUnit = uiState.preferences.dateUnit,
     ): MDStatisticsLineChartData = trainHistoryRecord.asLineChartData(dateUnit)
 
-    private fun initTypeTagPreferences(
+    private fun initWordClassPreferences(
         trainHistoryRecord: List<TrainHistory>,
         dateUnit: MDDateUnit = uiState.preferences.dateUnit,
     ): MDStatisticsLineChartData = trainHistoryRecord.asLineChartData(dateUnit)

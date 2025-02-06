@@ -2,19 +2,19 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relati
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordTypeTagRelationEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationTagId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationTagId
 
 
-data class TypeTagWithRelation(
+data class WordClassWithRelation(
     @Embedded
-    val tag: WordTypeTagEntity,
+    val tag: WordWordClassEntity,
     @Relation(
-        entity = WordTypeTagRelationEntity::class,
-        parentColumn = dbTypeTagId,
-        entityColumn = dbTypeTagRelationTagId,
+        entity = WordWordClassRelationEntity::class,
+        parentColumn = dbWordClassId,
+        entityColumn = dbWordClassRelationTagId,
     )
-    val relations: List<WordTypeTagRelationEntity>
+    val relations: List<WordWordClassRelationEntity>
 )

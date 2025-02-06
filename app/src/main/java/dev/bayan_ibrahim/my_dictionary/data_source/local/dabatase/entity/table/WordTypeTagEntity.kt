@@ -6,33 +6,33 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageCode
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagLanguage
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagName
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassLanguage
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassName
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
 
 @Entity(
-    tableName = dbTypeTagTable,
+    tableName = dbWordClassTable,
     foreignKeys = [
         ForeignKey(
             entity = LanguageEntity::class,
             parentColumns = [dbLanguageCode],
-            childColumns = [dbTypeTagLanguage],
+            childColumns = [dbWordClassLanguage],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE,
         ),
     ],
     indices = [
-        Index(dbTypeTagLanguage)
+        Index(dbWordClassLanguage)
     ]
 )
-data class WordTypeTagEntity(
+data class WordWordClassEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(dbTypeTagId)
+    @ColumnInfo(dbWordClassId)
     val id: Long? = null,
-    @ColumnInfo(dbTypeTagName)
+    @ColumnInfo(dbWordClassName)
     val name: String,
-    @ColumnInfo(dbTypeTagLanguage)
+    @ColumnInfo(dbWordClassLanguage)
     val language: String,
 )

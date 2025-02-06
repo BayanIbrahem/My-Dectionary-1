@@ -118,7 +118,7 @@ class MDExportToFileViewModel @Inject constructor(
         MDExportToFilePreferences.All -> wordRepo.getWordsIdsOf().first()
         is MDExportToFilePreferences.ContextTags -> wordRepo.getWordsIdsOf(contextTags = preferences.tags.toSet()).first()
         is MDExportToFilePreferences.Languages -> wordRepo.getWordsIdsOf(languages = preferences.codes.toSet()).first()
-        is MDExportToFilePreferences.TypeTags -> wordRepo.getWordsIdsOf(typeTags = preferences.ids.toSet()).first()
+        is MDExportToFilePreferences.WordsClasses -> wordRepo.getWordsIdsOf(wordsClasses = preferences.ids.toSet()).first()
         is MDExportToFilePreferences.Words -> preferences.ids.toSet()
     }
 

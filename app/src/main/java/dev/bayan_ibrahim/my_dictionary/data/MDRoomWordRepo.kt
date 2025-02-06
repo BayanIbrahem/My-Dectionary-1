@@ -8,7 +8,7 @@ import androidx.paging.map
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordTypeTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.context_tag.ContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
@@ -48,7 +48,7 @@ class MDRoomWordRepo(
     private val wordWithTagsDao: WordWithContextTagDao = db.getWordWithContextTagDao()
     private val wordWithContextTagsAndRelatedWordsDao: WordWithContextTagsAndRelatedWordsDao = db.getWordsWithContextTagAndRelatedWordsDao()
     private val wordsCrossTagDao: WordsCrossContextTagDao = db.getWordsCrossTagsDao()
-    private val typeTagDao: WordTypeTagDao = db.getWordTypeTagDao()
+    private val wordClassDao: WordWordClassDao = db.getWordWordClassDao()
     private val languageDao: LanguageDao = db.getLanguageDao()
     private val contextTagDao: ContextTagDao = db.getContextTagDao()
 
@@ -76,18 +76,18 @@ class MDRoomWordRepo(
         languages: Set<LanguageCode>,
         contextTags: Set<ContextTag>,
         includeContextTags: Boolean,
-        typeTags: Set<Long>,
+        wordsClasses: Set<Long>,
         memorizingProbabilities: Set<MDWordsListMemorizingProbabilityGroup>,
     ): Flow<Set<Long>> {
         val includeLanguages = languages.isNotEmpty()
         val effectiveIncludeContextTags = contextTags.isNotEmpty()
-        val includeTypeTags = typeTags.isNotEmpty()
+        val includeWordsClasses = wordsClasses.isNotEmpty()
         val includeMemorizingProbabilities = memorizingProbabilities.count() in (1..<MDWordsListMemorizingProbabilityGroup.entries.count())
         if (
             listOf(
                 includeLanguages,
                 effectiveIncludeContextTags,
-                includeTypeTags,
+                includeWordsClasses,
                 includeMemorizingProbabilities
             ).none { it }
         ) {
@@ -96,8 +96,8 @@ class MDRoomWordRepo(
         return wordDao.getWordsOf(
             includeLanguage = includeLanguages,
             languages = languages.map { it.code }.toSet(),
-            includeTypeTag = includeTypeTags,
-            typeTags = typeTags
+            includeWordClass = includeWordsClasses,
+            wordsClasses = wordsClasses
         ).let { flow ->
             if (effectiveIncludeContextTags) {
                 flow.flatMapConcat { entities ->
@@ -149,21 +149,21 @@ class MDRoomWordRepo(
 
     override suspend fun getWord(wordId: Long): Word? {
         val word = wordWithContextTagsAndRelatedWordsDao.getWordWithContextTagsAndRelatedWordsRelation(wordId) ?: return null
-        val typeTag = word.word.wordTypeTagId?.let { wordTypeTagId ->
-            typeTagDao.getTagType(wordTypeTagId)
+        val wordClass = word.word.wordWordClassId?.let { wordWordClassId ->
+            wordClassDao.getTagType(wordWordClassId)
         }?.asTagModel()
-        return word.asWordModel(typeTag)
+        return word.asWordModel(wordClass)
     }
 
     override fun getWordsOfIds(ids: Set<Long>): Flow<Sequence<Word>> = wordWithContextTagsAndRelatedWordsDao
         .getWordsWithContextTagsAndRelatedWordsRelations(
             ids = ids
         ).map { list ->
-            val typeTags = typeTagDao.getAllTagTypes().first().associate {
+            val wordsClasses = wordClassDao.getAllTagTypes().first().associate {
                 it.tag.id to it.asTagModel()
             }
             list.asSequence().map { entity ->
-                entity.asWordModel(typeTags[entity.word.wordTypeTagId])
+                entity.asWordModel(wordsClasses[entity.word.wordWordClassId])
             }
         }
 
@@ -177,10 +177,10 @@ class MDRoomWordRepo(
         sortByOrder: MDWordsListSortByOrder,
     ): Flow<PagingData<Word>> = pagingDataOf(
         mapper = { wordWithRelation ->
-            val wordTypeTag = wordWithRelation.word.wordTypeTagId?.let { typeTagId ->
-                typeTagDao.getTagType(typeTagId)
+            val wordWordClass = wordWithRelation.word.wordWordClassId?.let { wordClassId ->
+                wordClassDao.getTagType(wordClassId)
             }?.asTagModel()
-            wordWithRelation.asWordModel(wordTypeTag)
+            wordWithRelation.asWordModel(wordWordClass)
         }
     ) {
         when (sortBy) {

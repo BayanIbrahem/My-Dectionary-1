@@ -6,13 +6,13 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.Fi
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.file_part.MDJsonFileLanguagePartV1
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.file_part.MDJsonFileTagPartV1
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.file_part.MDJsonFileWordPartV1
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordTypeTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.repo.ExportToFileRepo
-import dev.bayan_ibrahim.my_dictionary.domain.repo.TypeTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.toStrHex
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
@@ -89,7 +89,7 @@ sealed interface ExportProgress {
 class MDRoomExportToFileRepo(
     private val fileWriterFactory: MDFileWriterFactory,
     private val wordRepo: WordRepo,
-    private val typeTagRepo: TypeTagRepo,
+    private val wordClassRepo: WordClassRepo,
     private val fileManager: FileManager,
 ) : ExportToFileRepo {
     override fun export(
@@ -180,11 +180,11 @@ class MDRoomExportToFileRepo(
     ) = wordRepo.getWordsOfIds(wordsIds).first().toList().map {
         it.language
     }.distinct().map { language ->
-        val typeTags = typeTagRepo.getTypeTagsOfLanguage(language).first()
+        val wordsClasses = wordClassRepo.getWordsClassesOfLanguage(language).first()
         MDJsonFileLanguagePartV1(
             code = language.code,
-            typeTags = typeTags.map { tag ->
-                tag.asFilePartTypeTag()
+            wordsClasses = wordsClasses.map { tag ->
+                tag.asFilePartWordClass()
             }
         )
     }
@@ -211,8 +211,8 @@ class MDRoomExportToFileRepo(
             contextTags = word.tags.map { it.asFilePartContextTag() },
             examples = word.examples,
             additionalTranslations = word.additionalTranslations,
-            typeTag = word.wordTypeTag?.let { tag ->
-                MDJsonFileWordPartV1.TypeTag(
+            wordClass = word.wordWordClass?.let { tag ->
+                MDJsonFileWordPartV1.WordClass(
                     name = tag.name
                 )
             },
@@ -233,10 +233,10 @@ class MDRoomExportToFileRepo(
         )
     }.toList()
 
-    private fun WordTypeTag.asFilePartTypeTag(): MDJsonFileLanguagePartV1.TypeTag = MDJsonFileLanguagePartV1.TypeTag(
+    private fun WordWordClass.asFilePartWordClass(): MDJsonFileLanguagePartV1.WordClass = MDJsonFileLanguagePartV1.WordClass(
         name = name,
         relations = relations.map { relation ->
-            MDJsonFileLanguagePartV1.TypeTag.Relation(
+            MDJsonFileLanguagePartV1.WordClass.Relation(
                 name = relation.label
             )
         },

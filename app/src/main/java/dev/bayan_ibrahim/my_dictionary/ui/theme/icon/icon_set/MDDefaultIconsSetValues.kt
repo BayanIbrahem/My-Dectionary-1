@@ -47,7 +47,7 @@ fun MDIconsSet.getDefaultIcon() = when (this) {
     MDIconsSet.WordTrainWriteType -> MDIcon(default = D.write1_outline, contentDescription = S.content_description_word_train_write_type)
     MDIconsSet.WordTranscription -> MDIcon(outlinedRes = D.voice_out_outline, filledRes = D.voice_out_fill, contentDescription = S.content_description_word_transcription)
     MDIconsSet.WordTranslation -> MDIcon(outlinedRes = D.book3_outline, filledRes = D.book3_fill, contentDescription = S.content_description_word_translation) // TODO, icon res
-    MDIconsSet.WordTypeTag -> MDIcon(outlinedRes = D.style_outline, filledRes = D.style_fill, contentDescription = S.content_description_word_type_tag)
+    MDIconsSet.WordWordClass -> MDIcon(outlinedRes = D.style_outline, filledRes = D.style_fill, contentDescription = S.content_description_word_word_class)
     MDIconsSet.WordsList -> MDIcon(outlinedRes = D.list3_outline, filledRes = D.list3_fill, contentDescription = S.content_description_words_list)
     MDIconsSet.Add -> MDIcon(default = D.add, contentDescription = S.content_description_add)
     MDIconsSet.ArrowDropdown -> MDIcon(default = D.arrow_dropdown, contentDescription = S.content_description_arrow_dropdown)

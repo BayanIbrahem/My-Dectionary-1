@@ -5,45 +5,45 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordBaseWordId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordName
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordRelationId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelatedWordTable
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagRelationId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordBaseWordId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordName
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordRelationId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordTable
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 
 @Entity(
-    tableName = dbTypeTagRelatedWordTable,
+    tableName = dbWordClassRelatedWordTable,
     foreignKeys = [
         ForeignKey(
-            entity = WordTypeTagRelationEntity::class,
-            parentColumns = [dbTypeTagRelationId],
-            childColumns = [dbTypeTagRelatedWordRelationId],
+            entity = WordWordClassRelationEntity::class,
+            parentColumns = [dbWordClassRelationId],
+            childColumns = [dbWordClassRelatedWordRelationId],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = WordEntity::class,
             parentColumns = [dbWordId],
-            childColumns = [dbTypeTagRelatedWordBaseWordId],
+            childColumns = [dbWordClassRelatedWordBaseWordId],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE,
         )
     ],
     indices = [
-        Index(dbTypeTagRelatedWordRelationId),
-        Index(dbTypeTagRelatedWordBaseWordId),
+        Index(dbWordClassRelatedWordRelationId),
+        Index(dbWordClassRelatedWordBaseWordId),
     ]
 )
-data class WordTypeTagRelatedWordEntity(
+data class WordWordClassRelatedWordEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = dbTypeTagRelatedWordId)
+    @ColumnInfo(name = dbWordClassRelatedWordId)
     val id: Long? = null,
-    @ColumnInfo(name = dbTypeTagRelatedWordRelationId)
+    @ColumnInfo(name = dbWordClassRelatedWordRelationId)
     val relationId: Long,
-    @ColumnInfo(name = dbTypeTagRelatedWordBaseWordId)
+    @ColumnInfo(name = dbWordClassRelatedWordBaseWordId)
     val baseWordId: Long,
-    @ColumnInfo(name = dbTypeTagRelatedWordName)
+    @ColumnInfo(name = dbWordClassRelatedWordName)
     val word: String,
 )

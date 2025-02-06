@@ -10,7 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.mea
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.converter.StringListConverter
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbLanguageCode
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTypeTagId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordAdditionalTranslations
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordAntonym
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordCollocation
@@ -37,16 +37,16 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordSyn
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranscription
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTypeTag
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordWordClass
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordUpdatedAt
 
 @Entity(
     tableName = dbWordTable,
     foreignKeys = [
         ForeignKey(
-            entity = WordTypeTagEntity::class,
-            parentColumns = [dbTypeTagId],
-            childColumns = [dbWordTypeTag],
+            entity = WordWordClassEntity::class,
+            parentColumns = [dbWordClassId],
+            childColumns = [dbWordWordClass],
             onUpdate = ForeignKey.SET_NULL,
             onDelete = ForeignKey.SET_NULL,
         ),
@@ -60,7 +60,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordUpd
         ),
     ],
     indices = [
-        Index(dbWordTypeTag),
+        Index(dbWordWordClass),
         Index(dbWordLanguageCode),
         Index(dbWordNormalizedMeaning),
         Index(dbWordNormalizedTranslation),
@@ -87,8 +87,8 @@ data class WordEntity(
     val languageCode: String,
     @ColumnInfo(dbWordAdditionalTranslations)
     val additionalTranslations: List<String> = emptyList(),
-    @ColumnInfo(dbWordTypeTag)
-    val wordTypeTagId: Long? = null,
+    @ColumnInfo(dbWordWordClass)
+    val wordWordClassId: Long? = null,
     @ColumnInfo(dbWordMemoryDecayFactor, defaultValue = "1")
     val memoryDecayFactor: Float = 1f,
     @ColumnInfo(dbWordLastTrain, defaultValue = "NULL")

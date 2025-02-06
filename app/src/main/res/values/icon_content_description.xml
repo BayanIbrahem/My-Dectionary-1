@@ -54,6 +54,6 @@
     <string name="content_description_word_train_write_type">Word train write type</string>
     <string name="content_description_word_transcription">Word transcription</string>
     <string name="content_description_word_translation">Word translation</string>
-    <string name="content_description_word_type_tag">Word type tag</string>
+    <string name="content_description_word_word_class">Word word class</string>
     <string name="content_description_words_list">Words list</string>
 </resources>

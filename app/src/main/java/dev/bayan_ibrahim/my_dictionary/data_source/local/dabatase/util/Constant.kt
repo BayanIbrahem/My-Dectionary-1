@@ -15,7 +15,7 @@ const val dbWordExamples = "word_examples"
 const val dbWordTranscription = "word_transcription"
 const val dbWordMemoryDecayFactor = "word_memoryDecayFactor"
 const val dbWordLastTrain = "word_lastTrain"
-const val dbWordTypeTag = "word_typeTag"
+const val dbWordWordClass = "word_wordClass"
 const val dbWordSynonym = "word_Synonym"
 const val dbWordAntonym = "word_Antonym"
 const val dbWordHyponym = "word_Hyponym"
@@ -45,24 +45,24 @@ const val dbLanguageWordSpaceLanguageCode = "languageWordSpace_code"
 const val dbLanguageWordSpaceWordsCount = "languageWordSpace_wordsCount"
 //const val dbLanguageWordSpaceAverageMemorizingProbability = "languageWordSpace_averageMemorizingProbability"
 
-// Word type tag:
-const val dbTypeTagTable = "typeTags"
-const val dbTypeTagId = "typeTag_id"
-const val dbTypeTagName = "typeTag_name"
-const val dbTypeTagLanguage = "typeTag_language"
+// Word word class:
+const val dbWordClassTable = "wordsClasses"
+const val dbWordClassId = "wordClass_id"
+const val dbWordClassName = "wordClass_name"
+const val dbWordClassLanguage = "wordClass_language"
 
-// Word type tag relation:
-const val dbTypeTagRelationTable = "tagRelations"
-const val dbTypeTagRelationId = "relation_id"
-const val dbTypeTagRelationLabel = "relation_label"
-const val dbTypeTagRelationTagId = "relation_tagId"
+// Word word class relation:
+const val dbWordClassRelationTable = "tagRelations"
+const val dbWordClassRelationId = "relation_id"
+const val dbWordClassRelationLabel = "relation_label"
+const val dbWordClassRelationTagId = "relation_tagId"
 
-// Word type tag related words:
-const val dbTypeTagRelatedWordTable = "tagRelatedWords"
-const val dbTypeTagRelatedWordId = "relatedWord_id"
-const val dbTypeTagRelatedWordRelationId = "relatedWord_relationId"
-const val dbTypeTagRelatedWordBaseWordId = "relatedWord_baseWordId"
-const val dbTypeTagRelatedWordName = "relatedWord_name"
+// Word word class related words:
+const val dbWordClassRelatedWordTable = "tagRelatedWords"
+const val dbWordClassRelatedWordId = "relatedWord_id"
+const val dbWordClassRelatedWordRelationId = "relatedWord_relationId"
+const val dbWordClassRelatedWordBaseWordId = "relatedWord_baseWordId"
+const val dbWordClassRelatedWordName = "relatedWord_name"
 
 // Language:
 const val dbLanguageTable = "languages"

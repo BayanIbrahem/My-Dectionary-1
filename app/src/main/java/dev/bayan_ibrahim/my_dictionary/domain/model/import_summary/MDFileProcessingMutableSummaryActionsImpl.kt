@@ -5,7 +5,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.End
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.GetAvailableParts
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseAndSaveContextTags
-import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseAndSaveTypeTags
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseAndSaveWordsClasses
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseAndSaveWords
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseSaveLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.RecognizingFileReader
@@ -48,12 +48,12 @@ class MDFileProcessingSummaryActionsImpl(
         summary.recognizedLanguages.putIfAbsent(code, new)
     }
 
-    override fun recognizeTypeTag(languageCode: LanguageCode, name: String, new: Boolean) {
-        summary.recognizedTypeTags.putIfAbsent(Pair(languageCode, name), new)
+    override fun recognizeWordClass(languageCode: LanguageCode, name: String, new: Boolean) {
+        summary.recognizedWordsClasses.putIfAbsent(Pair(languageCode, name), new)
     }
 
-    override fun recognizeTypeTagRelation(languageCode: LanguageCode, typeTagName: String, relationLabel: String, new: Boolean) {
-        summary.recognizedTypeTagsRelations.putIfAbsent(Triple(languageCode, typeTagName, relationLabel), new)
+    override fun recognizeWordClassRelation(languageCode: LanguageCode, wordClassName: String, relationLabel: String, new: Boolean) {
+        summary.recognizedWordsClassesRelations.putIfAbsent(Triple(languageCode, wordClassName, relationLabel), new)
     }
 
     override fun recognizeContextTag(value: String, new: Boolean) {
@@ -83,7 +83,7 @@ class MDFileProcessingSummaryActionsImpl(
         GetAvailableParts -> if (parseForAvailablePartsOnly) listOf(End) else {
             listOf(
                 ParseSaveLanguages,
-                ParseAndSaveTypeTags,
+                ParseAndSaveWordsClasses,
                 ParseAndSaveContextTags,
                 ParseAndSaveWords,
             ).filterForAvailableFileParts(availableParts)
@@ -91,12 +91,12 @@ class MDFileProcessingSummaryActionsImpl(
 
         ParseSaveLanguages ->
             listOf(
-                ParseAndSaveTypeTags,
+                ParseAndSaveWordsClasses,
                 ParseAndSaveContextTags,
                 ParseAndSaveWords,
             ).filterForAvailableFileParts(availableParts)
 
-        ParseAndSaveTypeTags ->
+        ParseAndSaveWordsClasses ->
             listOf(
                 ParseAndSaveContextTags,
                 ParseAndSaveWords,
@@ -117,7 +117,7 @@ class MDFileProcessingSummaryActionsImpl(
         if (availableParts.isNullOrEmpty()) return this
         return filter {
             when (it) {
-                ParseSaveLanguages, ParseAndSaveTypeTags -> MDFilePartType.Language in availableParts
+                ParseSaveLanguages, ParseAndSaveWordsClasses -> MDFilePartType.Language in availableParts
                 ParseAndSaveContextTags -> MDFilePartType.Tag in availableParts
                 ParseAndSaveWords -> MDFilePartType.Word in availableParts
                 else -> false
