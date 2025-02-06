@@ -37,16 +37,16 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordSyn
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranscription
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordWordClass
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClass
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordUpdatedAt
 
 @Entity(
     tableName = dbWordTable,
     foreignKeys = [
         ForeignKey(
-            entity = WordWordClassEntity::class,
+            entity = WordClassEntity::class,
             parentColumns = [dbWordClassId],
-            childColumns = [dbWordWordClass],
+            childColumns = [dbWordClass],
             onUpdate = ForeignKey.SET_NULL,
             onDelete = ForeignKey.SET_NULL,
         ),
@@ -60,7 +60,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordUpd
         ),
     ],
     indices = [
-        Index(dbWordWordClass),
+        Index(dbWordClass),
         Index(dbWordLanguageCode),
         Index(dbWordNormalizedMeaning),
         Index(dbWordNormalizedTranslation),
@@ -87,8 +87,8 @@ data class WordEntity(
     val languageCode: String,
     @ColumnInfo(dbWordAdditionalTranslations)
     val additionalTranslations: List<String> = emptyList(),
-    @ColumnInfo(dbWordWordClass)
-    val wordWordClassId: Long? = null,
+    @ColumnInfo(dbWordClass)
+    val wordClassId: Long? = null,
     @ColumnInfo(dbWordMemoryDecayFactor, defaultValue = "1")
     val memoryDecayFactor: Float = 1f,
     @ColumnInfo(dbWordLastTrain, defaultValue = "NULL")

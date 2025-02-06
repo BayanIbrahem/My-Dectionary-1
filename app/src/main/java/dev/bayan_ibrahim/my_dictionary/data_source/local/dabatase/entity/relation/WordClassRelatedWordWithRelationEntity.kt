@@ -2,17 +2,17 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relati
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelatedWordEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordRelationId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationLabel
 
-data class WordWordClassRelatedWordWithRelationEntity(
+data class WordClassRelatedWordWithRelationEntity(
     @Embedded
-    val related: WordWordClassRelatedWordEntity,
+    val related: WordClassRelatedWordEntity,
     @Relation(
-        WordWordClassRelationEntity::class,
+        WordClassRelationEntity::class,
         parentColumn = dbWordClassRelatedWordRelationId,
         entityColumn = dbWordClassRelationId,
         projection = [dbWordClassRelationLabel]

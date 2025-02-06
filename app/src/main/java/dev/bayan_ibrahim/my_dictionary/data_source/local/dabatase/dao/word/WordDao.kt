@@ -9,7 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryDbNormalize
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordBaseWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
@@ -19,7 +19,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMea
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMemoryDecayFactor
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordWordClass
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClass
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import kotlinx.coroutines.flow.Flow
 
@@ -32,12 +32,12 @@ interface WordDao {
 
     // even this function is duplicated but is more maintainable to keep two versions of it since it is being used here in another function
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelatedWords(words: Collection<WordWordClassRelatedWordEntity>)
+    suspend fun insertRelatedWords(words: Collection<WordClassRelatedWordEntity>)
 
     @Transaction
     suspend fun insertWordWithRelations(
         word: WordEntity,
-        relatedWords: List<WordWordClassRelatedWordEntity>,
+        relatedWords: List<WordClassRelatedWordEntity>,
     ): Long {
         val wordId = insertWord(word)
         val relatedWordsWithWordIdAndNullId = relatedWords.map { it.copy(baseWordId = wordId, id = null) }
@@ -62,7 +62,7 @@ interface WordDao {
     @Transaction
     suspend fun updateWordWithRelations(
         word: WordEntity,
-        relatedWords: List<WordWordClassRelatedWordEntity>,
+        relatedWords: List<WordClassRelatedWordEntity>,
     ) {
         updateWord(word)
         deleteRelatedWordsOf(word.id!!)
@@ -149,7 +149,7 @@ interface WordDao {
 
     @Query(
         """
-            SELECT $dbWordId FROM $dbWordTable WHERE $dbWordWordClass = :wordClass
+            SELECT $dbWordId FROM $dbWordTable WHERE $dbWordClass = :wordClass
         """
     )
     fun getWordsIdsOfWordClass(wordClass: Long): Flow<List<Long>>
@@ -167,7 +167,7 @@ interface WordDao {
             WHERE (
                 (NOT :includeLanguage) OR $dbWordLanguageCode IN (:languages)
             ) AND (
-                (NOT :includeWordClass) OR $dbWordWordClass IN (:wordsClasses)
+                (NOT :includeWordClass) OR $dbWordClass IN (:wordsClasses)
             )
         """
     )

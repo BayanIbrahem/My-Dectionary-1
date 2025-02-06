@@ -4,17 +4,17 @@ import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.and
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassRelatedWordDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassRelationWordsDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassRelatedWordDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassRelationWordsDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.context_tag.ContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.LanguageEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordCrossContextTagEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelatedWordEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelationEntity
@@ -29,7 +29,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFil
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFileReader
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFileReaderAbstractFactory
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDExtraTagsStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
@@ -56,13 +56,13 @@ class MDRoomImportFromFileRepo(
     private val appVersion: String,
 ) : ImportFromFileRepo {
     private val languageDao: LanguageDao = db.getLanguageDao()
-    private val wordClassDao: WordWordClassDao = db.getWordWordClassDao()
-    private val typeRelationDao: WordWordClassRelationWordsDao = db.getWordWordClassRelationDao()
+    private val wordClassDao: WordClassDao = db.getWordClassDao()
+    private val typeRelationDao: WordClassRelationWordsDao = db.getWordClassRelationDao()
     private val contextTagDao: ContextTagDao = db.getContextTagDao()
     private val wordDao: WordDao = db.getWordDao()
     private val wordWithContextTagsAndRelatedWordsDao = db.getWordsWithContextTagAndRelatedWordsDao()
     private val wordCrossTagsDao = db.getWordsCrossTagsDao()
-    private val relatedWordDao: WordWordClassRelatedWordDao = db.getWordWordClassRelatedWordDao()
+    private val relatedWordDao: WordClassRelatedWordDao = db.getWordClassRelatedWordDao()
 
     override suspend fun checkFileIfValid(fileData: MDDocumentData): Boolean {
         val factory = abstractFactory.getFirstSuitableFactoryOrNull(fileData)
@@ -130,7 +130,7 @@ class MDRoomImportFromFileRepo(
         val extraTags: List<ContextTag>,
         val extraTagsStrategy: MDExtraTagsStrategy,
     ) {
-        val languagesWordSpaces = mutableMapOf<Language, List<WordWordClass>>()
+        val languagesWordSpaces = mutableMapOf<Language, List<WordClass>>()
         val allLanguages = mutableSetOf<String>()
         val wordClassNameMapper = mutableMapOf<String, MutableMap<String, Long>>()
         val typeRelationNameMapper = mutableMapOf<String, MutableMap<Long, Long>>()
@@ -272,7 +272,7 @@ class MDRoomImportFromFileRepo(
     private suspend fun processSingleTag(
         scope: FileProcessingScope,
         languageCode: String,
-        tagData: WordWordClass,
+        tagData: WordClass,
         tagsOfLanguage: MutableMap<String, Pair<Long, MutableMap<String, Long>>>,
     ) {
         if (tagData.name.isBlank()) {
@@ -509,8 +509,8 @@ class MDRoomImportFromFileRepo(
      */
     private suspend fun resolveWordClass(
         scope: FileProcessingScope,
-        providedWordClassData: WordWordClass,
-    ): WordWordClass {
+        providedWordClassData: WordClass,
+    ): WordClass {
         return let {
             scope.wordClassNameMapper[providedWordClassData.name.lowercase()]?.get(providedWordClassData.language.code)
         }?.let { id ->
@@ -524,8 +524,8 @@ class MDRoomImportFromFileRepo(
 
     private suspend fun createNewWordClass(
         scope: FileProcessingScope,
-        providedWordClassData: WordWordClass,
-    ): WordWordClass {
+        providedWordClassData: WordClass,
+    ): WordClass {
         val dbTagId = wordClassDao.insertTagType(
             tag = providedWordClassData.asTagEntity(null)
         )
@@ -562,15 +562,15 @@ class MDRoomImportFromFileRepo(
         scope: FileProcessingScope,
         word: Word,
     ) {
-        if (word.wordWordClass != null) {
+        if (word.wordClass != null) {
             val relatedWordData = word.relatedWords.map { relatedWord ->
                 val relationId = resolveRelationId(
                     scope = scope, language = word.language,
-                    wordClassId = word.wordWordClass.id,
-                    wordClassName = word.wordWordClass.name,
+                    wordClassId = word.wordClass.id,
+                    wordClassName = word.wordClass.name,
                     relatedWord = relatedWord,
                 )
-                WordWordClassRelatedWordEntity(
+                WordClassRelatedWordEntity(
                     id = null, relationId = relationId, baseWordId = word.id, word = relatedWord.value
                 )
             }
@@ -609,7 +609,7 @@ class MDRoomImportFromFileRepo(
         label: String,
     ): Long {
         val dbRelationId = typeRelationDao.insertRelation(
-            relation = WordWordClassRelationEntity(
+            relation = WordClassRelationEntity(
                 id = null,
                 label = label,
                 tagId = wordClassId,

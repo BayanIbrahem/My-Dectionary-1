@@ -6,7 +6,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.Fi
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.file_part.MDJsonFileLanguagePartV1
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.file_part.MDJsonFileTagPartV1
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.version.v1.file_part.MDJsonFileWordPartV1
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
@@ -211,7 +211,7 @@ class MDRoomExportToFileRepo(
             contextTags = word.tags.map { it.asFilePartContextTag() },
             examples = word.examples,
             additionalTranslations = word.additionalTranslations,
-            wordClass = word.wordWordClass?.let { tag ->
+            wordClass = word.wordClass?.let { tag ->
                 MDJsonFileWordPartV1.WordClass(
                     name = tag.name
                 )
@@ -233,7 +233,7 @@ class MDRoomExportToFileRepo(
         )
     }.toList()
 
-    private fun WordWordClass.asFilePartWordClass(): MDJsonFileLanguagePartV1.WordClass = MDJsonFileLanguagePartV1.WordClass(
+    private fun WordClass.asFilePartWordClass(): MDJsonFileLanguagePartV1.WordClass = MDJsonFileLanguagePartV1.WordClass(
         name = name,
         relations = relations.map { relation ->
             MDJsonFileLanguagePartV1.WordClass.Relation(

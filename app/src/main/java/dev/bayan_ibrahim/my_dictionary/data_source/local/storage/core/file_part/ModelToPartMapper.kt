@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part
 
 import dev.bayan_ibrahim.my_dictionary.core.util.invalidIfNull
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.applyMergable
@@ -25,7 +25,7 @@ inline fun Word.validateWithDatabase(
     dbWordStrategy: MDPropertyConflictStrategy,
     corruptedStrategy: MDPropertyCorruptionStrategy,
     getDBContextTag: (data: ContextTag) -> ContextTag,
-    getDBWordClass: (data: WordWordClass) -> WordWordClass?,
+    getDBWordClass: (data: WordClass) -> WordClass?,
 ): Word {
     return Word(
         id = dbWord?.id.invalidIfNull(),
@@ -38,7 +38,7 @@ inline fun Word.validateWithDatabase(
         tags = dbWordStrategy.applyComputedCollection(dbWord?.tags) { this.tags.map(getDBContextTag) }.toSet(),
         transcription = dbWordStrategy.applyString(dbWord?.transcription) { this.transcription },
         examples = dbWordStrategy.applyComputedCollection(dbWord?.examples) { this.examples }.toList(),
-        wordWordClass = dbWordStrategy.applyComputedOld(dbWord?.wordWordClass) { this.wordWordClass?.let { getDBWordClass(it) } },
+        wordClass = dbWordStrategy.applyComputedOld(dbWord?.wordClass) { this.wordClass?.let { getDBWordClass(it) } },
         relatedWords = dbWordStrategy.applyComputedCollection(dbWord?.relatedWords) {
             this.relatedWords
         }.toList(),

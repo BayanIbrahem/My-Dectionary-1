@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_spac
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableField
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 
 abstract class LanguageWordSpaceState(code: String, wordsCount: Int = 0): LanguageWordSpace(
     code = code,
@@ -12,7 +12,7 @@ abstract class LanguageWordSpaceState(code: String, wordsCount: Int = 0): Langua
     abstract val isEditModeOn: Boolean
     abstract val isEditDialogShown: Boolean
 
-    abstract val tags: List<MDEditableField<WordWordClass>>
+    abstract val tags: List<MDEditableField<WordClass>>
 
     fun toMutableLanguageWordSpaceWithTags(): LanguageWordSpaceMutableState = LanguageWordSpaceMutableState(this)
 }

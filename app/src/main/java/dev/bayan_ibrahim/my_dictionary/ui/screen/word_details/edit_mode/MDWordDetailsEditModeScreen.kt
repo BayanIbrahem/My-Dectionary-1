@@ -28,8 +28,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTitleWithHint
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
@@ -339,8 +339,8 @@ private fun MDWordDetailsEditModeScreenPreview() {
                             override fun onEditTranscription(newTranscription: String) {}
                             override fun onEditAdditionalTranslations(id: Long, newValue: String) {}
                             override fun onEditExamples(id: Long, newValue: String) {}
-                            override fun onEditWordClass(newWordClass: WordWordClass?) {}
-                            override fun onEditTypeRelationLabel(id: Long, relation: WordWordClassRelation) {}
+                            override fun onEditWordClass(newWordClass: WordClass?) {}
+                            override fun onEditTypeRelationLabel(id: Long, relation: WordClassRelation) {}
                             override fun onEditTypeRelationValue(id: Long, newValue: String) {}
                             override fun onEditLexicalRelation(type: WordLexicalRelationType, id: Long, newValue: String) {}
                             override fun onAdditionalTranslationsFocusChange(newFocused: Long) {}

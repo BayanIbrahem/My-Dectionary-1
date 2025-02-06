@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.toMDEditableField
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
@@ -63,7 +63,7 @@ class MDWordSpaceViewModel @Inject constructor(
 
     private fun buildWordSpaceStateWithActions(
         language: LanguageCode,
-        tags: List<WordWordClass>,
+        tags: List<WordClass>,
         wordsCount: Int,
     ) = LanguageWordSpaceMutableState(
         code = language.code,

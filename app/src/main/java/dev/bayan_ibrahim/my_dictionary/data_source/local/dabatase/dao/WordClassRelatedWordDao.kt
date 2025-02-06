@@ -7,7 +7,7 @@ import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordBaseWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelatedWordRelationId
@@ -15,21 +15,21 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordCla
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WordWordClassRelatedWordDao {
+interface WordClassRelatedWordDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelatedWord(word: WordWordClassRelatedWordEntity): Long
+    suspend fun insertRelatedWord(word: WordClassRelatedWordEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelatedWords(words: Collection<WordWordClassRelatedWordEntity>)
+    suspend fun insertRelatedWords(words: Collection<WordClassRelatedWordEntity>)
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun updateRelatedWord(word: WordWordClassRelatedWordEntity)
+    suspend fun updateRelatedWord(word: WordClassRelatedWordEntity)
 
     @Delete
-    suspend fun deleteRelatedWord(word: WordWordClassRelatedWordEntity)
+    suspend fun deleteRelatedWord(word: WordClassRelatedWordEntity)
 
     @Delete
-    suspend fun deleteRelatedWords1(words: List<WordWordClassRelatedWordEntity>)
+    suspend fun deleteRelatedWords1(words: List<WordClassRelatedWordEntity>)
 
     @Query(
         """
@@ -57,14 +57,14 @@ interface WordWordClassRelatedWordDao {
             SELECT * FROM $dbWordClassRelatedWordTable 
         """
     )
-    fun getAllRelatedWords(): Flow<List<WordWordClassRelatedWordEntity>>
+    fun getAllRelatedWords(): Flow<List<WordClassRelatedWordEntity>>
 
     @Query(
         """
             SELECT * FROM $dbWordClassRelatedWordTable WHERE $dbWordClassRelatedWordBaseWordId IN (:baseWordIds)
         """
     )
-    fun getAllRelatedWordsOfWords(baseWordIds: Collection<Long>): Flow<List<WordWordClassRelatedWordEntity>>
+    fun getAllRelatedWordsOfWords(baseWordIds: Collection<Long>): Flow<List<WordClassRelatedWordEntity>>
 
     @Query(
         """

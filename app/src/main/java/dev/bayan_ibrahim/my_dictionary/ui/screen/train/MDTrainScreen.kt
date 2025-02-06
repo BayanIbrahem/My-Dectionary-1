@@ -80,8 +80,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.lin
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDTrainQuestionExtraInfo
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainSubmitOption
@@ -512,7 +512,7 @@ private fun ExtraInfoPagePart(
                 when (it) {
                     MDTrainQuestionExtraInfo.Transcription -> listOf(word.transcription)
                     MDTrainQuestionExtraInfo.Tag -> word.tags.map { it.value } // TODO, show tags correctly
-                    MDTrainQuestionExtraInfo.WordClass -> listOfNotNull(word.wordWordClass?.name)
+                    MDTrainQuestionExtraInfo.WordClass -> listOfNotNull(word.wordClass?.name)
                     MDTrainQuestionExtraInfo.RelatedWords -> word.relatedWords.map { it.value }
                     MDTrainQuestionExtraInfo.Example -> word.examples
                     MDTrainQuestionExtraInfo.AdditionalTranslation -> word.additionalTranslations
@@ -699,10 +699,10 @@ private fun ExtraInfoPagePartPreview() {
                         additionalTranslations = listOf("Additional translation 1", "Additional translation 2"),
                         transcription = "Transcription",
                         examples = listOf("Example 1", "Example 2"),
-                        wordWordClass = WordWordClass(
+                        wordClass = WordClass(
                             1, name = "Type tag", "en".code.getLanguage(),
                             relations = listOf(
-                                WordWordClassRelation("label")
+                                WordClassRelation("label")
                             ),
                         ),
                         relatedWords = listOf(

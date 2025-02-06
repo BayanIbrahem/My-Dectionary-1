@@ -7,9 +7,9 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.L
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageWordSpaceDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.TrainHistoryDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassRelatedWordDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassRelationWordsDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassRelatedWordDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassRelationWordsDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagsAndRelatedWordsDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithRelatedWordsDao
@@ -20,17 +20,17 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.L
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.TrainHistoryEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordCrossContextTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelatedWordEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelatedWordEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelationEntity
 
 @Database(
     entities = [
         WordEntity::class,
         TrainHistoryEntity::class,
-        WordWordClassEntity::class,
-        WordWordClassRelatedWordEntity::class,
-        WordWordClassRelationEntity::class,
+        WordClassEntity::class,
+        WordClassRelatedWordEntity::class,
+        WordClassRelationEntity::class,
         LanguageEntity::class,
         ContextTagEntity::class,
         WordCrossContextTagEntity::class,
@@ -48,9 +48,9 @@ abstract class MDDataBase : RoomDatabase() {
     abstract fun getLanguageWordSpaceDao(): LanguageWordSpaceDao
     abstract fun getLanguageDao(): LanguageDao
     abstract fun getWordTrainDao(): TrainHistoryDao
-    abstract fun getWordWordClassDao(): WordWordClassDao
-    abstract fun getWordWordClassRelatedWordDao(): WordWordClassRelatedWordDao
-    abstract fun getWordWordClassRelationDao(): WordWordClassRelationWordsDao
+    abstract fun getWordClassDao(): WordClassDao
+    abstract fun getWordClassRelatedWordDao(): WordClassRelatedWordDao
+    abstract fun getWordClassRelationDao(): WordClassRelationWordsDao
     abstract fun getContextTagDao(): ContextTagDao
     abstract fun getWordsCrossTagsDao(): WordsCrossContextTagDao
 }

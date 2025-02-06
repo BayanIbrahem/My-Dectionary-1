@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.train
 
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
@@ -165,7 +165,7 @@ class MDTrainMemoryDecayFactorAnswerDurationBasedDataSourceTest {
         tags: Set<ContextTag> = emptySet(),
         transcription: String = INVALID_TEXT,
         examples: List<String> = emptyList(),
-        wordWordClass: WordWordClass? = null,
+        wordClass: WordClass? = null,
         relatedWords: List<RelatedWord> = emptyList(),
         memoryDecayFactor: Float = 1f,
         lastTrainTime: Instant? = null,
@@ -180,7 +180,7 @@ class MDTrainMemoryDecayFactorAnswerDurationBasedDataSourceTest {
         tags = tags,
         transcription = transcription,
         examples = examples,
-        wordWordClass = wordWordClass,
+        wordClass = wordClass,
         relatedWords = relatedWords,
         memoryDecayFactor = memoryDecayFactor,
         lastTrainTime = lastTrainTime,

@@ -26,7 +26,7 @@ enum class MDFileProcessingSummaryActionsStep(override val strLabel: String, ove
     RecognizingFileReader("Get Suitable File Reader", MDIconsSet.ImportFromFile), // TODO, string res, icon res
     GetAvailableParts("Get available parts in file", MDIconsSet.ExportToFile), // TODO, string res, icon res
     ParseSaveLanguages("Process Languages", MDIconsSet.LanguageWordSpace),// TODO, string res, icon res
-    ParseAndSaveWordsClasses("Process Words Classes", MDIconsSet.WordWordClass),// TODO, string res, icon res
+    ParseAndSaveWordsClasses("Process Words Classes", MDIconsSet.WordClass),// TODO, string res, icon res
     ParseAndSaveContextTags("Process Context Tags", MDIconsSet.WordTag),// TODO, string res, icon res
     ParseAndSaveWords("Process Words", MDIconsSet.WordMeaning),// TODO, string res, icon res
     End("End", MDIconsSet.Check),// TODO, string res, icon res

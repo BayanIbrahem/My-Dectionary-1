@@ -9,8 +9,8 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_LANGUAGE
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
@@ -49,7 +49,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val wordsClasses: StateFlow<List<WordWordClass>> = currentLanguageFlow.flatMapConcat {
+    val wordsClasses: StateFlow<List<WordClass>> = currentLanguageFlow.flatMapConcat {
         val language = it ?: INVALID_LANGUAGE
         wordClassRepo.getWordsClassesOfLanguage(language)
     }.stateIn(
@@ -114,7 +114,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
                             tags = uiState.tags.toSet(),
                             transcription = uiState.transcription,
                             examples = uiState.examples.values.toList().filter { it.isNotBlank() },
-                            wordWordClass = uiState.selectedWordClass,
+                            wordClass = uiState.selectedWordClass,
                             relatedWords = uiState.relatedWords.values.mapNotNull {
                                 if (it.second.isBlank()) return@mapNotNull null
                                 RelatedWord(
@@ -172,13 +172,13 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
             _uiState.ensureBlankExamplesTrailingField()
         }
 
-        override fun onEditWordClass(newWordClass: WordWordClass?) {
+        override fun onEditWordClass(newWordClass: WordClass?) {
             _uiState.selectedWordClass = newWordClass
 //            _uiState.filterBlankRelatedWordsFields()
             _uiState.ensureBlankTypeRelationsTrailingField()
         }
 
-        override fun onEditTypeRelationLabel(id: Long, relation: WordWordClassRelation) {
+        override fun onEditTypeRelationLabel(id: Long, relation: WordClassRelation) {
             val old = _uiState.relatedWords[id]?.second ?: INVALID_TEXT
             _uiState.relatedWords[id] = Pair(relation, old)
 //            _uiState.filterBlankRelatedWordsFields(id)

@@ -8,32 +8,32 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordClassWithRelation
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassLanguage
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WordWordClassDao {
+interface WordClassDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTagType(tag: WordWordClassEntity): Long
+    suspend fun insertTagType(tag: WordClassEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTagTypes(tags: List<WordWordClassEntity>): List<Long>
+    suspend fun insertTagTypes(tags: List<WordClassEntity>): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTagTypes(vararg tags: WordWordClassEntity): List<Long>
+    suspend fun insertTagTypes(vararg tags: WordClassEntity): List<Long>
 
     @Update
-    suspend fun updateTagType(vararg tag: WordWordClassEntity)
+    suspend fun updateTagType(vararg tag: WordClassEntity)
 
     @Update
-    suspend fun updateTagTypes(tags: List<WordWordClassEntity>)
+    suspend fun updateTagTypes(tags: List<WordClassEntity>)
 
     @Delete
-    suspend fun deleteTagType(tag: WordWordClassEntity)
+    suspend fun deleteTagType(tag: WordClassEntity)
 
     @Query(
         """

@@ -4,8 +4,8 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFileWordPart
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.StrIdentifiable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.file_part.MDJsonFileWordPart
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -61,9 +61,9 @@ data class MDJsonFileWordPartV1(
             tags = contextTags.mapNotNull { it.toContextTag() }.toSet(),
             transcription = transcription ?: "",
             examples = examples,
-            wordWordClass = wordClass?.toModelWordClass(language)?.copy(
+            wordClass = wordClass?.toModelWordClass(language)?.copy(
                 relations = relatedWordsList.map {
-                    WordWordClassRelation(
+                    WordClassRelation(
                         label = it.name,
                         id = INVALID_ID,
                         wordsCount = 0,
@@ -100,8 +100,8 @@ data class MDJsonFileWordPartV1(
         @SerialName(NAME_KEY)
         override val name: String,
     ) : StrIdentifiable {
-        fun toModelWordClass(language: String): WordWordClass {
-            return WordWordClass(
+        fun toModelWordClass(language: String): WordClass {
+            return WordClass(
                 id = INVALID_ID,
                 name = name,
                 language = language.code.getLanguage(),

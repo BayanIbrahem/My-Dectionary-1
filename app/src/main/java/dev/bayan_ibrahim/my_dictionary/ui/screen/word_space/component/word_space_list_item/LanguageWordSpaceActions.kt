@@ -3,8 +3,8 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_spac
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableField
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableFieldStatus
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -52,7 +52,7 @@ data class LanguageWordSpaceActions(
     fun onAddTag(tag: String) {
         state.tags.add(
             MDEditableField.new(
-                WordWordClass(
+                WordClass(
                     id = INVALID_ID,
                     name = tag,
                     language = state,
@@ -83,7 +83,7 @@ data class LanguageWordSpaceActions(
 
     fun onAddTagRelation(tagIndex: Int, relation: String) {
         state.tags[tagIndex] = state.tags[tagIndex].edit {
-            copy(relations = relations + WordWordClassRelation(label = relation))
+            copy(relations = relations + WordClassRelation(label = relation))
         }
     }
 

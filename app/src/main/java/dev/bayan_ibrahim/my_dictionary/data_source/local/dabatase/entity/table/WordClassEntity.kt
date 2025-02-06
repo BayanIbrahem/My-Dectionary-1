@@ -10,7 +10,6 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordCla
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassLanguage
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassName
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassTable
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
 
 @Entity(
     tableName = dbWordClassTable,
@@ -27,7 +26,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLan
         Index(dbWordClassLanguage)
     ]
 )
-data class WordWordClassEntity(
+data class WordClassEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(dbWordClassId)
     val id: Long? = null,

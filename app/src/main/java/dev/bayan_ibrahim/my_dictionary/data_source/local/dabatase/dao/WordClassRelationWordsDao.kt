@@ -6,41 +6,40 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationTagId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WordWordClassRelationWordsDao {
+interface WordClassRelationWordsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelation(relation: WordWordClassRelationEntity): Long
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelations(relations: List<WordWordClassRelationEntity>): List<Long>
+    suspend fun insertRelation(relation: WordClassRelationEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertRelations(vararg relations: WordWordClassRelationEntity): List<Long>
+    suspend fun insertRelations(relations: List<WordClassRelationEntity>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertRelations(vararg relations: WordClassRelationEntity): List<Long>
 
     @Update
-    suspend fun updateRelation(relation: WordWordClassRelationEntity)
+    suspend fun updateRelation(relation: WordClassRelationEntity)
 
     @Update
-    suspend fun updateRelations(relations: List<WordWordClassRelationEntity>)
+    suspend fun updateRelations(relations: List<WordClassRelationEntity>)
 
     @Update
-    suspend fun updateRelations(vararg relations: WordWordClassRelationEntity)
+    suspend fun updateRelations(vararg relations: WordClassRelationEntity)
 
     @Delete
-    suspend fun deleteRelation(relation: WordWordClassRelationEntity)
+    suspend fun deleteRelation(relation: WordClassRelationEntity)
 
     @Delete
-    suspend fun deleteRelations1(relations: List<WordWordClassRelationEntity>)
+    suspend fun deleteRelations1(relations: List<WordClassRelationEntity>)
 
     @Delete
-    suspend fun deleteRelations2(vararg relations: WordWordClassRelationEntity)
+    suspend fun deleteRelations2(vararg relations: WordClassRelationEntity)
 
     @Query(
         """
@@ -74,12 +73,12 @@ interface WordWordClassRelationWordsDao {
             SELECT * FROM $dbWordClassRelationTable 
         """
     )
-    fun getAllRelations(): Flow<List<WordWordClassRelationEntity>>
+    fun getAllRelations(): Flow<List<WordClassRelationEntity>>
 
     @Query(
         """
             SELECT * FROM $dbWordClassRelationTable WHERE $dbWordClassRelationId = :id
         """
     )
-    suspend fun getAllRelation(id: Long): WordWordClassRelationEntity?
+    suspend fun getAllRelation(id: Long): WordClassRelationEntity?
 }

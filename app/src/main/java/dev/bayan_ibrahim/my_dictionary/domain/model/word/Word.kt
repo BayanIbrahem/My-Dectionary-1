@@ -5,7 +5,7 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
@@ -21,7 +21,7 @@ data class Word(
     val tags: Set<ContextTag> = emptySet(),
     val transcription: String = INVALID_TEXT,
     val examples: List<String> = emptyList(),
-    val wordWordClass: WordWordClass? = null,
+    val wordClass: WordClass? = null,
     val relatedWords: List<RelatedWord> = emptyList(),
     val memoryDecayFactor: Float = 1f,
     val lastTrainTime: Instant? = null,

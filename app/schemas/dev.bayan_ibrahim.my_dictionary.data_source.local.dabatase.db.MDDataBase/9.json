@@ -63,7 +63,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "wordWordClassId",
+            "fieldPath": "wordClassId",
             "columnName": "word_wordClass",
             "affinity": "INTEGER",
             "notNull": false

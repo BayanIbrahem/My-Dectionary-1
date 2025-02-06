@@ -17,7 +17,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
     tableName = dbWordClassRelatedWordTable,
     foreignKeys = [
         ForeignKey(
-            entity = WordWordClassRelationEntity::class,
+            entity = WordClassRelationEntity::class,
             parentColumns = [dbWordClassRelationId],
             childColumns = [dbWordClassRelatedWordRelationId],
             onUpdate = ForeignKey.CASCADE,
@@ -36,7 +36,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
         Index(dbWordClassRelatedWordBaseWordId),
     ]
 )
-data class WordWordClassRelatedWordEntity(
+data class WordClassRelatedWordEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = dbWordClassRelatedWordId)
     val id: Long? = null,

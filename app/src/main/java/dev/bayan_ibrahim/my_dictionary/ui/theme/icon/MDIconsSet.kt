@@ -60,7 +60,7 @@ enum class MDIconsSet {
     WordTrainWriteType,
     WordTranscription,
     WordTranslation,
-    WordWordClass,
+    WordClass,
     WordsList,
     DarkTheme,
     LightTheme,

@@ -14,8 +14,8 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_LANGUAGE
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -41,9 +41,9 @@ interface MDWordDetailsEditModeUiState : MDUiState {
     val examples: Map<Long, String>
 
     // type relations:
-    val selectedWordClass: WordWordClass?
-    val availableWordsClasses: StateFlow<List<WordWordClass>>
-    val relatedWords: Map<Long, Pair<WordWordClassRelation, String>>
+    val selectedWordClass: WordClass?
+    val availableWordsClasses: StateFlow<List<WordClass>>
+    val relatedWords: Map<Long, Pair<WordClassRelation, String>>
 
     // lexical relations:
     val lexicalRelations: Map<WordLexicalRelationType, Map<Long, String>>
@@ -51,7 +51,7 @@ interface MDWordDetailsEditModeUiState : MDUiState {
 
 class MDWordDetailsEditModeMutableUiState(
     override val tags: SnapshotStateList<ContextTag>,
-    override val availableWordsClasses: StateFlow<List<WordWordClass>>,
+    override val availableWordsClasses: StateFlow<List<WordClass>>,
 ) : MDWordDetailsEditModeUiState, MDMutableUiState() {
     private val idGenerator = IncrementalIdGenerator()
     override val valid: Boolean
@@ -74,8 +74,8 @@ class MDWordDetailsEditModeMutableUiState(
     override val examples: SnapshotStateMap<Long, String> = mutableStateMapOf()
 
     // type relations:
-    override var selectedWordClass: WordWordClass? by mutableStateOf(null)
-    override val relatedWords: SnapshotStateMap<Long, Pair<WordWordClassRelation, String>> = mutableStateMapOf()
+    override var selectedWordClass: WordClass? by mutableStateOf(null)
+    override val relatedWords: SnapshotStateMap<Long, Pair<WordClassRelation, String>> = mutableStateMapOf()
 
     // lexical relations:
     override val lexicalRelations: SnapshotStateMap<WordLexicalRelationType, SnapshotStateMap<Long, String>> = mutableStateMapOf()
@@ -97,7 +97,7 @@ class MDWordDetailsEditModeMutableUiState(
             examples.setAll(word.examples.associateByIdGenerator())
 
             // type relations:
-            selectedWordClass = word.wordWordClass
+            selectedWordClass = word.wordClass
             val newRelatedWords = selectedWordClass?.relations?.ifEmpty {
                 null
             }?.associateBy {

@@ -1,8 +1,8 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
@@ -16,8 +16,8 @@ interface MDWordDetailsEditModeBusinessUiActions {
     fun onEditTranscription(newTranscription: String)
     fun onEditAdditionalTranslations(id: Long, newValue: String)
     fun onEditExamples(id: Long, newValue: String)
-    fun onEditWordClass(newWordClass: WordWordClass?)
-    fun onEditTypeRelationLabel(id: Long, relation: WordWordClassRelation)
+    fun onEditWordClass(newWordClass: WordClass?)
+    fun onEditTypeRelationLabel(id: Long, relation: WordClassRelation)
     fun onEditTypeRelationValue(id: Long, newValue: String)
     fun onEditLexicalRelation(type: WordLexicalRelationType, id: Long, newValue: String)
 

@@ -51,8 +51,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClassRelation
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -443,7 +443,7 @@ private fun WordsSpaceFieldEditDialog(
             value = value,
             onChangeValue = { value = it },
             leadingIcon = if (isTag) {
-                MDIconsSet.WordWordClass
+                MDIconsSet.WordClass
             } else {
                 MDIconsSet.WordRelatedWords
             },
@@ -502,23 +502,23 @@ private val language = Language(
 private val state = LanguageWordSpaceMutableState(
     "ar",
     initialTags = listOf(
-        WordWordClass(
+        WordClass(
             id = 0,
             name = "Tag Name 1",
             language = language,
             relations = listOf(
-                WordWordClassRelation("Relation 1", 15),
-                WordWordClassRelation("Relation 2", 10),
+                WordClassRelation("Relation 1", 15),
+                WordClassRelation("Relation 2", 10),
             ),
             wordsCount = 25
         ),
-        WordWordClass(
+        WordClass(
             id = 0,
             name = "Tag Name 2",
             language = language,
             relations = listOf(
-                WordWordClassRelation("Relation 3", 15),
-                WordWordClassRelation("Relation 4", 10),
+                WordClassRelation("Relation 3", 15),
+                WordClassRelation("Relation 4", 10),
             ),
             wordsCount = 25
         )

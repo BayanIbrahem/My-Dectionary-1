@@ -2,15 +2,15 @@ package dev.bayan_ibrahim.my_dictionary.data
 
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordWordClassRelationWordsDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassRelationWordsDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordWordClassRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import kotlinx.coroutines.flow.Flow
@@ -19,16 +19,16 @@ import kotlinx.coroutines.flow.map
 class MDRoomWordClassRepo(
     private val db: MDDataBase,
 ) : WordClassRepo {
-    private val wordClassDao: WordWordClassDao = db.getWordWordClassDao()
-    private val typeRelationDao: WordWordClassRelationWordsDao = db.getWordWordClassRelationDao()
+    private val wordClassDao: WordClassDao = db.getWordClassDao()
+    private val typeRelationDao: WordClassRelationWordsDao = db.getWordClassRelationDao()
 
     override fun getWordsClassesOfLanguage(
         code: LanguageCode,
-    ): Flow<List<WordWordClass>> = wordClassDao.getTagTypesOfLanguage(code.code).map {
+    ): Flow<List<WordClass>> = wordClassDao.getTagTypesOfLanguage(code.code).map {
         it.map { it.asTagModel() }
     }
 
-    override fun getAllWordsClasses(): Flow<Map<LanguageCode, List<WordWordClass>>> = wordClassDao.getAllTagTypes().map {
+    override fun getAllWordsClasses(): Flow<Map<LanguageCode, List<WordClass>>> = wordClassDao.getAllTagTypes().map {
         it.map {
             it.asTagModel()
         }.groupBy {
@@ -38,10 +38,10 @@ class MDRoomWordClassRepo(
 
     override suspend fun getWordClass(
         id: Long,
-    ): WordWordClass? = wordClassDao.getTagType(id)?.asTagModel()
+    ): WordClass? = wordClassDao.getTagType(id)?.asTagModel()
 
     private suspend fun insertWordsClassesWithRelationsTransaction(
-        tags: List<WordWordClass>,
+        tags: List<WordClass>,
         deleteOthers: Boolean,
     ) {
         db.withTransaction {
@@ -59,12 +59,12 @@ class MDRoomWordClassRepo(
 
     private suspend fun insertWordsClassesWithRelationsOfLanguage(
         languageCode: LanguageCode,
-        tags: List<WordWordClass>,
+        tags: List<WordClass>,
         deleteOthers: Boolean,
     ) {
-        val newRelationsEntities = mutableListOf<WordWordClassRelationEntity>()
-        val existedRelationsEntities = mutableListOf<WordWordClassRelationEntity>()
-        val existedTagsEntities = mutableListOf<WordWordClassEntity>()
+        val newRelationsEntities = mutableListOf<WordClassRelationEntity>()
+        val existedRelationsEntities = mutableListOf<WordClassRelationEntity>()
+        val existedTagsEntities = mutableListOf<WordClassEntity>()
         val allNewTagsIds = mutableSetOf<Long>()
 
         tags.forEach { tag ->
@@ -93,7 +93,7 @@ class MDRoomWordClassRepo(
 
     override suspend fun setLanguageWordsClasses(
         code: LanguageCode,
-        tags: List<WordWordClass>,
+        tags: List<WordClass>,
     ) {
         insertWordsClassesWithRelationsTransaction(tags, true)
     }

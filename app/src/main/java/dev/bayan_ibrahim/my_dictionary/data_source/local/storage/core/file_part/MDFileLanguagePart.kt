@@ -1,6 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part
 
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordWordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 
 interface MDFileLanguagePart : MDFilePart {
@@ -9,9 +9,9 @@ interface MDFileLanguagePart : MDFilePart {
 
     interface LanguageWordClass: StrIdentifiable {
         val relations: List<StrIdentifiable>
-        fun toWordClass(language: Language): WordWordClass
+        fun toWordClass(language: Language): WordClass
     }
 
     fun toLanguage(): Language
-    fun toWordsClasses(): List<WordWordClass> = wordsClasses.map { it.toWordClass(toLanguage()) }
+    fun toWordsClasses(): List<WordClass> = wordsClasses.map { it.toWordClass(toLanguage()) }
 }
