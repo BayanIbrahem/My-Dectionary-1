@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json
 
 import androidx.compose.ui.graphics.Color
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.file_part.MDJsonFileTagPart
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.validate
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.strHex
 import kotlinx.serialization.SerialName
@@ -18,10 +18,10 @@ data class MDJsonFileTagPartV1(
     @SerialName(PASS_COLOR_KEY)
     override val passColorToChildren: Boolean? = null,
 ) : MDJsonFileTagPart {
-    override fun toContextTag(): ContextTag? = name.takeIf {
+    override fun toTag(): Tag? = name.takeIf {
         it.isNotBlank()
     }?.let {
-        ContextTag(
+        Tag(
             value = this.name,
             color = this.color?.let { Color.strHex(it) },
             passColorToChildren = this.passColorToChildren == true,

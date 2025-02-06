@@ -14,7 +14,7 @@ interface MDFileProcessingSummaryActions {
     fun recognizeLanguage(code: LanguageCode, new: Boolean)
     fun recognizeWordClass(languageCode: LanguageCode, name: String, new: Boolean)
     fun recognizeWordClassRelation(languageCode: LanguageCode, wordClassName: String, relationLabel: String, new: Boolean)
-    fun recognizeContextTag(value: String, new: Boolean)
+    fun recognizeTag(value: String, new: Boolean)
     fun recognizeWord(languageCode: LanguageCode, meaning: String, translation: String, new: Boolean)
     fun recognizeCorruptedWord(languageCode: LanguageCode, meaning: String, translation: String, new: Boolean)
     fun reset()
@@ -27,7 +27,7 @@ enum class MDFileProcessingSummaryActionsStep(override val strLabel: String, ove
     GetAvailableParts("Get available parts in file", MDIconsSet.ExportToFile), // TODO, string res, icon res
     ParseSaveLanguages("Process Languages", MDIconsSet.LanguageWordSpace),// TODO, string res, icon res
     ParseAndSaveWordsClasses("Process Words Classes", MDIconsSet.WordClass),// TODO, string res, icon res
-    ParseAndSaveContextTags("Process Context Tags", MDIconsSet.WordTag),// TODO, string res, icon res
+    ParseAndSaveTags("Process Context Tags", MDIconsSet.WordTag),// TODO, string res, icon res
     ParseAndSaveWords("Process Words", MDIconsSet.WordMeaning),// TODO, string res, icon res
     End("End", MDIconsSet.Check),// TODO, string res, icon res
 }
@@ -111,7 +111,7 @@ sealed class MDFileProcessingSummaryStepException : MDFileProcessingSummaryLog {
 enum class MDFileProcessingSummaryStepWarning : MDFileProcessingSummaryLog {
     BlankValidParts, // no exception in getting file parts but parts are invalid, in other words this file is blank
     BlankLanguages, // languages file part exists but has no data,
-    BlankContextTags,// context tags file part exists but has no data,
+    BlankTags,// context tags file part exists but has no data,
     ExistedWordAbort, // when facing a corrupted word and ignore it,
     CorruptedWordAbort; // when facing a corrupted word and ignore it
 
@@ -120,7 +120,7 @@ enum class MDFileProcessingSummaryStepWarning : MDFileProcessingSummaryLog {
         get() = when (this) {
             BlankValidParts -> "No Valid Parts"
             BlankLanguages -> "No Languages Data"
-            BlankContextTags -> "No Context Tags Data"
+            BlankTags -> "No Context Tags Data"
             ExistedWordAbort -> "Word Conflict Detected"
             CorruptedWordAbort -> "Corrupted Word Detected"
         }
@@ -130,7 +130,7 @@ enum class MDFileProcessingSummaryStepWarning : MDFileProcessingSummaryLog {
         get() = when (this) {
             BlankValidParts -> "The file is not empty but it doesn't contain any file parts"
             BlankLanguages -> "The file contains a languages section, but it has no data."
-            BlankContextTags -> "The file contains a context tags section, but it has no data."
+            BlankTags -> "The file contains a context tags section, but it has no data."
             ExistedWordAbort -> "A new word was ignored because it conflicts with an existing word in your local dataset."
             CorruptedWordAbort -> "A new word was ignored because it contains corrupted or invalid data."
         }
@@ -147,7 +147,7 @@ enum class MDFileProcessingSummaryStepWarning : MDFileProcessingSummaryLog {
                 "Add valid languages data to the file if required."
             )
 
-            BlankContextTags -> listOf(
+            BlankTags -> listOf(
                 "If context tags are unnecessary, remove the context tags part from the file.",
                 "Add valid context tags data to the file if required."
             )

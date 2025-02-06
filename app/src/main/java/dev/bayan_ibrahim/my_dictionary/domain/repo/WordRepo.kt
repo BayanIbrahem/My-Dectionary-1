@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.domain.repo
 
 import androidx.paging.PagingData
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.flatMapConcat
 interface WordRepo {
     fun getWordsIdsOf(
         languages: Set<LanguageCode> = emptySet(),
-        contextTags: Set<ContextTag> = emptySet(),
-        includeContextTags: Boolean = true,
+        tags: Set<Tag> = emptySet(),
+        includeTags: Boolean = true,
         wordsClasses: Set<Long> = emptySet(),
         memorizingProbabilities: Set<MDWordsListMemorizingProbabilityGroup> = emptySet(),
     ): Flow<Set<Long>>
@@ -23,14 +23,14 @@ interface WordRepo {
 
     fun getWordsOf(
         languages: Set<LanguageCode> = emptySet(),
-        contextTags: Set<ContextTag> = emptySet(),
-        includeContextTags: Boolean = true,
+        tags: Set<Tag> = emptySet(),
+        includeTags: Boolean = true,
         wordsClasses: Set<Long> = emptySet(),
         memorizingProbabilities: Set<MDWordsListMemorizingProbabilityGroup> = emptySet(),
     ): Flow<Sequence<Word>> = getWordsIdsOf(
         languages = languages,
-        contextTags = contextTags,
-        includeContextTags = includeContextTags,
+        tags = tags,
+        includeTags = includeTags,
         wordsClasses = wordsClasses,
         memorizingProbabilities = memorizingProbabilities
     ).flatMapConcat(::getWordsOfIds)
@@ -52,7 +52,7 @@ interface WordRepo {
     suspend fun deleteWords(ids: Collection<Long>)
     suspend fun appendTagsToWords(
         wordsIds: Collection<Long>,
-        tags: Collection<ContextTag>,
+        tags: Collection<Tag>,
     )
 
     suspend fun saveOrUpdateWord(word: Word): Long

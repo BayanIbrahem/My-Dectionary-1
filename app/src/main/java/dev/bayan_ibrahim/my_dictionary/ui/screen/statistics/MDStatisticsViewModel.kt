@@ -9,7 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.instantIdentifier
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.startOf
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_history.TrainHistory
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResultType
 import dev.bayan_ibrahim.my_dictionary.domain.repo.TrainHistoryRepo
@@ -66,7 +66,7 @@ class MDStatisticsViewModel @Inject constructor(
     ) = when (preferences) {
         is MDStatisticsViewPreferences.Date -> trainHistoryRepo.getTrainHistoryOf(startTime, endTime).first()
         is MDStatisticsViewPreferences.Language -> getTrainHistoryOfLanguage(preferences.language, startTime, endTime)
-        is MDStatisticsViewPreferences.Tag -> getTrainHistoryOfContextTag(preferences.tag, startTime, endTime)
+        is MDStatisticsViewPreferences.Tag -> getTrainHistoryOfTag(preferences.tag, startTime, endTime)
         is MDStatisticsViewPreferences.Train -> trainHistoryRepo.getTrainHistoryOf(limit = preferences.count.count).first()
         is MDStatisticsViewPreferences.WordClass -> getTrainHistoryOfWordClass(preferences.wordClassId, startTime, endTime)
         is MDStatisticsViewPreferences.Word -> getTrainHistoryOfWord(preferences.wordId, startTime, endTime)
@@ -99,13 +99,13 @@ class MDStatisticsViewModel @Inject constructor(
         ).first()
     }
 
-    private suspend fun getTrainHistoryOfContextTag(
-        contextTag: ContextTag,
+    private suspend fun getTrainHistoryOfTag(
+        tag: Tag,
         startTime: Instant?,
         endTime: Instant?,
         limit: Int? = null,
     ): List<TrainHistory> {
-        val wordsIds = wordRepo.getWordsIdsOf(contextTags = setOf(contextTag)).first()
+        val wordsIds = wordRepo.getWordsIdsOf(tags = setOf(tag)).first()
         return trainHistoryRepo.getTrainHistoryOf(
             startTime = startTime,
             endTime = endTime,

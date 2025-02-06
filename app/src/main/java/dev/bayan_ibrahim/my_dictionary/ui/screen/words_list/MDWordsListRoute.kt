@@ -12,13 +12,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorViewModel
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesDialogRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog.MDWordsListViewPreferencesViewModel
 
@@ -31,18 +31,18 @@ fun MDWordsListRoute(
     navigateToTrainScreen: () -> Unit,
     modifier: Modifier = Modifier,
     wordsListViewModel: MDWordsListViewModel = hiltViewModel(),
-    contextTagsSelectorViewModel: MDContextTagsSelectorViewModel = hiltViewModel(),
+    tagsSelectorViewModel: MDTagsSelectorViewModel = hiltViewModel(),
 ) {
     DisposableEffect(Unit) {
         wordsListViewModel.initWithNavArgs(navArgs)
-        contextTagsSelectorViewModel.init()
+        tagsSelectorViewModel.init()
         this.onDispose { }
     }
 
     val uiState = wordsListViewModel.uiState
     val wordsList = wordsListViewModel.paginatedWordsList.collectAsLazyPagingItems()
     val lifeMemorizingProbability by wordsListViewModel.lifeMemorizingProbability.collectAsStateWithLifecycle()
-    val tagsSelectorUiState = contextTagsSelectorViewModel.uiState
+    val tagsSelectorUiState = tagsSelectorViewModel.uiState
     val selectedWordSpace by uiState.selectedWordSpace.collectAsStateWithLifecycle()
     val currentSpeakingWordId by wordsListViewModel.currentSpeakingWordId.collectAsStateWithLifecycle()
 
@@ -62,8 +62,8 @@ fun MDWordsListRoute(
 
     val tagsSelectorNavActions by remember {
         derivedStateOf {
-            object : MDContextTagsSelectorNavigationUiActions {
-                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<ContextTag>) {
+            object : MDTagsSelectorNavigationUiActions {
+                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<Tag>) {
                     super.onUpdateSelectedTags(selectedTags)
                 }
             }
@@ -71,7 +71,7 @@ fun MDWordsListRoute(
     }
     val tagsSelectorUiActions by remember {
         derivedStateOf {
-            contextTagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
+            tagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
         }
     }
 
@@ -80,8 +80,8 @@ fun MDWordsListRoute(
         uiState = uiState,
         uiActions = uiActions,
         wordsList = wordsList,
-        contextTagsSelectionState = tagsSelectorUiState,
-        contextTagsSelectionActions = tagsSelectorUiActions,
+        tagsSelectionState = tagsSelectorUiState,
+        tagsSelectionActions = tagsSelectorUiActions,
         currentSpeakingWordId =currentSpeakingWordId,
         modifier = modifier,
         lifeMemorizingProbability = lifeMemorizingProbability,

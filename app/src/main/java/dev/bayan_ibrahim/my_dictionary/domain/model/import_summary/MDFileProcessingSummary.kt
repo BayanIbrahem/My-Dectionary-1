@@ -19,7 +19,7 @@ interface MDFileProcessingSummary {
     val recognizedLanguages: Map<LanguageCode, Boolean>
     val recognizedWordsClasses: Map<Pair<LanguageCode, String>, Boolean>
     val recognizedWordsClassesRelations: Map<Triple<LanguageCode, String, String>, Boolean>
-    val recognizedContextTags: Map<String, Boolean>
+    val recognizedTags: Map<String, Boolean>
     val recognizedWords: Map<Triple<LanguageCode, String, String>, Boolean>
     val recognizedCorruptedWords: Map<Triple<LanguageCode, String, String>, Boolean>
     var processingStartTime: Long

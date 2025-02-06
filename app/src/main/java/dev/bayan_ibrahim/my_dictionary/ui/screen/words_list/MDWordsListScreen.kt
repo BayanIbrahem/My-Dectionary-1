@@ -43,8 +43,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyPagingGridItems
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordListItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
@@ -62,8 +62,8 @@ fun MDWordsListScreen(
     searchQuery: String,
     wordsList: LazyPagingItems<Word>,
     uiActions: MDWordsListUiActions,
-    contextTagsSelectionState: MDContextTagsSelectorUiState,
-    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
+    tagsSelectionState: MDTagsSelectorUiState,
+    tagsSelectionActions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
     lifeMemorizingProbability: Boolean = false,
     currentSpeakingWordId: String? = null,
@@ -110,11 +110,11 @@ fun MDWordsListScreen(
                         onAdjustFilterPreferences = uiActions::onShowViewPreferencesDialog,
                         onSelectLanguagePage = uiActions::onShowLanguageWordSpacesDialog,
                         onDeleteWordSpace = uiActions::onDeleteLanguageWordSpace,
-                        contextTagsSelectionState = contextTagsSelectionState,
-                        contextTagsSelectionActions = contextTagsSelectionActions,
+                        tagsSelectionState = tagsSelectionState,
+                        tagsSelectionActions = tagsSelectionActions,
                         onClearSelection = uiActions::onClearSelection,
                         onDeleteSelection = uiActions::onDeleteSelection,
-                        onConfirmAppendContextTagsOnSelectedWords = uiActions::onConfirmAppendContextTagsOnSelectedWords,
+                        onConfirmAppendTagsOnSelectedWords = uiActions::onConfirmAppendTagsOnSelectedWords,
                         modifier = Modifier.background(Color.Green),
                         onNavigationIconClick = uiActions::onOpenNavDrawer,
                         onSearchQueryChange = uiActions::onSearchQueryChange

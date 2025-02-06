@@ -10,13 +10,13 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorViewModel
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorViewModel
 
 @Composable
 fun MDWordDetailsEditModeRoute(
@@ -26,15 +26,15 @@ fun MDWordDetailsEditModeRoute(
     onNavigateToDetailsViewMode: (wordId: Long, language: LanguageCode) -> Unit,
     modifier: Modifier = Modifier,
     wordDetailsViewModel: MDWordDetailsEditModeViewModel = hiltViewModel(),
-    contextTagsSelectorViewModel: MDContextTagsSelectorViewModel = hiltViewModel(),
+    tagsSelectorViewModel: MDTagsSelectorViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(wordDetails) {
         wordDetailsViewModel.initWithNavArgs(wordDetails)
-        contextTagsSelectorViewModel.init()
+        tagsSelectorViewModel.init()
     }
 
     val uiState = wordDetailsViewModel.uiState
-    val tagsSelectorUiState = contextTagsSelectorViewModel.uiState
+    val tagsSelectorUiState = tagsSelectorViewModel.uiState
 
     val navActions by remember {
         derivedStateOf {
@@ -54,8 +54,8 @@ fun MDWordDetailsEditModeRoute(
 
     val tagsSelectorNavActions by remember {
         derivedStateOf {
-            object : MDContextTagsSelectorNavigationUiActions {
-                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<ContextTag>) {
+            object : MDTagsSelectorNavigationUiActions {
+                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<Tag>) {
                     uiActions.onUpdateSelectedTags(selectedTags)
                 }
             }
@@ -63,14 +63,14 @@ fun MDWordDetailsEditModeRoute(
     }
     val tagsSelectorUiActions by remember {
         derivedStateOf {
-            contextTagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
+            tagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
         }
     }
     MDWordDetailsEditModeScreen(
         uiState = uiState,
         uiActions = uiActions,
-        contextTagsState = tagsSelectorUiState,
-        contextTagsActions = tagsSelectorUiActions,
+        tagsState = tagsSelectorUiState,
+        tagsActions = tagsSelectorUiActions,
         modifier = modifier,
     )
 }

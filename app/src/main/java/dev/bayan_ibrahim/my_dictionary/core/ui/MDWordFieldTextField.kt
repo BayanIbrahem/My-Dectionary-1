@@ -51,6 +51,7 @@ fun MDWordFieldTextField(
     readOnly: Boolean = false,
     focusManager: FocusManager = LocalFocusManager.current,
     onFocusEvent: (FocusState) -> Unit = {},
+    maxLines: Int = 1,
     colors: TextFieldColors = MDTextFieldDefaults.colors(),
     hasBottomHorizontalDivider: Boolean = false,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
@@ -86,7 +87,8 @@ fun MDWordFieldTextField(
             onFocusEvent(it)
         },
         hasBottomHorizontalDivider = hasBottomHorizontalDivider,
-        maxLines = 1,
+        minLines = 1,
+        maxLines = maxLines,
         placeholder = placeholder,
         label = textFieldLabel,
         prefix = index?.let {

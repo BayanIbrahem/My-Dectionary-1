@@ -52,13 +52,13 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelector
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorMutableUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorViewModel
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorMutableUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
@@ -77,11 +77,11 @@ fun MDWordsListTopAppBar(
     onDeleteWordSpace: () -> Unit,
     onNavigationIconClick: () -> Unit,
     // selection mode actions
-    contextTagsSelectionState: MDContextTagsSelectorUiState,
-    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
+    tagsSelectionState: MDTagsSelectorUiState,
+    tagsSelectionActions: MDTagsSelectorUiActions,
     onClearSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
-    onConfirmAppendContextTagsOnSelectedWords: (selectedTags: List<ContextTag>) -> Unit,
+    onConfirmAppendTagsOnSelectedWords: (selectedTags: List<Tag>) -> Unit,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -108,9 +108,9 @@ fun MDWordsListTopAppBar(
                 totalWordsCount = visibleWordsCount,
                 onClearSelection = onClearSelection,
                 onDeleteSelection = onDeleteSelection,
-                contextTagsSelectionState = contextTagsSelectionState,
-                contextTagsSelectionActions = contextTagsSelectionActions,
-                onConfirmAppendContextTagsOnSelectedWords = onConfirmAppendContextTagsOnSelectedWords,
+                tagsSelectionState = tagsSelectionState,
+                tagsSelectionActions = tagsSelectionActions,
+                onConfirmAppendTagsOnSelectedWords = onConfirmAppendTagsOnSelectedWords,
                 modifier = modifier
             )
         }
@@ -369,9 +369,9 @@ private fun WordsListTopAppBarSelectionMode(
     totalWordsCount: Int,
     onClearSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
-    contextTagsSelectionState: MDContextTagsSelectorUiState,
-    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
-    onConfirmAppendContextTagsOnSelectedWords: (selectedTags: List<ContextTag>) -> Unit,
+    tagsSelectionState: MDTagsSelectorUiState,
+    tagsSelectionActions: MDTagsSelectorUiActions,
+    onConfirmAppendTagsOnSelectedWords: (selectedTags: List<Tag>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hasSelected by remember(selectedWordsCount) {
@@ -449,9 +449,9 @@ private fun WordsListTopAppBarSelectionMode(
         showDialog = showSelectedTagsDialog,
         onDismissRequest = { showSelectedTagsDialog = false },
         selectedWordsCount = selectedWordsCount,
-        contextTagsSelectionState = contextTagsSelectionState,
-        contextTagsSelectionActions = contextTagsSelectionActions,
-        onConfirm = onConfirmAppendContextTagsOnSelectedWords,
+        tagsSelectionState = tagsSelectionState,
+        tagsSelectionActions = tagsSelectionActions,
+        onConfirm = onConfirmAppendTagsOnSelectedWords,
     )
 }
 
@@ -460,9 +460,9 @@ private fun ExtraTagsDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
     selectedWordsCount: Int,
-    contextTagsSelectionState: MDContextTagsSelectorUiState,
-    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
-    onConfirm: (selectedTags: List<ContextTag>) -> Unit,
+    tagsSelectionState: MDTagsSelectorUiState,
+    tagsSelectionActions: MDTagsSelectorUiActions,
+    onConfirm: (selectedTags: List<Tag>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     MDAlertDialog(
@@ -485,11 +485,11 @@ private fun ExtraTagsDialog(
         actions = {
             MDAlertDialogActions(
                 onDismissRequest = onDismissRequest,
-                primaryClickEnabled = contextTagsSelectionState.selectedTags.isNotEmpty(),
+                primaryClickEnabled = tagsSelectionState.selectedTags.isNotEmpty(),
                 onPrimaryClick = {
-                    onConfirm(contextTagsSelectionState.selectedTags)
-                    contextTagsSelectionActions.clearSelectedTags()
-                    contextTagsSelectionActions.onResetToRoot()
+                    onConfirm(tagsSelectionState.selectedTags)
+                    tagsSelectionActions.clearSelectedTags()
+                    tagsSelectionActions.onResetToRoot()
                 },
             )
         }
@@ -498,9 +498,9 @@ private fun ExtraTagsDialog(
             modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            MDContextTagsSelector(
-                state = contextTagsSelectionState,
-                actions = contextTagsSelectionActions
+            MDTagsSelector(
+                state = tagsSelectionState,
+                actions = tagsSelectionActions
             )
         }
     }
@@ -550,7 +550,7 @@ private fun WordsListTopAppBarPreview() {
                 var selectionMode by remember {
                     mutableStateOf(true)
                 }
-                val viewModel: MDContextTagsSelectorViewModel = hiltViewModel()
+                val viewModel: MDTagsSelectorViewModel = hiltViewModel()
                 MDWordsListTopAppBar(
                     isSelectionModeOn = selectionMode,
                     language = Language(code = "ar", selfDisplayName = "العربية", localDisplayName = "Arabic"),
@@ -565,9 +565,9 @@ private fun WordsListTopAppBarPreview() {
                         selectionMode = false
                     },
                     onDeleteSelection = {},
-                    contextTagsSelectionState = MDContextTagsSelectorMutableUiState(),
-                    contextTagsSelectionActions = viewModel.getUiActions(object : MDContextTagsSelectorNavigationUiActions {}),
-                    onConfirmAppendContextTagsOnSelectedWords = {},
+                    tagsSelectionState = MDTagsSelectorMutableUiState(),
+                    tagsSelectionActions = viewModel.getUiActions(object : MDTagsSelectorNavigationUiActions {}),
+                    onConfirmAppendTagsOnSelectedWords = {},
                     onNavigationIconClick = {},
                     searchQuery =  "",
                     onSearchQueryChange = {}

@@ -4,8 +4,10 @@ import android.content.Context
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.UserPreferencesProto
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.UserPreferencesTheme
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.UserPreferencesThemeContrast
+import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.UserPreferencesWordDetailsAlignmentSource
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordDetailsDirectionSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsPack
@@ -49,7 +51,14 @@ class MDUserPreferencesDataStoreImpl(
             }?.let {
                 MDIconsPack.entries[it]
             } ?: MDIconsPack.Default,
-            liveMemorizingProbability = it.liveMemorizingProbability
+            liveMemorizingProbability = it.liveMemorizingProbability,
+            wordDetailsDirectionSource = when (it.wordAlignment) {
+                UserPreferencesWordDetailsAlignmentSource.Word -> WordDetailsDirectionSource.WordLanguage
+                UserPreferencesWordDetailsAlignmentSource.Device -> WordDetailsDirectionSource.Device
+                UserPreferencesWordDetailsAlignmentSource.Ltr -> WordDetailsDirectionSource.Ltr
+                UserPreferencesWordDetailsAlignmentSource.Rtl -> WordDetailsDirectionSource.Rtl
+                else -> WordDetailsDirectionSource.WordLanguage
+            }
         )
     }
 
@@ -76,6 +85,12 @@ class MDUserPreferencesDataStoreImpl(
                 }
                 this.iconsSet = user.iconsPack.ordinal
                 this.liveMemorizingProbability = user.liveMemorizingProbability
+                this.wordAlignment = when (user.wordDetailsDirectionSource) {
+                    WordDetailsDirectionSource.Ltr -> UserPreferencesWordDetailsAlignmentSource.Ltr
+                    WordDetailsDirectionSource.Rtl -> UserPreferencesWordDetailsAlignmentSource.Rtl
+                    WordDetailsDirectionSource.Device -> UserPreferencesWordDetailsAlignmentSource.Device
+                    WordDetailsDirectionSource.WordLanguage -> UserPreferencesWordDetailsAlignmentSource.Word
+                }
             }
         }
     }

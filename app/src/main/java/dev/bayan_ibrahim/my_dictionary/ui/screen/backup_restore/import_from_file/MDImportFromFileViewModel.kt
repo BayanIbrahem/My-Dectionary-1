@@ -14,7 +14,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStr
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingMutableSummary
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummary
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsImpl
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.repo.ImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +39,7 @@ class MDImportFromFileViewModel @Inject constructor(
 
     private var fileProcessJob: Job? = null
 
-    private var lastSelectedTagsSnapshot: List<ContextTag> = emptyList()
+    private var lastSelectedTagsSnapshot: List<Tag> = emptyList()
 
     fun initWithNavArgs(args: MDDestination.ImportFromFile) {
         _uiState.onExecute {
@@ -130,7 +130,7 @@ class MDImportFromFileViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {
+    fun onUpdateSelectedTags(selectedTags: List<Tag>) {
         lastSelectedTagsSnapshot = selectedTags
     }
 }

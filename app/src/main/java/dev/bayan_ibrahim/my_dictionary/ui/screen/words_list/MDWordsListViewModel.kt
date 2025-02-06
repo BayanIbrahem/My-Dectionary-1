@@ -13,7 +13,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferencesBuil
 import dev.bayan_ibrahim.my_dictionary.domain.model.defaultWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.defaultLanguage
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
@@ -92,8 +92,8 @@ class MDWordsListViewModel @Inject constructor(
                     paginatedWordsListJob = launch {
                         val targetWords = wordRepo.getWordsIdsOf(
                             languages = setOf(language),
-                            contextTags = preferences.selectedTags,
-                            includeContextTags = preferences.includeSelectedTags,
+                            tags = preferences.selectedTags,
+                            includeTags = preferences.includeSelectedTags,
                             memorizingProbabilities = preferences.selectedMemorizingProbabilityGroups
                         ).first()
                         wordRepo.getPaginatedWordsList(
@@ -254,7 +254,7 @@ class MDWordsListViewModel @Inject constructor(
             _uiState.showViewPreferencesDialog = false
         }
 
-        override fun onConfirmAppendContextTagsOnSelectedWords(selectedTags: List<ContextTag>) {
+        override fun onConfirmAppendTagsOnSelectedWords(selectedTags: List<Tag>) {
             if (uiState.isSelectModeOn) {
                 if (uiState.selectedWords.isNotEmpty()) {
                     if (selectedTags.isNotEmpty()) {

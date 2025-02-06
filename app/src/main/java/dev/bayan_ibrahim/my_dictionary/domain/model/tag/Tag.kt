@@ -6,9 +6,9 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 /**
  * separator for tags segments in levels
  */
-const val ContextTagSegmentSeparator: String = "/"
+const val TagSegmentSeparator: String = "/"
 
-data class ContextTag(
+data class Tag(
     val value: String,
     val id: Long = INVALID_ID,
     val wordsCount: Int? = null,
@@ -48,7 +48,7 @@ data class ContextTag(
          */
         currentColorIsPassed: Boolean = true,
     ) : this(
-        value = segments.joinToString(ContextTagSegmentSeparator),
+        value = segments.joinToString(TagSegmentSeparator),
         id = id,
         wordsCount = wordsCount,
         color = markerColor,
@@ -61,12 +61,12 @@ data class ContextTag(
         id: Long = INVALID_ID,
         wordsCount: Int? = null,
     ) : this(
-        value = segments.joinToString(ContextTagSegmentSeparator),
+        value = segments.joinToString(TagSegmentSeparator),
         id = id,
         wordsCount = wordsCount,
     )
 
-    val segments = value.split(ContextTagSegmentSeparator)
+    val segments = value.split(TagSegmentSeparator)
 
     operator fun get(level: Int): String = segments[level]
 
@@ -86,13 +86,13 @@ data class ContextTag(
  * return true if any of [targetTags] [isContained] in any of receiver
  * @see anyContainedInAny
  */
-fun Iterable<ContextTag>.anyContainsAny(targetTags: Iterable<ContextTag>): Boolean = targetTags.anyContainedInAny(this)
+fun Iterable<Tag>.anyContainsAny(targetTags: Iterable<Tag>): Boolean = targetTags.anyContainedInAny(this)
 
 /**
  * return true if any of receiver [isContained] in any of [targetTags]
  * @see [anyContainsAny]
  */
-fun Iterable<ContextTag>.anyContainedInAny(targetTags: Iterable<ContextTag>): Boolean {
+fun Iterable<Tag>.anyContainedInAny(targetTags: Iterable<Tag>): Boolean {
     return this.any { source ->
         targetTags.any { target ->
             source.isContained(target)
@@ -102,7 +102,7 @@ fun Iterable<ContextTag>.anyContainedInAny(targetTags: Iterable<ContextTag>): Bo
 
 /**
  * check if this in contained in [other], is is similar if we check if [this] is some how a sub tag from [other]
- * return true if the start n segment (where n is [ContextTag.depth] of [other]) from [this] equals
+ * return true if the start n segment (where n is [Tag.depth] of [other]) from [this] equals
  * first n segment from the other tag
  *
  * ```kotlin
@@ -117,7 +117,7 @@ fun Iterable<ContextTag>.anyContainedInAny(targetTags: Iterable<ContextTag>): Bo
  * ```
  * @see contains
  */
-fun ContextTag.isContained(other: ContextTag): Boolean {
+fun Tag.isContained(other: Tag): Boolean {
     if (this.depth < other.depth) return false
 
     repeat(other.depth) { l -> // level
@@ -128,61 +128,61 @@ fun ContextTag.isContained(other: ContextTag): Boolean {
     return true
 }
 
-private const val CONTEXT_TAG_SEPARATOR = "|"
+private const val TAG_SEPARATOR = "|"
 
 /**
  * generate a simple string from id and tag id and tag value
  * notice that this method drop all params like color and wordsCount and keep only [id], and [value]
  * */
-fun ContextTag.simpleSerialize(separator: String = CONTEXT_TAG_SEPARATOR): String = "$id$separator$value"
-fun ContextTag.Companion.simpleString(value: String, separator: String = CONTEXT_TAG_SEPARATOR): ContextTag {
+fun Tag.simpleSerialize(separator: String = TAG_SEPARATOR): String = "$id$separator$value"
+fun Tag.Companion.simpleString(value: String, separator: String = TAG_SEPARATOR): Tag {
     val (strId, v) = value.split(separator)
-    return ContextTag(id = strId.toLong(), value = v)
+    return Tag(id = strId.toLong(), value = v)
 }
 
 /**
  * check if [other] contains this and it is opposite of [isContained]
  * @see isContained
  */
-fun ContextTag.contains(other: ContextTag): Boolean = other.isContained(this)
+fun Tag.contains(other: Tag): Boolean = other.isContained(this)
 
-val ContextTag.depth: Int
+val Tag.depth: Int
     get() = segments.count()
 
-val ContextTag.isTopLevel
+val Tag.isTopLevel
     get() = depth == 1
 
-val ContextTag.parentOrNull: ContextTag?
+val Tag.parentOrNull: Tag?
     get() = if (isTopLevel) null else parentAtLevelOrNull(depth.dec())
 
-val ContextTag.parent: ContextTag
+val Tag.parent: Tag
     get() = parentOrNull ?: throw IllegalArgumentException("Top level tag has no parent")
 
 /**
  * return parent that contains [level]  segments count, if [level] > [depth] return null
  */
-fun ContextTag.parentAtLevelOrNull(level: Int): ContextTag? {
+fun Tag.parentAtLevelOrNull(level: Int): Tag? {
     return if (level > depth) {
         null
     } else {
-        ContextTag(segments.subList(0, level))
+        Tag(segments.subList(0, level))
     }
 }
 
 /**
  * return parent that contains [level] segments count, if [level] > [depth] throw an exception
  */
-fun ContextTag.parentAtLevel(level: Int): ContextTag = parentAtLevelOrNull(level)!!
+fun Tag.parentAtLevel(level: Int): Tag = parentAtLevelOrNull(level)!!
 
 /**
  * return true if current tag has a color its own
  */
-val ContextTag.isMarkerTag: Boolean
+val Tag.isMarkerTag: Boolean
     get() = color != null && !currentColorIsPassed
 
 
 /**
- * Comparator for `ContextTag` objects to determine their ordering based on inheritance and path.
+ * Comparator for `Tag` objects to determine their ordering based on inheritance and path.
  *
  * In general it compare tas as it is an inheritance tree (like family tree when we need to compare which is older 🙂)
  *
@@ -193,8 +193,8 @@ val ContextTag.isMarkerTag: Boolean
  *    - The tag with the shorter path is smaller.
  *    - If paths are of equal length, comparison is based on the lexicographic order of their segments.
  */
-object InheritedTagsComparable : Comparator<ContextTag> {
-    override fun compare(t1: ContextTag?, t2: ContextTag?): Int {
+object InheritedTagsComparable : Comparator<Tag> {
+    override fun compare(t1: Tag?, t2: Tag?): Int {
         // Null checks
         if (t1 == null) return if (t2 == null) 0 else -1
         if (t2 == null) return 1
@@ -222,7 +222,7 @@ object InheritedTagsComparable : Comparator<ContextTag> {
 /**
  * return a copy of the context that with validated segment text
  */
-fun ContextTag.validate(): ContextTag = ContextTag(
+fun Tag.validate(): Tag = Tag(
     segments = segments.map { it.trim() },
     id = id,
     wordsCount = wordsCount,

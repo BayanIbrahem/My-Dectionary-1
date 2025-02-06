@@ -4,7 +4,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.End
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.GetAvailableParts
-import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseAndSaveContextTags
+import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseAndSaveTags
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseAndSaveWordsClasses
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseAndSaveWords
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActionsStep.ParseSaveLanguages
@@ -56,8 +56,8 @@ class MDFileProcessingSummaryActionsImpl(
         summary.recognizedWordsClassesRelations.putIfAbsent(Triple(languageCode, wordClassName, relationLabel), new)
     }
 
-    override fun recognizeContextTag(value: String, new: Boolean) {
-        summary.recognizedContextTags.putIfAbsent(value, new)
+    override fun recognizeTag(value: String, new: Boolean) {
+        summary.recognizedTags.putIfAbsent(value, new)
     }
 
     override fun recognizeWord(languageCode: LanguageCode, meaning: String, translation: String, new: Boolean) {
@@ -84,7 +84,7 @@ class MDFileProcessingSummaryActionsImpl(
             listOf(
                 ParseSaveLanguages,
                 ParseAndSaveWordsClasses,
-                ParseAndSaveContextTags,
+                ParseAndSaveTags,
                 ParseAndSaveWords,
             ).filterForAvailableFileParts(availableParts)
         }
@@ -92,17 +92,17 @@ class MDFileProcessingSummaryActionsImpl(
         ParseSaveLanguages ->
             listOf(
                 ParseAndSaveWordsClasses,
-                ParseAndSaveContextTags,
+                ParseAndSaveTags,
                 ParseAndSaveWords,
             ).filterForAvailableFileParts(availableParts)
 
         ParseAndSaveWordsClasses ->
             listOf(
-                ParseAndSaveContextTags,
+                ParseAndSaveTags,
                 ParseAndSaveWords,
             ).filterForAvailableFileParts(availableParts)
 
-        ParseAndSaveContextTags ->
+        ParseAndSaveTags ->
             listOf(
                 ParseAndSaveWords,
             ).filterForAvailableFileParts(availableParts)
@@ -118,7 +118,7 @@ class MDFileProcessingSummaryActionsImpl(
         return filter {
             when (it) {
                 ParseSaveLanguages, ParseAndSaveWordsClasses -> MDFilePartType.Language in availableParts
-                ParseAndSaveContextTags -> MDFilePartType.Tag in availableParts
+                ParseAndSaveTags -> MDFilePartType.Tag in availableParts
                 ParseAndSaveWords -> MDFilePartType.Word in availableParts
                 else -> false
             }

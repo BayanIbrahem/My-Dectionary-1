@@ -8,13 +8,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorViewModel
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorViewModel
 
 @Composable
 fun MDImportFromFileRoute(
@@ -23,11 +23,11 @@ fun MDImportFromFileRoute(
     appActions: MDAppUiActions,
     modifier: Modifier = Modifier,
     importViewModel: MDImportFromFileViewModel = hiltViewModel(),
-    contextTagsViewModel: MDContextTagsSelectorViewModel = hiltViewModel(),
+    tagsViewModel: MDTagsSelectorViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(args) {
         importViewModel.initWithNavArgs(args)
-        contextTagsViewModel.init()
+        tagsViewModel.init()
     }
 
     val uiState = importViewModel.uiState
@@ -36,7 +36,7 @@ fun MDImportFromFileRoute(
             importViewModel.importSummary
         }
     }
-    val tagsSelectorUiState = contextTagsViewModel.uiState
+    val tagsSelectorUiState = tagsViewModel.uiState
     val navActions by remember {
         derivedStateOf {
             object : MDImportFromFileNavigationUiActions, MDAppNavigationUiActions by appActions{
@@ -50,8 +50,8 @@ fun MDImportFromFileRoute(
     }
     val tagsSelectorNavigationActions by remember {
         derivedStateOf {
-            object : MDContextTagsSelectorNavigationUiActions {
-                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<ContextTag>) {
+            object : MDTagsSelectorNavigationUiActions {
+                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<Tag>) {
                     super.onUpdateSelectedTags(selectedTags)
                     importViewModel.onUpdateSelectedTags(selectedTags)
                 }
@@ -60,7 +60,7 @@ fun MDImportFromFileRoute(
     }
     val tagsSelectorUiActions by remember {
         derivedStateOf {
-            contextTagsViewModel.getUiActions(tagsSelectorNavigationActions)
+            tagsViewModel.getUiActions(tagsSelectorNavigationActions)
         }
     }
     MDImportFromFileScreen(

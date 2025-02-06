@@ -25,7 +25,7 @@ class MDFileProcessingMutableSummary : MDFileProcessingSummary {
     override val recognizedLanguages: SnapshotStateMap<LanguageCode, Boolean> = mutableStateMapOf()
     override val recognizedWordsClasses: SnapshotStateMap<Pair<LanguageCode, String>, Boolean> = mutableStateMapOf()
     override val recognizedWordsClassesRelations: SnapshotStateMap<Triple<LanguageCode, String, String>, Boolean> = mutableStateMapOf()
-    override val recognizedContextTags: SnapshotStateMap<String, Boolean> = mutableStateMapOf()
+    override val recognizedTags: SnapshotStateMap<String, Boolean> = mutableStateMapOf()
     override val recognizedWords: SnapshotStateMap<Triple<LanguageCode, String, String>, Boolean> = mutableStateMapOf()
     override val recognizedCorruptedWords: SnapshotStateMap<Triple<LanguageCode, String, String>, Boolean> = mutableStateMapOf()
 
@@ -45,7 +45,7 @@ class MDFileProcessingMutableSummary : MDFileProcessingSummary {
         recognizedLanguages.clear()
         recognizedWordsClasses.clear()
         recognizedWordsClassesRelations.clear()
-        recognizedContextTags.clear()
+        recognizedTags.clear()
         recognizedWords.clear()
         recognizedCorruptedWords.clear()
 

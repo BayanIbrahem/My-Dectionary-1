@@ -8,7 +8,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStr
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.applyMergable
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.applyNonMergable
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.validateWith
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
 import kotlinx.datetime.Clock
@@ -24,7 +24,7 @@ inline fun Word.validateWithDatabase(
     dbWord: Word? = null,
     dbWordStrategy: MDPropertyConflictStrategy,
     corruptedStrategy: MDPropertyCorruptionStrategy,
-    getDBContextTag: (data: ContextTag) -> ContextTag,
+    getDBTag: (data: Tag) -> Tag,
     getDBWordClass: (data: WordClass) -> WordClass?,
 ): Word {
     return Word(
@@ -35,7 +35,7 @@ inline fun Word.validateWithDatabase(
             this.additionalTranslations
         }.toList(),
         language = this.language,
-        tags = dbWordStrategy.applyComputedCollection(dbWord?.tags) { this.tags.map(getDBContextTag) }.toSet(),
+        tags = dbWordStrategy.applyComputedCollection(dbWord?.tags) { this.tags.map(getDBTag) }.toSet(),
         transcription = dbWordStrategy.applyString(dbWord?.transcription) { this.transcription },
         examples = dbWordStrategy.applyComputedCollection(dbWord?.examples) { this.examples }.toList(),
         wordClass = dbWordStrategy.applyComputedOld(dbWord?.wordClass) { this.wordClass?.let { getDBWordClass(it) } },

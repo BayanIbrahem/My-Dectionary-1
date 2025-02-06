@@ -20,14 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagExplorerDialog
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorBusinessUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorMutableUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagExplorerDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorBusinessUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorMutableUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.marker_tags.component.MDMarkerTagListItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.marker_tags.component.MDMarkerTagsTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -37,9 +37,9 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 fun MDMarkerTagsScreen(
     uiState: MDMarkerTagsUiState,
-    markerTags: PersistentList<ContextTag>,
-    nonMarkerTagsState: MDContextTagsSelectorUiState,
-    nonMarkerTagsActions: MDContextTagsSelectorUiActions,
+    markerTags: PersistentList<Tag>,
+    nonMarkerTagsState: MDTagsSelectorUiState,
+    nonMarkerTagsActions: MDTagsSelectorUiActions,
     uiActions: MDMarkerTagsUiActions,
     modifier: Modifier = Modifier,
 ) {
@@ -76,7 +76,7 @@ fun MDMarkerTagsScreen(
             }
         }
         // dialog:
-        MDContextTagExplorerDialog(
+        MDTagExplorerDialog(
             showDialog = showExplorerDialog,
             onDismissRequest = { showExplorerDialog = false },
             state = nonMarkerTagsState,
@@ -101,35 +101,35 @@ private fun MDMarkerTagsScreenPreview() {
                         onExecute { true }
                     },
                     markerTags = persistentListOf(),
-                    nonMarkerTagsState = MDContextTagsSelectorMutableUiState(),
-                    nonMarkerTagsActions = MDContextTagsSelectorUiActions(navigationActions = object : MDContextTagsSelectorNavigationUiActions {},
-                        businessActions = object : MDContextTagsSelectorBusinessUiActions {
-                            override fun onClickTag(tag: ContextTag) {}
+                    nonMarkerTagsState = MDTagsSelectorMutableUiState(),
+                    nonMarkerTagsActions = MDTagsSelectorUiActions(navigationActions = object : MDTagsSelectorNavigationUiActions {},
+                        businessActions = object : MDTagsSelectorBusinessUiActions {
+                            override fun onClickTag(tag: Tag) {}
 
-                            override fun onSelectTag(tag: ContextTag) {}
+                            override fun onSelectTag(tag: Tag) {}
 
                             override fun onSelectCurrentTag() {}
 
-                            override fun onUnSelectTag(tag: ContextTag) {}
+                            override fun onUnSelectTag(tag: Tag) {}
 
-                            override fun onSetInitialSelectedTags(tags: Collection<ContextTag>) {}
+                            override fun onSetInitialSelectedTags(tags: Collection<Tag>) {}
 
                             override fun clearSelectedTags() {}
 
-                            override fun onAddNewContextTag(tag: ContextTag) {}
+                            override fun onAddNewTag(tag: Tag) {}
 
-                            override fun onAddNewContextTag(segment: String) {}
+                            override fun onAddNewTag(segment: String) {}
 
-                            override fun onDeleteContextTag(tag: ContextTag) {}
+                            override fun onDeleteTag(tag: Tag) {}
 
                             override fun onNavigateUp() {}
 
                             override fun onResetToRoot() {}
 
-                            override fun onSetAllowedTagsFilter(filter: (ContextTag) -> Boolean) {}
+                            override fun onSetAllowedTagsFilter(filter: (Tag) -> Boolean) {}
 
                             override fun onResetAllowedTagsFilter() {}
-                            override fun onSetForbiddenTagsFilter(filter: (ContextTag) -> Boolean) {}
+                            override fun onSetForbiddenTagsFilter(filter: (Tag) -> Boolean) {}
                             override fun onResetForbiddenTagsFilter() {}
                             override fun onResetTagsFilter() {}
                             override fun onSearchQueryChange(query: String) {}
@@ -142,9 +142,9 @@ private fun MDMarkerTagsScreenPreview() {
 
                         },
                         object : MDMarkerTagsBusinessUiActions {
-                            override fun updateTag(tag: ContextTag) {}
-                            override fun removeTag(tag: ContextTag) {}
-                            override fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {}
+                            override fun updateTag(tag: Tag) {}
+                            override fun removeTag(tag: Tag) {}
+                            override fun onUpdateSelectedTags(selectedTags: List<Tag>) {}
                         },
                     )
                 )

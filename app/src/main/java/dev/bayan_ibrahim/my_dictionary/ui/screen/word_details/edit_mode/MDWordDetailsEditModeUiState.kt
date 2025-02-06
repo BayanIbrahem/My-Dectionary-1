@@ -17,7 +17,7 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
 import kotlinx.coroutines.flow.StateFlow
@@ -30,13 +30,14 @@ interface MDWordDetailsEditModeUiState : MDUiState {
     // basic:
     val meaning: String
     val translation: String
+    val note: String
     val language: Language
 
     // phonetic:
     val transcription: String
 
     // additional:
-    val tags: List<ContextTag>
+    val tags: List<Tag>
     val additionalTranslations: Map<Long, String>
     val examples: Map<Long, String>
 
@@ -50,7 +51,7 @@ interface MDWordDetailsEditModeUiState : MDUiState {
 }
 
 class MDWordDetailsEditModeMutableUiState(
-    override val tags: SnapshotStateList<ContextTag>,
+    override val tags: SnapshotStateList<Tag>,
     override val availableWordsClasses: StateFlow<List<WordClass>>,
 ) : MDWordDetailsEditModeUiState, MDMutableUiState() {
     private val idGenerator = IncrementalIdGenerator()
@@ -66,6 +67,7 @@ class MDWordDetailsEditModeMutableUiState(
     // basic:
     override var meaning: String by mutableStateOf(INVALID_TEXT)
     override var translation: String by mutableStateOf(INVALID_TEXT)
+    override var note: String by mutableStateOf(INVALID_TEXT)
     override var language: Language by mutableStateOf(INVALID_LANGUAGE)
 
     // additional:
@@ -89,6 +91,7 @@ class MDWordDetailsEditModeMutableUiState(
             // basic:
             meaning = word.meaning
             translation = word.translation
+            note = word.note
             language = word.language
 
             // additional:

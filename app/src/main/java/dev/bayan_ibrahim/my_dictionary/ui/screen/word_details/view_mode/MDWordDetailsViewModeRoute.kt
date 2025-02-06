@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
@@ -29,6 +30,7 @@ fun MDWordDetailsViewModeRoute(
     }
 
     val uiState = viewModel.uiState
+    val wordAlignmentSource by viewModel.wordDetailsDirectionSource.collectAsStateWithLifecycle()
     val navActions by remember {
         derivedStateOf {
             object : MDWordDetailsViewModeNavigationUiActions, MDAppNavigationUiActions by appActions {
@@ -53,6 +55,7 @@ fun MDWordDetailsViewModeRoute(
     }
     MDWordDetailsViewModeScreen(
         uiState = uiState,
+        wordAlignmentSource= wordAlignmentSource,
         uiActions = uiActions,
         modifier = modifier,
     )

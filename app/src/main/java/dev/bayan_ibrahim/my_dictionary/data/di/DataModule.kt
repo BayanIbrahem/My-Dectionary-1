@@ -8,7 +8,7 @@ import dagger.hilt.components.SingletonComponent
 import dev.bayan_ibrahim.my_dictionary.data.MDDataStoreTrainPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDDataStoreUserPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDDataStoreViewPreferencesRepo
-import dev.bayan_ibrahim.my_dictionary.data.MDRoomContextTagRepo
+import dev.bayan_ibrahim.my_dictionary.data.MDRoomTagRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomExportToFileRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.data.MDRoomLanguageRepo
@@ -20,7 +20,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.MDPreference
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFileReaderAbstractFactory
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.write.MDFileWriterFactory
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.FileManager
-import dev.bayan_ibrahim.my_dictionary.domain.repo.ContextTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.TagRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.ExportToFileRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.ImportFromFileRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
@@ -59,11 +59,11 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideContextTagRepo(
+    fun provideTagRepo(
         db: MDDataBase,
-    ): ContextTagRepo = MDRoomContextTagRepo(
-        contextTagDao = db.getContextTagDao(),
-        wordsCrossContextTagDao = db.getWordsCrossTagsDao()
+    ): TagRepo = MDRoomTagRepo(
+        tagDao = db.getTagDao(),
+        wordsCrossTagDao = db.getWordsCrossTagsDao()
     )
 
     @Singleton

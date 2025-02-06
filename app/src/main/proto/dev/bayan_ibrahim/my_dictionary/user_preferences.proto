@@ -10,6 +10,7 @@ message UserPreferencesProto {
   UserPreferencesThemeContrast contrast = 4;
   int32 iconsSet = 5;
   bool liveMemorizingProbability = 6;
+  UserPreferencesWordDetailsAlignmentSource wordAlignment =7;
 }
 
 enum UserPreferencesTheme {
@@ -22,4 +23,11 @@ enum UserPreferencesThemeContrast {
   Normal = 0;
   Medium = 1;
   High = 2;
+}
+
+enum UserPreferencesWordDetailsAlignmentSource {
+  Word = 0;
+  Device = 1;
+  Ltr = 2;
+  Rtl = 3;
 }

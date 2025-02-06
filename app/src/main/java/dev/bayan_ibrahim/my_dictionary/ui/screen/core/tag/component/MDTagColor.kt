@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.component
+package dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerpOnSurface
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerpSurface
 
 @Composable
-fun MDContextTagColorIcon(
+fun MDTagColorIcon(
     color: Color,
     isPassed: Boolean,
     canPassable: Boolean,
@@ -49,10 +49,10 @@ fun MDContextTagColorIcon(
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                 if (isPassed) {
-                    MDContextTagPassedFromParentMarkerIcon()
+                    MDTagPassedFromParentMarkerIcon()
                 }
                 if (canPassable) {
-                    MDContextTagPassToChildrenMarkerIcon()
+                    MDTagPassToChildrenMarkerIcon()
                 }
             }
         }
@@ -60,14 +60,14 @@ fun MDContextTagColorIcon(
 }
 
 @Composable
-fun MDContextTagPassedFromParentMarkerIcon(
+fun MDTagPassedFromParentMarkerIcon(
     modifier: Modifier = Modifier,
 ) {
     SmallMarkerText(char = 'P', modifier = modifier,)
 }
 
 @Composable
-fun MDContextTagPassToChildrenMarkerIcon(
+fun MDTagPassToChildrenMarkerIcon(
     modifier: Modifier = Modifier,
 ) {
     SmallMarkerText(char = 'C', modifier = modifier,)
@@ -89,7 +89,7 @@ private fun SmallMarkerText(
 
 @Preview
 @Composable
-private fun MDContextTagColorIconPreview() {
+private fun MDTagColorIconPreview() {
     MyDictionaryTheme() {
         Surface(
             color = MaterialTheme.colorScheme.background
@@ -101,10 +101,10 @@ private fun MDContextTagColorIconPreview() {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    MDContextTagColorIcon(color = Color.Red, isPassed = true, canPassable = true)
-                    MDContextTagColorIcon(color = Color.White, isPassed = true, canPassable = false)
-                    MDContextTagColorIcon(color = Color.Black, isPassed = false, canPassable = true)
-                    MDContextTagColorIcon(color = Color.Green, isPassed = false, canPassable = false)
+                    MDTagColorIcon(color = Color.Red, isPassed = true, canPassable = true)
+                    MDTagColorIcon(color = Color.White, isPassed = true, canPassable = false)
+                    MDTagColorIcon(color = Color.Black, isPassed = false, canPassable = true)
+                    MDTagColorIcon(color = Color.Green, isPassed = false, canPassable = false)
                 }
             }
         }

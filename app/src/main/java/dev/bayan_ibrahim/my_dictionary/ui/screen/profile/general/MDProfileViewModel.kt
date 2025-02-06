@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordDetailsDirectionSource
 import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +42,14 @@ class MDProfileViewModel @Inject constructor(
             viewModelScope.launch {
                 userRepo.setUserPreferences {
                     it.copy(liveMemorizingProbability = liveTemplate)
+                }
+            }
+        }
+
+        override fun onToggleWordDetailsAlignmentSource(source: WordDetailsDirectionSource) {
+            viewModelScope.launch {
+                userRepo.setUserPreferences {
+                    it.copy(wordDetailsDirectionSource = source)
                 }
             }
         }

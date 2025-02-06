@@ -38,6 +38,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTab
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranscription
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClass
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordNote
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordUpdatedAt
 
 @Entity(
@@ -95,6 +96,8 @@ data class WordEntity(
     val lastTrainTime: Long? = null,
     @ColumnInfo(dbWordTranscription)
     val transcription: String = INVALID_TEXT,
+    @ColumnInfo(dbWordNote, defaultValue = INVALID_TEXT)
+    val note: String = INVALID_TEXT,
     @ColumnInfo(dbWordExamples)
     val examples: List<String> = emptyList(),
     @ColumnInfo(dbWordSynonym)

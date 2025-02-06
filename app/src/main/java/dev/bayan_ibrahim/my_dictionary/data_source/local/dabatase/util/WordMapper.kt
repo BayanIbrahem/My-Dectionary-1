@@ -5,7 +5,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.mea
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithContextTagsAndRelatedWordsRelation
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithTagsAndRelatedWordsRelation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelatedWordEntity
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
@@ -18,7 +18,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
 import kotlinx.datetime.Clock
 
 @JvmName("WordWithRelatedWordsAsWordModel")
-fun WordWithContextTagsAndRelatedWordsRelation.asWordModel(
+fun WordWithTagsAndRelatedWordsRelation.asWordModel(
     tag: WordClass? = null,
 ): Word = Word(
     id = this.word.id!!,
@@ -30,6 +30,7 @@ fun WordWithContextTagsAndRelatedWordsRelation.asWordModel(
     transcription = this.word.transcription,
     examples = this.word.examples,
     wordClass = tag,
+    note = this.word.note,
     relatedWords = tag?.let {
         relatedWords.map { word ->
             RelatedWord(
@@ -57,6 +58,7 @@ fun WordEntity.asWordModel(): Word = Word(
     language = this.languageCode.code.getLanguage(),
     transcription = this.transcription,
     examples = this.examples,
+    note = this.note,
     wordClass = null,
     relatedWords = emptyList(),
     memoryDecayFactor = this.memoryDecayFactor,
@@ -95,6 +97,7 @@ fun Word.asWordEntity(
     translation = this.translation,
     normalizedTranslation = this.translation.meaningSearchNormalize,
     additionalTranslations = this.additionalTranslations,
+    note = this.note,
     languageCode = this.language.code,
     transcription = this.transcription,
     examples = this.examples,

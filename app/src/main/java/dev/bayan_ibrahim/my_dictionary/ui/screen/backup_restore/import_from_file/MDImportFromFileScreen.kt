@@ -73,9 +73,9 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.Import
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFilePartsSelector
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFilePicker
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDOptionSelectionGroup
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagExplorerDialog
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagExplorerDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import kotlinx.coroutines.delay
@@ -89,9 +89,9 @@ import kotlin.time.Duration.Companion.seconds
 fun MDImportFromFileScreen(
     uiState: MDImportFromFileUiState,
     summary: MDFileProcessingSummary,
-    tagsSelectorUiState: MDContextTagsSelectorUiState,
+    tagsSelectorUiState: MDTagsSelectorUiState,
     uiActions: MDImportFromFileUiActions,
-    tagsSelectorUiActions: MDContextTagsSelectorUiActions,
+    tagsSelectorUiActions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -154,7 +154,7 @@ fun MDImportFromFileScreen(
                 tagsSelectorUiState.selectedTags.forEach { tag ->
                     item(
                         onLongClick = {
-                            tagsSelectorUiActions.onDeleteContextTag(tag)
+                            tagsSelectorUiActions.onDeleteTag(tag)
                         },
                         leadingIcon = {
                             MDIcon(MDIconsSet.WordTag)
@@ -201,7 +201,7 @@ fun MDImportFromFileScreen(
             summary = summary,
             onCancel = uiActions::onCancelImportProcess
         )
-        MDContextTagExplorerDialog(
+        MDTagExplorerDialog(
             showDialog = showTagsExplorerDialog,
             onDismissRequest = { showTagsExplorerDialog = false },
             state = tagsSelectorUiState,

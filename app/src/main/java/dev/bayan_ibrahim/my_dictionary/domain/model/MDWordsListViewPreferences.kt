@@ -3,7 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.domain.model
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalize
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
@@ -14,7 +14,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListView
 interface MDWordsListViewPreferences {
     val searchQuery: String
     val searchTarget: MDWordsListSearchTarget
-    val selectedTags: Set<ContextTag>
+    val selectedTags: Set<Tag>
     val includeSelectedTags: Boolean
     val selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>
     val sortBy: MDWordsListViewPreferencesSortBy
@@ -51,7 +51,7 @@ interface MDWordsListViewPreferences {
 data class WordsListViewPreferencesBuilder(
     override val searchQuery: String,
     override val searchTarget: MDWordsListSearchTarget,
-    override val selectedTags: Set<ContextTag>,
+    override val selectedTags: Set<Tag>,
     override val includeSelectedTags: Boolean,
     override val selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     override val sortBy: MDWordsListViewPreferencesSortBy,

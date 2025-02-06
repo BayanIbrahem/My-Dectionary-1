@@ -4,7 +4,6 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFileWordPart
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.StrIdentifiable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.file_part.MDJsonFileWordPart
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
@@ -17,6 +16,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord as ModelRelatedWord
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass as ModelWordClass
 
 @Serializable
 data class MDJsonFileWordPartV1(
@@ -28,8 +28,8 @@ data class MDJsonFileWordPartV1(
     override val translation: String,
     @SerialName(TRANSCRIPTION_KEY)
     override val transcription: String? = null,
-    @SerialName(CONTEXT_TAGS_KEY)
-    override val contextTags: List<MDJsonFileTagPartV1> = emptyList(),
+    @SerialName(TAGS_KEY)
+    override val tags: List<MDJsonFileTagPartV1> = emptyList(),
     @SerialName(EXAMPLES_KEY)
     override val examples: List<String> = emptyList(),
     @SerialName(ADDITIONAL_TRANSLATION_KEY)
@@ -58,7 +58,7 @@ data class MDJsonFileWordPartV1(
             translation = translation,
             additionalTranslations = additionalTranslations,
             language = language.code.getLanguage(),
-            tags = contextTags.mapNotNull { it.toContextTag() }.toSet(),
+            tags = tags.mapNotNull { it.toTag() }.toSet(),
             transcription = transcription ?: "",
             examples = examples,
             wordClass = wordClass?.toModelWordClass(language)?.copy(
@@ -100,8 +100,8 @@ data class MDJsonFileWordPartV1(
         @SerialName(NAME_KEY)
         override val name: String,
     ) : StrIdentifiable {
-        fun toModelWordClass(language: String): WordClass {
-            return WordClass(
+        fun toModelWordClass(language: String): ModelWordClass {
+            return ModelWordClass(
                 id = INVALID_ID,
                 name = name,
                 language = language.code.getLanguage(),
@@ -148,7 +148,7 @@ data class MDJsonFileWordPartV1(
         const val MEANING_KEY = "meaning"
         const val TRANSLATION_KEY = "translation"
         const val TRANSCRIPTION_KEY = "transcription"
-        const val CONTEXT_TAGS_KEY = "contextTags"
+        const val TAGS_KEY = "tags"
         const val EXAMPLES_KEY = "examples"
         const val ADDITIONAL_TRANSLATION_KEY = "additionalTranslations"
         const val WORD_CLASS_KEY = "wordClass"

@@ -10,7 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.repo.ExportToFileRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
@@ -151,7 +151,7 @@ class MDRoomExportToFileRepo(
         ) { part: MDFilePartType ->
             when (part) {
                 MDFilePartType.Language -> getLanguagesOfIds(wordsIds)
-                MDFilePartType.Tag -> getContextTagsOfIds(wordsIds)
+                MDFilePartType.Tag -> getTagsOfIds(wordsIds)
                 MDFilePartType.Word -> getWordsOfIds(wordsIds)
             }
         }
@@ -190,14 +190,14 @@ class MDRoomExportToFileRepo(
     }
 
 
-    private suspend fun getContextTagsOfIds(
+    private suspend fun getTagsOfIds(
         wordsIds: Set<Long>,
     ) = wordRepo.getWordsOfIds(wordsIds).first().map {
         it.tags
     }.flatten().distinctBy {
         it.id
     }.map { tag ->
-        tag.asFilePartContextTag()
+        tag.asFilePartTag()
     }.toList()
 
     private suspend fun getWordsOfIds(
@@ -208,7 +208,7 @@ class MDRoomExportToFileRepo(
             meaning = word.meaning,
             translation = word.translation,
             transcription = word.transcription.nullIfInvalid(),
-            contextTags = word.tags.map { it.asFilePartContextTag() },
+            tags = word.tags.map { it.asFilePartTag() },
             examples = word.examples,
             additionalTranslations = word.additionalTranslations,
             wordClass = word.wordClass?.let { tag ->
@@ -242,7 +242,7 @@ class MDRoomExportToFileRepo(
         },
     )
 
-    private fun ContextTag.asFilePartContextTag(): MDJsonFileTagPartV1 = MDJsonFileTagPartV1(
+    private fun Tag.asFilePartTag(): MDJsonFileTagPartV1 = MDJsonFileTagPartV1(
         name = value,
         color = originalColor?.toStrHex(),
         passColorToChildren = originalColor?.let { passColorToChildren }

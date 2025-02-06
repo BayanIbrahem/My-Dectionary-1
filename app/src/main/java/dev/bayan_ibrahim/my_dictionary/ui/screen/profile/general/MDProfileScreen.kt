@@ -12,14 +12,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordDetailsDirectionSource
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.component.MDProfileTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -52,6 +59,10 @@ fun MDProfileScreen(
             WordsListGroup(
                 isLiveTemplateEnabled = userPreferences.liveMemorizingProbability,
                 onToggleLiveTemplate = uiActions::onToggleLiveTemplate
+            )
+            WordDetailsGroup(
+                selectedAlignmentSource = userPreferences.wordDetailsDirectionSource,
+                onSelectSource = uiActions::onToggleWordDetailsAlignmentSource
             )
         }
     }
@@ -158,6 +169,57 @@ private fun WordsListGroup(
 
 }
 
+@Composable
+private fun WordDetailsGroup(
+    selectedAlignmentSource: WordDetailsDirectionSource,
+    onSelectSource: (WordDetailsDirectionSource) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    MDHorizontalCardGroup(
+        modifier = modifier,
+        title = {
+            Text("Word Details") // TODO, string res
+        },
+        subtitle = {
+            Text("Choose alignment source (left to right or right to left")
+        }
+    ) {
+        WordDetailsDirectionSource.entries.forEach { source ->
+            radioItem(
+                selected = source == selectedAlignmentSource,
+                onClick = {
+                    onSelectSource(source)
+                },
+                trailingIcon = {
+                    MDIcon(source.icon)
+                }
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(source.label)
+                        val current = source.current
+                        if (current != null) {
+                            append(" ")
+                            pushStyle(
+                                SpanStyle(
+                                    fontStyle = FontStyle.Italic,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            val text = when (current) {
+                                LayoutDirection.Ltr -> "LTR" // TODO, string res
+                                LayoutDirection.Rtl -> "RTL"
+                            }
+                            append("CURRENT $text") // TODO, string res
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun MDProfileScreenPreview() {
@@ -185,9 +247,8 @@ private fun MDProfileScreenPreview() {
                             override fun navigateToAppTheme() {}
                         },
                         object : MDProfileBusinessUiActions {
-                            override fun onToggleLiveTemplate(liveTemplate: Boolean) {
-                                TODO("Not yet implemented")
-                            }
+                            override fun onToggleLiveTemplate(liveTemplate: Boolean) {}
+                            override fun onToggleWordDetailsAlignmentSource(source: WordDetailsDirectionSource) {}
                         },
                     )
                 )

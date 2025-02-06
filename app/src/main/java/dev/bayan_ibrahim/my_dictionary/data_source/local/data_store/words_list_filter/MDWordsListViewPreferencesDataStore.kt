@@ -4,7 +4,7 @@ import android.content.Context
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.copy
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDWordsListViewPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordsListViewPreferencesBuilder
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.simpleSerialize
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.simpleString
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
@@ -26,9 +26,9 @@ interface MDWordsListViewPreferencesDataStore {
 class MDWordsListDataStoreViewPreferencesImpl(
     context: Context,
 ) : MDWordsListViewPreferencesDataStore {
-    private val selectedContextTagsFlow = MutableStateFlow<Set<ContextTag>>(emptySet())
+    private val selectedTagsFlow = MutableStateFlow<Set<Tag>>(emptySet())
     private val proto = context.wordsListViewPreferencesDataStore
-    override fun getWordsListViewPreferencesStream(): Flow<MDWordsListViewPreferences> = selectedContextTagsFlow.combine(
+    override fun getWordsListViewPreferencesStream(): Flow<MDWordsListViewPreferences> = selectedTagsFlow.combine(
         proto.data
     ) { tags, data ->
         WordsListViewPreferencesBuilder(
@@ -56,7 +56,7 @@ class MDWordsListDataStoreViewPreferencesImpl(
                 sortBy = wordsList.sortBy.ordinal
                 sortByOrder = wordsList.sortByOrder.ordinal
 
-                selectedContextTagsFlow.value = wordsList.selectedTags
+                selectedTagsFlow.value = wordsList.selectedTags
             }
         }
     }

@@ -9,16 +9,16 @@ import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.context_tag.ContextTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.tag.TagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithContextTagsAndRelatedWordsDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordWithTagsAndRelatedWordsDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordsPaginatedDao
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word_cross_context_tag.WordsCrossContextTagDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word_cross_tag.WordsCrossTagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.LanguageEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordCrossContextTagEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordCrossTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelatedWords
@@ -27,7 +27,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordEnt
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.contains
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
@@ -45,12 +45,12 @@ class MDRoomWordRepo(
 ) : WordRepo {
     private val wordDao: WordDao = db.getWordDao()
     private val wordsPaginatedDao: WordsPaginatedDao = db.getWordsPaginatedDao()
-    private val wordWithTagsDao: WordWithContextTagDao = db.getWordWithContextTagDao()
-    private val wordWithContextTagsAndRelatedWordsDao: WordWithContextTagsAndRelatedWordsDao = db.getWordsWithContextTagAndRelatedWordsDao()
-    private val wordsCrossTagDao: WordsCrossContextTagDao = db.getWordsCrossTagsDao()
+    private val wordWithTagsDao: WordWithTagDao = db.getWordWithTagDao()
+    private val wordWithTagsAndRelatedWordsDao: WordWithTagsAndRelatedWordsDao = db.getWordsWithTagAndRelatedWordsDao()
+    private val wordsCrossTagDao: WordsCrossTagDao = db.getWordsCrossTagsDao()
     private val wordClassDao: WordClassDao = db.getWordClassDao()
     private val languageDao: LanguageDao = db.getLanguageDao()
-    private val contextTagDao: ContextTagDao = db.getContextTagDao()
+    private val tagDao: TagDao = db.getTagDao()
 
     private fun <T : Any, K : Any> pagingDataOf(
         mapper: suspend (T) -> K,
@@ -74,19 +74,19 @@ class MDRoomWordRepo(
 
     override fun getWordsIdsOf(
         languages: Set<LanguageCode>,
-        contextTags: Set<ContextTag>,
-        includeContextTags: Boolean,
+        tags: Set<Tag>,
+        includeTags: Boolean,
         wordsClasses: Set<Long>,
         memorizingProbabilities: Set<MDWordsListMemorizingProbabilityGroup>,
     ): Flow<Set<Long>> {
         val includeLanguages = languages.isNotEmpty()
-        val effectiveIncludeContextTags = contextTags.isNotEmpty()
+        val effectiveIncludeTags = tags.isNotEmpty()
         val includeWordsClasses = wordsClasses.isNotEmpty()
         val includeMemorizingProbabilities = memorizingProbabilities.count() in (1..<MDWordsListMemorizingProbabilityGroup.entries.count())
         if (
             listOf(
                 includeLanguages,
-                effectiveIncludeContextTags,
+                effectiveIncludeTags,
                 includeWordsClasses,
                 includeMemorizingProbabilities
             ).none { it }
@@ -99,19 +99,19 @@ class MDRoomWordRepo(
             includeWordClass = includeWordsClasses,
             wordsClasses = wordsClasses
         ).let { flow ->
-            if (effectiveIncludeContextTags) {
+            if (effectiveIncludeTags) {
                 flow.flatMapConcat { entities ->
                     wordWithTagsDao.getWordsWithTagsRelations(
                         ids = entities.mapNotNull { it.id }
                     ).map { entitiesWithTags ->
-                        entitiesWithTags.mapNotNull { (word, tags) ->
-                            val matchTags = if (includeContextTags) tags.any { target ->
-                                contextTags.any { source ->
+                        entitiesWithTags.mapNotNull { (word, entities) ->
+                            val matchTags = if (includeTags) entities.any { target ->
+                                tags.any { source ->
                                     source.contains(target.asModel())
                                 }
                             } else {
-                                tags.none { target ->
-                                    contextTags.any { source ->
+                                entities.none { target ->
+                                    tags.any { source ->
                                         source.contains(target.asModel())
                                     }
                                 }
@@ -148,15 +148,15 @@ class MDRoomWordRepo(
     }
 
     override suspend fun getWord(wordId: Long): Word? {
-        val word = wordWithContextTagsAndRelatedWordsDao.getWordWithContextTagsAndRelatedWordsRelation(wordId) ?: return null
+        val word = wordWithTagsAndRelatedWordsDao.getWordWithTagsAndRelatedWordsRelation(wordId) ?: return null
         val wordClass = word.word.wordClassId?.let { wordClassId ->
             wordClassDao.getTagType(wordClassId)
         }?.asTagModel()
         return word.asWordModel(wordClass)
     }
 
-    override fun getWordsOfIds(ids: Set<Long>): Flow<Sequence<Word>> = wordWithContextTagsAndRelatedWordsDao
-        .getWordsWithContextTagsAndRelatedWordsRelations(
+    override fun getWordsOfIds(ids: Set<Long>): Flow<Sequence<Word>> = wordWithTagsAndRelatedWordsDao
+        .getWordsWithTagsAndRelatedWordsRelations(
             ids = ids
         ).map { list ->
             val wordsClasses = wordClassDao.getAllTagTypes().first().associate {
@@ -264,21 +264,21 @@ class MDRoomWordRepo(
 
     override suspend fun appendTagsToWords(
         wordsIds: Collection<Long>,
-        tags: Collection<ContextTag>,
+        tags: Collection<Tag>,
     ) {
         val tagsIds = tags.map {
-            it.id.nullIfInvalid() ?: contextTagDao.insertContextTag(it.asEntity())
+            it.id.nullIfInvalid() ?: tagDao.insertTag(it.asEntity())
         }
         val relations = wordsIds.map { w ->
             tagsIds.map { t ->
-                WordCrossContextTagEntity(
+                WordCrossTagEntity(
                     id = null,
                     wordId = w,
                     tagId = t
                 )
             }
         }.flatten()
-        wordsCrossTagDao.insertWordCrossContextTagsList(relations)
+        wordsCrossTagDao.insertWordCrossTagsList(relations)
     }
 
     override suspend fun saveOrUpdateWord(word: Word): Long {
@@ -296,9 +296,9 @@ class MDRoomWordRepo(
     private suspend fun updateWordWithRelations(word: Word) {
         db.withTransaction {
             wordDao.updateWordWithRelations(word = word.asWordEntity(), relatedWords = word.asRelatedWords())
-            val relations = getWordCrossContextTagRelationFromTags(word.tags, word.id)
-            wordsCrossTagDao.deleteWordsCrossContextTagsOfWord(word.id)
-            wordsCrossTagDao.insertWordCrossContextTagsList(relations)
+            val relations = getWordCrossTagRelationFromTags(word.tags, word.id)
+            wordsCrossTagDao.deleteWordsCrossTagsOfWord(word.id)
+            wordsCrossTagDao.insertWordCrossTagsList(relations)
         }
     }
 
@@ -309,22 +309,22 @@ class MDRoomWordRepo(
                 word = word.asWordEntity(),
                 relatedWords = word.asRelatedWords()
             )
-            val relations = getWordCrossContextTagRelationFromTags(word.tags, wordId)
-            wordsCrossTagDao.insertWordCrossContextTagsList(relations)
+            val relations = getWordCrossTagRelationFromTags(word.tags, wordId)
+            wordsCrossTagDao.insertWordCrossTagsList(relations)
             wordId
         }
     }
 
-    private suspend fun getWordCrossContextTagRelationFromTags(
-        tags: Collection<ContextTag>,
+    private suspend fun getWordCrossTagRelationFromTags(
+        tags: Collection<Tag>,
         wordId: Long,
-    ): List<WordCrossContextTagEntity> {
+    ): List<WordCrossTagEntity> {
         val tagsIds = tags.map {
-            it.id.nullIfInvalid() ?: contextTagDao.insertContextTag(it.asEntity())
+            it.id.nullIfInvalid() ?: tagDao.insertTag(it.asEntity())
         }
 
         val relations = tagsIds.map { tagId ->
-            WordCrossContextTagEntity(
+            WordCrossTagEntity(
                 wordId = wordId,
                 tagId = tagId
             )

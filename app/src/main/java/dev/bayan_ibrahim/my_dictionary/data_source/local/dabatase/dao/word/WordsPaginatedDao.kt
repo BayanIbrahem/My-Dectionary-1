@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithContextTagsAndRelatedWordsRelation
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithTagsAndRelatedWordsRelation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordCreatedAt
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordLanguageCode
@@ -41,7 +41,7 @@ interface WordsPaginatedDao {
         includeMeaning: Boolean,
         includeTranslation: Boolean,
         queryPattern: String,
-    ): PagingSource<Int, WordWithContextTagsAndRelatedWordsRelation>
+    ): PagingSource<Int, WordWithTagsAndRelatedWordsRelation>
 
     @Transaction
     @Query("$getWordsWithRelatedQuery ORDER BY $dbWordMeaning ASC")
@@ -51,7 +51,7 @@ interface WordsPaginatedDao {
         includeMeaning: Boolean,
         includeTranslation: Boolean,
         queryPattern: String,
-    ): PagingSource<Int, WordWithContextTagsAndRelatedWordsRelation>
+    ): PagingSource<Int, WordWithTagsAndRelatedWordsRelation>
 
 
     @Transaction
@@ -62,7 +62,7 @@ interface WordsPaginatedDao {
         includeMeaning: Boolean,
         includeTranslation: Boolean,
         queryPattern: String,
-    ): PagingSource<Int, WordWithContextTagsAndRelatedWordsRelation>
+    ): PagingSource<Int, WordWithTagsAndRelatedWordsRelation>
 
     @Transaction
     @Query("$getWordsWithRelatedQuery ORDER BY $dbWordTranslation ASC")
@@ -72,7 +72,7 @@ interface WordsPaginatedDao {
         includeMeaning: Boolean,
         includeTranslation: Boolean,
         queryPattern: String,
-    ): PagingSource<Int, WordWithContextTagsAndRelatedWordsRelation>
+    ): PagingSource<Int, WordWithTagsAndRelatedWordsRelation>
 
     @Transaction
     @Query("$getWordsWithRelatedQuery ORDER BY $dbWordCreatedAt DESC")
@@ -82,7 +82,7 @@ interface WordsPaginatedDao {
         includeMeaning: Boolean,
         includeTranslation: Boolean,
         queryPattern: String,
-    ): PagingSource<Int, WordWithContextTagsAndRelatedWordsRelation>
+    ): PagingSource<Int, WordWithTagsAndRelatedWordsRelation>
 
     @Transaction
     @Query("$getWordsWithRelatedQuery ORDER BY $dbWordCreatedAt ASC")
@@ -92,7 +92,7 @@ interface WordsPaginatedDao {
         includeMeaning: Boolean,
         includeTranslation: Boolean,
         queryPattern: String,
-    ): PagingSource<Int, WordWithContextTagsAndRelatedWordsRelation>
+    ): PagingSource<Int, WordWithTagsAndRelatedWordsRelation>
 
     @Transaction
     @Query("$getWordsWithRelatedQuery ORDER BY $dbWordUpdatedAt DESC")
@@ -102,7 +102,7 @@ interface WordsPaginatedDao {
         includeMeaning: Boolean,
         includeTranslation: Boolean,
         queryPattern: String,
-    ): PagingSource<Int, WordWithContextTagsAndRelatedWordsRelation>
+    ): PagingSource<Int, WordWithTagsAndRelatedWordsRelation>
 
     @Transaction
     @Query("$getWordsWithRelatedQuery ORDER BY $dbWordUpdatedAt ASC")
@@ -112,5 +112,5 @@ interface WordsPaginatedDao {
         includeMeaning: Boolean,
         includeTranslation: Boolean,
         queryPattern: String,
-    ): PagingSource<Int, WordWithContextTagsAndRelatedWordsRelation>
+    ): PagingSource<Int, WordWithTagsAndRelatedWordsRelation>
 }

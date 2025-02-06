@@ -10,7 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTab
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WordWithContextTagDao {
+interface WordWithTagDao {
     @Transaction
     @Query(
         """

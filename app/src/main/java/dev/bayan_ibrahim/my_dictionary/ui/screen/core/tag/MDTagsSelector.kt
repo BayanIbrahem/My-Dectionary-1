@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag
+package dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag
 
 
 import androidx.compose.animation.AnimatedVisibility
@@ -28,12 +28,12 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
-fun LazyListScope.contextTagsSelector(
-    state: MDContextTagsSelectorUiState,
-    actions: MDContextTagsSelectorUiActions,
+fun LazyListScope.tagsSelector(
+    state: MDTagsSelectorUiState,
+    actions: MDTagsSelectorUiActions,
     /**
      * toggle permission to create new tags to database
      */
@@ -68,7 +68,7 @@ fun LazyListScope.contextTagsSelector(
                 }
             }
         }
-        MDContextTagListItem(
+        MDTagListItem(
             modifier = Modifier.animateItem(),
             tag = tag,
             tagOrder = i.inc(),
@@ -86,13 +86,13 @@ fun LazyListScope.contextTagsSelector(
                 mutableStateOf(false)
             }
             Spacer(modifier = Modifier.height(spacedBy))
-            MDNewContextTagListItem(
+            MDNewTagListItem(
                 modifier = Modifier.animateItem(),
                 onAddNewTagClick = {
                     showExploreDialog = true
                 }
             )
-            MDContextTagExplorerDialog(
+            MDTagExplorerDialog(
                 showDialog = showExploreDialog,
                 onDismissRequest = { showExploreDialog = false },
                 state = state,
@@ -110,9 +110,9 @@ fun LazyListScope.contextTagsSelector(
 }
 
 @Composable
-fun ColumnScope.MDContextTagsSelector(
-    state: MDContextTagsSelectorUiState,
-    actions: MDContextTagsSelectorUiActions,
+fun ColumnScope.MDTagsSelector(
+    state: MDTagsSelectorUiState,
+    actions: MDTagsSelectorUiActions,
     /**
      * toggle permission to create new tags to database
      */
@@ -129,7 +129,7 @@ fun ColumnScope.MDContextTagsSelector(
     var showExploreDialog by remember {
         mutableStateOf(false)
     }
-    MDContextTagExplorerDialog(
+    MDTagExplorerDialog(
         showDialog = showExploreDialog,
         onDismissRequest = { showExploreDialog = false },
         state = state,
@@ -137,7 +137,7 @@ fun ColumnScope.MDContextTagsSelector(
         allowAddTags = allowAddTags,
         allowRemoveTags = allowRemoveTags,
     )
-    val onLongClick: (ContextTag) -> Unit by remember(allowEditTags) {
+    val onLongClick: (Tag) -> Unit by remember(allowEditTags) {
         derivedStateOf {
             if (allowEditTags) actions::onUnSelectTag
             else {
@@ -146,7 +146,7 @@ fun ColumnScope.MDContextTagsSelector(
         }
     }
     state.selectedTags.forEachIndexed { i, tag ->
-        MDContextTagListItem(
+        MDTagListItem(
             tag = tag,
             tagOrder = i.inc(),
             onClick = {}, // must has onClick to be onLongClick enabled
@@ -156,7 +156,7 @@ fun ColumnScope.MDContextTagsSelector(
         )
     }
     AnimatedVisibility(allowEditTags) {
-        MDNewContextTagListItem(
+        MDNewTagListItem(
             onAddNewTagClick = {
                 showExploreDialog = true
             }
@@ -165,14 +165,14 @@ fun ColumnScope.MDContextTagsSelector(
 }
 
 @Composable
-fun MDContextTagListItem(
-    tag: ContextTag,
+fun MDTagListItem(
+    tag: Tag,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     tagOrder: Int? = null,
 ) {
-    MDContextTagListItem(
+    MDTagListItem(
         value = "${tagOrder?.let { "$it. " } ?: ""}${tag.value}", // TODO, string res
         modifier = modifier,
         onClick = onClick,
@@ -181,7 +181,7 @@ fun MDContextTagListItem(
 }
 
 @Composable
-fun MDNewContextTagListItem(
+fun MDNewTagListItem(
     onAddNewTagClick: () -> Unit,
     modifier: Modifier = Modifier,
     /**
@@ -189,7 +189,7 @@ fun MDNewContextTagListItem(
      */
     tagOrder: Int? = null,
 ) {
-    MDContextTagListItem(
+    MDTagListItem(
         value = "${tagOrder?.let { "$it. " } ?: ""}Add New Context Tag", // TODO, string res
         modifier = modifier,
         onClick = onAddNewTagClick,
@@ -197,7 +197,7 @@ fun MDNewContextTagListItem(
 }
 
 @Composable
-private fun MDContextTagListItem(
+private fun MDTagListItem(
     value: String,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,

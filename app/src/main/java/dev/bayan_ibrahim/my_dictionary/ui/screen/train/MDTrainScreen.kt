@@ -18,18 +18,13 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.items
@@ -77,6 +72,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
+import dev.bayan_ibrahim.my_dictionary.core.ui.IconSegmentedButton
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDTrainQuestionExtraInfo
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
@@ -553,52 +549,11 @@ private fun ExtraInfoPagePart(
                 )
             }
         }
-        LazyRow(
-            modifier = Modifier.height(48.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (selectedVisibleInfo != null) {
-                item(
-                    key = selectedVisibleInfo
-                ) {
-                    IconButton(
-                        modifier = Modifier.animateItem(),
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.onSecondary,
-                        ),
-                        onClick = {
-                            onSelectVisibleInfo(null)
-                        }
-                    ) {
-                        MDIcon(selectedVisibleInfo.icon)
-                    }
-                }
-                item {
-                    VerticalDivider(
-                        modifier = Modifier
-                            .height(36.dp)
-                            .animateItem()
-                    )
-                }
-            }
-            items(
-                items = notSelectedAvailableExtraInfo,
-                key = { it.ordinal }
-            ) {
-                FilledIconButton(
-                    modifier = Modifier.animateItem(),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                        contentColor = MaterialTheme.colorScheme.onSurface,
-                    ),
-                    onClick = { onSelectVisibleInfo(it) }
-                ) {
-                    MDIcon(it.icon)
-                }
-            }
-        }
+        IconSegmentedButton(
+            selected = selectedVisibleInfo,
+            allItems = MDTrainQuestionExtraInfo.entries,
+            onSelectItem = onSelectVisibleInfo
+        )
     }
 }
 

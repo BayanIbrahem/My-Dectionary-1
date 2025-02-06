@@ -4,7 +4,6 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFileLanguagePart
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.StrIdentifiable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_type.json.core.file_part.MDJsonFileLanguagePart
-import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
@@ -12,6 +11,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass as ModelWordClass
 
 @Serializable
 data class MDJsonFileLanguagePartV1(
@@ -48,7 +48,7 @@ data class MDJsonFileLanguagePartV1(
             const val RELATIONS_KEY = "relations"
         }
 
-        override fun toWordClass(language: Language): WordClass = WordClass(
+        override fun toWordClass(language: Language): ModelWordClass = ModelWordClass(
             id = INVALID_ID,
             name = name,
             language = language,

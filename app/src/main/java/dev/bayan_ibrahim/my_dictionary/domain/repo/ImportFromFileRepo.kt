@@ -6,7 +6,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.import_summary.MDFileProcessingSummaryActions
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 
 interface ImportFromFileRepo {
     suspend fun checkFileIfValid(fileData: MDDocumentData): Boolean
@@ -16,7 +16,7 @@ interface ImportFromFileRepo {
         outputSummaryActions: MDFileProcessingSummaryActions,
         existedWordStrategy: MDPropertyConflictStrategy,
         corruptedWordStrategy: MDPropertyCorruptionStrategy,
-        extraTags: List<ContextTag> = emptyList(),
+        extraTags: List<Tag> = emptyList(),
         extraTagsStrategy: MDExtraTagsStrategy = MDExtraTagsStrategy.All,
         allowedFileParts: Set<MDFilePartType> = MDFilePartType.entries.toSet(),
     )

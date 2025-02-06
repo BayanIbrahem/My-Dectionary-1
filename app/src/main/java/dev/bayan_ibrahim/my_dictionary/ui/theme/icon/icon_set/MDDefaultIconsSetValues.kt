@@ -65,4 +65,7 @@ fun MDIconsSet.getDefaultIcon() = when (this) {
     MDIconsSet.DarkTheme -> MDIcon(outlinedRes = D.dark_mode_outline, filledRes = D.dark_mode_fill, contentDescription = S.content_description_dark_theme)
     MDIconsSet.LightTheme -> MDIcon(outlinedRes = D.light_mode_outline, filledRes = D.dark_mode_fill, contentDescription = S.content_description_light_theme)
     MDIconsSet.SystemTheme -> MDIcon(outlinedRes = D.contrast, filledRes = D.contrast, contentDescription = S.content_description_system_theme)
+    MDIconsSet.Ltr-> MDIcon(outlinedRes = D.ltr, filledRes = D.ltr, contentDescription = S.content_description_ltr)
+    MDIconsSet.Rtl-> MDIcon(outlinedRes = D.rtl, filledRes = D.rtl, contentDescription = S.content_description_rtl)
+    MDIconsSet.DeviceDirection-> MDIcon(outlinedRes = D.device_direction, filledRes = D.device_direction, contentDescription = S.content_description_device_direction)
 }

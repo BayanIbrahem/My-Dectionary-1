@@ -9,13 +9,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorViewModel
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorViewModel
 
 @Composable
 fun MDMigrateTagsRoute(
@@ -24,10 +24,10 @@ fun MDMigrateTagsRoute(
     appActions: MDAppUiActions,
     modifier: Modifier = Modifier,
     viewModel: MDMigrateTagsViewModel = hiltViewModel(),
-    contextTagsSelectorViewModel: MDContextTagsSelectorViewModel = hiltViewModel(),
+    tagsSelectorViewModel: MDTagsSelectorViewModel = hiltViewModel(),
 ) {
     DisposableEffect(args) {
-        contextTagsSelectorViewModel.init()
+        tagsSelectorViewModel.init()
         viewModel.initWithNavArgs(args)
         onDispose {  }
     }
@@ -45,12 +45,12 @@ fun MDMigrateTagsRoute(
         }
     }
 
-    val tagsSelectorUiState = contextTagsSelectorViewModel.uiState
+    val tagsSelectorUiState = tagsSelectorViewModel.uiState
 
     val tagsSelectorNavActions by remember {
         derivedStateOf {
-            object : MDContextTagsSelectorNavigationUiActions {
-                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<ContextTag>) {
+            object : MDTagsSelectorNavigationUiActions {
+                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<Tag>) {
                     super.onUpdateSelectedTags(selectedTags)
                 }
             }
@@ -58,7 +58,7 @@ fun MDMigrateTagsRoute(
     }
     val tagsSelectorUiActions by remember {
         derivedStateOf {
-            contextTagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
+            tagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
         }
     }
     MDMigrateTagsScreen(

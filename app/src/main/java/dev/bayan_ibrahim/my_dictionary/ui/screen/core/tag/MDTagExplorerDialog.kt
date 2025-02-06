@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag
+package dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -53,8 +53,8 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagSegmentSeparator
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.TagSegmentSeparator
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.asTree
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.depth
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.parentAtLevel
@@ -62,21 +62,21 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
 @Composable
-fun MDContextTagExplorerDialog(
+fun MDTagExplorerDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
-    state: MDContextTagsSelectorUiState,
-    actions: MDContextTagsSelectorUiActions,
+    state: MDTagsSelectorUiState,
+    actions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
     // ui
-    tagTrailingIcon: (@Composable (ContextTag) -> Unit)? = { tag ->
+    tagTrailingIcon: (@Composable (Tag) -> Unit)? = { tag ->
         tag.wordsCount?.takeIf {
             it > 0
         }?.let {
             Text("x$it")
         }
     },
-    tagLeadingIcon: @Composable (tag: ContextTag, isLeaf: Boolean) -> Unit = { _, _ ->
+    tagLeadingIcon: @Composable (tag: Tag, isLeaf: Boolean) -> Unit = { _, _ ->
         MDIcon(MDIconsSet.WordTag) // TODO, icons tag
     },
     primaryActionLabel: String = "Select", // TODO, string res
@@ -141,13 +141,13 @@ fun MDContextTagExplorerDialog(
             )
         }
     ) {
-        var deleteConfirmTag: ContextTag? by remember {
+        var deleteConfirmTag: Tag? by remember {
             mutableStateOf(null)
         }
         DeleteTagConfirmDialog(
             selectedTag = deleteConfirmTag,
             onDismissRequest = { deleteConfirmTag = null },
-            onConfirm = actions::onDeleteContextTag
+            onConfirm = actions::onDeleteTag
         )
         Column(
             modifier = Modifier
@@ -211,11 +211,11 @@ fun MDContextTagExplorerDialog(
                     value = newTagSegmentText,
                     placeholder = "new Tag",
                     onValueChange = {
-                        newTagSegmentText = it.split(ContextTagSegmentSeparator).joinToString("")
+                        newTagSegmentText = it.split(TagSegmentSeparator).joinToString("")
                     },
                     onKeyboardAction = {
                         // cancel
-                        actions.onAddNewContextTag(newTagSegmentText)
+                        actions.onAddNewTag(newTagSegmentText)
                         newTagSegmentText = ""
                         isAddNewTagInProgress = false
                     },
@@ -232,7 +232,7 @@ fun MDContextTagExplorerDialog(
                             if (newTagSegmentText.isNotBlank()) {
                                 IconButton(
                                     onClick = {
-                                        actions.onAddNewContextTag(newTagSegmentText)
+                                        actions.onAddNewTag(newTagSegmentText)
                                         newTagSegmentText = ""
                                         isAddNewTagInProgress = false
                                     }
@@ -250,9 +250,9 @@ fun MDContextTagExplorerDialog(
 
 @Composable
 private fun DeleteTagConfirmDialog(
-    selectedTag: ContextTag?,
+    selectedTag: Tag?,
     onDismissRequest: () -> Unit,
-    onConfirm: (ContextTag) -> Unit,
+    onConfirm: (Tag) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val showDialog by remember(selectedTag) {
@@ -310,8 +310,8 @@ private fun DeleteTagConfirmDialog(
 
 @Composable
 private fun DialogHeader(
-    state: MDContextTagsSelectorUiState,
-    actions: MDContextTagsSelectorUiActions,
+    state: MDTagsSelectorUiState,
+    actions: MDTagsSelectorUiActions,
     isAddNewTagInProgress: Boolean,
     allowAddTags: Boolean,
     onAddNewTag: () -> Unit,
@@ -360,7 +360,7 @@ private fun DialogHeader(
                 placeholder = randomTagLastSegment?.let { "e.g $it" /*TODO, string res */ } ?: ""
             )
             state.currentTagsTree.tag?.let {
-                MDContextTagPath(
+                MDTagPath(
                     tag = it,
                     onClickSegment = { i, s ->
                         val parentTag = it.parentAtLevel(i.inc())
@@ -382,8 +382,8 @@ private fun DialogHeader(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun MDContextTagPath(
-    tag: ContextTag,
+private fun MDTagPath(
+    tag: Tag,
     onClickSegment: (index: Int, value: String) -> Unit,
     modifier: Modifier = Modifier,
     levelsSeparator: String = ">",
@@ -407,7 +407,7 @@ private fun MDContextTagPath(
 
 @Preview
 @Composable
-private fun MDContextTagPathPreview() {
+private fun MDTagPathPreview() {
     MyDictionaryTheme() {
         Surface(
             color = MaterialTheme.colorScheme.background
@@ -416,8 +416,8 @@ private fun MDContextTagPathPreview() {
                 modifier = Modifier.padding(16.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                MDContextTagPath(
-                    tag = ContextTag("object", "food", "vegetables"),
+                MDTagPath(
+                    tag = Tag("object", "food", "vegetables"),
                     onClickSegment = { _, _ ->
 
                     }
@@ -430,7 +430,7 @@ private fun MDContextTagPathPreview() {
 
 @Preview
 @Composable
-private fun MDContextTagSelectorDialogPreview() {
+private fun MDTagSelectorDialogPreview() {
     MyDictionaryTheme {
         Surface(
             color = MaterialTheme.colorScheme.background
@@ -442,22 +442,22 @@ private fun MDContextTagSelectorDialogPreview() {
                 val tree by remember {
                     derivedStateOf {
                         listOf(
-                            ContextTag("object", "food", "fruit"),
-                            ContextTag("object", "food", "vegetables"),
-                            ContextTag("object", "food", "healthy"),
-                            ContextTag("object", "device"),
-                            ContextTag("language", "en"),
+                            Tag("object", "food", "fruit"),
+                            Tag("object", "food", "vegetables"),
+                            Tag("object", "food", "healthy"),
+                            Tag("object", "device"),
+                            Tag("language", "en"),
                         ).asTree()
                     }
                 }
-                val viewModel: MDContextTagsSelectorViewModel = hiltViewModel()
+                val viewModel: MDTagsSelectorViewModel = hiltViewModel()
                 val state = viewModel.uiState
                 val actions by remember(state) {
                     derivedStateOf {
-                        viewModel.getUiActions(object : MDContextTagsSelectorNavigationUiActions{})
+                        viewModel.getUiActions(object : MDTagsSelectorNavigationUiActions{})
                     }
                 }
-                MDContextTagExplorerDialog(
+                MDTagExplorerDialog(
                     showDialog = true,
                     onDismissRequest = {
 

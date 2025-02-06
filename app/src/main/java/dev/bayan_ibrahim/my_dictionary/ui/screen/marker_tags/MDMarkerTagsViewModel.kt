@@ -5,11 +5,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.InheritedTagsComparable
-import dev.bayan_ibrahim.my_dictionary.domain.repo.ContextTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.TagRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorMutableUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorMutableUiState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
@@ -21,10 +21,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MDMarkerTagsViewModel @Inject constructor(
-    private val repo: ContextTagRepo,
+    private val repo: TagRepo,
 ) : ViewModel() {
     private val _uiState: MDMarkerTagsMutableUiState = MDMarkerTagsMutableUiState()
-    val markerTags = repo.getContextTagsStream(
+    val markerTags = repo.getTagsStream(
         includeMarkerTags = true,
         includeNonMarkerTags = false
     ).map {
@@ -35,16 +35,16 @@ class MDMarkerTagsViewModel @Inject constructor(
         initialValue = persistentListOf(),
     )
 
-    private val _tagsState = MDContextTagsSelectorMutableUiState()
+    private val _tagsState = MDTagsSelectorMutableUiState()
 
-    private fun onAddNewMarkerTag(markerTags: List<ContextTag>) {
+    private fun onAddNewMarkerTag(markerTags: List<Tag>) {
         val nonMarkedTags = markerTags.filter {
             it.color == null
         }
         _tagsState.selectedTags.clear()
         viewModelScope.launch(Dispatchers.IO) {
             nonMarkedTags.forEach { tag ->
-                repo.addOrUpdateContextTag(tag.copy(color = Color.Red, currentColorIsPassed = false))
+                repo.addOrUpdateTag(tag.copy(color = Color.Red, currentColorIsPassed = false))
             }
         }
     }
@@ -66,20 +66,20 @@ class MDMarkerTagsViewModel @Inject constructor(
     private fun getBusinessUiActions(
         navActions: MDMarkerTagsNavigationUiActions,
     ): MDMarkerTagsBusinessUiActions = object : MDMarkerTagsBusinessUiActions {
-        override fun updateTag(tag: ContextTag) {
+        override fun updateTag(tag: Tag) {
             viewModelScope.launch(Dispatchers.IO) {
-                repo.addOrUpdateContextTag(tag)
+                repo.addOrUpdateTag(tag)
             }
         }
 
-        override fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {
+        override fun onUpdateSelectedTags(selectedTags: List<Tag>) {
             val tag = selectedTags.lastOrNull() ?: return
             updateTag(tag.copy(color = Color.Red, currentColorIsPassed = false, passColorToChildren = true))
         }
 
-        override fun removeTag(tag: ContextTag) {
+        override fun removeTag(tag: Tag) {
             viewModelScope.launch(Dispatchers.IO) {
-                repo.removeContextTag(tag)
+                repo.removeTag(tag)
             }
         }
     }

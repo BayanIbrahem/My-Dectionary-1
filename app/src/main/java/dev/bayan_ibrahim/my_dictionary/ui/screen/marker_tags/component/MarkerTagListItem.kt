@@ -32,7 +32,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.i
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDColorPickerDialog
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerpOnSurface
@@ -40,7 +40,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerpSurface
 
 @Composable
 fun MDMarkerTagListItem(
-    tag: ContextTag,
+    tag: Tag,
     onChangeColor: (Color) -> Unit,
     onToggleInheritedMarkerColor: (Boolean) -> Unit,
     onRemoveMarker: () -> Unit,
@@ -137,7 +137,7 @@ private fun MDMarkerTagListItemPreview() {
                 contentAlignment = Alignment.Center,
             ) {
                 MDMarkerTagListItem(
-                    tag = ContextTag(id = 1, value = "object/food/healthy/fruit"),
+                    tag = Tag(id = 1, value = "object/food/healthy/fruit"),
                     onChangeColor = {},
                     onToggleInheritedMarkerColor = {},
                     onRemoveMarker = {},

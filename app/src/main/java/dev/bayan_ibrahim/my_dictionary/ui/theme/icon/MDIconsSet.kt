@@ -65,6 +65,9 @@ enum class MDIconsSet {
     DarkTheme,
     LightTheme,
     SystemTheme,
+    Ltr,
+    Rtl,
+    DeviceDirection,
 }
 
 /**

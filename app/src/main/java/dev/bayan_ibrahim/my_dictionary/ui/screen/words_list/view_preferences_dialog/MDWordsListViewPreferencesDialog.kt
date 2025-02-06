@@ -31,9 +31,9 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelector
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -47,8 +47,8 @@ fun MDWordsListViewPreferencesDialog(
     showDialog: Boolean,
     uiState: MDWordsListViewPreferencesUiState,
     uiActions: MDWordsListViewPreferencesUiActions,
-    contextTagsSelectionState: MDContextTagsSelectorUiState,
-    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
+    tagsSelectionState: MDTagsSelectorUiState,
+    tagsSelectionActions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember {
@@ -102,8 +102,8 @@ fun MDWordsListViewPreferencesDialog(
                 )
 
                 MDWordsListViewPreferencesTab.Filter -> FilterBody(
-                    contextTagsSelectionState = contextTagsSelectionState,
-                    contextTagsSelectionActions = contextTagsSelectionActions,
+                    tagsSelectionState = tagsSelectionState,
+                    tagsSelectionActions = tagsSelectionActions,
                     includeSelectedTags = uiState.includeSelectedTags,
                     selectedMemorizingProbabilityGroups = uiState.selectedMemorizingProbabilityGroups,
                     onToggleSelectedTags = uiActions::onToggleIncludeSelectedTags,
@@ -159,8 +159,8 @@ private fun SearchBody(
 
 @Composable
 private fun FilterBody(
-    contextTagsSelectionState: MDContextTagsSelectorUiState,
-    contextTagsSelectionActions: MDContextTagsSelectorUiActions,
+    tagsSelectionState: MDTagsSelectorUiState,
+    tagsSelectionActions: MDTagsSelectorUiActions,
     includeSelectedTags: Boolean,
     selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     onToggleSelectedTags: (Boolean) -> Unit,
@@ -174,9 +174,9 @@ private fun FilterBody(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        MDContextTagsSelector(
-            state = contextTagsSelectionState,
-            actions = contextTagsSelectionActions,
+        MDTagsSelector(
+            state = tagsSelectionState,
+            actions = tagsSelectionActions,
             allowAddTags = false,
             allowRemoveTags = false,
             allowEditTags = true,

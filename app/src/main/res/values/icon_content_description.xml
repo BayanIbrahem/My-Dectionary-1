@@ -45,6 +45,9 @@
     <string name="content_description_dark_theme">Dark Theme</string>
     <string name="content_description_light_theme">Light Theme</string>
     <string name="content_description_system_theme">System Theme</string>
+    <string name="content_description_ltr">Ltr</string>
+    <string name="content_description_rtl">Rtl</string>
+    <string name="content_description_device_direction">Device Direction</string>
     <string name="content_description_word_additional_translation">Word additional translation</string>
     <string name="content_description_word_example">Word example</string>
     <string name="content_description_word_meaning">Word meaning</string>

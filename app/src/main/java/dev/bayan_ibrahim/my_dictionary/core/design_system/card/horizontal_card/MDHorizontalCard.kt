@@ -181,9 +181,10 @@ fun MDHorizontalCard(
         )
 
         Surface(
-            modifier = modifier
+            modifier = Modifier
                 .heightIn(42.dp, 60.dp)
-                .height(IntrinsicSize.Min),
+                .height(IntrinsicSize.Min)
+                .then(modifier),
             color = containerColor,
         ) {
             Row(
@@ -255,7 +256,7 @@ fun MDHorizontalCard(
                 }
             }
         }
-        if(bottomHorizontalDividerThickness.value > 0f) {
+        if (bottomHorizontalDividerThickness.value > 0f) {
             HorizontalDivider(
                 modifier = Modifier.height(bottomHorizontalDividerThickness),
                 color = colors.dividerColor
@@ -278,10 +279,10 @@ private fun MDHorizontalCardsPreview() {
                 MDHorizontalCard(
                     onClick = {},
                     leadingIcon = {
-                        MDIcon(MDIconsSet.Verified) 
+                        MDIcon(MDIconsSet.Verified)
                     },
                     trailingIcon = {
-                        MDIcon(MDIconsSet.Verified) 
+                        MDIcon(MDIconsSet.Verified)
                     }
                 ) {
                     Text("this is a field")

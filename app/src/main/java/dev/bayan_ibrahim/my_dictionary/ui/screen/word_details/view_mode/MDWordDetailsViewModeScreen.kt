@@ -6,11 +6,11 @@ import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FloatingActionButton
@@ -20,12 +20,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.MDDateTimeFormat
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.format
@@ -35,17 +40,19 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTitleWithHint
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardScope
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
+import dev.bayan_ibrahim.my_dictionary.core.ui.IconSegmentedButton
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordDetailsDirectionSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.invalid
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.component.MDContextTagColorIcon
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.component.MDTagColorIcon
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.view_mode.component.MDWordDetailsViewModeTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -54,12 +61,29 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 fun MDWordDetailsViewModeScreen(
     uiState: MDWordDetailsViewModeUiState,
     uiActions: MDWordDetailsViewModeUiActions,
+    wordAlignmentSource: WordDetailsDirectionSource,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
 
+    val deviceDirection = LocalLayoutDirection.current
+
+    val direction by remember(
+        key1 = wordAlignmentSource,
+        key2 = uiState.word.language.direction,
+        key3 = deviceDirection
+    ) {
+        derivedStateOf {
+            when (wordAlignmentSource) {
+                WordDetailsDirectionSource.Ltr -> LayoutDirection.Ltr
+                WordDetailsDirectionSource.Rtl -> LayoutDirection.Rtl
+                WordDetailsDirectionSource.Device -> deviceDirection
+                WordDetailsDirectionSource.WordLanguage -> uiState.word.language.direction
+            }
+        }
+    }
     CompositionLocalProvider(
-        LocalLayoutDirection provides uiState.word.language.direction,
+        LocalLayoutDirection provides direction,
     ) {
         MDScreen(
             uiState = uiState,
@@ -78,7 +102,7 @@ fun MDWordDetailsViewModeScreen(
                     enter = fadeIn() + expandIn(),
                     exit = fadeOut() + shrinkOut(),
 
-                ) {
+                    ) {
                     FloatingActionButton(uiActions::onEdit) {
                         MDIcon(MDIconsSet.Edit)
                     }
@@ -89,6 +113,15 @@ fun MDWordDetailsViewModeScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 state = lazyListState
             ) {
+                item {
+                    IconSegmentedButton(
+                        horizontalAlignment = Alignment.End,
+
+                        selected = wordAlignmentSource,
+                        allItems = WordDetailsDirectionSource.entries,
+                        onSelectItem = uiActions::onToggleWordDetailsAlignmentSource
+                    )
+                }
                 item {
                     WordInfoGroup(
                         title = "Basic", // TODO, string res
@@ -107,6 +140,11 @@ fun MDWordDetailsViewModeScreen(
                             label = "Language",/* TODO, string res */
                             value = uiState.word.language.fullDisplayName,
                         )
+                        if (uiState.word.note.isNotEmpty())
+                            wordPropertyItem(
+                                label = "Note",/* TODO, string res */
+                                value = uiState.word.note,
+                            )
                     }
                 }
                 item {
@@ -140,7 +178,7 @@ fun MDWordDetailsViewModeScreen(
                                     value = tag.value,
                                     trailingIcon = tag.color?.let { color ->
                                         {
-                                            MDContextTagColorIcon(
+                                            MDTagColorIcon(
                                                 color = color,
                                                 isPassed = tag.currentColorIsPassed,
                                                 canPassable = tag.passColorToChildren
@@ -235,12 +273,14 @@ fun MDWordDetailsViewModeScreen(
 }
 
 private fun MDHorizontalCardScope.wordPropertyItem(
+    modifier: Modifier = Modifier,
     value: String = "",
     leadingIcon: MDIconsSet? = null,
     label: String? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     item(
+        modifier = modifier.requiredHeightIn(42.dp, Dp.Unspecified),
         leadingIcon = leadingIcon?.let {
             {
                 MDIcon(leadingIcon)
@@ -255,7 +295,11 @@ private fun MDHorizontalCardScope.wordPropertyItem(
             label?.let {
                 Text(text = label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
             }
-            Text(text = value, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.basicMarquee(Int.MAX_VALUE))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyLarge,
+//                modifier = Modifier.basicMarquee(Int.MAX_VALUE)
+            )
         }
     }
 }
@@ -301,9 +345,9 @@ private fun WordDetailsViewModeScreenPreview() {
                                 translation = "Translation",
                                 transcription = "Transcription",
                                 tags = setOf(
-                                    ContextTag(value = "object/word/tag1", color = Color.Red),
-                                    ContextTag(value = "object/word/tag2", color = Color.Blue),
-                                    ContextTag(value = "object/word/tag3"),
+                                    Tag(value = "object/word/tag1", color = Color.Red),
+                                    Tag(value = "object/word/tag2", color = Color.Blue),
+                                    Tag(value = "object/word/tag3"),
                                 ),
                                 examples = listOf(
                                     "example 1",
@@ -337,8 +381,11 @@ private fun WordDetailsViewModeScreenPreview() {
                             override fun onShare() {}
                             override fun onOpenNavDrawer() {}
                         },
-                        object : MDWordDetailsViewModeBusinessUiActions {},
-                    )
+                        object : MDWordDetailsViewModeBusinessUiActions {
+                            override fun onToggleWordDetailsAlignmentSource(source: WordDetailsDirectionSource?) {}
+                        },
+                    ),
+                    wordAlignmentSource = WordDetailsDirectionSource.WordLanguage
                 )
             }
         }

@@ -31,14 +31,14 @@ import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorBusinessUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorMutableUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.contextTagsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorBusinessUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorMutableUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.tagsSelector
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode.component.MDWordDetailsEditModeTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -48,8 +48,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun MDWordDetailsEditModeScreen(
     uiState: MDWordDetailsEditModeUiState,
     uiActions: MDWordDetailsEditModeUiActions,
-    contextTagsState: MDContextTagsSelectorUiState,
-    contextTagsActions: MDContextTagsSelectorUiActions,
+    tagsState: MDTagsSelectorUiState,
+    tagsActions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
     spacedBy: Dp = 8.dp,
 ) {
@@ -94,6 +94,18 @@ fun MDWordDetailsEditModeScreen(
                         leadingIcon = MDIconsSet.WordTranslation,
                     )
                 }
+
+                item {
+                    MDWordFieldTextField(
+                        value = uiState.note,
+                        onValueChange = uiActions::onEditNote,
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = "Note about the word",
+                        label = "Note", // TODO, string res
+                        leadingIcon = MDIconsSet.WordExample,  // TODO, icon res
+                        maxLines = 3,
+                    )
+                }
             }
 
             editableGroup(
@@ -116,9 +128,9 @@ fun MDWordDetailsEditModeScreen(
                 title = "Context tags", // TODO, string res
                 icon = MDIconsSet.WordTag,
             ) {
-                contextTagsSelector(
-                    state = contextTagsState,
-                    actions = contextTagsActions,
+                tagsSelector(
+                    state = tagsState,
+                    actions = tagsActions,
                     spacedBy = spacedBy,
                     showTitle = false,
                     showHorizontalDivider = false,
@@ -336,6 +348,7 @@ private fun MDWordDetailsEditModeScreenPreview() {
                             override fun onSave() {}
                             override fun onEditMeaning(newMeaning: String) {}
                             override fun onEditTranslation(newTranslation: String) {}
+                            override fun onEditNote(newNote: String) {}
                             override fun onEditTranscription(newTranscription: String) {}
                             override fun onEditAdditionalTranslations(id: Long, newValue: String) {}
                             override fun onEditExamples(id: Long, newValue: String) {}
@@ -348,38 +361,38 @@ private fun MDWordDetailsEditModeScreenPreview() {
                             override fun onTypeRelationFocusChange(newFocused: Long) {}
                             override fun onLexicalRelationFocusChange(newFocused: Long) {}
                             override fun onFocusChange(newFocused: Long) {}
-                            override fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {}
+                            override fun onUpdateSelectedTags(selectedTags: List<Tag>) {}
                         },
                     ),
-                    contextTagsState = MDContextTagsSelectorMutableUiState(),
-                    contextTagsActions = MDContextTagsSelectorUiActions(navigationActions = object : MDContextTagsSelectorNavigationUiActions {},
-                        businessActions = object : MDContextTagsSelectorBusinessUiActions {
-                            override fun onClickTag(tag: ContextTag) {}
+                    tagsState = MDTagsSelectorMutableUiState(),
+                    tagsActions = MDTagsSelectorUiActions(navigationActions = object : MDTagsSelectorNavigationUiActions {},
+                        businessActions = object : MDTagsSelectorBusinessUiActions {
+                            override fun onClickTag(tag: Tag) {}
 
-                            override fun onSelectTag(tag: ContextTag) {}
+                            override fun onSelectTag(tag: Tag) {}
 
                             override fun onSelectCurrentTag() {}
 
-                            override fun onUnSelectTag(tag: ContextTag) {}
+                            override fun onUnSelectTag(tag: Tag) {}
 
-                            override fun onSetInitialSelectedTags(tags: Collection<ContextTag>) {}
+                            override fun onSetInitialSelectedTags(tags: Collection<Tag>) {}
 
                             override fun clearSelectedTags() {}
 
-                            override fun onAddNewContextTag(tag: ContextTag) {}
+                            override fun onAddNewTag(tag: Tag) {}
 
-                            override fun onAddNewContextTag(segment: String) {}
+                            override fun onAddNewTag(segment: String) {}
 
-                            override fun onDeleteContextTag(tag: ContextTag) {}
+                            override fun onDeleteTag(tag: Tag) {}
 
                             override fun onNavigateUp() {}
 
                             override fun onResetToRoot() {}
 
-                            override fun onSetAllowedTagsFilter(filter: (ContextTag) -> Boolean) {}
+                            override fun onSetAllowedTagsFilter(filter: (Tag) -> Boolean) {}
 
                             override fun onResetAllowedTagsFilter() {}
-                            override fun onSetForbiddenTagsFilter(filter: (ContextTag) -> Boolean) {}
+                            override fun onSetForbiddenTagsFilter(filter: (Tag) -> Boolean) {}
                             override fun onResetForbiddenTagsFilter() {}
                             override fun onResetTagsFilter() {}
                             override fun onSearchQueryChange(query: String) {}

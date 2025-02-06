@@ -5,7 +5,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainSubmitOption
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.MDTrainWordResult
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
@@ -162,7 +162,7 @@ class MDTrainMemoryDecayFactorAnswerDurationBasedDataSourceTest {
         translation: String = "",
         additionalTranslations: List<String> = emptyList(),
         language: Language = Language("en", "English", "English"),
-        tags: Set<ContextTag> = emptySet(),
+        tags: Set<Tag> = emptySet(),
         transcription: String = INVALID_TEXT,
         examples: List<String> = emptyList(),
         wordClass: WordClass? = null,

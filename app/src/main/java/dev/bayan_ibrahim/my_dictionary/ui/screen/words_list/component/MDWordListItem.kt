@@ -58,7 +58,7 @@ import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -349,8 +349,8 @@ private fun MDWordListItemPreview() {
                         additionalTranslations = listOf("Human Eye", "Human Eye 2"),
                         language = Language("de", "Deutsch", "German"),
                         tags = setOf(
-                            ContextTag(value = "Human body"),
-                            ContextTag(value = "Organic")
+                            Tag(value = "Human body"),
+                            Tag(value = "Organic")
                         ),
                         transcription = "auge",
                         examples = listOf("I habe zwei auge", "some other example"),

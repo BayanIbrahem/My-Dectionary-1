@@ -17,17 +17,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelector
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Composable
 fun MDMigrateTagsScreen(
     uiState: MDMigrateTagsUiState,
     uiActions: MDMigrateTagsUiActions,
-    tagsSelectorUiState: MDContextTagsSelectorUiState,
-    tagsSelectorUiActions: MDContextTagsSelectorUiActions,
+    tagsSelectorUiState: MDTagsSelectorUiState,
+    tagsSelectorUiActions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
 ) {
     MDScreen(
@@ -42,7 +42,7 @@ fun MDMigrateTagsScreen(
         ) {
             // TODO, string res
             Text("Select Target Tags", style = MaterialTheme.typography.titleMedium)
-            MDContextTagsSelector(
+            MDTagsSelector(
                 state = tagsSelectorUiState,
                 actions = tagsSelectorUiActions,
                 allowEditTags = true,

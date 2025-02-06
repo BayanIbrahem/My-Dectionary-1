@@ -455,18 +455,18 @@
         "foreignKeys": []
       },
       {
-        "tableName": "contextTags",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contextTags_id` INTEGER PRIMARY KEY AUTOINCREMENT, `contextTags_path` TEXT NOT NULL)",
+        "tableName": "tags",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tags_id` INTEGER PRIMARY KEY AUTOINCREMENT, `tags_path` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "tagId",
-            "columnName": "contextTags_id",
+            "columnName": "tags_id",
             "affinity": "INTEGER",
             "notNull": false
           },
           {
             "fieldPath": "path",
-            "columnName": "contextTags_path",
+            "columnName": "tags_path",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -474,41 +474,41 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "contextTags_id"
+            "tags_id"
           ]
         },
         "indices": [
           {
-            "name": "index_contextTags_contextTags_path",
+            "name": "index_tags_tags_path",
             "unique": true,
             "columnNames": [
-              "contextTags_path"
+              "tags_path"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_contextTags_contextTags_path` ON `${TABLE_NAME}` (`contextTags_path`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_tags_tags_path` ON `${TABLE_NAME}` (`tags_path`)"
           }
         ],
         "foreignKeys": []
       },
       {
-        "tableName": "wordsWithContextTags",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wordsWithContextTags_id` INTEGER PRIMARY KEY AUTOINCREMENT, `wordsWithContextTags_wordId` INTEGER NOT NULL, `wordsWithContextTags_tagId` INTEGER NOT NULL, FOREIGN KEY(`wordsWithContextTags_wordId`) REFERENCES `words`(`word_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`wordsWithContextTags_tagId`) REFERENCES `contextTags`(`contextTags_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "tableName": "wordsWithTags",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wordsWithTags_id` INTEGER PRIMARY KEY AUTOINCREMENT, `wordsWithTags_wordId` INTEGER NOT NULL, `wordsWithTags_tagId` INTEGER NOT NULL, FOREIGN KEY(`wordsWithTags_wordId`) REFERENCES `words`(`word_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`wordsWithTags_tagId`) REFERENCES `tags`(`tags_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
-            "columnName": "wordsWithContextTags_id",
+            "columnName": "wordsWithTags_id",
             "affinity": "INTEGER",
             "notNull": false
           },
           {
             "fieldPath": "wordId",
-            "columnName": "wordsWithContextTags_wordId",
+            "columnName": "wordsWithTags_wordId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "tagId",
-            "columnName": "wordsWithContextTags_tagId",
+            "columnName": "wordsWithTags_tagId",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -516,27 +516,27 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "wordsWithContextTags_id"
+            "wordsWithTags_id"
           ]
         },
         "indices": [
           {
-            "name": "index_wordsWithContextTags_wordsWithContextTags_wordId",
+            "name": "index_wordsWithTags_wordsWithTags_wordId",
             "unique": false,
             "columnNames": [
-              "wordsWithContextTags_wordId"
+              "wordsWithTags_wordId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_wordsWithContextTags_wordsWithContextTags_wordId` ON `${TABLE_NAME}` (`wordsWithContextTags_wordId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wordsWithTags_wordsWithTags_wordId` ON `${TABLE_NAME}` (`wordsWithTags_wordId`)"
           },
           {
-            "name": "index_wordsWithContextTags_wordsWithContextTags_tagId",
+            "name": "index_wordsWithTags_wordsWithTags_tagId",
             "unique": false,
             "columnNames": [
-              "wordsWithContextTags_tagId"
+              "wordsWithTags_tagId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_wordsWithContextTags_wordsWithContextTags_tagId` ON `${TABLE_NAME}` (`wordsWithContextTags_tagId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wordsWithTags_wordsWithTags_tagId` ON `${TABLE_NAME}` (`wordsWithTags_tagId`)"
           }
         ],
         "foreignKeys": [
@@ -545,21 +545,21 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "wordsWithContextTags_wordId"
+              "wordsWithTags_wordId"
             ],
             "referencedColumns": [
               "word_id"
             ]
           },
           {
-            "table": "contextTags",
+            "table": "tags",
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "wordsWithContextTags_tagId"
+              "wordsWithTags_tagId"
             ],
             "referencedColumns": [
-              "contextTags_id"
+              "tags_id"
             ]
           }
         ]

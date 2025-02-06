@@ -14,7 +14,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
@@ -22,7 +22,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.UserPreferencesRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag.MDContextTagsSelectorMutableUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorMutableUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,7 +40,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     private val userRepo: UserPreferencesRepo,
     private val wordClassRepo: WordClassRepo,
 ) : ViewModel() {
-    private val _tagsState = MDContextTagsSelectorMutableUiState()
+    private val _tagsState = MDTagsSelectorMutableUiState()
 
     private val currentLanguageFlow: StateFlow<Language?> = userRepo.getUserPreferencesStream().map { it.selectedLanguagePage }.stateIn(
         scope = viewModelScope,
@@ -98,7 +98,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     private fun getBusinessUiActions(
         navActions: MDWordDetailsEditModeNavigationUiActions,
     ): MDWordDetailsEditModeBusinessUiActions = object : MDWordDetailsEditModeBusinessUiActions {
-        override fun onUpdateSelectedTags(selectedTags: List<ContextTag>) {
+        override fun onUpdateSelectedTags(selectedTags: List<Tag>) {
             _uiState.tags.setAll(selectedTags)
         }
         override fun onSave() {
@@ -113,6 +113,7 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
                             additionalTranslations = uiState.additionalTranslations.values.toList().filter { it.isNotBlank() },
                             tags = uiState.tags.toSet(),
                             transcription = uiState.transcription,
+                            note = uiState.note,
                             examples = uiState.examples.values.toList().filter { it.isNotBlank() },
                             wordClass = uiState.selectedWordClass,
                             relatedWords = uiState.relatedWords.values.mapNotNull {
@@ -154,6 +155,10 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
 
         override fun onEditTranslation(newTranslation: String) {
             _uiState.translation = newTranslation
+        }
+
+        override fun onEditNote(newNote: String) {
+            _uiState.note = newNote
         }
 
         override fun onEditTranscription(newTranscription: String) {

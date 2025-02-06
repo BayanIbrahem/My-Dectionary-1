@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.ui.screen.core.context_tag
+package dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag
 
 
 import androidx.lifecycle.ViewModel
@@ -6,13 +6,13 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagMatchNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsMutableTree
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTagsTree
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.TagsMutableTree
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.TagsTree
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.contains
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.isContained
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.parentOrNull
-import dev.bayan_ibrahim.my_dictionary.domain.repo.ContextTagRepo
+import dev.bayan_ibrahim.my_dictionary.domain.repo.TagRepo
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,26 +20,26 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MDContextTagsSelectorViewModel @Inject constructor(
-    private val repo: ContextTagRepo,
+class MDTagsSelectorViewModel @Inject constructor(
+    private val repo: TagRepo,
 ) : ViewModel() {
-    private val _uiState: MDContextTagsSelectorMutableUiState = MDContextTagsSelectorMutableUiState()
-    val uiState: MDContextTagsSelectorUiState = _uiState
+    private val _uiState: MDTagsSelectorMutableUiState = MDTagsSelectorMutableUiState()
+    val uiState: MDTagsSelectorUiState = _uiState
     private var tagsStateAllTagsStreamCollectorJob: Job? = null
 
-    private var allowedFilter: (ContextTag) -> Boolean = { true }
-    private var forbiddenFilter: (ContextTag) -> Boolean = { false }
+    private var allowedFilter: (Tag) -> Boolean = { true }
+    private var forbiddenFilter: (Tag) -> Boolean = { false }
 
     private var selectedTagsMaxSize: Int = Int.MAX_VALUE
     fun init(
-        allowedFilter: (ContextTag) -> Boolean = { true },
-        forbiddenFilter: (ContextTag) -> Boolean = { false },
+        allowedFilter: (Tag) -> Boolean = { true },
+        forbiddenFilter: (Tag) -> Boolean = { false },
         selectedTagsMaxSize: Int = Int.MAX_VALUE,
     ) {
         this.selectedTagsMaxSize = selectedTagsMaxSize.coerceAtLeast(1)
         tagsStateAllTagsStreamCollectorJob?.cancel()
         tagsStateAllTagsStreamCollectorJob = viewModelScope.launch {
-            repo.getContextTagsStream().collect { allTags ->
+            repo.getTagsStream().collect { allTags ->
                 _uiState.allTagsTree.setFrom(allTags)
                 refreshCurrentTree()
             }
@@ -48,21 +48,21 @@ class MDContextTagsSelectorViewModel @Inject constructor(
         this.forbiddenFilter = forbiddenFilter
     }
 
-    private fun onAddTagToTree(tag: ContextTag) {
+    private fun onAddTagToTree(tag: Tag) {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.addOrUpdateContextTag(tag)
+            repo.addOrUpdateTag(tag)
         }
     }
 
-    private fun onRemoveTagFromTree(tag: ContextTag) {
+    private fun onRemoveTagFromTree(tag: Tag) {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.removeContextTag(tag)
+            repo.removeTag(tag)
         }
     }
 
     fun getUiActions(
-        navActions: MDContextTagsSelectorNavigationUiActions,
-    ): MDContextTagsSelectorUiActions = MDContextTagsSelectorUiActions(
+        navActions: MDTagsSelectorNavigationUiActions,
+    ): MDTagsSelectorUiActions = MDTagsSelectorUiActions(
         navigationActions = navActions,
         businessActions = getBusinessUiActions(navActions)
     )
@@ -79,8 +79,8 @@ class MDContextTagsSelectorViewModel @Inject constructor(
     }
 
     private fun getBusinessUiActions(
-        navActions: MDContextTagsSelectorNavigationUiActions,
-    ): MDContextTagsSelectorBusinessUiActions = object : MDContextTagsSelectorBusinessUiActions {
+        navActions: MDTagsSelectorNavigationUiActions,
+    ): MDTagsSelectorBusinessUiActions = object : MDTagsSelectorBusinessUiActions {
 
         private fun onUpdateSelectedTags() {
             navActions.onUpdateSelectedTags(_uiState.selectedTags)
@@ -88,7 +88,7 @@ class MDContextTagsSelectorViewModel @Inject constructor(
             onUpdateDisabledTags()
         }
 
-        override fun onClickTag(tag: ContextTag) {
+        override fun onClickTag(tag: Tag) {
             setCurrentTree(_uiState.allTagsTree[tag] ?: _uiState.allTagsTree)
             onSearchQueryChange(_uiState.searchQuery)
         }
@@ -99,7 +99,7 @@ class MDContextTagsSelectorViewModel @Inject constructor(
         }
 
 
-        override fun onSelectTag(tag: ContextTag) {
+        override fun onSelectTag(tag: Tag) {
             val indexOfLastContainer = _uiState.selectedTags.indexOfLast { it.contains(tag) }
             val firstValidIndexAfterTrim = _uiState.selectedTags.size.inc().minus(selectedTagsMaxSize).coerceAtLeast(0)
 
@@ -122,12 +122,12 @@ class MDContextTagsSelectorViewModel @Inject constructor(
             _uiState.currentTagsTree.tag?.let { onSelectTag(it) }
         }
 
-        override fun onUnSelectTag(tag: ContextTag) {
+        override fun onUnSelectTag(tag: Tag) {
             _uiState.selectedTags.remove(tag)
             onUpdateSelectedTags()
         }
 
-        override fun onSetInitialSelectedTags(tags: Collection<ContextTag>) {
+        override fun onSetInitialSelectedTags(tags: Collection<Tag>) {
             _uiState.selectedTags.setAll(tags)
             onUpdateSelectedTags()
         }
@@ -137,23 +137,23 @@ class MDContextTagsSelectorViewModel @Inject constructor(
             onUpdateSelectedTags()
         }
 
-        override fun onAddNewContextTag(tag: ContextTag) {
+        override fun onAddNewTag(tag: Tag) {
             onAddTagToTree(tag)
-            val mutableCurrent = ContextTagsMutableTree(_uiState.currentTagsTree)
+            val mutableCurrent = TagsMutableTree(_uiState.currentTagsTree)
             mutableCurrent.addTag(tag)
             setCurrentTree(mutableCurrent)
         }
 
-        override fun onAddNewContextTag(segment: String) {
+        override fun onAddNewTag(segment: String) {
             if (segment.isNotBlank()) {
-                val tag = ContextTag((_uiState.currentTagsTree.tag?.segments ?: emptyList()) + segment)
-                onAddNewContextTag(tag)
+                val tag = Tag((_uiState.currentTagsTree.tag?.segments ?: emptyList()) + segment)
+                onAddNewTag(tag)
             }
         }
 
-        override fun onDeleteContextTag(tag: ContextTag) {
+        override fun onDeleteTag(tag: Tag) {
             onRemoveTagFromTree(tag)
-            val mutableCurrent = ContextTagsMutableTree(_uiState.currentTagsTree)
+            val mutableCurrent = TagsMutableTree(_uiState.currentTagsTree)
             mutableCurrent.removeTag(tag)
             setCurrentTree(mutableCurrent)
         }
@@ -166,7 +166,7 @@ class MDContextTagsSelectorViewModel @Inject constructor(
             setCurrentTree(_uiState.allTagsTree)
         }
 
-        override fun onSetAllowedTagsFilter(filter: (ContextTag) -> Boolean) {
+        override fun onSetAllowedTagsFilter(filter: (Tag) -> Boolean) {
             allowedFilter = filter
             onUpdateSelectEnableState()
         }
@@ -176,7 +176,7 @@ class MDContextTagsSelectorViewModel @Inject constructor(
             onUpdateSelectEnableState()
         }
 
-        override fun onSetForbiddenTagsFilter(filter: (ContextTag) -> Boolean) {
+        override fun onSetForbiddenTagsFilter(filter: (Tag) -> Boolean) {
             forbiddenFilter = filter
             onUpdateSelectEnableState()
         }
@@ -193,7 +193,7 @@ class MDContextTagsSelectorViewModel @Inject constructor(
         }
 
         override fun refreshCurrentTree() {
-            this@MDContextTagsSelectorViewModel.refreshCurrentTree()
+            this@MDTagsSelectorViewModel.refreshCurrentTree()
         }
     }
 
@@ -205,7 +205,7 @@ class MDContextTagsSelectorViewModel @Inject constructor(
         )
     }
 
-    private fun setCurrentTree(tree: ContextTagsTree) {
+    private fun setCurrentTree(tree: TagsTree) {
         _uiState.currentTagsTree.setFrom(tree)
         onUpdateSelectEnableState()
         onUpdateDisabledTags()

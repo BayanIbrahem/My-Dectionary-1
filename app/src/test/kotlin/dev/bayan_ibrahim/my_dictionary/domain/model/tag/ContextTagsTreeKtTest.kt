@@ -6,37 +6,37 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class ContextTagsTreeKtTest {
-    private lateinit var tagsList: List<ContextTag>
-    private lateinit var tagsTree: ContextTagsMutableTree
+class TagsTreeKtTest {
+    private lateinit var tagsList: List<Tag>
+    private lateinit var tagsTree: TagsMutableTree
 
     @Before
     fun setup() {
         tagsList = listOf(
-            ContextTag("object", "food", "fruit"),
-            ContextTag("object", "food", "vegetables"),
-            ContextTag("object", "food", "healthy"),
-            ContextTag("object", "device"),
-            ContextTag("language", "en"),
+            Tag("object", "food", "fruit"),
+            Tag("object", "food", "vegetables"),
+            Tag("object", "food", "healthy"),
+            Tag("object", "device"),
+            Tag("language", "en"),
         )
-        tagsTree = ContextTagsMutableTree().apply {
-            nextLevel["object"] = ContextTagsMutableTree(ContextTag("object")).apply {
-                nextLevel["food"] = ContextTagsMutableTree(ContextTag("object", "food")).apply {
-                    nextLevel["fruit"] = ContextTagsMutableTree(ContextTag("object", "food", "fruit"))
-                    nextLevel["vegetables"] = ContextTagsMutableTree(ContextTag("object", "food", "vegetables"))
-                    nextLevel["healthy"] = ContextTagsMutableTree(ContextTag("object", "food", "healthy"))
+        tagsTree = TagsMutableTree().apply {
+            nextLevel["object"] = TagsMutableTree(Tag("object")).apply {
+                nextLevel["food"] = TagsMutableTree(Tag("object", "food")).apply {
+                    nextLevel["fruit"] = TagsMutableTree(Tag("object", "food", "fruit"))
+                    nextLevel["vegetables"] = TagsMutableTree(Tag("object", "food", "vegetables"))
+                    nextLevel["healthy"] = TagsMutableTree(Tag("object", "food", "healthy"))
                 }
-                nextLevel["device"] = ContextTagsMutableTree(ContextTag("object", "device"))
+                nextLevel["device"] = TagsMutableTree(Tag("object", "device"))
             }
-            nextLevel["language"] = ContextTagsMutableTree(ContextTag("language")).apply {
-                nextLevel["en"] = ContextTagsMutableTree(ContextTag("language", "en"))
+            nextLevel["language"] = TagsMutableTree(Tag("language")).apply {
+                nextLevel["en"] = TagsMutableTree(Tag("language", "en"))
             }
         }
     }
 
     @Test
     fun `asTree-emptyList-emptyTree`() {
-        val tagsList: List<ContextTag> = emptyList()
+        val tagsList: List<Tag> = emptyList()
         val tree = tagsList.asTree()
         assertNull(tree.tag)
         assertTrue(tree.nextLevel.isEmpty())
@@ -54,13 +54,13 @@ class ContextTagsTreeKtTest {
     @Test
     fun `getSubTree-existedDirectSubTree-returnSubTree`() {
         val actualSubTree = tagsTree["object"]
-        val expectedSubTree = ContextTagsMutableTree(ContextTag("object")).apply {
-            nextLevel["food"] = ContextTagsMutableTree(ContextTag("object", "food")).apply {
-                nextLevel["fruit"] = ContextTagsMutableTree(ContextTag("object", "food", "fruit"))
-                nextLevel["vegetables"] = ContextTagsMutableTree(ContextTag("object", "food", "vegetables"))
-                nextLevel["healthy"] = ContextTagsMutableTree(ContextTag("object", "food", "healthy"))
+        val expectedSubTree = TagsMutableTree(Tag("object")).apply {
+            nextLevel["food"] = TagsMutableTree(Tag("object", "food")).apply {
+                nextLevel["fruit"] = TagsMutableTree(Tag("object", "food", "fruit"))
+                nextLevel["vegetables"] = TagsMutableTree(Tag("object", "food", "vegetables"))
+                nextLevel["healthy"] = TagsMutableTree(Tag("object", "food", "healthy"))
             }
-            nextLevel["device"] = ContextTagsMutableTree(ContextTag("object", "device"))
+            nextLevel["device"] = TagsMutableTree(Tag("object", "device"))
         }
         assertEquals(expectedSubTree, actualSubTree)
     }
@@ -69,7 +69,7 @@ class ContextTagsTreeKtTest {
     @Test
     fun `getSubTree-currentTree-returnSameTree`() {
         val tree=tagsTree["object"]!!
-        val actualSubTree = tagsTree[ContextTag("object")]
+        val actualSubTree = tagsTree[Tag("object")]
         assertEquals(tree, actualSubTree)
     }
     @Test
@@ -81,12 +81,12 @@ class ContextTagsTreeKtTest {
     @Test
     fun `getSubTree-existedDeepSubTree-returnSubTree`() {
         val actualSubTree = tagsTree[
-            ContextTag("object", "food")
+            Tag("object", "food")
         ]
-        val expectedSubTree = ContextTagsMutableTree(ContextTag("object", "food")).apply {
-            nextLevel["fruit"] = ContextTagsMutableTree(ContextTag("object", "food", "fruit"))
-            nextLevel["vegetables"] = ContextTagsMutableTree(ContextTag("object", "food", "vegetables"))
-            nextLevel["healthy"] = ContextTagsMutableTree(ContextTag("object", "food", "healthy"))
+        val expectedSubTree = TagsMutableTree(Tag("object", "food")).apply {
+            nextLevel["fruit"] = TagsMutableTree(Tag("object", "food", "fruit"))
+            nextLevel["vegetables"] = TagsMutableTree(Tag("object", "food", "vegetables"))
+            nextLevel["healthy"] = TagsMutableTree(Tag("object", "food", "healthy"))
         }
         assertEquals(expectedSubTree, actualSubTree)
     }
@@ -94,7 +94,7 @@ class ContextTagsTreeKtTest {
     @Test
     fun `getSubTree-nonExistedDeepSubTree-returnSubTree`() {
         val actualSubTree = tagsTree[
-            ContextTag("object", "non existed")
+            Tag("object", "non existed")
         ]
         assertNull(actualSubTree)
     }

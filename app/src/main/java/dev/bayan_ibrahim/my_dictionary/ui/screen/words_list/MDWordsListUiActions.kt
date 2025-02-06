@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list
 
 import androidx.compose.runtime.Immutable
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ContextTag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 
@@ -35,7 +35,7 @@ interface MDWordsListBusinessUiActions {
 
     fun onShowViewPreferencesDialog()
     fun onDismissViewPreferencesDialog()
-    fun onConfirmAppendContextTagsOnSelectedWords(selectedTags: List<ContextTag>)
+    fun onConfirmAppendTagsOnSelectedWords(selectedTags: List<Tag>)
     fun onSpeakWord(word: Word)
     fun onSearchQueryChange(query: String)
 }
