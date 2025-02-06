@@ -5,7 +5,6 @@ package dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.percentInRange
 
 const val DEFAULT_FRACTION = 0.5f

@@ -15,8 +15,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.asFormattedString
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutput
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.asFormattedString
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.background.MDChartBackground
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.defaultColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.calculateYLabels

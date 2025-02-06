@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.core.common.helper_methods
+package dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format
 
 import java.text.DecimalFormat
 import kotlin.math.absoluteValue

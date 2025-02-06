@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="all">all</string>
+    <string name="any">any</string>
+    <string name="every">every</string>
+    <string name="some">some</string>
+    <string name="none">none</string>
+
+    <string name="saved">saved</string>
+    <string name="edited">edited</string>
+    <string name="notifications">notifications</string>
+
+</resources>

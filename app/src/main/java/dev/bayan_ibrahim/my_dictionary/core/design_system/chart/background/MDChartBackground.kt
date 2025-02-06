@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.asFormattedString
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.asFormattedString
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.DefaultRotationDegree
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.drawChartBackground
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.chart_util.drawXLabels

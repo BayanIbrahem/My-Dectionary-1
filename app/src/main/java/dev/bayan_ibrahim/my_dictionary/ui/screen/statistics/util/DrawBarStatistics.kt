@@ -15,7 +15,7 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.asFormattedString
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.asFormattedString
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutput
 
 /**

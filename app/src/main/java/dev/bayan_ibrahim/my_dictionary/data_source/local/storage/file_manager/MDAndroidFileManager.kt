@@ -7,7 +7,7 @@ import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.OpenableColumns
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.asFileSize
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.asFileSize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.flatten
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileSize

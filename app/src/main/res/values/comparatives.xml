@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- neutrals -->
+    <string name="moderate">moderate</string>
+    <string name="medium">medium</string>
+    <string name="normal">normal</string>
+    <string name="average">average</string>
+
+    <string name="fast">fast</string>
+    <string name="slow">slow</string>
+    <string name="long_">long</string>
+    <string name="short_">short</string>
+
+    <string name="faster">faster</string>
+    <string name="slower">slower</string>
+    <string name="longer">longer</string>
+    <string name="shorter">shorter</string>
+
+    <string name="faster_than_x">faster than %s</string>
+    <string name="slower_than_x">slower than %s</string>
+    <string name="longer_than_x">longer than %s</string>
+    <string name="shorter_than_x">shorter than %s</string>
+
+    <string name="the_fastest">the fastest</string>
+    <string name="the_slowest">the slowest</string>
+    <string name="the_longest">the longest</string>
+    <string name="the_shortest">the shortest</string>
+</resources>

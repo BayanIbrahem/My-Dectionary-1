@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="xth">%dth %s</string>
+    <string name="the_xth">the %dth %s</string>
+    <!-- normal no-the -->
+    <string name="first">first %s</string>
+    <string name="second">second %s</string>
+    <string name="third">third %s</string>
+    <string name="fourth">fourth %s</string>
+    <string name="fifth">fifth %s</string>
+    <string name="sixth">sixth %s</string>
+    <string name="seventh">seventh %s</string>
+    <string name="eighth">eighth %s</string>
+    <string name="ninth">ninth %s</string>
+    <string name="tenth">tenth %s</string>
+
+    <!-- normal the -->
+    <string name="the_first">the first %s</string>
+    <string name="the_second">the second %s</string>
+    <string name="the_third">the third %s</string>
+    <string name="the_fourth">the fourth %s</string>
+    <string name="the_fifth">the fifth %s</string>
+    <string name="the_sixth">the sixth %s</string>
+    <string name="the_seventh">the seventh %s</string>
+    <string name="the_eighth">the eighth %s</string>
+    <string name="the_ninth">the ninth %s</string>
+    <string name="the_tenth">the tenth %s</string>
+
+    <!-- brief no-the -->
+    <string name="_1st">1st %s</string>
+    <string name="_2nd">2nd %s</string>
+    <string name="_3rd">3rd %s</string>
+    <string name="_4th">4th %s</string>
+    <string name="_5th">5th %s</string>
+    <string name="_6th">6th %s</string>
+    <string name="_7th">7th %s</string>
+    <string name="_8th">8th %s</string>
+    <string name="_9th">9th %s</string>
+    <string name="_10th">10th %s</string>
+
+    <!--brief the-->
+    <string name="the_1st">the 1st %s</string>
+    <string name="the_2nd">the 2nd %s</string>
+    <string name="the_3rd">the 3rd %s</string>
+    <string name="the_4th">the 4th %s</string>
+    <string name="the_5th">the 5th %s</string>
+    <string name="the_6th">the 6th %s</string>
+    <string name="the_7th">the 7th %s</string>
+    <string name="the_8th">the 8th %s</string>
+    <string name="the_9th">the 9th %s</string>
+    <string name="the_10th">the 10th %s</string>
+</resources>

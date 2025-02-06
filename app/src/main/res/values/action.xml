@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="delete">delete</string>
+    <string name="delete_all">delete all</string>
+    <string name="remove">remove</string>
+    <string name="remove_all">remove all</string>
+    <string name="consume">consume</string>
+
+    <string name="add">add</string>
+    <string name="add_all">add all</string>
+    <string name="new_">new</string>
+    <string name="add_new">add new</string>
+    <string name="add_template">add template</string>
+
+
+    <string name="confirm">confirm</string>
+    <string name="accept">accept</string>
+    <string name="continue_">continue</string>
+    <string name="apply">apply</string>
+    <string name="choose">choose</string>
+
+    <string name="save">save</string>
+    <string name="save_all">save all</string>
+    <string name="save_as_copy">save as copy</string>
+    <string name="save_and_apply">save &amp; apply</string>
+    <string name="start_now">start now</string>
+    <string name="start_later">start later</string>
+
+    <string name="cancel" tools:ignore="ButtonCase">cancel</string>
+    <string name="ignore">ignore</string>
+    <string name="ignore_all">ignore</string>
+    <string name="dismiss">dismiss</string>
+    <string name="reject">reject</string>
+    <string name="reject_all">reject all</string>
+    <string name="reset">reset</string>
+    <string name="reset_all">reset all</string>
+    <string name="reset_changes">reset changes</string>
+
+    <string name="back">back</string>
+    <string name="next">next</string>
+    <string name="reverse">reverse</string>
+
+    <string name="edit">edit</string>
+    <string name="edit_all">edit all</string>
+    <string name="update">update</string>
+    <string name="update_all">update_all</string>
+
+    <string name="view">view</string>
+    <string name="view_all">view all</string>
+    <string name="details">details</string>
+    <string name="more">more</string>
+
+    <string name="share">share</string>
+    <string name="share_all">share all</string>
+    <string name="send">send</string>
+    <string name="send_all">send all</string>
+
+    <string name="search">search</string>
+    <string name="find">find</string>
+
+    <string name="help">help</string>
+    <string name="faq">FAQ</string>
+
+    <string name="group_by">group by</string>
+    <string name="sort_by">sort by</string>
+
+    <string name="select">select</string>
+    <string name="select_all">select all</string>
+    <string name="deselect">deselect</string>
+</resources>
