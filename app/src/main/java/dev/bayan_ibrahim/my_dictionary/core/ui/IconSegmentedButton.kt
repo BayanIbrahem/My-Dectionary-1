@@ -22,10 +22,10 @@ import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 @Composable
 fun <E> IconSegmentedButton(
     selected: E? = null,
-    allItems: List<E>,
+    allItems: Collection<E>,
     onSelectItem: (E?) -> Unit,
     modifier: Modifier = Modifier,
-    horizontalAlignment: Alignment.Horizontal = Alignment.Start
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
 ) where E : IconedEnum, E : Enum<E> {
     val nonSelectedItems by remember(selected, allItems) {
         derivedStateOf {
@@ -67,7 +67,7 @@ fun <E> IconSegmentedButton(
             }
         }
         items(
-            items = nonSelectedItems,
+            items = nonSelectedItems.toList(),
             key = { it.ordinal }
         ) {
             FilledIconButton(

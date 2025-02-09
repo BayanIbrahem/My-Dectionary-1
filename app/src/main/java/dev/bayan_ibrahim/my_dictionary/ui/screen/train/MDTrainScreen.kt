@@ -20,28 +20,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -125,7 +118,7 @@ fun MDTrainScreen(
                     uiState.trainWordsListQuestion[uiState.currentIndex].type
                 }
             }
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Column(modifier = Modifier) {
                 ScreenHeader(
                     currentIndex = uiState.currentIndex,
                     totalCount = totalCount,
@@ -146,11 +139,6 @@ fun MDTrainScreen(
                 }
             }
         }
-
-        Text(
-            text = imePadding.asPaddingValues().calculateBottomPadding().toString(),
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 
@@ -232,7 +220,6 @@ private fun TimerClock(
         animationSpec = infiniteRepeatable(tween(1000, easing = LinearEasing), RepeatMode.Reverse)
     )
 
-    remainingTime.remainingTime
     Box(
         modifier = modifier
             .graphicsLayer {
@@ -375,7 +362,7 @@ private fun WordWriteTrainPage(
     }
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         QuestionPagePart(
             question = train.question,
@@ -388,13 +375,6 @@ private fun WordWriteTrainPage(
             mutableStateOf(null)
         }
         Column {
-            ExtraInfoPagePart(
-                word = train.word,
-                selectedVisibleInfo = selectedVisibleInfo,
-                availableExtraInfo = MDTrainQuestionExtraInfo.entries,
-                onSelectVisibleInfo = { selectedVisibleInfo = it },
-                modifier = Modifier.weight(1f),
-            )
             MDBasicTextField(
                 value = answer,
                 modifier = Modifier.fillMaxWidth(),
@@ -402,6 +382,13 @@ private fun WordWriteTrainPage(
                     answer = it
                 },
                 placeholder = "Write answer here"
+            )
+            ExtraInfoPagePart(
+                word = train.word,
+                selectedVisibleInfo = selectedVisibleInfo,
+                availableExtraInfo = MDTrainQuestionExtraInfo.entries,
+                onSelectVisibleInfo = { selectedVisibleInfo = it },
+                modifier = Modifier,
             )
         }
     }
@@ -506,29 +493,25 @@ private fun ExtraInfoPagePart(
         derivedStateOf {
             availableExtraInfo.associateWith {
                 when (it) {
-                    MDTrainQuestionExtraInfo.Transcription -> listOf(word.transcription)
+                    MDTrainQuestionExtraInfo.Transcription -> listOfNotNull(word.transcription.takeUnless { it.isBlank() })
                     MDTrainQuestionExtraInfo.Tag -> word.tags.map { it.value } // TODO, show tags correctly
                     MDTrainQuestionExtraInfo.WordClass -> listOfNotNull(word.wordClass?.name)
                     MDTrainQuestionExtraInfo.RelatedWords -> word.relatedWords.map { it.value }
-                    MDTrainQuestionExtraInfo.Example -> word.examples
-                    MDTrainQuestionExtraInfo.AdditionalTranslation -> word.additionalTranslations
+                    MDTrainQuestionExtraInfo.Example -> word.examples.filter { it.isNotEmpty() }
+                    MDTrainQuestionExtraInfo.AdditionalTranslation -> word.additionalTranslations.filter { it.isNotEmpty() }
                 }
             }.filterValues { it.isNotEmpty() }
-        }
-    }
-    val notSelectedAvailableExtraInfo by remember(validAvailableExtraInfo, selectedVisibleInfo) {
-        derivedStateOf {
-            if (selectedVisibleInfo == null) {
-                validAvailableExtraInfo.keys
-            } else {
-                validAvailableExtraInfo.keys - selectedVisibleInfo
-            }.toList()
         }
     }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
     ) {
+        IconSegmentedButton(
+            selected = selectedVisibleInfo,
+            allItems = validAvailableExtraInfo.keys,
+            onSelectItem = onSelectVisibleInfo
+        )
         val selectedVisibleInfoData by remember(selectedVisibleInfo, validAvailableExtraInfo) {
             derivedStateOf {
                 validAvailableExtraInfo[selectedVisibleInfo]
@@ -549,11 +532,6 @@ private fun ExtraInfoPagePart(
                 )
             }
         }
-        IconSegmentedButton(
-            selected = selectedVisibleInfo,
-            allItems = MDTrainQuestionExtraInfo.entries,
-            onSelectItem = onSelectVisibleInfo
-        )
     }
 }
 
