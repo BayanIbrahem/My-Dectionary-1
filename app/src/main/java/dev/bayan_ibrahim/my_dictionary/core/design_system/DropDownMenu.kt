@@ -40,7 +40,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDImeAction
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
@@ -249,7 +251,7 @@ fun <Data : Any> MDBasicDropDownMenu(
                             },
                         ) {
                             Text(
-                                text = "Cancel selection",/* TODO, string res */
+                                text = firstCapStringResource(R.string.cancel_selection),
                                 fontWeight = FontWeight.Bold,
                                 fontStyle = FontStyle.Italic,
                             )

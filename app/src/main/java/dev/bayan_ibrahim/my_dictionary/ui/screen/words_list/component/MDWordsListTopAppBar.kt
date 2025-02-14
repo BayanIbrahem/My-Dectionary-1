@@ -2,9 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -40,11 +38,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapStringResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
@@ -178,7 +181,7 @@ private fun WordsListTopAppBarNormalMode(
             ) {
                 Text("${language.localDisplayName} ") // has a trailing space
                 Text(
-                    text = "$visibleWordsCount words", // TODO, string res
+                    text = firstCapPluralsResource(R.plurals.word, visibleWordsCount),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -195,7 +198,7 @@ private fun WordsListTopAppBarNormalMode(
                 ) {
                     BadgedBox(
                         badge = {
-                            if(searchFieldNotEmpty) {
+                            if (searchFieldNotEmpty) {
                                 Badge()
                             }
                         }
@@ -233,7 +236,7 @@ private fun WordsListTopAppBarNormalMode(
                 ) {
                     MenuItem(
                         leadingIcon = MDIconsSet.LanguageWordSpace,
-                        text = "Select language page", // TODO, string res
+                        text = firstCapStringResource(R.string.select_x, firstCapStringResource(R.string.language)),
                         onClick = {
                             dismiss()
                             onSelectLanguagePage()
@@ -242,7 +245,7 @@ private fun WordsListTopAppBarNormalMode(
 
                     MenuItem(
                         leadingIcon = MDIconsSet.DeletePermanent,
-                        text = "Delete word space", // TODO, string res
+                        text = firstCapStringResource(R.string.delete_x, firstCapStringResource(R.string.word_space)),
                         onClick = {
                             dismiss()
                             onDeleteWordSpace()
@@ -252,8 +255,8 @@ private fun WordsListTopAppBarNormalMode(
                 }
             }
         }
-        val factor by animateFloatAsState(if(searchFieldVisible) 1f else 0f)
-        val height by animateDpAsState(if(searchFieldVisible)92.dp else 0.dp)
+        val factor by animateFloatAsState(if (searchFieldVisible) 1f else 0f)
+        val height by animateDpAsState(if (searchFieldVisible) 92.dp else 0.dp)
         MDWordFieldTextField(
             value = searchQuery,
             onValueChange = {
@@ -273,93 +276,13 @@ private fun WordsListTopAppBarNormalMode(
                 searchFieldHasFocus = it.isFocused
             },
             showLabelOnEditMode = true,
-            label = "Search Query", // TODO, string res
-            placeholder = "Eg. Car", // TODO, string res
+            label = firstCapStringResource(R.string.search_query),
+            placeholder = firstCapStringResource(R.string.eg_x, firstCapStringResource(R.string.car)),
             showTrailingActionsIfNotFocused = true,
             showTrailingActionsIfBlank = true,
-            onKeyboardAction = {searchFieldFocusRequester.freeFocus()}
+            onKeyboardAction = { searchFieldFocusRequester.freeFocus() }
         )
     }
-//    MDTopAppBar(
-//        isTopLevel = true,
-//        onNavigationIconClick = onNavigationIconClick,
-//        title = {
-//            Row(
-//                verticalAlignment = Alignment.Bottom,
-//            ) {
-//                Text("${language.localDisplayName} ") // has a trailing space
-//                Text(
-//                    text = "$visibleWordsCount words", // TODO, string res
-//                    style = MaterialTheme.typography.labelLarge,
-//                    color = MaterialTheme.colorScheme.onSurfaceVariant
-//                )
-//            }
-//        },
-//        modifier = modifier,
-//        colors = TopAppBarDefaults.topAppBarColors(
-//            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-//            titleContentColor = MaterialTheme.colorScheme.onSurface,
-//        ),
-//        expandedHeight = topAppBarHeight,
-//        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-//        actions = {
-////            IconButton(
-////                onClick = {
-////                    onTrainVisibleWords()
-////                    // adjust filter preferences
-////                },
-////            ) {
-////                MDIcon(MDIconsSet.Train)
-////            }
-//            IconButton(
-//                onClick = {
-//                    onAdjustFilterPreferences()
-//                    // adjust filter preferences
-//                },
-//            ) {
-//                MDIcon(MDIconsSet.Filter)
-//            }
-//            var expanded by remember {
-//                mutableStateOf(false)
-//            }
-//            val dismiss: () -> Unit by remember {
-//                derivedStateOf { { expanded = false } }
-//            }
-//            IconButton(
-//                onClick = {
-//                    expanded = true
-//                }
-//            ) {
-//                MDBasicIconDropDownMenu(
-//                    expanded = expanded,
-//                    onDismissRequest = dismiss,
-//                    menuOffset = menuOffset,
-//                    icon = {
-//                        MDIcon(MDIconsSet.MoreVert)
-//                    }
-//                ) {
-//                    MenuItem(
-//                        leadingIcon = MDIconsSet.LanguageWordSpace,
-//                        text = "Select language page", // TODO, string res
-//                        onClick = {
-//                            dismiss()
-//                            onSelectLanguagePage()
-//                        },
-//                    )
-//
-//                    MenuItem(
-//                        leadingIcon = MDIconsSet.DeletePermanent,
-//                        text = "Delete word space", // TODO, string res
-//                        onClick = {
-//                            dismiss()
-//                            onDeleteWordSpace()
-//                        },
-//                        important = true,
-//                    )
-//                }
-//            }
-//        },
-//    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -385,7 +308,7 @@ private fun WordsListTopAppBarSelectionMode(
         isTopLevel = true, // this value is overwritten by navigation icon
         onNavigationIconClick = {}, // cause it has a navigation icon
         title = {
-            Text("$selectedWordsCount selected of $totalWordsCount") // TODO, string res
+            Text(stringResource(R.string.x_selected_of_y, selectedWordsCount, totalWordsCount))
         },
         modifier = modifier,
         navigationIcon = {
@@ -423,7 +346,7 @@ private fun WordsListTopAppBarSelectionMode(
                 ) {
                     MenuItem(
                         leadingIcon = MDIconsSet.Delete,
-                        text = "Delete Selection", // TODO, string res
+                        text = eachFirstCapStringResource(R.string.delete_selection),
                         onClick = {
                             dismiss()
                             onDeleteSelection()
@@ -474,12 +397,12 @@ private fun ExtraTagsDialog(
             .padding(8.dp),
         title = {
             Column {
-                Text(text = "Append Tags") // TODO, string res
+                Text(text = firstCapStringResource(R.string.append_x, firstCapStringResource(R.string.tag)))
                 Text(
-                    text = "Selected Words $selectedWordsCount",
+                    text = firstCapStringResource(R.string.x_selected, firstCapPluralsResource(R.plurals.word, selectedWordsCount)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline
-                ) // TODO, string res
+                )
             }
         },
         actions = {
@@ -569,7 +492,7 @@ private fun WordsListTopAppBarPreview() {
                     tagsSelectionActions = viewModel.getUiActions(object : MDTagsSelectorNavigationUiActions {}),
                     onConfirmAppendTagsOnSelectedWords = {},
                     onNavigationIconClick = {},
-                    searchQuery =  "",
+                    searchQuery = "",
                     onSearchQueryChange = {}
                 )
 //                WordsListTopAppBar(

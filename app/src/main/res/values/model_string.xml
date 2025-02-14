@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="the_word">the word</string>
+    <string name="a_word">a word</string>
+    <string name="word">word</string>
+    <string name="words">words</string>
+
+    <string name="the_tag">the tag</string>
+    <string name="a_tag">a tag</string>
+    <string name="tag">tag</string>
+    <string name="tags">tags</string>
+
+    <string name="the_tags_tree">the tags tree</string>
+    <string name="a_tags_tree">a tags tree</string>
+    <string name="tags_tree">tags tree</string>
+    <string name="tags_trees">tags trees</string>
+
+    <string name="the_marker_tag">the marker tag</string>
+    <string name="a_marker_tag">a marker tag</string>
+    <string name="marker_tag">marker tag</string>
+    <string name="marker_tags">marker tags</string>
+
+    <string name="the_word_class">the word class</string>
+    <string name="a_word_class">a word class</string>
+    <string name="word_class">word class</string>
+    <string name="word_classes">word classes</string>
+
+    <string name="the_relation">the relation</string>
+    <string name="a_relation">a relation</string>
+    <string name="relation">relation</string>
+    <string name="relations">relations</string>
+
+    <string name="the_related_word">the related word</string>
+    <string name="a_related_word">a related word</string>
+    <string name="related_word">related word</string>
+    <string name="related_words">related words</string>
+
+    <string name="the_lexical_relation">the lexical relation</string>
+    <string name="a_lexical_relation">a lexical relation</string>
+    <string name="lexical_relation">lexical relation</string>
+    <string name="lexical_relations">lexical relations</string>
+
+    <string name="the_word_class_relation">the word class relation</string>
+    <string name="a_word_class_relation">a word class relation</string>
+    <string name="word_class_relation">word class relation</string>
+    <string name="word_class_relations">word class relations</string>
+
+    <string name="the_language">the language</string>
+    <string name="a_language">a language</string>
+    <string name="language">language</string>
+    <string name="languages">languages</string>
+
+    <string name="the_word_space">the word space</string>
+    <string name="a_word_space">a word space</string>
+    <string name="word_space">word space</string>
+    <string name="word_spaces">word spaces</string>
+
+    <string name="the_color">the color</string>
+    <string name="a_color">a color</string>
+    <string name="color">color</string>
+    <string name="colors">colors</string>
+
+    <string name="the_train">the train</string>
+    <string name="a_train">a train</string>
+    <string name="train">train</string>
+    <string name="trains">trains</string>
+
+    <string name="the_history">the history</string>
+    <string name="a_history">a history</string>
+    <string name="history">history</string>
+    <string name="histories">histories</string>
+
+    <string name="the_entry">the entry</string>
+    <string name="an_entry">an entry</string>
+    <string name="entry">entry</string>
+    <string name="entries">entries</string>
+
+    <string name="the_history_entry">the history entry</string>
+    <string name="a_history_entry">a history entry</string>
+    <string name="history_entry">history entry</string>
+    <string name="history_entries">history entries</string>
+
+    <string name="the_example">the example</string>
+    <string name="an_example">an example</string>
+    <string name="example">example</string>
+    <string name="examples">examples</string>
+
+    <string name="the_meaning">the meaning</string>
+    <string name="a_meaning">a meaning</string>
+    <string name="meaning">meaning</string>
+    <string name="meanings">meanings</string>
+
+    <string name="the_translation">the translation</string>
+    <string name="a_translation">a translation</string>
+    <string name="translation">translation</string>
+    <string name="translations">translations</string>
+
+    <string name="the_additional_translation">the additional translation</string>
+    <string name="an_additional_translation">an additional translation</string>
+    <string name="additional_translation">additional translation</string>
+    <string name="additional_translations">additional translations</string>
+
+    <string name="the_note">the note</string>
+    <string name="a_note">a note</string>
+    <string name="note">note</string>
+    <string name="notes">notes</string>
+
+    <string name="the_transcription">the transcription</string>
+    <string name="a_transcription">a transcription</string>
+    <string name="transcription">transcription</string>
+    <string name="transcriptions">transcriptions</string>
+
+    <string name="the_phonetic">the phonetic</string>
+    <string name="a_phonetic">a phonetic</string>
+    <string name="phonetic">phonetic</string>
+    <string name="phonetics">phonetics</string>
+
+    <string name="the_theme">the theme</string>
+    <string name="a_theme">a theme</string>
+    <string name="theme">theme</string>
+    <string name="themes">themes</string>
+
+    <string name="the_statistic">the statistic</string>
+    <string name="a_statistic">a statistic</string>
+    <string name="statistic">statistic</string>
+    <string name="statistics">statistics</string>
+
+    <string name="the_item">the item</string>
+    <string name="a_item">a item</string>
+    <string name="item">item</string>
+    <string name="items">items</string>
+
+    <string name="the_error">the error</string>
+    <string name="a_error">a error</string>
+    <string name="error">error</string>
+    <string name="errors">errors</string>
+
+    <string name="the_warning">the warning</string>
+    <string name="a_warning">a warning</string>
+    <string name="warning">warning</string>
+    <string name="warnings">warnings</string>
+
+    <string name="the_profile">the profile</string>
+    <string name="a_profile">a profile</string>
+    <string name="profile">profile</string>
+    <string name="profiles">profiles</string>
+
+    <string name="the_tools">the tool</string>
+    <string name="a_tools">a tool</string>
+    <string name="tool">tool</string>
+    <string name="tools">tools</string>
+
+    <string name="the_learning_group">the learning group</string>
+    <string name="a_learning_groups">a learning group</string>
+    <string name="learning_group">learning group</string>
+    <string name="learning_groups">learning groups</string>
+</resources>

@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <string name="red">red</string>
+    <string name="orange">orange</string>
+    <string name="yellow">yellow</string>
+    <string name="green">green</string>
+    <string name="blue">blue</string>
+    <string name="purple">purple</string>
+    <string name="pink">pink</string>
+    <string name="black">black</string>
+    <string name="white">white</string>
+    <string name="gray">gray</string>
+    <string name="brown">brown</string>
+    <string name="teal">teal</string>
+    <string name="lime">lime</string>
+    <string name="magenta">magenta</string>
+    <string name="cyan">cyan</string>
+    <string name="maroon">maroon</string>
+    <string name="olive">olive</string>
+    <string name="navy">navy</string>
+    <string name="coral">coral</string>
+    <string name="gold">gold</string>
+    <string name="silver">silver</string>
 </resources>

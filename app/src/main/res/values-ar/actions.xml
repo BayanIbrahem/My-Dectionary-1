@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="delete">حذف</string>
+    <string name="delete_x">حذف %1$s</string>
+    <string name="delete_all">حذف الكل</string>
+    <string name="delete_selection">حذف التحديد</string>
+    <string name="remove">إزالة</string>
+    <string name="remove_x">إزالة %1$s</string>
+    <string name="remove_all">إزالة الكل</string>
+    <string name="consume">استهلاك</string>
+    <string name="navigate_up">الانتقال لأعلى</string>
+
+    <string name="add">إضافة</string>
+    <string name="add_x">إضافة %1$s</string>
+    <string name="add_all">إضافة الكل</string>
+
+    <string name="append">إلحاق</string>
+    <string name="append_x">إلحاق %1$s</string>
+    <string name="append_all">إلحاق الكل</string>
+    <string name="add_new">إضافة جديد</string>
+    <string name="add_template">إضافة قالب</string>
+
+    <string name="confirm">تأكيد</string>
+    <string name="accept">قبول</string>
+    <string name="continue_">متابعة</string>
+    <string name="apply">تطبيق</string>
+    <string name="choose">اختيار</string>
+
+    <string name="save">حفظ</string>
+    <string name="save_x">حفظ %1$s</string>
+    <string name="save_all">حفظ الكل</string>
+    <string name="save_as_copy">حفظ كنسخة</string>
+    <string name="save_and_apply">حفظ &amp; تطبيق</string>
+    <string name="start_now">ابدأ الآن</string>
+    <string name="start_later">ابدأ لاحقًا</string>
+
+    <string name="cancel" tools:ignore="ButtonCase">إلغاء</string>
+    <string name="cancel_selection" tools:ignore="ButtonCase">إلغاء التحديد</string>
+    <string name="close">إغلاق</string>
+    <string name="ignore">تجاهل</string>
+    <string name="ignore_all">تجاهل الكل</string>
+    <string name="dismiss">تجاهل</string>
+    <string name="reject">رفض</string>
+    <string name="reject_all">رفض الكل</string>
+    <string name="reset">إعادة تعيين</string>
+    <string name="reset_all">إعادة تعيين الكل</string>
+    <string name="reset_changes">إعادة تعيين التغييرات</string>
+
+    <string name="back">رجوع</string>
+    <string name="next">التالي</string>
+    <string name="reverse">عكس</string>
+
+    <string name="edit">تعديل</string>
+    <string name="edit_x">تعديل %1$s</string>
+    <string name="edit_all">تعديل الكل</string>
+    <string name="update">تحديث</string>
+    <string name="update_all">تحديث الكل</string>
+
+    <string name="view">عرض</string>
+    <string name="view_all">عرض الكل</string>
+    <string name="details">التفاصيل</string>
+    <string name="more">المزيد</string>
+
+    <string name="share">مشاركة</string>
+    <string name="share_x">مشاركة %1$s</string>
+    <string name="share_all">مشاركة الكل</string>
+    <string name="send">إرسال</string>
+    <string name="send_all">إرسال الكل</string>
+
+    <string name="search">بحث</string>
+    <string name="find">بحث</string>
+    <string name="filter">تصفية</string>
+
+    <string name="help">مساعدة</string>
+    <string name="faq">الأسئلة الشائعة</string>
+
+    <string name="group">التجميع حسب</string>
+    <string name="group_by">التجميع حسب</string>
+    <string name="sort">الترتيب حسب</string>
+    <string name="sort_by">الترتيب حسب</string>
+
+    <string name="select">تحديد</string>
+    <string name="select_x">تحديد %1$s</string>
+    <string name="pick">اختيار</string>
+    <string name="select_all">تحديد الكل</string>
+    <string name="deselect">إلغاء التحديد</string>
+    <string name="pass">تجاوز</string>
+    <string name="guess">تخمين</string>
+    <string name="answer">إجابة</string>
+    <string name="confident">واثق</string>
+
+    <string name="_import">استيراد</string>
+    <string name="export">تصدير</string>
+    <string name="show">عرض</string>
+    <string name="show_first">عرض الأول</string>
+    <string name="show_last">عرض الأخير</string>
+    <string name="show_only">عرض فقط</string>
+
+    <string name="show_x">عرض %1$s</string>
+    <string name="show_first_x">عرض الأول %1$s</string>
+    <string name="show_last_x">عرض الأخير %1$s</string>
+    <string name="show_only_x">عرض فقط %1$s</string>
+</resources>

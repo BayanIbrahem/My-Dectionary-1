@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
@@ -62,7 +63,9 @@ fun MDNavigationDrawer(
                     DrawerHeader()
                     DrawerContent(
                         currentDestination = currentDestination,
-                        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState()),
                         onNavigateTo = onNavigateTo,
                     )
                     DrawerFooter()
@@ -130,7 +133,7 @@ private fun DrawerContentMainGroup(
     MDDrawerContentGroup(
         modifier = modifier,
         hasDivider = false,
-    ) { // TODO, string res
+    ) {
         MDDestination.TopLevel.Enum.entries.forEachIndexed { i, topLevel ->
             ContentGroupListItem(
                 label = topLevel.label,
@@ -152,10 +155,10 @@ private fun DrawerContentToolsGroup(
 ) {
     MDDrawerContentGroup(
         modifier = modifier,
-        title = "Tools"// TODO, string res
+        title = firstCapStringResource(R.string.tools)
     ) {
         ContentGroupListItem(
-            label = "Marker Tags", // TODO, string res
+            label = firstCapStringResource(R.string.marker_tags),
             leadingIcon = MDIconsSet.Colors,
             modifier = Modifier.clip(MDHorizontalCardGroupDefaults.shape),
             currentDestination = currentDestination,
@@ -174,11 +177,11 @@ private fun DrawerContentMigrationGroup(
     modifier: Modifier = Modifier,
 ) {
 //    MDDrawerContentGroup(
-//        title = "Migration",// TODO, string res
+//        title = firstCapStringResource(R.string.migration),
 //        modifier = modifier,
 //    ) {
 //        ContentGroupListItem(
-//            label = "Migrate Tags",// TODO, string res
+//            label = firstCapStringResource(R.string.migrate_tags),
 //            leadingIcon = MDIconsSet.WordTag,// TODO, icon res
 //            currentDestination = currentDestination,
 //            associatedDestination = MDDestination.MigrateTags::class,
@@ -188,7 +191,7 @@ private fun DrawerContentMigrationGroup(
 //        )
 //
 //        ContentGroupListItem(
-//            label = "Migrate Similar Words", // TODO, string res
+//            label = firstCapStringResource(R.string.migrate_similar_words),
 //            leadingIcon = MDIconsSet.WordMeaning, // TODO, icon res
 //            currentDestination = currentDestination,
 //            associatedDestination = MDDestination.MigrateSimilarWords::class,

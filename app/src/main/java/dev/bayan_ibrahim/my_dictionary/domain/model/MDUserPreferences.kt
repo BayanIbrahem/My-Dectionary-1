@@ -1,9 +1,12 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.upperStringResource
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsPack
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -37,11 +40,21 @@ fun MDUserPreferences.getSelectedThemeIdentifier(
     )
 }
 
-enum class WordDetailsDirectionSource(override val strLabel: String, override val icon: MDIconsSet) : LabeledEnum, IconedEnum {
-    Ltr("LTR", MDIconsSet.Ltr),
-    Rtl("RTL", MDIconsSet.Rtl),
-    Device("Device Locale", MDIconsSet.DeviceDirection),
-    WordLanguage("Language Locale", MDIconsSet.LanguageWordSpace);
+enum class WordDetailsDirectionSource(override val icon: MDIconsSet) : LabeledEnum, IconedEnum {
+    Ltr( MDIconsSet.Ltr),
+    Rtl(MDIconsSet.Rtl),
+    Device(MDIconsSet.DeviceDirection),
+    WordLanguage( MDIconsSet.LanguageWordSpace);
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = when(this) {
+            Ltr -> upperStringResource(R.string.ltr)
+            Rtl -> upperStringResource(R.string.rtl)
+            Device -> upperStringResource(R.string.device_locale)
+            WordLanguage -> upperStringResource(R.string.language_locale)
+        }
 
     val current: LayoutDirection?
         @Composable

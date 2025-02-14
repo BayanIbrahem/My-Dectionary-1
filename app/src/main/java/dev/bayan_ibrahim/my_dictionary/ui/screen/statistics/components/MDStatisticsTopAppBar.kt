@@ -138,7 +138,7 @@ private fun MDMostRecentTrainHistoryActions(
     val availableOptions by remember(availableTrainHistoryCount) {
         derivedStateOf {
             MDStatisticsMostResentHistoryCount.entries.filter {
-                it.count <= availableTrainHistoryCount
+                it.quantity <= availableTrainHistoryCount
             }
         }
     }

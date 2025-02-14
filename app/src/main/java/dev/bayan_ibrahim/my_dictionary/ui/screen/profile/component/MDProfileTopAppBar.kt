@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
@@ -24,7 +26,7 @@ fun MDProfileTopAppBar(
         isTopLevel = true,
         onNavigationIconClick = onNavigationIconClick,
         title = {
-            Text("Profile") // TODO, string res
+            Text(firstCapStringResource(R.string.profile))
         }
     )
 }

@@ -2,6 +2,8 @@ package dev.bayan_ibrahim.my_dictionary.domain.model.date
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.res.stringResource
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.MDDateTimeFormat
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.atDefaultStartOfDay
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.format
@@ -11,6 +13,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.toDefault
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.toEpochMonths
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.toEpochQuarters
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.toEpochWeeks
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -67,11 +70,11 @@ fun MDDateUnit.labelOfIdentifier(
 ): String {
     return when (this) {
         MDDateUnit.Year -> {
-            when (identifier.mod(4)) { // TODO, string res
-                0 -> "Spring"
-                1 -> "Summer"
-                2 -> "Atom"
-                else -> "Winter"
+            when (identifier.mod(4)) {
+                0 -> firstCapStringResource(R.string.spring)
+                1 -> firstCapStringResource(R.string.summer)
+                2 -> firstCapStringResource(R.string.atom)
+                else -> firstCapStringResource(R.string.winter)
             }
         }
 
@@ -116,11 +119,11 @@ val MDDateUnit.label: String
 @Composable
 @ReadOnlyComposable
 get() = when (this) {
-    MDDateUnit.Year -> "Year"
-    MDDateUnit.Quarter -> "Quarter (season)"
-    MDDateUnit.Month -> "Month"
-    MDDateUnit.Week -> "Week"
-    MDDateUnit.Day -> "Day"
+    MDDateUnit.Year -> stringResource(R.string.year)
+    MDDateUnit.Quarter -> stringResource(R.string.quarter_season)
+    MDDateUnit.Month -> stringResource(R.string.month)
+    MDDateUnit.Week -> stringResource(R.string.week)
+    MDDateUnit.Day -> stringResource(R.string.day)
 }
 fun MDDateUnit.startOf(endInstant: Instant): Instant {
     val datetime = endInstant.toDefaultLocalDateTime()

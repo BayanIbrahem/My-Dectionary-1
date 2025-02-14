@@ -25,6 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardTextStyle
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -103,9 +105,9 @@ fun RowScope.MDAlertDialogActions(
     primaryClickEnabled: Boolean = true,
     secondaryClickEnabled: Boolean = true,
     tertiaryClickEnabled: Boolean = true,
-    primaryActionLabel: String = "Confirm", // TODO, string res
-    secondaryActionLabel: String = "Cancel", // TODO, string res
-    tertiaryActionLabel: String = "Reset", // TODO, string res
+    primaryActionLabel: String = firstCapStringResource(R.string.confirm),
+    secondaryActionLabel: String = firstCapStringResource(R.string.cancel),
+    tertiaryActionLabel: String = firstCapStringResource(R.string.reset),
     dismissOnPrimaryClick: Boolean = true,
     dismissOnSecondaryClick: Boolean = true,
     dismissOnTertiaryClick: Boolean = true,

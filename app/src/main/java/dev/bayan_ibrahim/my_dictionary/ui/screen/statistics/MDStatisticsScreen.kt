@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -37,9 +38,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.MDDateTimeFormat
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.format
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.toDefaultLocalDateTime
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.upperStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCard
@@ -51,7 +55,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.h
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.MDBarChart
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.line_chart.MDLineChart
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
-import dev.bayan_ibrahim.my_dictionary.core.ui.toFormattedString
+import dev.bayan_ibrahim.my_dictionary.core.ui.format
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.MDStatisticsMostResentHistoryCount
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.labelOfIdentifier
@@ -76,7 +80,7 @@ fun MDStatisticsScreen(
     MDScreen(
         uiState = uiState,
         modifier = modifier,
-        invalidDataMessage = "No History available, you should train first", // TODO, string res
+        invalidDataMessage = firstCapStringResource(R.string.no_history_hint),
         topBar = {
             MDStatisticsTopAppBar(
                 preferences = uiState.preferences,
@@ -175,7 +179,7 @@ fun MDStatisticsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 4.dp)
-                            ) // TODO, string res
+                            )
                         }
                         item {
                             val trainType by remember {
@@ -243,7 +247,7 @@ fun MDStatisticsScreen(
                                         Text(wordHistory.trainResult.submitOption.label)
                                         Spacer(modifier = Modifier.weight(1f))
                                         MDIcon(MDIconsSet.TrainTime, modifier = Modifier.size(16.dp)) // TODO, icon res
-                                        Text(wordHistory.trainResult.consumedDuration.toFormattedString()) // TODO, string res
+                                        Text(wordHistory.trainResult.consumedDuration.format)
                                     }
                                 }
                             ) {
@@ -280,23 +284,23 @@ private fun MDWordHistoryContent(
         is MDTrainWordResult.Pass -> {
             MDWordHistoryContent(
                 question = wordHistory.questionWord,
-                mainLabel = "PASS",
+                mainLabel = upperStringResource(R.string.pass),
                 modifier = modifier,
                 mainLabelColor = color,
                 secondLabel = wordHistory.trainResult.correctAnswer,
                 secondLabelColor = getTrainResultTypeColor(MDTrainWordResult.Right.type)
-            ) // TODO, string res
+            )
         }
 
         is MDTrainWordResult.Timeout -> {
             MDWordHistoryContent(
                 question = wordHistory.questionWord,
                 modifier = modifier,
-                mainLabel = "TIMEOUT",
+                mainLabel = upperStringResource(R.string.timeout),
                 mainLabelColor = color,
                 secondLabel = wordHistory.trainResult.correctAnswer,
                 secondLabelColor = getTrainResultTypeColor(MDTrainWordResult.Right.type)
-            )  // TODO, string res
+            )
         }
 
         is MDTrainWordResult.Right -> {

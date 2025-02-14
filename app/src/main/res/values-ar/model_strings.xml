@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="the_word">الكلمة</string>
+    <string name="a_word">كلمة</string>
+    <string name="word">كلمة</string>
+    <string name="words">كلمات</string>
+
+    <string name="the_tag">الوسم</string>
+    <string name="a_tag">وسم</string>
+    <string name="tag">وسم</string>
+    <string name="tags">وسوم</string>
+
+    <string name="the_tags_tree">شجرة الوسوم</string>
+    <string name="a_tags_tree">شجرة وسوم</string>
+    <string name="tags_tree">شجرة وسوم</string>
+    <string name="tags_trees">أشجار الوسوم</string>
+
+    <string name="the_marker_tag">وسم العلامة</string>
+    <string name="a_marker_tag">وسم علامة</string>
+    <string name="marker_tag">وسم علامة</string>
+    <string name="marker_tags">وسوم العلامات</string>
+
+    <string name="the_word_class">فئة الكلمة</string>
+    <string name="a_word_class">فئة كلمة</string>
+    <string name="word_class">فئة كلمة</string>
+    <string name="word_classes">فئات الكلمات</string>
+
+    <string name="the_relation">العلاقة</string>
+    <string name="a_relation">علاقة</string>
+    <string name="relation">علاقة</string>
+    <string name="relations">علاقات</string>
+
+    <string name="the_related_word">الكلمة ذات الصلة</string>
+    <string name="a_related_word">كلمة ذات صلة</string>
+    <string name="related_word">كلمة ذات صلة</string>
+    <string name="related_words">كلمات ذات صلة</string>
+
+    <string name="the_lexical_relation">العلاقة المعجمية</string>
+    <string name="a_lexical_relation">علاقة معجمية</string>
+    <string name="lexical_relation">علاقة معجمية</string>
+    <string name="lexical_relations">علاقات معجمية</string>
+
+    <string name="the_word_class_relation">علاقة فئة الكلمة</string>
+    <string name="a_word_class_relation">علاقة فئة كلمة</string>
+    <string name="word_class_relation">علاقة فئة كلمة</string>
+    <string name="word_class_relations">علاقات فئات الكلمات</string>
+
+    <string name="the_language">اللغة</string>
+    <string name="a_language">لغة</string>
+    <string name="language">لغة</string>
+    <string name="languages">لغات</string>
+
+    <string name="the_word_space">فضاء الكلمات</string>
+    <string name="a_word_space">فضاء كلمة</string>
+    <string name="word_space">فضاء كلمة</string>
+    <string name="word_spaces">فضاءات الكلمات</string>
+
+    <string name="the_color">اللون</string>
+    <string name="a_color">لون</string>
+    <string name="color">لون</string>
+    <string name="colors">ألوان</string>
+
+    <string name="the_train">التدريب</string>
+    <string name="a_train">تدريب</string>
+    <string name="train">تدريب</string>
+    <string name="trains">تدريبات</string>
+
+    <string name="the_history">التاريخ</string>
+    <string name="a_history">تاريخ</string>
+    <string name="history">تاريخ</string>
+    <string name="histories">تواريخ</string>
+
+    <string name="the_entry">المدخل</string>
+    <string name="an_entry">مدخل</string>
+    <string name="entry">مدخل</string>
+    <string name="entries">مداخل</string>
+
+    <string name="the_history_entry">مدخل التاريخ</string>
+    <string name="a_history_entry">مدخل تاريخ</string>
+    <string name="history_entry">مدخل تاريخ</string>
+    <string name="history_entries">مداخل التاريخ</string>
+
+    <string name="the_example">المثال</string>
+    <string name="an_example">مثال</string>
+    <string name="example">مثال</string>
+    <string name="examples">أمثلة</string>
+
+    <string name="the_meaning">المعنى</string>
+    <string name="a_meaning">معنى</string>
+    <string name="meaning">معنى</string>
+    <string name="meanings">معاني</string>
+
+    <string name="the_translation">الترجمة</string>
+    <string name="a_translation">ترجمة</string>
+    <string name="translation">ترجمة</string>
+    <string name="translations">ترجمات</string>
+
+    <string name="the_additional_translation">الترجمة الإضافية</string>
+    <string name="an_additional_translation">ترجمة إضافية</string>
+    <string name="additional_translation">ترجمة إضافية</string>
+    <string name="additional_translations">ترجمات إضافية</string>
+
+    <string name="the_note">الملاحظة</string>
+    <string name="a_note">ملاحظة</string>
+    <string name="note">ملاحظة</string>
+    <string name="notes">ملاحظات</string>
+
+    <string name="the_transcription">النطق</string>
+    <string name="a_transcription">نطق</string>
+    <string name="transcription">نطق</string>
+    <string name="transcriptions">أنطاق</string>
+
+    <string name="the_phonetic">الصوتي</string>
+    <string name="a_phonetic">صوتي</string>
+    <string name="phonetic">صوتي</string>
+    <string name="phonetics">صوتيات</string>
+
+    <string name="the_theme">الموضوع</string>
+    <string name="a_theme">موضوع</string>
+    <string name="theme">موضوع</string>
+    <string name="themes">مواضيع</string>
+
+    <string name="the_statistic">الإحصائية</string>
+    <string name="a_statistic">إحصائية</string>
+    <string name="statistic">إحصائية</string>
+    <string name="statistics">إحصائيات</string>
+
+    <string name="the_item">العنصر</string>
+    <string name="a_item">عنصر</string>
+    <string name="item">عنصر</string>
+    <string name="items">عناصر</string>
+
+    <string name="the_error">الخطأ</string>
+    <string name="a_error">خطأ</string>
+    <string name="error">خطأ</string>
+    <string name="errors">أخطاء</string>
+
+    <string name="the_warning">التحذير</string>
+    <string name="a_warning">تحذير</string>
+    <string name="warning">تحذير</string>
+    <string name="warnings">تحذيرات</string>
+
+    <string name="the_profile">الملف الشخصي</string>
+    <string name="a_profile">ملف شخصي</string>
+    <string name="profile">ملف شخصي</string>
+    <string name="profiles">ملفات شخصية</string>
+
+    <string name="the_tools">الأداة</string>
+    <string name="a_tools">أداة</string>
+    <string name="tool">أداة</string>
+    <string name="tools">أدوات</string>
+
+    <string name="the_learning_group">مجموعة التعلم</string>
+    <string name="a_learning_groups">مجموعة تعلم</string>
+    <string name="learning_group">مجموعة تعلم</string>
+    <string name="learning_groups">مجموعات تعلم</string>
+</resources>

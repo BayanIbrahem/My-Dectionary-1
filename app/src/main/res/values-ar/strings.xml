@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invalid_data">بيانات غير صالحة</string>
+
+    <string name="abort_all">إلغاء الكل</string>
+    <string name="ignore_word">تجاهل الكلمة</string>
+    <string name="ignore_new_value">تجاهل القيمة الجديدة</string>
+    <string name="replace_old_value">استبدال القيمة القديمة</string>
+    <string name="merge_or_ignore">دمج أو تجاهل</string>
+    <string name="merge_or_replace">دمج أو استبدال</string>
+    <string name="created_at">تاريخ الإنشاء</string>
+    <string name="updated_at">تاريخ التحديث</string>
+    <string name="memorizing_probability">احتمالية الحفظ</string>
+    <string name="train_time">وقت التدريب</string>
+    <string name="create_time">وقت الإنشاء</string>
+    <string name="random">عشوائي</string>
+
+    <string name="memorizing_probability_asc_order">الكلمات ذات التقدم الأدنى في التعلم</string>
+    <string name="memorizing_probability_desc_order">الكلمات ذات التقدم الأعلى في التعلم</string>
+    <string name="train_time_asc_order">الكلمات التي تم تدريبها منذ فترة طويلة</string>
+    <string name="train_time_desc_order">الكلمات التي تم تدريبها مؤخرًا</string>
+    <string name="create_time_asc_order">الكلمات التي تم إنشاؤها منذ فترة طويلة</string>
+    <string name="create_time_desc_order">الكلمات التي تم إنشاؤها مؤخرًا</string>
+    <string name="random_order">ترتيب عشوائي</string>
+
+    <string name="not_learned">لم يتم تعلمها</string>
+    <string name="known">معروفة</string>
+    <string name="acknowledged">تم الاعتراف بها</string>
+    <string name="learned">تم تعلمها</string>
+
+    <string name="hsv">HSV</string>
+    <string name="rgb">RGB</string>
+
+    <string name="hue">درجة اللون</string>
+    <string name="saturation">التشبع</string>
+    <string name="luminance">الإضاءة</string>
+
+    <string name="ltr">من اليسار إلى اليمين</string>
+    <string name="rtl">من اليمين إلى اليسار</string>
+    <string name="device_locale">لغة الجهاز</string>
+    <string name="language_locale">لغة التطبيق</string>
+
+    <string name="start">ابدأ</string>
+    <string name="read_file_type">قراءة نوع الملف</string>
+    <string name="get_suitable_file_reader">الحصول على قارئ ملف مناسب</string>
+    <string name="get_available_parts">الحصول على الأجزاء المتاحة في الملف</string>
+    <string name="process_languages">معالجة اللغات</string>
+    <string name="process_words_classes">معالجة فئات الكلمات</string>
+    <string name="process_tags">معالجة العلامات</string>
+    <string name="process_words">معالجة الكلمات</string>
+    <string name="end">إنهاء</string>
+
+    <!-- خطأ -->
+    <string name="error_unrecognized_file_type">نوع الملف غير معروف</string>
+    <string name="error_unrecognized_file_version">إصدار الملف غير معروف</string>
+    <string name="error_corrupted_file_parts">أجزاء الملف تالفة</string>
+    <string name="error_existed_word">الكلمة موجودة بالفعل</string>
+    <string name="error_corrupted_word">الكلمة تالفة</string>
+    <string name="error_unrecognized_file_type_cause">لا يمكن فتح الملف. قد يكون تالفًا أو غير مدعوم.</string>
+    <string name="error_unrecognized_file_reader_cause">تعذر العثور على قارئ مناسب للملف. قد يكون إصدار الملف جديدًا جدًا أو قديمًا جدًا أو غير صالح.</string>
+    <string name="error_corrupted_file_parts_cause">محتوى الملف تالف، مما يجعل من المستحيل استرجاع أجزائه.</string>
+    <string name="error_existed_word_cause">تم إيقاف الاستيراد بسبب تعارض مع كلمة موجودة. توجد كلمة مطابقة بنفس اللغة والمعنى والترجمة.</string>
+    <string name="error_corrupted_word_cause">تم إيقاف الاستيراد لأنه تم اكتشاف كلمة تالفة. تم ضبط الاستراتيجية على الإيقاف عند وجود كلمات تالفة.</string>
+    <string name="error_unrecognized_file_type_suggestion_1">تأكد من أن إصدار التطبيق (%1$s) ليس أقدم من الإصدار المستخدم لتصدير هذا الملف.</string>
+    <string name="error_unrecognized_file_type_suggestion_2">إذا كان إصدار هذا التطبيق أحدث من إصدار تطبيق التصدير، فاتصل بنا للحصول على الدعم.</string>
+    <string name="error_unrecognized_file_type_suggestion_3">إذا تم إنشاء هذا الملف بواسطة أداة خارجية، فتأكد من أن تنسيقه مدعوم. تحقق من التنسيقات المتاحة في شاشة التصدير.</string>
+    <string name="error_unrecognized_file_reader_suggestion_1">إصدار هذا الملف (%1$s) غير مدعوم. الإصدارات المدعومة هي %2$s. إصدار التطبيق الحالي هو %3$s. يرجى التحقق من توافق الملف.</string>
+    <string name="error_unrecognized_file_reader_suggestion_2">إصدار هذا الملف (%1$s) قديم جدًا. الإصدارات المدعومة هي %2$s. ضع في اعتبارك التحديث أو التحقق من الملف.</string>
+    <string name="error_unrecognized_file_reader_suggestion_3">اتصل بنا مع التفاصيل اللازمة للحصول على المساعدة.</string>
+    <string name="error_corrupted_file_parts_suggestion_1">قد يكون الملف تالفًا. حاول إعادة تصديره أو اتصل بنا مع التفاصيل اللازمة.</string>
+    <string name="error_existed_word_suggestion_1">غيّر استراتيجية حل التعارض أو أزل القيم المتعارضة من ملفك. يحدث هذا الخطأ عندما تتعارض البيانات في الملف المستورد مع مجموعة البيانات الموجودة لديك.</string>
+    <string name="error_corrupted_word_suggestion_1">غيّر استراتيجية التعامل مع الكلمات التالفة أو أصلح الكلمات غير الصالحة في ملفك. يحدث هذا الخطأ عندما يحتوي الملف على كلمات ببيانات غير صالحة، مثل معنى فارغ.</string>
+
+    <!-- تحذير -->
+    <string name="warning_no_valid_parts">لا توجد أجزاء صالحة</string>
+    <string name="warning_no_languages_data">لا توجد بيانات للغات</string>
+    <string name="warning_no_tags_data">لا توجد بيانات للعلامات</string>
+    <string name="warning_word_conflict_detected">تم اكتشاف تعارض في الكلمات</string>
+    <string name="warning_corrupted_word_detected">تم اكتشاف كلمة تالفة</string>
+    <string name="warning_no_valid_parts_cause">الملف ليس فارغًا ولكنه لا يحتوي على أي أجزاء ملف.</string>
+    <string name="warning_no_languages_data_cause">يحتوي الملف على قسم اللغات، ولكنه لا يحتوي على أي بيانات.</string>
+    <string name="warning_no_tags_data_cause">يحتوي الملف على قسم العلامات، ولكنه لا يحتوي على أي بيانات.</string>
+    <string name="warning_word_conflict_cause">تم تجاهل كلمة جديدة لأنها تتعارض مع كلمة موجودة في مجموعة البيانات المحلية.</string>
+    <string name="warning_corrupted_word_detected_cause">تم تجاهل كلمة جديدة لأنها تحتوي على بيانات تالفة أو غير صالحة.</string>
+    <string name="warning_no_valid_parts_suggestion_1">تأكد من أن الملف يحتوي على بيانات صالحة. في حين أن الملف ليس فارغًا، إلا أنه لا يحتوي على أي أجزاء ملف صالحة.</string>
+    <string name="warning_no_language_data_suggestion_1">إذا كانت اللغات غير ضرورية، فقم بإزالة جزء اللغات من الملف.</string>
+    <string name="warning_no_language_data_suggestion_2">أضف بيانات لغات صالحة إلى الملف إذا لزم الأمر.</string>
+    <string name="warning_no_tags_data_suggestion_1">إذا كانت العلامات غير ضرورية، فقم بإزالة جزء العلامات من الملف.</string>
+    <string name="warning_no_tags_data_suggestion_2">أضف بيانات علامات صالحة إلى الملف إذا لزم الأمر.</string>
+    <string name="warning_word_conflict_suggestion_1">غيّر استراتيجية حل تعارض الكلمات الموجودة.</string>
+    <string name="warning_word_conflict_suggestion_2">حرّر الكلمة الجديدة لتجنب التعارض مع البيانات الموجودة.</string>
+    <string name="warning_word_conflict_suggestion_3">حرّر أو احذف الكلمة المتعارضة في مجموعة البيانات المحلية.</string>
+    <string name="warning_corrupted_word_detected_suggestion_1">احذف أو أصلح الكلمة التالفة في ملف الاستيراد.</string>
+    <string name="warning_corrupted_word_detected_suggestion_2">أزل الكلمة التالفة من الملف قبل الاستيراد.</string>
+
+    <string name="general">عام</string>
+    <string name="json_file">ملف JSON</string>
+    <string name="write_word">كتابة كلمة</string>
+    <string name="select_word">اختيار كلمة</string>
+
+    <string name="migration">ترحيل</string>
+    <string name="migrate_tags">ترحيل العلامات</string>
+    <string name="migrate_similar_words">ترحيل الكلمات المتشابهة</string>
+
+    <string name="extra_tags">علامات إضافية</string>
+    <string name="extra_tags_hint">العلامات التي تُضاف لكل كلمة مستوردة</string>
+    <string name="extra_tags_strategy">استراتيجية العلامات الإضافية</string>
+
+    <string name="extra_tags_strategy_hint">على أي الكلمات يجب أن تضيف العلامات الإضافية؟</string>
+    <string name="corrupted_word">كلمة تالفة</string>
+    <string name="corrupted_word_hint">الإجراء عند ظهور كلمة غير صالحة في الملف الجديد</string>
+    <string name="existed_word">كلمة موجودة</string>
+    <string name="existed_word_hint">الإجراء عند وجود كلمة بنفس المعنى والترجمة مخزنة بالفعل</string>
+    <string name="importing_data">استيراد البيانات</string>
+    <string name="what_went_wrong">ما الذي حدث خطأ؟</string>
+    <string name="possible_solutions">حلول محتملة</string>
+    <string name="export_done">تم التصدير</string>
+    <string name="export_error">خطأ في التصدير</string>
+    <string name="export_running_x_of_y">التصدير قيد التشغيل - %1$d من %2$d</string>
+    <string name="output">الناتج</string>
+    <string name="wrong">خاطئ</string>
+    <string name="right">صحيح</string>
+    <string name="timeout">انتهت المهلة</string>
+
+    <string name="synonym">مُرادف</string>
+    <string name="antonym">مُضاد</string>
+    <string name="hyponym">نوع فرعي</string>
+    <string name="hypernym">نوع عام</string>
+    <string name="meronym">جزء من كل</string>
+    <string name="holonym">كلّ يحتوي أجزاء</string>
+    <string name="homonym">جناس تام</string>
+    <string name="polysemy">تعدد المعاني</string>
+    <string name="prototype">نموذج أصلي</string>
+    <string name="metonymy">كناية</string>
+    <string name="collocation">تلازم لفظي</string>
+    <string name="homograph">متجانسة الرسم</string>
+    <string name="homophone">متجانسة اللفظ</string>
+    <string name="synonym_hint">كلمات لها نفس المعنى أو معانٍ متشابهة جدًا</string>
+    <string name="antonym_hint">كلمات ذات معانٍ متضادة</string>
+    <string name="hyponym_hint">كلمة يتضمن معناها معنى كلمة أخرى</string>
+    <string name="hypernym_hint">كلمة ذات معنى أوسع يشمل معاني كلمات أخرى</string>
+    <string name="meronym_hint">علاقة جزء بكل</string>
+    <string name="holonym_hint">علاقة الكل بالجزء</string>
+    <string name="homonym_hint">كلمات لها نفس الهجاء والنطق ولكن معانٍ مختلفة</string>
+    <string name="polysemy_hint">كلمة لها معانٍ متعددة مرتبطة</string>
+    <string name="prototype_hint">المثال الأكثر شيوعًا لفئة ما</string>
+    <string name="metonymy_hint">استخدام كلمة واحدة للدلالة على شيء مرتبط بها ارتباطًا وثيقًا</string>
+    <string name="collocation_hint">تركيبات كلمات متكررة وطبيعية</string>
+    <string name="homograph_hint">كلمات تُكتب بنفس الطريقة ولكن بمعانٍ مختلفة وربما بنطق مختلف</string>
+    <string name="homophone_hint">كلمات تُلفظ بنفس الطريقة ولكن بمعانٍ وهجاء مختلفين</string>
+
+    <string name="synonym_example">سعيد، مبتهج</string>
+    <string name="antonym_example">حار، بارد</string>
+    <string name="hyponym_example">كلب، حيوان</string>
+    <string name="hypernym_example">حيوان، كلب</string>
+    <string name="meronym_example">عجلة، سيارة</string>
+    <string name="holonym_example">سيارة، عجلة</string>
+    <string name="homonym_example">ضفة (النهر)، بنك (مالي)</string>
+    <string name="polysemy_example">رأس (جزء من الجسم)، رأس (قائد)</string>
+    <string name="prototype_example">شحرور (للطائر)</string>
+    <string name="metonymy_example">البيت الأبيض (للرئيس الأمريكي)</string>
+    <string name="collocation_example">شاي قوي، اتخاذ قرار</string>
+    <string name="homograph_example">قاد (معدن)، قاد (أرشد)</string>
+    <string name="homophone_example">دب (حيوان)، دب (تحمل)</string>
+
+    <string name="basic">أساسي</string>
+    <string name="meaning_hint">المعنى مثال: سيارة</string>
+    <string name="translation_hint">الترجمة مثال: كورما</string>
+    <string name="note_hint">ملاحظة عن الكلمة</string>
+    <string name="transcription_hint">النطق (رمز صوتي)</string>
+    <string name="leave_blank_to_delete">اتركه فارغًا للحذف</string>
+    <string name="permanent_delete_warning">لا يمكن التراجع عن هذا الإجراء</string>
+    <string name="apply_to_inner_tags">تطبيق على العلامات الداخلية</string>
+    <string name="backup_restore">نسخ احتياطي واستعادة</string>
+    <string name="import_from_file">استيراد من ملف</string>
+    <string name="export_to_file">تصدير إلى ملف</string>
+    <string name="sync">مزامنة</string>
+    <string name="app_theme">مظهر التطبيق</string>
+    <string name="words_list">قائمة الكلمات</string>
+    <string name="memorize_probability_live_preview">معاينة مباشرة لاحتمالية الحفظ</string>
+    <string name="memorize_probability_live_preview_checked">سيتم حساب الاحتمالية في الوقت الفعلي</string>
+    <string name="memorize_probability_live_preview_unchecked">سيتم حساب الاحتمالية مرة واحدة لكل كلمة</string>
+    <string name="word_details">تفاصيل الكلمة</string>
+    <string name="alignment_hint">اختر مصدر المحاذاة (من اليسار إلى اليمين أو من اليمين إلى اليسار)</string>
+    <string name="current">الحالي</string>
+    <string name="no_history_hint">لا يوجد سجل متاح، يجب أن تتدرب أولاً</string>
+    <string name="creation">إنشاء</string>
+    <string name="cancel_changes">إلغاء التغييرات</string>
+    <string name="no_word_class_hint">لا توجد فئات كلمات حتى الآن في هذه اللغة، اضغط على زر التحرير على البطاقة لإضافة بعض الفئات</string>
+    <string name="word_class_name">اسم فئة الكلمة</string>
+    <string name="word_class_relation_label">تسمية علاقة فئة الكلمة</string>
+    <string name="train_type">نوع التدريب</string>
+    <string name="train_target">هدف التدريب</string>
+    <string name="words_order">ترتيب الكلمات</string>
+    <string name="select_language_hint">حدد لغة للبدء</string>
+    <string name="no_words_filter_hint">لا توجد كلمات تطابق عوامل التصفية الخاصة بك...</string>
+    <string name="no_words_add_hint">لا توجد كلمات حتى الآن، أضف بعض الكلمات أولاً</string>
+    <string name="delete_in_progress_hint">عملية الحذف قيد التشغيل، يرجى الانتظار...</string>
+    <string name="confirm_delete_x_hint">هل أنت متأكد من أنك تريد حذف %1$s؟\nلا يمكن التراجع عن هذا الإجراء.</string>
+    <string name="search_query">استعلام البحث</string>
+    <string name="car">سيارة</string>
+    <string name="include_selected_tags">تضمين العلامات المحددة</string>
+    <string name="include_selected_tags_hint_on">يجب أن تحتوي أي نتيجة على الأقل على واحدة من العلامات المحددة</string>
+    <string name="include_selected_tags_hint_off">يجب ألا تحتوي جميع النتائج على أي من العلامات المحددة</string>
+    <string name="words_count_limit">حد عدد الكلمات</string>
+</resources>

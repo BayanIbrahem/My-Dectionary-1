@@ -1,80 +1,131 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.res.stringResource
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 
 enum class MDWordsListSearchTarget(
-    override val strLabel: String,
     val includeMeaning: Boolean,
     val includeTranslation: Boolean,
 ) : LabeledEnum {
-    Meaning(strLabel = "Meaning Only", includeMeaning = true, includeTranslation = false), // TODO, string res
-    Translation(strLabel = "Translations Only", includeMeaning = false, includeTranslation = true),// TODO, string res
-    All(strLabel = "Meaning and translations", includeMeaning = true, includeTranslation = true);// TODO, string res
+    Meaning(includeMeaning = true, includeTranslation = false),
+    Translation(includeMeaning = false, includeTranslation = true),
+    All(includeMeaning = true, includeTranslation = true);
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = when (this) {
+            Meaning -> stringResource(
+                R.string.x_only,
+                firstCapStringResource(R.string.meaning)
+            )
+
+            Translation -> stringResource(
+                R.string.x_only,
+                firstCapStringResource(R.string.translation)
+            )
+
+            All -> stringResource(
+                R.string.x_and_y,
+                firstCapStringResource(R.string.meaning),
+                firstCapStringResource(R.string.translation)
+            )
+        }
 }
 
 enum class MDWordsListViewPreferencesSortBy(
-    override val strLabel: String,
     override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
-    Meaning("Meaning", MDIconsSet.WordMeaning),// TODO, string res 
-    Translation("Translation", MDIconsSet.WordTranslation),// TODO, string res 
-    CreatedAt("Created At", MDIconsSet.CreateTime), // TODO, string res
-    UpdatedAt("Updated At", MDIconsSet.Edit) // TODO, string res, TODO, icon res
+    Meaning(MDIconsSet.WordMeaning),
+    Translation(MDIconsSet.WordTranslation),
+    CreatedAt(MDIconsSet.CreateTime),
+    UpdatedAt(MDIconsSet.Edit); // TODO, icon res
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = when (this) {
+            Meaning -> firstCapStringResource(R.string.meaning)
+            Translation -> firstCapStringResource(R.string.translation)
+            CreatedAt -> firstCapStringResource(R.string.created_at)
+            UpdatedAt -> firstCapStringResource(R.string.updated_at)
+        }
 }
 
 enum class WordsListTrainPreferencesSortBy(
-    override val strLabel: String,
     override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
-    MemorizingProbability("Memorizing Probability", MDIconsSet.MemorizingProbability), 
-    TrainingTime("Training Time", MDIconsSet.TrainTime),
-    CreateTime("Create Time", MDIconsSet.CreateTime),
-    Random("Random", MDIconsSet.Random);
+    MemorizingProbability(MDIconsSet.MemorizingProbability),
+    TrainingTime(MDIconsSet.TrainTime),
+    CreateTime(MDIconsSet.CreateTime),
+    Random(MDIconsSet.Random);
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = when (this) {
+            MemorizingProbability -> firstCapStringResource(R.string.memorizing_probability)
+            TrainingTime -> firstCapStringResource(R.string.train_time)
+            CreateTime -> firstCapStringResource(R.string.create_time)
+            Random -> firstCapStringResource(R.string.random)
+        }
 
     @Composable
     fun orderLabel(order: MDWordsListSortByOrder): String = when (order) {
-        // TODO, string res
         MDWordsListSortByOrder.Asc -> when (this) {
-            MemorizingProbability -> "Words with the fewest learning progress"
-            TrainingTime -> "Words trained by long time ago"
-            CreateTime -> "Words created long time ago"
-            Random -> "Random order"
+            MemorizingProbability -> firstCapStringResource(R.string.memorizing_probability_asc_order)
+            TrainingTime -> firstCapStringResource(R.string.train_time_asc_order)
+            CreateTime -> firstCapStringResource(R.string.create_time_asc_order)
+            Random -> firstCapStringResource(R.string.random_order)
         }
 
-        // TODO, string res
         MDWordsListSortByOrder.Desc -> when (this) {
-            MemorizingProbability -> "Words with the largest learning progress"
-            TrainingTime -> "Words trained by recently"
-            CreateTime -> "Words created recently"
-            Random -> "Random order"
+            MemorizingProbability -> firstCapStringResource(R.string.memorizing_probability_desc_order)
+            TrainingTime -> firstCapStringResource(R.string.train_time_desc_order)
+            CreateTime -> firstCapStringResource(R.string.create_time_desc_order)
+            Random -> firstCapStringResource(R.string.random_order)
         }
     }
 }
 
 enum class MDWordsListSortByOrder(
-    override val strLabel: String,
+    @StringRes val labelRes: Int,
     override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
     Asc(
-        strLabel = "Asc",
-        icon = MDIconsSet.AscSort 
-    ), // TODO, string res
+        labelRes = R.string.asc,
+        icon = MDIconsSet.AscSort
+    ),
     Desc(
-        strLabel = "Desc",
-        icon = MDIconsSet.DescSort 
-    ), // TODO, string res
+        labelRes = R.string.desc,
+        icon = MDIconsSet.DescSort
+    );
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = firstCapStringResource(labelRes)
 }
 
 
-enum class MDWordsListMemorizingProbabilityGroup(override val strLabel: String, val probabilityRange: ClosedFloatingPointRange<Float>) : LabeledEnum {
-    NotLearned("Not Learned", 0f..0.25f),
-    Known("Known", 0.25f..0.5f),
-    Acknowledged("Acknowledged", 0.5f..0.75f),
-    Learned("Learned", 0.75f..1f);
+enum class MDWordsListMemorizingProbabilityGroup(@StringRes val labelRes: Int, val probabilityRange: ClosedFloatingPointRange<Float>) : LabeledEnum {
+    NotLearned(R.string.not_learned, 0f..0.25f),
+    Known(R.string.known, 0.25f..0.5f),
+    Acknowledged(R.string.acknowledged, 0.5f..0.75f),
+    Learned(R.string.learned, 0.75f..1f);
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = firstCapStringResource(labelRes)
 
     companion object {
         fun of(percent: Float): MDWordsListMemorizingProbabilityGroup {

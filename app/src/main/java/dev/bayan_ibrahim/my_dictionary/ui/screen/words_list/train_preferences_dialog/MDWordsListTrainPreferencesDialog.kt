@@ -27,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
@@ -77,9 +79,9 @@ fun MDWordsListTrainPreferencesDialog(
         actions = {
             MDAlertDialogActions(
                 onDismissRequest = uiActions::onDismissDialog,
-                primaryActionLabel = "Train", // TODO string res
-                secondaryActionLabel = "Cancel", // TODO string res
-                tertiaryActionLabel = "Reset", // TODO string res
+                primaryActionLabel = firstCapStringResource(R.string.train),
+                secondaryActionLabel = firstCapStringResource(R.string.cancel),
+                tertiaryActionLabel = firstCapStringResource(R.string.reset),
                 colors = MDDialogDefaults.colors(
                     tertiaryActionColor = MaterialTheme.colorScheme.error
                 ),
@@ -133,14 +135,14 @@ private fun TrainTypeBody(
         CheckableGroup(
             data = TrainWordType.entries,
             selected = selectedType,
-            title = "Train Type",  // TODO, string res
+            title = firstCapStringResource(R.string.train_type),
             onClick = onSelectType,
         )
 
         CheckableGroup(
             data = WordsListTrainTarget.entries,
             selected = selectedTarget,
-            title = "Train Target",  // TODO, string res
+            title = firstCapStringResource(R.string.train_target),
             onClick = onSelectTarget,
         )
     }
@@ -167,7 +169,7 @@ private fun WordsOrderBody(
             fieldReadOnly = true,
             menuMatchFieldWidth = false,
             allowCancelSelection = false,
-            label = "Words Count limit", // TODO, string res
+            label = firstCapStringResource(R.string.words_count_limit),
             onSelectSuggestion = { i, limit ->
                 limit?.let(onSelectLimit)
             },
@@ -179,7 +181,7 @@ private fun WordsOrderBody(
         CheckableGroup(
             data = WordsListTrainPreferencesSortBy.entries,
             selected = selectedSortBy,
-            title = "Sort By", // TODO, string res
+            title = firstCapStringResource(R.string.sort_by),
             onClick = onSelectSortBy,
         )
 
@@ -189,7 +191,7 @@ private fun WordsOrderBody(
             CheckableGroup(
                 data = MDWordsListSortByOrder.entries,
                 selected = selectedSortByOrder,
-                title = "Show first", // TODO, string res
+                title = firstCapStringResource(R.string.show_first),
                 onClick = onSelectSortByOrder,
                 getLabel = {
                     selectedSortBy.orderLabel(it)

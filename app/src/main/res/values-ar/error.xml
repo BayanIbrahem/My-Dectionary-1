@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invalid_output_dir_label">مجلد غير صالح</string>
+    <string name="invalid_output_dir_hint">مجلد غير صالح، حاول تحديد مجلد آخر</string>
+
+    <string name="unreadable_output_dir_label">مجلد محمي</string>
+    <string name="unreadable_output_dir_hint">لا يمكن قراءة المجلد المحدد</string>
+
+    <string name="invalid_output_stream_label">مجلد محمي</string>
+    <string name="invalid_output_stream_hint">لا يمكن فتح الملف في المجلد المحدد، تحقق مما إذا كان المجلد المحدد صالحًا وغير محمي</string>
+</resources>

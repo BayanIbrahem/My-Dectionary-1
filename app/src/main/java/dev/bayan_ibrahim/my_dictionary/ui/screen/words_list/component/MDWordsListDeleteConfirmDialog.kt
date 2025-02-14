@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
@@ -56,7 +58,7 @@ fun MDWordsListDeleteConfirmDialog(
                 Text(
                     text = title,
                     modifier = Modifier.weight(1f),
-                )// TODO, string res
+                )
                 if (isDeleteRunning) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 }
@@ -68,7 +70,7 @@ fun MDWordsListDeleteConfirmDialog(
                 onDismissRequest = onDismissRequest,
                 onPrimaryClick = onConfirm,
                 onSecondaryClick = onCancel,
-                primaryActionLabel = "Delete",
+                primaryActionLabel = firstCapStringResource(R.string.delete),
                 colors = MDDialogDefaults.colors(
                     primaryActionColor = MaterialTheme.colorScheme.error,
                 ),
@@ -83,7 +85,7 @@ fun MDWordsListDeleteConfirmDialog(
             text = deleteMessage,
             modifier = Modifier.padding(8.dp),
             style = MaterialTheme.typography.bodyLarge,
-        )// TODO, string res
+        )
     }
 }
 

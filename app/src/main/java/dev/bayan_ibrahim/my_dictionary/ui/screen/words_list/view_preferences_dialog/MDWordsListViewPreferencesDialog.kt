@@ -3,7 +3,6 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_di
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,7 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
@@ -30,16 +32,14 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.M
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
-import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesTab
-import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import kotlin.math.roundToInt
 
 @Composable
@@ -134,15 +134,6 @@ private fun SearchBody(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-//        MDWordFieldTextField(
-//            value = searchQuery,
-//            onValueChange = onSearchQueryChange,
-//            leadingIcon = MDIconsSet.SearchList,
-//            modifier = Modifier.fillMaxWidth(),
-//            showLabelOnEditMode = true,
-//            label = "Search Query", // TODO, string res
-//            placeholder = "Eg. Car" // TODO, string res
-//        )
         MDHorizontalCardGroup {
             MDWordsListSearchTarget.entries.forEach { target ->
                 radioItem(
@@ -189,11 +180,10 @@ private fun FilterBody(
                     onToggleSelectedTags(!includeSelectedTags)
                 },
                 subtitle = {
-                    // TODO, string res
                     val text = if (includeSelectedTags) {
-                        "any result should contains at least one of the selected tags"
+                        firstCapStringResource(R.string.include_selected_tags_hint_on)
                     } else {
-                        "all results should NOT contain any one of the selected tags"
+                        firstCapStringResource(R.string.include_selected_tags_hint_off)
                     }
                     Text(
                         text = text,
@@ -202,12 +192,12 @@ private fun FilterBody(
                     )
                 },
             ) {
-                Text(text = "Include Selected Tabs")
+                Text(text = firstCapStringResource(R.string.include_selected_tags))
             }
         }
 
         MDHorizontalCardGroup(
-            title = { Text("Learning groups") }
+            title = { Text(firstCapStringResource(R.string.learning_groups)) }
         ) {
             MDWordsListMemorizingProbabilityGroup.entries.forEach { group ->
                 checkboxItem(
@@ -217,12 +207,11 @@ private fun FilterBody(
                         onSelectLearningGroup(group)
                     },
                     subtitle = {
-                        // TODO, string res
-                        val text = "from ${
-                            group.probabilityRange.start.times(100).roundToInt()
-                        }% to ${
+                        val text = stringResource(
+                            R.string.from_x_to_y,
+                            group.probabilityRange.start.times(100).roundToInt(),
                             group.probabilityRange.endInclusive.times(100).roundToInt()
-                        }%"
+                        )
                         Text(
                             text = text,
                             maxLines = 1,
@@ -246,10 +235,13 @@ private fun SortBody(
     modifier: Modifier = Modifier,
 ) {
     val colors = MDHorizontalCardDefaults.primaryColors
-    Column(modifier = modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    ) {
         MDHorizontalCardGroup(
-            // TODO, string res
-            title = { Text("Sorted By") }
+            title = { Text(firstCapStringResource(R.string.sorted_by)) }
         ) {
             MDWordsListViewPreferencesSortBy.entries.forEach { sortBy ->
                 radioItem(
@@ -267,8 +259,7 @@ private fun SortBody(
         }
 
         MDHorizontalCardGroup(
-            // TODO, string res
-            title = { Text("Sorted By Order") }
+            title = { Text(firstCapStringResource(R.string.sorted_by_order)) }
         ) {
             MDWordsListSortByOrder.entries.forEach { sortByOrder ->
                 radioItem(

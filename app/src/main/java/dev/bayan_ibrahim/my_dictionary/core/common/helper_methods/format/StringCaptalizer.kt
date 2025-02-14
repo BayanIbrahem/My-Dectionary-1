@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.StringCapitalizer.*
 
-private fun stringCapitalize(
+fun capitalizeString(
     string: String,
     capitalizer: StringCapitalizer,
 ): String = when (capitalizer) {
@@ -26,8 +26,10 @@ private fun stringCapitalize(
     }
 }
 
+fun StringCapitalizer.applyOn(string: String) = capitalizeString(string, this)
+
 @JvmName("StringCapitalizeStringCapitalizer")
-fun String.capitalize(capitalizer: StringCapitalizer): String = stringCapitalize(
+fun String.capitalize(capitalizer: StringCapitalizer): String = capitalizeString(
     string = this,
     capitalizer = capitalizer
 )
@@ -36,18 +38,18 @@ fun String.capitalize(capitalizer: StringCapitalizer): String = stringCapitalize
 fun StringCapitalizer?.capitalize(string: String): String = if (this == null) {
     string
 } else {
-    stringCapitalize(string = string, capitalizer = this)
+    capitalizeString(string = string, capitalizer = this)
 }
 
 /**
  * equals to String.capitalize([StringCapitalizer.FIRST_CHAR])
  */
-val String.capitalizedFirst get() = stringCapitalize(this, FIRST_CHAR)
+val String.capitalizedFirst get() = capitalizeString(this, FIRST_CHAR)
 
 /**
  * equals to String.capitalize([StringCapitalizer.EACH_FIRST_CHAR])
  */
-val String.capitalizedEachFirst get() = stringCapitalize(this, EACH_FIRST_CHAR)
+val String.capitalizedEachFirst get() = capitalizeString(this, EACH_FIRST_CHAR)
 
 /**
  * Defines various string capitalization styles.

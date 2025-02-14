@@ -1,7 +1,12 @@
 package dev.bayan_ibrahim.my_dictionary.ui.navigate
 
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination.TopLevel.WordsList
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.util.MDExportToFilePreferences
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsViewPreferences
@@ -42,16 +47,21 @@ sealed class MDDestination {
 
         enum class Enum(
             override val icon: MDIconsSet,
-            override val strLabel: String,
+            @StringRes val labelRes: Int,
         ) : IconedEnum, LabeledEnum {
-            WordsList(MDIconsSet.WordsList, "Words List"),
+            WordsList(MDIconsSet.WordsList, R.string.words),
 
             /**
              * same of [MDDestination.Statistics] but this take the [MDStatisticsViewPreferences.Date] preferences
              */
-            Statistics(MDIconsSet.Statistics, "Statistics"),
-            Profile(MDIconsSet.Profile, "Profile"),
-            WordSpace(MDIconsSet.LanguageWordSpace, "Word Spaces");
+            Statistics(MDIconsSet.Statistics, R.string.statistics),
+            Profile(MDIconsSet.Profile, R.string.profile),
+            WordSpace(MDIconsSet.LanguageWordSpace, R.string.word_spaces);
+
+            override val label: String
+                @Composable
+                @ReadOnlyComposable
+                get() = firstCapStringResource(labelRes)
 
             val route
                 get() = when (this) {

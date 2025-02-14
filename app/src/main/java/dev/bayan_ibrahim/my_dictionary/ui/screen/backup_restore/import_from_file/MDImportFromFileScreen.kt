@@ -43,12 +43,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutput
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapPluralsResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabData
@@ -118,7 +122,7 @@ fun MDImportFromFileScreen(
                         enter = fadeIn() + slideInHorizontally(),
                         exit = fadeOut() + slideOutHorizontally(),
                     ) {
-                        Text("Import") // TODO, string res
+                        Text(firstCapStringResource(R.string._import))
                     }
                 }
             }
@@ -147,9 +151,9 @@ fun MDImportFromFileScreen(
                     onClick = {
                         showTagsExplorerDialog = true
                     },
-                    subtitle = { Text("Tags that added to each imported word") }
+                    subtitle = { Text(firstCapStringResource(R.string.extra_tags_hint)) }
                 ) {
-                    Text("Extra Context Tags") // TODO, string res
+                    Text(firstCapStringResource(R.string.extra_tags))
                 }
                 tagsSelectorUiState.selectedTags.forEach { tag ->
                     item(
@@ -178,23 +182,23 @@ fun MDImportFromFileScreen(
                     selectedOption = uiState.extraTagsStrategy,
                     availableOptions = MDExtraTagsStrategy.entries,
                     onSelectOption = uiActions::onChangeExtraTagsStrategy,
-                    title = "Extra Tags Strategy", // TODO, string res
-                    subtitle = "What words should extra tags add to", // TODO, string res
+                    title = firstCapStringResource(R.string.extra_tags_strategy),
+                    subtitle = stringResource(R.string.extra_tags_strategy_hint),
                 )
             }
             MDOptionSelectionGroup(
                 selectedOption = uiState.corruptedWordStrategy,
                 availableOptions = MDPropertyCorruptionStrategy.entries,
                 onSelectOption = uiActions::onChangeCorruptedWordStrategy,
-                title = "Corrupted Word", // TODO, string res
-                subtitle = "Action when an invalid word appears in the new file", // TODO, string res
+                title = firstCapStringResource(R.string.corrupted_word),
+                subtitle = firstCapStringResource(R.string.corrupted_word_hint),
             )
             MDOptionSelectionGroup(
                 selectedOption = uiState.existedWordStrategy,
                 availableOptions = MDPropertyConflictStrategy.entries,
                 onSelectOption = uiActions::onChangeExistedWordStrategy,
-                title = "Existed Word", // TODO, string res
-                subtitle = "Action when a word with the same meaning and translation is already stored", // TODO, string res
+                title = firstCapStringResource(R.string.existed_word),
+                subtitle = firstCapStringResource(R.string.existed_word_hint),
             )
         }
         FileProgressDialog(
@@ -245,7 +249,7 @@ private fun FileProgressDialog(
         title = {
             Row {
                 Text(
-                    text = "Importing data",
+                    text = firstCapStringResource(R.string.importing_data),
                     modifier = Modifier.weight(1f),
                 )
                 passedTime?.let {
@@ -257,7 +261,7 @@ private fun FileProgressDialog(
             TextButton(
                 onClick = onCancel,
             ) {
-                Text("Cancel") // TODO, string res
+                Text(firstCapStringResource(R.string.cancel))
             }
         }
     ) {
@@ -270,14 +274,13 @@ private fun FileProgressDialog(
             Column {
                 MDTabRow(
                     tabs = listOf(
-                        MDTabData.Label("Exceptions x${summary.exceptions.values.sum()}"),// TODO, string res
-                        MDTabData.Label("Warnings x${summary.warnings.values.sum()}"), // TODO, string res
+                        MDTabData.Label(eachFirstCapPluralsResource(R.plurals.error, summary.exceptions.values.sum())),
+                        MDTabData.Label(eachFirstCapPluralsResource(R.plurals.warning, summary.warnings.values.sum())),
                     ),
                     selectedTabIndex = horizontalPagerState.currentPage,
                     onClickTab = { i, _ ->
                         scope.launch {
                             horizontalPagerState.animateScrollToPage(i)
-
                         }
                     }
                 )
@@ -345,7 +348,7 @@ private fun SummaryExceptions(
 ) {
     SummaryLogs(
         logs = exceptions,
-        labelPrefix = "Exception", // TODO, string res
+        labelPrefix = firstCapStringResource(R.string.error),
         modifier = modifier,
         colors = MDCardDefaults.colors(
             headerContainerColor = MaterialTheme.colorScheme.errorContainer,
@@ -362,7 +365,7 @@ private fun SummaryWarnings(
 ) {
     SummaryLogs(
         logs = warnings,
-        labelPrefix = "Warning", // TODO, string res
+        labelPrefix = firstCapStringResource(R.string.warning),
         modifier = modifier,
         colors = MDCardDefaults.colors(
             headerContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -430,9 +433,8 @@ private fun SummaryLogs(
                         modifier = Modifier,
                         verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
-                        // TODO, string res
                         Text(
-                            text = "What went wrong",
+                            text = firstCapStringResource(R.string.what_went_wrong),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold
                         )
@@ -442,9 +444,8 @@ private fun SummaryLogs(
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Spacer(modifier = Modifier.padding(8.dp))
-                        // TODO, string res
                         Text(
-                            text = "Possible Solutions",
+                            text = firstCapStringResource(R.string.possible_solutions),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold
                         )

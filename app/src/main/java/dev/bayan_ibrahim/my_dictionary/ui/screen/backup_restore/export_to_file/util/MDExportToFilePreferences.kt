@@ -1,5 +1,9 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.util
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.simpleSerialize
@@ -9,13 +13,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface MDExportToFilePreferences : LabeledEnum {
-    override val strLabel: String
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
         get() = when (this) {
-            All -> "All Words"
-            is Tags -> "Context Tags (x${simpleSerializedTags.size})"
-            is Languages -> "Languages (x${codes.size})"
-            is WordsClasses -> "WordsClasses (x${ids.size})"
-            is Words -> "Words (x${ids.size})"
+            All -> firstCapStringResource(R.string.all_x, firstCapStringResource(R.string.words))
+            is Tags -> "${firstCapStringResource(R.string.tags)} (x${simpleSerializedTags.size})"
+            is Languages -> "${firstCapStringResource(R.string.languages)} (x${codes.size})"
+            is WordsClasses -> "${firstCapStringResource(R.string.word_classes)} (x${ids.size})"
+            is Words -> "${firstCapStringResource(R.string.words)} (x${ids.size})"
         }
 
     data class Languages(val codes: Collection<LanguageCode>) : MDExportToFilePreferences

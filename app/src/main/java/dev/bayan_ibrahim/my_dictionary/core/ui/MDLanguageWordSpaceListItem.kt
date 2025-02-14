@@ -19,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
@@ -86,7 +88,10 @@ fun MDLanguageWordSpaceListItem(
             )
             Row {
                 Text(
-                    text = if (hideWordCountAndProgress) wordSpace.localDisplayName else "${wordSpace.wordsCount} words", // TODO, string res
+                    text = if (hideWordCountAndProgress) wordSpace.localDisplayName else pluralStringResource(
+                        R.plurals.word,
+                        wordSpace.wordsCount
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f),
                     color = animatedContentVariantColor,

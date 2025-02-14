@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.core.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -18,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +43,10 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toOffset
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutput
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.upperStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
@@ -100,7 +105,7 @@ fun MDColorPickerDialog(
         },
         actions = {
             MDAlertDialogActions(
-                primaryActionLabel = "Pick", // TODO, string res
+                primaryActionLabel = firstCapStringResource(R.string.pick),
                 onDismissRequest = onDismissRequest,
                 onPrimaryClick = { onConfirm(selectedColor) },
             )
@@ -526,7 +531,7 @@ private fun MDHueColorTextField(
     modifier: Modifier = Modifier,
 ) {
     MDColorTextField(
-        label = "Hue",
+        label = firstCapStringResource(R.string.hue),
         value = hsvColor.hue.times(360f).roundToInt().toString(),
         onValueChange = {
             it.toIntOrNull()?.let { hue ->
@@ -546,7 +551,7 @@ private fun MDSaturationColorTextField(
     modifier: Modifier = Modifier,
 ) {
     MDColorTextField(
-        label = "Saturation",
+        label = firstCapStringResource(R.string.saturation),
         value = hsvColor.saturation.times(100f).roundToInt().toString(),
         onValueChange = {
             it.toIntOrNull()?.let { saturation ->
@@ -566,7 +571,7 @@ private fun MDLuminanceColorTextField(
     modifier: Modifier = Modifier,
 ) {
     MDColorTextField(
-        label = "Luminance",
+        label = firstCapStringResource(R.string.luminance),
         value = hsvColor.luminance.times(100f).roundToInt().toString(),
         onValueChange = {
             it.toIntOrNull()?.let { luminance ->
@@ -586,7 +591,7 @@ private fun MDRedColorTextField(
     modifier: Modifier = Modifier,
 ) {
     MDColorTextField(
-        label = "Red",
+        label = firstCapStringResource(R.string.red),
         value = selectedColor.red.calculateOutput(0f, 1f, 0f, 255f).roundToInt().toString(),
         onValueChange = {
             it.ifBlank { "0" }.toIntOrNull()?.let { red ->
@@ -606,7 +611,7 @@ private fun MDGreenColorTextField(
     modifier: Modifier = Modifier,
 ) {
     MDColorTextField(
-        label = "Green",
+        label = firstCapStringResource(R.string.green),
         value = selectedColor.green.calculateOutput(0f, 1f, 0f, 255f).roundToInt().toString(),
         onValueChange = {
             it.ifBlank { "0" }.toIntOrNull()?.let { green ->
@@ -626,7 +631,7 @@ private fun MDBlueColorTextField(
     modifier: Modifier = Modifier,
 ) {
     MDColorTextField(
-        label = "Blue",
+        label = firstCapStringResource(R.string.blue),
         value = selectedColor.blue.calculateOutput(0f, 1f, 0f, 255f).roundToInt().toString(),
         onValueChange = {
             it.ifBlank { "0" }.toIntOrNull()?.let { blue ->
@@ -704,8 +709,13 @@ private fun MDColorFormatDropDown(
     )
 }
 
-enum class ColorPickerFormat(override val strLabel: String) : LabeledEnum {
-    RGB("RGB"), HSV("HSV"),
+enum class ColorPickerFormat(@StringRes val labelRes: Int) : LabeledEnum {
+    RGB(R.string.rgb), HSV(R.string.hsv);
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = upperStringResource(labelRes)
 }
 
 @Preview

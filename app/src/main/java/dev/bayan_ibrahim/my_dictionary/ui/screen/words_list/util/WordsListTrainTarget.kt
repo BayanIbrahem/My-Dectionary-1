@@ -1,23 +1,33 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util
 
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 enum class WordsListTrainTarget(
-    override val strLabel: String,
+    @StringRes val labelRes: Int,
     override val icon: MDIconsSet,
 ) : LabeledEnum, IconedEnum {
     Meaning(
-        strLabel = "On Meaning",
+        labelRes = R.string.meaning,
         icon = MDIconsSet.WordMeaning 
-    ), // TODO, string res
+    ),
 
     Translation(
-        strLabel = "On Translation",
+        labelRes = R.string.translation,
         icon = MDIconsSet.WordTranslation 
-    ),// TODO, string res
+    );
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = firstCapStringResource(R.string.on_x, firstCapStringResource(labelRes))
 }
 
 val WordsListTrainTarget.questionSelector

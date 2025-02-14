@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.MDWordDetailsTopAppBar
@@ -66,16 +68,16 @@ private fun TrailingActions(
         ) {
             MDIcon(
                 icon = MDIconsSet.Share,
-                contentDescription = "share word",
-            ) // TODO, string res
+                contentDescription = firstCapStringResource(R.string.share_x, firstCapStringResource(R.string.word)),
+            )
         }
         IconButton(
             onClick = onNavigateUp
         ) {
             MDIcon(
                 icon = MDIconsSet.ArrowForward,
-                contentDescription = "Navigate back",
-            ) // TODO, string res
+                contentDescription = firstCapStringResource(R.string.navigate_up),
+            )
         }
     }
 }

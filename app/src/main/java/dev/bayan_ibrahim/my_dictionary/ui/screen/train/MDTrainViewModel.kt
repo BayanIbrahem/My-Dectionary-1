@@ -119,7 +119,7 @@ class MDTrainViewModel @Inject constructor(
                 sortBy = trainPreferences.sortBy,
                 sortByOrder = trainPreferences.sortByOrder,
                 validWords = validWords,
-                limit = trainPreferences.limit.count
+                limit = trainPreferences.limit.quantity
             )
 
             val trainWords = generateTrainWords(

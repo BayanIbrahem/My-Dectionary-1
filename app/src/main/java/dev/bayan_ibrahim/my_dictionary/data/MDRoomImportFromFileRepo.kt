@@ -310,7 +310,7 @@ class MDRoomImportFromFileRepo(
     }
 
     /**
-     * parse context tags from file and store them with name and id cache map for late uses
+     * parse tags from file and store them with name and id cache map for late uses
      */
     private suspend fun processTags(scope: FileProcessingScope) {
         if (MDFilePartType.Tag !in scope.allowedParts) return
@@ -489,7 +489,7 @@ class MDRoomImportFromFileRepo(
     }
 
     /**
-     * create a new tag id and cache it in id/name cache maps for context tags
+     * create a new tag id and cache it in id/name cache maps for tags
      */
     private suspend fun createNewTag(
         scope: FileProcessingScope,
@@ -537,7 +537,7 @@ class MDRoomImportFromFileRepo(
 
     /**
      * insert or update word
-     * insert context tags with word at this point every tag id in the [word] must be valid db id
+     * insert tags with word at this point every tag id in the [word] must be valid db id
      */
     private suspend fun handleWordEntity(scope: FileProcessingScope, word: Word): Long {
         val wordEntity = word.asWordEntity(false)

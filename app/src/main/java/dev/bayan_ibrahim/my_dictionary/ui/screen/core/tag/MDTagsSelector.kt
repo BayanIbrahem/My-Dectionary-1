@@ -24,6 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
@@ -46,7 +48,7 @@ fun LazyListScope.tagsSelector(
      * togglePermission to edit selected tags
      */
     allowEditTags: Boolean = true,
-    label: @Composable () -> String = { "Context Tags" },
+    label: @Composable () -> String = { "Tags" },
     spacedBy: Dp = 0.dp,
     showHorizontalDivider: Boolean = false,
     showTitle: Boolean = false,
@@ -173,7 +175,7 @@ fun MDTagListItem(
     tagOrder: Int? = null,
 ) {
     MDTagListItem(
-        value = "${tagOrder?.let { "$it. " } ?: ""}${tag.value}", // TODO, string res
+        value = "${tagOrder?.let { "$it. " } ?: ""}${tag.value}",
         modifier = modifier,
         onClick = onClick,
         onLongClick = onLongClick,
@@ -190,7 +192,7 @@ fun MDNewTagListItem(
     tagOrder: Int? = null,
 ) {
     MDTagListItem(
-        value = "${tagOrder?.let { "$it. " } ?: ""}Add New Context Tag", // TODO, string res
+        value = "${tagOrder?.let { "$it. " } ?: ""}${firstCapStringResource(R.string.add_x, firstCapStringResource(R.string.tag))}",
         modifier = modifier,
         onClick = onAddNewTagClick,
     )

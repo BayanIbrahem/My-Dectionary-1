@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="primary">أساسي</string>
+    <string name="secondary">ثانوي</string>
+    <string name="tertiary">ثالثي</string>
+    <string name="quaternary">رباعي</string>
+    <string name="quinary">خماسي</string>
+    <string name="senary">سداسي</string>
+    <string name="septenary">سباعي</string>
+    <string name="octonary">ثماني</string>
+    <string name="nonary">تساعي</string>
+    <string name="denary">عشاري</string>
+</resources>

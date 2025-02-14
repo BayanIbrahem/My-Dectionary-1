@@ -36,12 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagMatchNormalize
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
@@ -79,7 +81,7 @@ fun MDTagExplorerDialog(
     tagLeadingIcon: @Composable (tag: Tag, isLeaf: Boolean) -> Unit = { _, _ ->
         MDIcon(MDIconsSet.WordTag) // TODO, icons tag
     },
-    primaryActionLabel: String = "Select", // TODO, string res
+    primaryActionLabel: String = firstCapStringResource(R.string.select),
     /**
      * callback when click a list item, passing current tag, and destination tag and if the destination
      * tag is leaf or not
@@ -280,9 +282,9 @@ private fun DeleteTagConfirmDialog(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Delete Context Tag",
+                    text = firstCapStringResource(R.string.delete_x, firstCapStringResource(R.string.tag)),
                     modifier = Modifier.weight(1f),
-                )// TODO, string res
+                )
             }
         },
         modifier = modifier,
@@ -291,7 +293,7 @@ private fun DeleteTagConfirmDialog(
                 onDismissRequest = onDismissRequest,
                 onPrimaryClick = onConfirmDelete,
                 onSecondaryClick = onDismissRequest,
-                primaryActionLabel = "Delete",
+                primaryActionLabel = firstCapStringResource(R.string.delete),
                 colors = MDDialogDefaults.colors(
                     primaryActionColor = MaterialTheme.colorScheme.error,
                 ),
@@ -301,10 +303,13 @@ private fun DeleteTagConfirmDialog(
         },
     ) {
         Text(
-            text = "Delete ${selectedTag?.value ?: ""} this action can not be undone",
+            text = firstCapStringResource(
+                R.string.delete_x,
+                "${selectedTag?.value ?: ""}, ${stringResource(R.string.permanent_delete_warning)}"
+            ),
             modifier = Modifier.padding(8.dp),
             style = MaterialTheme.typography.bodyLarge,
-        )// TODO, string res
+        )
     }
 }
 
@@ -351,13 +356,13 @@ private fun DialogHeader(
                 .weight(1f)
                 .animateContentSize { initialValue, targetValue -> },
         ) {
-            Text("Tags tree", style = MaterialTheme.typography.titleMedium)
+            Text(firstCapStringResource(R.string.tags_tree), style = MaterialTheme.typography.titleMedium)
             MDSearchDialogInputField(
                 modifier = Modifier.fillMaxWidth(),
                 searchQuery = state.searchQuery,
                 onSearchQueryChange = actions::onSearchQueryChange,
                 label = "",
-                placeholder = randomTagLastSegment?.let { "e.g $it" /*TODO, string res */ } ?: ""
+                placeholder = randomTagLastSegment?.let { stringResource(R.string.eg_x, it) } ?: ""
             )
             state.currentTagsTree.tag?.let {
                 MDTagPath(
@@ -454,7 +459,7 @@ private fun MDTagSelectorDialogPreview() {
                 val state = viewModel.uiState
                 val actions by remember(state) {
                     derivedStateOf {
-                        viewModel.getUiActions(object : MDTagsSelectorNavigationUiActions{})
+                        viewModel.getUiActions(object : MDTagsSelectorNavigationUiActions {})
                     }
                 }
                 MDTagExplorerDialog(

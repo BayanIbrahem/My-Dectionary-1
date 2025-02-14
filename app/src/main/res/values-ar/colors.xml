@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="red">أحمر</string>
+    <string name="orange">برتقالي</string>
+    <string name="yellow">أصفر</string>
+    <string name="green">أخضر</string>
+    <string name="blue">أزرق</string>
+    <string name="purple">بنفسجي</string>
+    <string name="pink">وردي</string>
+    <string name="black">أسود</string>
+    <string name="white">أبيض</string>
+    <string name="gray">رمادي</string>
+    <string name="brown">بني</string>
+    <string name="teal">أزرق مخضر</string>
+    <string name="lime">ليموني</string>
+    <string name="magenta">أرجواني</string>
+    <string name="cyan">سماوي</string>
+    <string name="maroon">عنابي</string>
+    <string name="olive">زيتوني</string>
+    <string name="navy">كحلي</string>
+    <string name="coral">مرجاني</string>
+    <string name="gold">ذهبي</string>
+    <string name="silver">فضي</string>
+</resources>

@@ -67,7 +67,7 @@ class MDStatisticsViewModel @Inject constructor(
         is MDStatisticsViewPreferences.Date -> trainHistoryRepo.getTrainHistoryOf(startTime, endTime).first()
         is MDStatisticsViewPreferences.Language -> getTrainHistoryOfLanguage(preferences.language, startTime, endTime)
         is MDStatisticsViewPreferences.Tag -> getTrainHistoryOfTag(preferences.tag, startTime, endTime)
-        is MDStatisticsViewPreferences.Train -> trainHistoryRepo.getTrainHistoryOf(limit = preferences.count.count).first()
+        is MDStatisticsViewPreferences.Train -> trainHistoryRepo.getTrainHistoryOf(limit = preferences.count.quantity).first()
         is MDStatisticsViewPreferences.WordClass -> getTrainHistoryOfWordClass(preferences.wordClassId, startTime, endTime)
         is MDStatisticsViewPreferences.Word -> getTrainHistoryOfWord(preferences.wordId, startTime, endTime)
     }

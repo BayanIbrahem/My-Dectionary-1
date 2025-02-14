@@ -5,6 +5,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -19,7 +21,7 @@ fun MDMarkerTagsTopAppBar(
     MDTopAppBar(
         modifier = modifier,
         title = {
-            Text("Marker Tags")// TODO, string res
+            Text(firstCapStringResource(R.string.marker_tags))
         },
         isTopLevel = false,
         onNavigationIconClick = onNavigateBack,

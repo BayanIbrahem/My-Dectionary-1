@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invalid_output_dir_label">invalid directory</string>
+    <string name="invalid_output_dir_hint">invalid directory, try select another one</string>
+
+    <string name="unreadable_output_dir_label">protected directory</string>
+    <string name="unreadable_output_dir_hint">selected directory can not be read</string>
+
+    <string name="invalid_output_stream_label">protected directory</string>
+    <string name="invalid_output_stream_hint">can not open file in selected directory, check if selected directory is valid and not protected</string>
+</resources>

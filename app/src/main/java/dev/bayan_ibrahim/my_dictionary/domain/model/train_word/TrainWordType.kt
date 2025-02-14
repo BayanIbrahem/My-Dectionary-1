@@ -1,11 +1,16 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.train_word
 
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 enum class TrainWordType(
-    override val strLabel: String,
+    @StringRes val labelRes: Int,
     override val icon: MDIconsSet,
     /**
      * global key for this type, used for database to keep correct types after migration
@@ -13,16 +18,21 @@ enum class TrainWordType(
     val key: Int,
 ) : LabeledEnum, IconedEnum {
     SelectWordMeaning(
-        strLabel = "Select Word",
+        labelRes = R.string.select_word,
         icon = MDIconsSet.WordTrainSelectType, 
         key = 0
-    ), // TODO, string res
+    ),
 
     WriteWord(
-        strLabel = "Write Word",
+        labelRes = R.string.write_word,
         icon = MDIconsSet.WordTrainWriteType, 
         key = 2,
-    ); // TODO, string res
+    );
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = firstCapStringResource(labelRes)
 
     companion object Companion {
         /**

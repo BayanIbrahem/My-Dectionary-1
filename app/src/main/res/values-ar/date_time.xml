@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="spring">ربيع</string>
+    <string name="summer">صيف</string>
+    <string name="atom">ذرة</string>
+    <string name="winter">شتاء</string>
+
+    <string name="year">سنة</string>
+    <string name="quarter_season">ربع (فصل)</string>
+    <string name="month">شهر</string>
+    <string name="week">أسبوع</string>
+    <string name="day">يوم</string>
+
+    <string name="time_ms">%1$d م.ث</string>
+    <string name="time_s">%1$d ث</string>
+    <string name="time_m_s">%1$dد:%2$dثانية</string>
+    <string name="time_h_m_s">%1$dس:%2$dد:%3$dث</string>
+</resources>

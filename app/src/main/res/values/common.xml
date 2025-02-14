@@ -5,9 +5,40 @@
     <string name="every">every</string>
     <string name="some">some</string>
     <string name="none">none</string>
+    <string name="_new">new</string>
+    <string name="updated">updated</string>
+    <string name="only">only</string>
+    <string name = "on">on</string>
+    <string name = "eg">e.g</string>
+    <string name = "sorted_by">sorted by</string>
+    <string name = "sorted_by_order">sorted by order</string>
+
+    <string name="all_x">all %1$s</string>
+    <string name="any_x">any %1$s</string>
+    <string name="every_x">every %1$s</string>
+    <string name="some_x">some %1$s</string>
+    <string name="none_x">none %1$s</string>
+    <string name="new_x">new %1$s</string>
+    <string name="updated_x">updated %1$s</string>
+    <string name="only_x">only %1$s</string>
+    <string name="x_only">%1$s only</string>
+    <string name = "on_x">on %1$s</string>
+    <string name = "eg_x">e.g %1$s</string>
+    <string name = "sorted_by_x">sorted by %1$s</string>
+    <string name = "sorted_by_order_x">sorted by order %1$s</string>
 
     <string name="saved">saved</string>
     <string name="edited">edited</string>
-    <string name="notifications">notifications</string>
 
+    <string name="x_or_y">%1$s or %2$s</string>
+    <string name="x_and_y">%1$s and %2$s</string>
+    <string name="x_like_y">%1$s like %2$s</string>
+    <string name="x_with_y">%1$s with %2$s</string>
+    <string name="x_without_y">%1$s without %2$s</string>
+    <string name="x_selected_of_y">%1$s selected of %2$s</string>
+    <string name="x_selected">%1$s selected</string>
+    <string name="from_x_to_y">from %1$s% to %2$s%</string>
+
+    <string name = "asc">asc</string>
+    <string name = "desc">desc</string>
 </resources>

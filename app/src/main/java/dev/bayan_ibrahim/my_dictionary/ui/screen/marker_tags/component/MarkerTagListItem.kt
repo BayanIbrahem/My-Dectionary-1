@@ -25,6 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGridGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
@@ -103,12 +105,12 @@ fun MDMarkerTagListItem(
                     GridItemSpan(this.maxLineSpan)
                 },
                 title = {
-                    Text("Apply to inner tags") // TODO, string res
+                    Text(firstCapStringResource(R.string.apply_to_inner_tags))
                 },
             )
             item(onClick = onRemoveTag) {
                 Text(
-                    text = "Remove Tag", // TODO, string res
+                    text = firstCapStringResource(R.string.delete_x, firstCapStringResource(R.string.tag)),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.error,
@@ -116,7 +118,7 @@ fun MDMarkerTagListItem(
             }
             item(onClick = onRemoveMarker) {
                 Text(
-                    text = "Remove Marker color", // TODO, string res
+                    text = firstCapStringResource(R.string.remove_x, firstCapStringResource(R.string.color)),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                 )

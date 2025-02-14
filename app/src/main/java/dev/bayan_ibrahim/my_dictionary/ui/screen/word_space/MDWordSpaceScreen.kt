@@ -17,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDSimpleLanguageSelectionDialog
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
@@ -52,7 +54,7 @@ fun MDWordSpaceScreen(
         showDialog = showAddNewWordSpaceDialog,
         primaryList = wordSpaces,
         primaryListCountTitleBuilder = {
-            "Languages Count $it" // TODO, string res
+            firstCapPluralsResource(R.plurals.language, it)
         },
         onDismissRequest = {
             showAddNewWordSpaceDialog = false

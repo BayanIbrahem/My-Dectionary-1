@@ -23,9 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapStringResource
 
 data object MDScreenDefaults {
     val paddingWindowInsets = WindowInsets(8.dp, 8.dp, 8.dp, 8.dp)
@@ -40,7 +43,7 @@ data object MDScreenDefaults {
 fun MDScreen(
     uiState: MDUiState,
     modifier: Modifier = Modifier,
-    invalidDataMessage: String = "Invalid Data", // TODO, string res
+    invalidDataMessage: String = eachFirstCapStringResource(R.string.invalid_data),
     contentAlignment: Alignment = Alignment.TopCenter,
     showFloatingActionButtonOnLoading: Boolean = false,
     showFloatingActionButtonOnError: Boolean = false,
@@ -81,14 +84,14 @@ fun MDScreen(
                     CircularProgressIndicator(modifier = Modifier.size(40.dp))
                 }
             } else if (uiState.error != null) {
-                TitledMessage(titleMessage = "Error", bodyMessage = uiState.error ?: "")// TODO, string res
+                TitledMessage(titleMessage = stringResource(R.string.error), bodyMessage = uiState.error ?: "")
             } else if (uiState.validData) {
                 content()
             } else { // invalid data
                 TitledMessage(
-                    titleMessage = "Invalid Data",
+                    titleMessage = stringResource(R.string.invalid_data),
                     bodyMessage = invalidDataMessage
-                ) // TODO, string res
+                )
             }
         }
     }

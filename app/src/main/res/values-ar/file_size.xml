@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="byte_short">%s ب</string>
+    <string name="kilobyte_short">%s ك.ب</string>
+    <string name="megabyte_short">%s م.ب</string>
+    <string name="gigabyte_short">%s ج.ب</string>
+    <string name="terabyte_short">%s ت.ب</string>
+    <string name="byte_long">%s بايت</string>
+    <string name="kilobyte_long">%s كيلوبايت</string>
+    <string name="megabyte_long">%s ميجابايت</string>
+    <string name="gigabyte_long">%s جيجابايت</string>
+    <string name="terabyte_long">%s تيرابايت</string>
+</resources>

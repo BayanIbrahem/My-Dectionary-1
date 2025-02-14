@@ -46,9 +46,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.MDNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalizer
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
@@ -237,7 +240,11 @@ fun MDWordListItem(
                 ) {
                     Text(
                         modifier = Modifier.basicMarquee(),
-                        text = if (word.examples.isEmpty()) "No Examples yet" else "Examples", // TODO, string res
+                        text = if (word.examples.isEmpty()) {
+                            firstCapPluralsResource(R.plurals.example, 0)
+                        } else {
+                            firstCapStringResource(R.string.examples)
+                        },
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                     )

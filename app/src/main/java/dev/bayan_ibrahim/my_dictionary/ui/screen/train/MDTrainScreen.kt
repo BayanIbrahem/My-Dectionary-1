@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
@@ -58,6 +57,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
@@ -155,7 +157,7 @@ private fun ScreenHeader(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = "Train Type: $trainType", // TODO, string res
+            text = "${firstCapStringResource(R.string.train_type)}: $trainType",
             style = MaterialTheme.typography.bodyLarge
         )
         MDLinearProgressIndicator(
@@ -168,7 +170,7 @@ private fun ScreenHeader(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "${currentIndex.inc()}/$totalCount", // TODO, string res
+                text = "${currentIndex.inc()}/$totalCount",
                 modifier = Modifier,
                 style = MaterialTheme.typography.labelMedium
             )
@@ -572,7 +574,7 @@ private fun ExtraInfoDataAnimatedPart(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             valuesItems.ifEmpty {
-                listOf("No Items") // TODO, string res
+                listOf(firstCapPluralsResource(R.plurals.item, 0))
             }.forEach {
                 Text(it)
             }

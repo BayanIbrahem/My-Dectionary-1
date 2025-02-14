@@ -1,61 +1,76 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.file
 
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 /**
  * this strategy is used when both old and new values are not null, if any of them is null (or invalid like a blank string or list) then
  * it would try to get other value if also not null
  */
-enum class MDPropertyConflictStrategy(override val strLabel: String) : LabeledEnum {
+enum class MDPropertyConflictStrategy(@StringRes val labelRes: Int) : LabeledEnum {
     /**
      * abort all transaction if there is a conflict in words
      */
-    AbortTransaction("Abort All"),
+    AbortTransaction(R.string.abort_all),
 
     /**
      * ignore only the new word if old word exists
      */
-    IgnoreWord("Ignore Word"),
+    IgnoreWord(R.string.ignore_word),
 
     /**
      * firstNotNullOfOrNull(old, new)
      */
-    IgnoreProperty("Ignore new value"),
+    IgnoreProperty(R.string.ignore_new_value),
 
     /**
      * firstNotNullOfOrNull(new, old)
      */
-    Override("Override old value"),
+    Override(R.string.replace_old_value),
 
     /**
      * firstNotNullOfOrNull(old + new, old, new)
      */
-    MergeOrIgnore("Merge if possible or ignore new"),
+    MergeOrIgnore(R.string.merge_or_ignore),
 
     /**
      * firstNotNullOfOrNull(old + new, new, old)
      */
-    MergeOrOverride("Merge if possible or override old");
+    MergeOrOverride(R.string.merge_or_ignore);
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = firstCapStringResource(labelRes)
 }
 
 /**
  * this strategy is used when trying to get new word value but it appears that it is corrupted
  */
-enum class MDPropertyCorruptionStrategy(override val strLabel: String) : LabeledEnum {
+enum class MDPropertyCorruptionStrategy(@StringRes val labelRes: Int) : LabeledEnum {
     /**
      * abort all transaction if there is a conflict in words
      */
-    AbortTransaction("Abort All"),
+    AbortTransaction(R.string.abort_all),
 
     /**
      * ignore only the new word if old word exists
      */
-    IgnoreWord("Ignore Word"),
+    IgnoreWord(R.string.ignore_word),
 
     /**
      * just ignore the new property
      */
-    IgnoreProperty("Ignore new value"),
+    IgnoreProperty(R.string.ignore_new_value);
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = firstCapStringResource(labelRes)
 }
 
 sealed class MDPropertyConflictException(
@@ -132,8 +147,13 @@ inline fun <T : Any> T.validateWith(
     }
 }
 
-enum class MDExtraTagsStrategy(override val strLabel: String): LabeledEnum {
-    All("All Words"),
-    New("New Words"),
-    Updated("Updated Words"),
+enum class MDExtraTagsStrategy(@StringRes val labelRes: Int) : LabeledEnum {
+    All(R.string.all_x),
+    New(R.string.new_x),
+    Updated(R.string.updated_x);
+
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = firstCapStringResource(labelRes, firstCapStringResource(R.string.words))
 }

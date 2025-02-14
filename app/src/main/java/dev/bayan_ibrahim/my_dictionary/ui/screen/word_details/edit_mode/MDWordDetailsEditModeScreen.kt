@@ -20,10 +20,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTitleWithHint
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
@@ -70,7 +73,7 @@ fun MDWordDetailsEditModeScreen(
             verticalArrangement = Arrangement.spacedBy(spacedBy)
         ) {
             editableGroup(
-                title = "Basic", // TODO, string res
+                title = { firstCapStringResource(R.string.basic) },
                 icon = MDIconsSet.WordMeaning, // TODO, icon res
             ) {
                 item {
@@ -78,9 +81,8 @@ fun MDWordDetailsEditModeScreen(
                         value = uiState.meaning,
                         onValueChange = uiActions::onEditMeaning,
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = "Meaning e.g Car",
-                        label = "Meaning",
-                        // TODO, string res
+                        placeholder = firstCapStringResource(R.string.meaning_hint),
+                        label = firstCapStringResource(R.string.meaning),
                         leadingIcon = MDIconsSet.WordMeaning,
                     )
                 }
@@ -89,8 +91,8 @@ fun MDWordDetailsEditModeScreen(
                         value = uiState.translation,
                         onValueChange = uiActions::onEditTranslation,
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = "Translation e.g Koruma",
-                        label = "Translation", // TODO, string res
+                        placeholder = firstCapStringResource(R.string.translation_hint),
+                        label = firstCapStringResource(R.string.translation),
                         leadingIcon = MDIconsSet.WordTranslation,
                     )
                 }
@@ -100,8 +102,8 @@ fun MDWordDetailsEditModeScreen(
                         value = uiState.note,
                         onValueChange = uiActions::onEditNote,
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = "Note about the word",
-                        label = "Note", // TODO, string res
+                        placeholder = firstCapStringResource(R.string.note_hint),
+                        label = firstCapStringResource(R.string.note),
                         leadingIcon = MDIconsSet.WordExample,  // TODO, icon res
                         maxLines = 3,
                     )
@@ -109,7 +111,7 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                title = "Phonetic", // TODO, string res
+                title = { firstCapStringResource(R.string.phonetic) },
                 icon = MDIconsSet.WordTranscription,
             ) {
                 item {
@@ -117,15 +119,15 @@ fun MDWordDetailsEditModeScreen(
                         value = uiState.transcription,
                         onValueChange = uiActions::onEditTranscription,
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = "Transcription (phonetic symbol)",
-                        label = "Transcription", // TODO, string res
+                        placeholder = firstCapStringResource(R.string.transcription_hint),
+                        label = firstCapStringResource(R.string.transcription),
                         leadingIcon = MDIconsSet.WordTranscription,
                     )
                 }
             }
 
             editableGroup(
-                title = "Context tags", // TODO, string res
+                title = { firstCapStringResource(R.string.tags) },
                 icon = MDIconsSet.WordTag,
             ) {
                 tagsSelector(
@@ -138,7 +140,7 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                title = "Additional Translations", // TODO string res
+                title = { firstCapStringResource(R.string.additional_translations) },
                 icon = MDIconsSet.WordAdditionalTranslation,
             ) {
                 itemsIndexed(
@@ -159,14 +161,17 @@ fun MDWordDetailsEditModeScreen(
                                 uiActions.onAdditionalTranslationsFocusChange(newFocused = id)
                             }
                         },
-                        placeholder = if (isLast) "Add additional translation" else "Additional Translation (leave blank to delete)",
-                        // TODO, string res
+                        placeholder = if (isLast) {
+                            firstCapStringResource(R.string.add_x, firstCapStringResource(R.string.additional_translation))
+                        } else {
+                            "${firstCapStringResource(R.string.additional_translation)} (${stringResource(R.string.leave_blank_to_delete)})"
+                        },
                     )
                 }
             }
 
             editableGroup(
-                title = "Examples", // TODO string res
+                title = { firstCapStringResource(R.string.examples) },
                 icon = MDIconsSet.WordExample,
             ) {
                 itemsIndexed(
@@ -187,14 +192,17 @@ fun MDWordDetailsEditModeScreen(
                                 uiActions.onExamplesFocusChange(newFocused = id)
                             }
                         },
-                        placeholder = if (isLast) "Add Example" else "Example (leave blank to delete)",
-                        // TODO, string rse
+                        placeholder = if (isLast) {
+                            firstCapStringResource(R.string.add_x, firstCapStringResource(R.string.example))
+                        } else {
+                            "${firstCapStringResource(R.string.example)} (${stringResource(R.string.leave_blank_to_delete)})"
+                        },
                     )
                 }
             }
 
             editableGroup(
-                title = "Word Class", // TODO, string res
+                title = { firstCapStringResource(R.string.word_class) },
                 icon = MDIconsSet.WordRelatedWords,
             ) {
                 item {
@@ -202,7 +210,7 @@ fun MDWordDetailsEditModeScreen(
                         value = uiState.selectedWordClass,
                         suggestions = availableWordsClasses,
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = "Select word class", // TODO, string res
+                        placeholder = firstCapStringResource(R.string.select_x, firstCapStringResource(R.string.word_class)),
                         fieldReadOnly = true,
                         onValueChange = {},
                         suggestionTitle = {
@@ -251,7 +259,11 @@ fun MDWordDetailsEditModeScreen(
                             onValueChange = { newValue ->
                                 uiActions.onEditTypeRelationValue(id, newValue)
                             },
-                            placeholder = if (isLast) "Add Type relation" else "Type relation (leave blank to delete)", // TODO, string rse
+                            placeholder = if (isLast) {
+                                firstCapStringResource(R.string.add_x, firstCapStringResource(R.string.word_class_relation))
+                            } else {
+                                "${firstCapStringResource(R.string.word_class_relation)} (${stringResource(R.string.leave_blank_to_delete)})"
+                            },
                         )
                     }
                 }
@@ -260,8 +272,10 @@ fun MDWordDetailsEditModeScreen(
                 it.key
             }.forEach { (type, relations) ->
                 editableGroup(
-                    title = { type.relationName },
-                    titleHint = type.strLabel,
+                    title = { type.label },
+                    titleHint = {
+                        type.hintLikeExample
+                    },
                     icon = MDIconsSet.WordRelatedWords // TODO, icon res
                 ) {
                     itemsIndexed(
@@ -282,7 +296,11 @@ fun MDWordDetailsEditModeScreen(
                                     uiActions.onLexicalRelationFocusChange(newFocused = id)
                                 }
                             },
-                            placeholder = if (isLast) "Add Lexical relation" else "Lexical relation (leave blank to delete)", // TODO, string rse
+                            placeholder = if (isLast) {
+                                firstCapStringResource(R.string.add_x, firstCapStringResource(R.string.lexical_relation))
+                            } else {
+                                "${firstCapStringResource(R.string.lexical_relation)} (${stringResource(R.string.leave_blank_to_delete)})"
+                            },
                         )
                     }
                 }
@@ -298,7 +316,7 @@ private fun LazyListScope.editableGroup(
     items: LazyListScope.() -> Unit,
 ) = editableGroup(
     title = { title },
-    titleHint = titleHint,
+    titleHint = { titleHint },
     icon = icon,
     items = items
 )
@@ -306,12 +324,12 @@ private fun LazyListScope.editableGroup(
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.editableGroup(
     title: @Composable () -> String,
-    titleHint: String? = null,
+    titleHint: @Composable () -> String? = { null },
     icon: MDIconsSet? = null,
     items: LazyListScope.() -> Unit,
 ) {
     stickyHeader {
-        MDTitleWithHint(title = title(), icon = icon, titleHint = titleHint)
+        MDTitleWithHint(title = title(), icon = icon, titleHint = titleHint())
     }
     items()
     item {

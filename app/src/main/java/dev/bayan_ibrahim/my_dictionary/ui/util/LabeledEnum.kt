@@ -8,12 +8,9 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentFilledPainter
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.currentOutlinedPainter
 
 interface LabeledEnum {
-    val strLabel: String
-
+    @get:Composable
+    @get:ReadOnlyComposable
     val label: String
-        @Composable
-        @ReadOnlyComposable
-        get() = strLabel //TODO,string res
 }
 
 @Suppress("unused")

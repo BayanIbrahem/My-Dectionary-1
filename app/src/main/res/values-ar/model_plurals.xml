@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="word">
+        <item quantity="zero">لا كلمات</item>
+        <item quantity="one">كلمة واحدة</item>
+        <item quantity="two">كلمتان</item>
+        <item quantity="few">%d كلمات</item>
+        <item quantity="many">%d كلمة</item>
+        <item quantity="other">%d كلمة</item>
+    </plurals>
+    <plurals name="tag">
+        <item quantity="zero">لا وسوم</item>
+        <item quantity="one">وسم واحد</item>
+        <item quantity="two">وسمان</item>
+        <item quantity="few">%d وسوم</item>
+        <item quantity="many">%d وسم</item>
+        <item quantity="other">%d وسم</item>
+    </plurals>
+    <plurals name="tags_tree">
+        <item quantity="zero">لا أشجار وسوم</item>
+        <item quantity="one">شجرة وسوم واحدة</item>
+        <item quantity="two">شجرتا وسوم</item>
+        <item quantity="few">%d أشجار وسوم</item>
+        <item quantity="many">%d شجرة وسوم</item>
+        <item quantity="other">%d شجرة وسوم</item>
+    </plurals>
+    <plurals name="marker_tag">
+        <item quantity="zero">لا وسوم مميزة</item>
+        <item quantity="one">وسم مميز واحد</item>
+        <item quantity="two">وسمان مميزان</item>
+        <item quantity="few">%d وسوم مميز</item>
+        <item quantity="many">%d وسم مميز</item>
+        <item quantity="other">%d وسم مميز</item>
+    </plurals>
+    <plurals name="word_class">
+        <item quantity="zero">لا فئات كلمات</item>
+        <item quantity="one">فئة كلمة واحدة</item>
+        <item quantity="two">فئتا كلمات</item>
+        <item quantity="few">%d فئات كلمات</item>
+        <item quantity="many">%d فئة كلمة</item>
+        <item quantity="other">%d فئة كلمة</item>
+    </plurals>
+    <plurals name="relation">
+        <item quantity="zero">لا علاقات كلمات</item>
+        <item quantity="one">علاقة واحدة</item>
+        <item quantity="two">علاقتان</item>
+        <item quantity="few">%d علاقات</item>
+        <item quantity="many">%d علاقة</item>
+        <item quantity="other">%d علاقة</item>
+    </plurals>
+    <plurals name="related_word">
+        <item quantity="zero">لا كلمات ذات صلة</item>
+        <item quantity="one">كلمة ذات صلة واحدة</item>
+        <item quantity="two">كلمتان ذاتا صلة</item>
+        <item quantity="few">%d كلمات ذات صلة</item>
+        <item quantity="many">%d كلمة ذات صلة</item>
+        <item quantity="other">%d كلمة ذات صلة</item>
+    </plurals>
+    <plurals name="lexical_relation">
+        <item quantity="zero">لا علاقات معجمية</item>
+        <item quantity="one">علاقة معجمية واحدة</item>
+        <item quantity="two">علاقتان معجميتان</item>
+        <item quantity="few">%d علاقات معجمية</item>
+        <item quantity="many">%d علاقة معجمية</item>
+        <item quantity="other">%d علاقة معجمية</item>
+    </plurals>
+    <plurals name="word_class_relation">
+        <item quantity="zero">لا علاقات فئة الكلمات</item>
+        <item quantity="one">علاقة فئة كلمات واحدة</item>
+        <item quantity="two">علاقتان فئة كلمات</item>
+        <item quantity="few">%d علاقات فئة الكلمات</item>
+        <item quantity="many">%d علاقة فئة كلمات</item>
+        <item quantity="other">%d علاقة فئة كلمات</item>
+    </plurals>
+    <plurals name="language">
+        <item quantity="zero">لا لغات</item>
+        <item quantity="one">لغة واحدة</item>
+        <item quantity="two">لغتان</item>
+        <item quantity="few">%d لغات</item>
+        <item quantity="many">%d لغة</item>
+        <item quantity="other">%d لغة</item>
+    </plurals>
+    <plurals name="x_language">
+        <item quantity="zero">لا %1$s لغات</item>
+        <item quantity="one">لغة %1$s واحدة</item>
+        <item quantity="two">لغتان %1$s</item>
+        <item quantity="few">%1$d لغات %2$s</item>
+        <item quantity="many">%1$d لغة %2$s</item>
+        <item quantity="other">%1$d لغة %2$s</item>
+    </plurals>
+    <plurals name="word_space">
+        <item quantity="zero">لا مساحات كلمات</item>
+        <item quantity="one">مساحة كلمة واحدة</item>
+        <item quantity="two">مساحتان كلمتان</item>
+        <item quantity="few">%d مساحات كلمات</item>
+        <item quantity="many">%d مساحة كلمة</item>
+        <item quantity="other">%d مساحة كلمة</item>
+    </plurals>
+    <plurals name="color">
+        <item quantity="zero">لا ألوان</item>
+        <item quantity="one">لون واحد</item>
+        <item quantity="two">لونان</item>
+        <item quantity="few">%d ألوان</item>
+        <item quantity="many">%d لون</item>
+        <item quantity="other">%d لون</item>
+    </plurals>
+    <plurals name="train">
+        <item quantity="zero">لا تدريبات</item>
+        <item quantity="one">تدريب واحد</item>
+        <item quantity="two">تدريبان</item>
+        <item quantity="few">%d تدريبات</item>
+        <item quantity="many">%d تدريب</item>
+        <item quantity="other">%d تدريب</item>
+    </plurals>
+    <plurals name="history">
+        <item quantity="zero">لا سجلات</item>
+        <item quantity="one">سجل واحد</item>
+        <item quantity="two">سجلان</item>
+        <item quantity="few">%d سجلات</item>
+        <item quantity="many">%d سجل</item>
+        <item quantity="other">%d سجل</item>
+    </plurals>
+    <plurals name="train_history">
+        <item quantity="zero">لا سجلات تدريب</item>
+        <item quantity="one">سجل تدريب واحد</item>
+        <item quantity="two">سجلان تدريب</item>
+        <item quantity="few">%d سجلات تدريب</item>
+        <item quantity="many">%d سجل تدريب</item>
+        <item quantity="other">%d سجل تدريب</item>
+    </plurals>
+    <plurals name="entry">
+        <item quantity="zero">لا مدخلات</item>
+        <item quantity="one">مدخل واحد</item>
+        <item quantity="two">مدخلان</item>
+        <item quantity="few">%d مدخلات</item>
+        <item quantity="many">%d مدخل</item>
+        <item quantity="other">%d مدخل</item>
+    </plurals>
+    <plurals name="history_entry">
+        <item quantity="zero">لا مدخلات سجل</item>
+        <item quantity="one">مدخل سجل واحد</item>
+        <item quantity="two">مدخلان سجل</item>
+        <item quantity="few">%d مدخلات سجل</item>
+        <item quantity="many">%d مدخل سجل</item>
+        <item quantity="other">%d مدخل سجل</item>
+    </plurals>
+    <plurals name="example">
+        <item quantity="zero">لا أمثلة</item>
+        <item quantity="one">مثال واحد</item>
+        <item quantity="two">مثالان</item>
+        <item quantity="few">%d أمثلة</item>
+        <item quantity="many">%d مثال</item>
+        <item quantity="other">%d مثال</item>
+    </plurals>
+
+    <plurals name="meaning">
+        <item quantity="zero">لا معانٍ</item>
+        <item quantity="one">معنى واحد</item>
+        <item quantity="two">معنيان</item>
+        <item quantity="few">%d معانٍ</item>
+        <item quantity="many">%d معنى</item>
+        <item quantity="other">%d معنى</item>
+    </plurals>
+
+    <plurals name="translation">
+        <item quantity="zero">لا ترجمات</item>
+        <item quantity="one">ترجمة واحدة</item>
+        <item quantity="two">ترجمتان</item>
+        <item quantity="few">%d ترجمات</item>
+        <item quantity="many">%d ترجمة</item>
+        <item quantity="other">%d ترجمة</item>
+    </plurals>
+
+    <plurals name="additional_translation">
+        <item quantity="zero">لا ترجمات إضافية</item>
+        <item quantity="one">ترجمة إضافية واحدة</item>
+        <item quantity="two">ترجمتان إضافيتان</item>
+        <item quantity="few">%d ترجمات إضافية</item>
+        <item quantity="many">%d ترجمة إضافية</item>
+        <item quantity="other">%d ترجمة إضافية</item>
+    </plurals>
+
+    <plurals name="note">
+        <item quantity="zero">لا ملاحظات</item>
+        <item quantity="one">ملاحظة واحدة</item>
+        <item quantity="two">ملاحظتان</item>
+        <item quantity="few">%d ملاحظات</item>
+        <item quantity="many">%d ملاحظة</item>
+        <item quantity="other">%d ملاحظة</item>
+    </plurals>
+
+    <plurals name="transcription">
+        <item quantity="zero">لا نصوص صوتية</item>
+        <item quantity="one">نص صوتي واحد</item>
+        <item quantity="two">نصان صوتيان</item>
+        <item quantity="few">%d نصوص صوتية</item>
+        <item quantity="many">%d نص صوتي</item>
+        <item quantity="other">%d نص صوتي</item>
+    </plurals>
+
+    <plurals name="phonetic">
+        <item quantity="zero">لا صوتيات</item>
+        <item quantity="one">صوتي واحد</item>
+        <item quantity="two">صوتيان</item>
+        <item quantity="few">%d صوتيات</item>
+        <item quantity="many">%d صوتي</item>
+        <item quantity="other">%d صوتي</item>
+    </plurals>
+
+    <plurals name="theme">
+        <item quantity="zero">لا مواضيع</item>
+        <item quantity="one">موضوع واحد</item>
+        <item quantity="two">موضوعان</item>
+        <item quantity="few">%d مواضيع</item>
+        <item quantity="many">%d موضوع</item>
+        <item quantity="other">%d موضوع</item>
+    </plurals>
+
+    <plurals name="statistic">
+        <item quantity="zero">لا إحصائيات</item>
+        <item quantity="one">إحصائية واحدة</item>
+        <item quantity="two">إحصائيتان</item>
+        <item quantity="few">%d إحصائيات</item>
+        <item quantity="many">%d إحصائية</item>
+        <item quantity="other">%d إحصائية</item>
+    </plurals>
+
+    <plurals name="item">
+        <item quantity="zero">لا عناصر</item>
+        <item quantity="one">عنصر واحد</item>
+        <item quantity="two">عنصران</item>
+        <item quantity="few">%d عناصر</item>
+        <item quantity="many">%d عنصر</item>
+        <item quantity="other">%d عنصر</item>
+    </plurals>
+
+    <plurals name="error">
+        <item quantity="zero">لا أخطاء</item>
+        <item quantity="one">خطأ واحد</item>
+        <item quantity="two">خطآن</item>
+        <item quantity="few">%d أخطاء</item>
+        <item quantity="many">%d خطأ</item>
+        <item quantity="other">%d خطأ</item>
+    </plurals>
+
+    <plurals name="warning">
+        <item quantity="zero">لا تحذيرات</item>
+        <item quantity="one">تحذير واحد</item>
+        <item quantity="two">تحذيران</item>
+        <item quantity="few">%d تحذيرات</item>
+        <item quantity="many">%d تحذير</item>
+        <item quantity="other">%d تحذير</item>
+    </plurals>
+
+    <plurals name="profile">
+        <item quantity="zero">لا ملفات تعريف</item>
+        <item quantity="one">ملف تعريف واحد</item>
+        <item quantity="two">ملفا تعريف</item>
+        <item quantity="few">%d ملفات تعريف</item>
+        <item quantity="many">%d ملف تعريف</item>
+        <item quantity="other">%d ملف تعريف</item>
+    </plurals>
+
+    <plurals name="tool">
+        <item quantity="zero">لا أدوات</item>
+        <item quantity="one">أداة واحدة</item>
+        <item quantity="two">أداتان</item>
+        <item quantity="few">%d أدوات</item>
+        <item quantity="many">%d أداة</item>
+        <item quantity="other">%d أداة</item>
+    </plurals>
+
+    <plurals name="learning_group">
+        <item quantity="zero">لا مجموعات تعليمية</item>
+        <item quantity="one">مجموعة تعليمية واحدة</item>
+        <item quantity="two">مجموعتان تعليميتان</item>
+        <item quantity="few">%d مجموعات تعليمية</item>
+        <item quantity="many">%d مجموعة تعليمية</item>
+        <item quantity="other">%d مجموعة تعليمية</item>
+    </plurals>
+</resources>

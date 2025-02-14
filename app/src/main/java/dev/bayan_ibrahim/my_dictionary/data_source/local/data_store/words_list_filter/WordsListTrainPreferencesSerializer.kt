@@ -2,7 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.data_store.words_list_
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
-import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
+import com.google.protobuf.InvalidProtocolBufferException
 import dev.bayan_ibrahim.my_dictionary.data_source.local.proto.model.WordsListTrainPreferencesProto
 import java.io.InputStream
 import java.io.OutputStream

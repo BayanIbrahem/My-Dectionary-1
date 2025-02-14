@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="spring">spring</string>
+    <string name="summer">summer</string>
+    <string name="atom">atom</string>
+    <string name="winter">winter</string>
+
+    <string name="year">year</string>
+    <string name="quarter_season">quarter (season)</string>
+    <string name="month">month</string>
+    <string name="week">week</string>
+    <string name="day">day</string>
+
+    <string name = "time_ms">%1$dms</string>
+    <string name = "time_s">%1$ds</string>
+    <string name = "time_m_s">%1$dm:%2$ds</string>
+    <string name = "time_h_m_s">%1$dh:%2$dm:%3$ds</string>
+</resources>

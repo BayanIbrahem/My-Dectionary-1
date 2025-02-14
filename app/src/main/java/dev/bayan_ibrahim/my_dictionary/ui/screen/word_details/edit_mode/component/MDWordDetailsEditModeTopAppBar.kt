@@ -10,10 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
-import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.component.MDWordDetailsTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -47,7 +49,7 @@ private fun LeadingActions(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "New", // TODO, string res
+        text = firstCapStringResource(R.string._new),
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.error,
         modifier = modifier,
@@ -69,8 +71,8 @@ private fun TrailingActions(
         ) {
             MDIcon(
                 icon = MDIconsSet.Close,
-                contentDescription = "cancel changes"
-            ) // TODO, string res
+                contentDescription = firstCapStringResource(R.string.cancel_changes)
+            )
         }
         IconButton(
             onClick = onSave,
@@ -78,8 +80,11 @@ private fun TrailingActions(
         ) {
             MDIcon(
                 icon = MDIconsSet.Save,
-                contentDescription = "save word",
-            ) // TODO, string res
+                contentDescription = firstCapStringResource(
+                    R.string.save_x,
+                    firstCapStringResource(R.string.word)
+                )
+            )
         }
     }
 }

@@ -1,4 +1,208 @@
 <resources>
-    <string name="app_name">My Dictionary</string>
+    <string name="app_name" translatable="false">Lexorge</string>
+    <string name="invalid_data">invalid data</string>
+
+    <string name="abort_all">abort all</string>
+    <string name="ignore_word">ignore word</string>
+    <string name="ignore_new_value">ignore new value</string>
+    <string name="replace_old_value">replace old value</string>
+    <string name="merge_or_ignore">merge or ignore</string>
+    <string name="merge_or_replace">merge or replace</string>
+    <string name="created_at">created at</string>
+    <string name="updated_at">updated at</string>
+    <string name="memorizing_probability">memorizing probability</string>
+    <string name="train_time">train time</string>
+    <string name="create_time">create time</string>
+    <string name="random">random</string>
+
+    <string name="memorizing_probability_asc_order">words with the fewest learning progress</string>
+    <string name="memorizing_probability_desc_order">"words with the largest learning progress</string>
+    <string name="train_time_asc_order">words trained by long time ago</string>
+    <string name="train_time_desc_order">words trained by recently</string>
+    <string name="create_time_asc_order">words created long time ago</string>
+    <string name="create_time_desc_order">words created recently</string>
+    <string name="random_order">random order</string>
+
+    <string name="not_learned">not learned</string>
+    <string name="known">known</string>
+    <string name="acknowledged">acknowledged</string>
+    <string name="learned">learned</string>
+
+    <string name="hsv">hsv</string>
+    <string name="rgb">rgb</string>
+
+    <string name="hue">hue</string>
+    <string name="saturation">saturation</string>
+    <string name="luminance">luminance</string>
+
+    <string name="ltr">ltr</string>
+    <string name="rtl">rtl</string>
+    <string name="device_locale">device locale</string>
+    <string name="language_locale">language locale</string>
+
+    <string name="start">start</string>
+    <string name="read_file_type">read file type</string>
+    <string name="get_suitable_file_reader">get suitable file reader</string>
+    <string name="get_available_parts">get available parts in file</string>
+    <string name="process_languages">process languages</string>
+    <string name="process_words_classes">process words classes</string>
+    <string name="process_tags">process tags</string>
+    <string name="process_words">process words</string>
+    <string name="end">end</string>
+
+    <!--Error-->
+    <string name="error_unrecognized_file_type">unrecognized file type</string>
+    <string name="error_unrecognized_file_version">unrecognized file version</string>
+    <string name="error_corrupted_file_parts">corrupted file parts</string>
+    <string name="error_existed_word">existed word</string>
+    <string name="error_corrupted_word">corrupted word</string>
+    <string name="error_unrecognized_file_type_cause">cannot open the file. it may be corrupted or of an unsupported type.</string>
+    <string name="error_unrecognized_file_reader_cause">unable to find a suitable reader for the file. the file version might be too new for this app, too old, or invalid.</string>
+    <string name="error_corrupted_file_parts_cause">the file content is problematic, making it impossible to retrieve its parts.</string>
+    <string name="error_existed_word_cause">import aborted due to a conflict with an existing word. an identical word with the same language, meaning, and translation exists.</string>
+    <string name="error_corrupted_word_cause">import aborted because a corrupted word was detected. the strategy is set to abort on corrupted words.</string>
+    <string name="error_unrecognized_file_type_suggestion_1">ensure the app version (%1$s) is not older than the version used to export this file.</string>
+    <string name="error_unrecognized_file_type_suggestion_2">if this app version is newer than the exporting app\'s version, contact us for support.</string>
+    <string name="error_unrecognized_file_type_suggestion_3">if this file was created by a third-party tool, ensure its format is supported. check available formats in the export screen.</string>
+    <string name="error_unrecognized_file_reader_suggestion_1">this file version (%1$s) is not supported. supported versions are %2$s. the current app version is %3$s. please verify the file\'s compatibility.</string>
+    <string name="error_unrecognized_file_reader_suggestion_2">this file version (%1$s) is too old. supported versions are %2$s. consider updating or verifying the file.</string>
+    <string name="error_unrecognized_file_reader_suggestion_3">contact us with the necessary details for assistance.</string>
+    <string name="error_corrupted_file_parts_suggestion_1">the file may be corrupted. try re-exporting it or contact us with the necessary details.</string>
+    <string name="error_existed_word_suggestion_1">change the conflict resolution strategy or remove conflicting values from your file. this error occurs when data in the imported file conflicts with your existing dataset.</string>
+    <string name="error_corrupted_word_suggestion_1">change the corrupted word handling strategy or fix the invalid words in your file. this error occurs when the file contains words with invalid data, such as a blank meaning.</string>
+
+    <!--Warning-->
+    <string name="warning_no_valid_parts">no valid parts</string>
+    <string name="warning_no_languages_data">no languages data</string>
+    <string name="warning_no_tags_data">no tags data</string>
+    <string name="warning_word_conflict_detected">word conflict detected</string>
+    <string name="warning_corrupted_word_detected">corrupted word detected</string>
+    <string name="warning_no_valid_parts_cause">the file is not empty but it doesn\'t contain any file parts</string>
+    <string name="warning_no_languages_data_cause">the file contains a languages section, but it has no data.</string>
+    <string name="warning_no_tags_data_cause">the file contains a tags section, but it has no data.</string>
+    <string name="warning_word_conflict_cause">a new word was ignored because it conflicts with an existing word in your local dataset.</string>
+    <string name="warning_corrupted_word_detected_cause">a new word was ignored because it contains corrupted or invalid data.</string>
+    <string name="warning_no_valid_parts_suggestion_1">ensure the file contains valid data. while the file isn\'t empty, it doesn\'t have any valid file parts.</string>
+    <string name="warning_no_language_data_suggestion_1">if languages are unnecessary, remove the languages part from the file.</string>
+    <string name="warning_no_language_data_suggestion_2">add valid languages data to the file if required.</string>
+    <string name="warning_no_tags_data_suggestion_1">if tags are unnecessary, remove the tags part from the file.</string>
+    <string name="warning_no_tags_data_suggestion_2">add valid tags data to the file if required.</string>
+    <string name="warning_word_conflict_suggestion_1">change the existing word conflict resolution strategy.</string>
+    <string name="warning_word_conflict_suggestion_2">edit the new word to avoid conflict with existing data.</string>
+    <string name="warning_word_conflict_suggestion_3">edit or delete the conflicting word in your local dataset.</string>
+    <string name="warning_corrupted_word_detected_suggestion_1">delete or fix the corrupted word in the import file.</string>
+    <string name="warning_corrupted_word_detected_suggestion_2">remove the corrupted word from the file before importing.</string>
+
+    <string name="general">general</string>
+    <string name="json_file">json file</string>
+    <string name="write_word">write word</string>
+    <string name="select_word">select word</string>
+
+    <string name="migration">migration</string>
+    <string name="migrate_tags">migrate tags</string>
+    <string name="migrate_similar_words">migrate similar words</string>
+
+    <string name="extra_tags">extra tags</string>
+    <string name="extra_tags_hint">tags that added to each imported word</string>
+    <string name="extra_tags_strategy">extra tags strategy</string>
+    <string name="extra_tags_strategy_hint">what words should extra tags add to</string>
+    <string name="corrupted_word">corrupted word</string>
+    <string name="corrupted_word_hint">action when an invalid word appears in the new file</string>
+    <string name="existed_word">existed word</string>
+    <string name="existed_word_hint">action when a word with the same meaning and translation is already stored</string>
+    <string name="importing_data">importing data</string>
+    <string name="what_went_wrong">what went wrong</string>
+    <string name="possible_solutions">possible solutions</string>
+    <string name="export_done">export done</string>
+    <string name="export_error">export error</string>
+    <string name="export_running_x_of_y">export running - %1$d of %2$d</string>
+    <string name="output">output</string>
+    <string name="wrong">wrong</string>
+    <string name="right">right</string>
+    <string name="timeout">timeout</string>
+
+    <string name="synonym">synonym</string>
+    <string name="antonym">antonym</string>
+    <string name="hyponym">hyponym</string>
+    <string name="hypernym">hypernym</string>
+    <string name="meronym">meronym</string>
+    <string name="holonym">holonym</string>
+    <string name="homonym">homonym</string>
+    <string name="polysemy">polysemy</string>
+    <string name="prototype">prototype</string>
+    <string name="metonymy">metonymy</string>
+    <string name="collocation">collocation</string>
+    <string name="homograph">homograph</string>
+    <string name="homophone">homophone</string>
+
+    <string name="synonym_hint">words with the same or very similar meanings</string>
+    <string name="antonym_hint">words with opposite meanings</string>
+    <string name="hyponym_hint">a word whose meaning is included within the meaning of another</string>
+    <string name="hypernym_hint">a word with a broader meaning that includes the meanings of other words</string>
+    <string name="meronym_hint">part-whole relationship</string>
+    <string name="holonym_hint">whole-part relationship</string>
+    <string name="homonym_hint">words with the same spelling and pronunciation but different meanings</string>
+    <string name="polysemy_hint">a word with multiple related meanings</string>
+    <string name="prototype_hint">the most typical example of a category</string>
+    <string name="metonymy_hint">using one word to stand for something closely related</string>
+    <string name="collocation_hint">frequent and natural word combinations</string>
+    <string name="homograph_hint">words spelled the same but with different meanings and possibly pronunciations</string>
+    <string name="homophone_hint">words pronounced the same but with different meanings and spellings</string>
+
+    <string name="synonym_example">happy, joyful</string>
+    <string name="antonym_example">hot, cold</string>
+    <string name="hyponym_example">dog, animal</string>
+    <string name="hypernym_example">animal, dog</string>
+    <string name="meronym_example">wheel, car</string>
+    <string name="holonym_example">car, wheel</string>
+    <string name="homonym_example">bank (riverside), bank (financial)</string>
+    <string name="polysemy_example">head (body part), head (leader)</string>
+    <string name="prototype_example">robin (for bird)</string>
+    <string name="metonymy_example">the white house (for the u.s. president)</string>
+    <string name="collocation_example">strong tea, make a decision</string>
+    <string name="homograph_example">lead (metal), lead (guide)</string>
+    <string name="homophone_example">bear (animal), bear (tolerate)</string>
+
+    <string name="basic">basic</string>
+    <string name="meaning_hint">meaning e.g car</string>
+    <string name="translation_hint">translation e.g koruma</string>
+    <string name="note_hint">note about the word</string>
+    <string name="transcription_hint">transcription (phonetic symbol)</string>
+    <string name="leave_blank_to_delete">leave blank to delete</string>
+    <string name="permanent_delete_warning">this action can not be undone</string>
+    <string name="apply_to_inner_tags">apply to inner tags</string>
+    <string name="backup_restore">backup &amp; restore></string>
+    <string name="import_from_file">import from file</string>
+    <string name="export_to_file">export to file</string>
+    <string name="sync">sync</string>
+    <string name="app_theme">app theme</string>
+    <string name="words_list">words list</string>
+    <string name="memorize_probability_live_preview">memorize probability live preview</string>
+    <string name="memorize_probability_live_preview_checked">probability would be calculated in real time</string>
+    <string name="memorize_probability_live_preview_unchecked">probability would be calculated once for each word</string>
+    <string name="word_details">word details</string>
+    <string name="alignment_hint">choose alignment source (left to right or right to left</string>
+    <string name="current">current</string>
+    <string name="no_history_hint">no history available, you should train first</string>
+    <string name="creation">creation</string>
+    <string name="cancel_changes">cancel changes</string>
+    <string name="no_word_class_hint">No word classes yet in this language, press edit button on the card to add some</string>
+    <string name="word_class_name">word class name</string>
+    <string name="word_class_relation_label">word class relation label</string>
+    <string name="train_type">train type</string>
+    <string name="train_target">train target</string>
+    <string name="words_order">words order</string>
+    <string name="select_language_hint">select a language to start</string>
+    <string name="no_words_filter_hint">no words matches your filters…</string>
+    <string name="no_words_add_hint">no words yet, add some words first</string>
+    <string name="delete_in_progress_hint">deletion process is running please wait…</string>
+    <string name="confirm_delete_x_hint">are you sure you want to delete %1$s
+        this action can not be undone.</string>
+    <string name="search_query">search query</string>
+    <string name="car">car</string>
+    <string name="include_selected_tags">include selected tags</string>
+    <string name="include_selected_tags_hint_on">any result should contains at least one of the selected tags</string>
+    <string name="include_selected_tags_hint_off">all results should not contain any one of the selected tags</string>
+    <string name="words_count_limit">words count limit</string>
 
 </resources>

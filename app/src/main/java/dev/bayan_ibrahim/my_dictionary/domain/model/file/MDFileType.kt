@@ -1,5 +1,9 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.file
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.res.stringResource
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 enum class MDFileType(
@@ -14,11 +18,13 @@ enum class MDFileType(
 //    CSV("csv", "text/csv");
     ;
 
-    override val strLabel: String
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
         get() = when (this) {
-            Unknown -> "General"
+            Unknown -> stringResource(R.string.general)
 //            Excel -> "Excel file"
-            Json -> "Json file"
+            Json -> stringResource(R.string.json_file)
 //            Xml -> "Xml file"
 //            CSV -> "CSV file"
         }

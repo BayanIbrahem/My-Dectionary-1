@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "dev.bayan_ibrahim.my_dictionary"
-    compileSdk = 34
+    compileSdk = 35
 
     configurations {
         // for the duplicate annotation problem
@@ -22,9 +22,9 @@ android {
     defaultConfig {
         applicationId = "dev.bayan_ibrahim.my_dictionary"
         minSdk = 21
-        targetSdk = 34
-        versionCode = 14
-        versionName = "2.0.0-beta03"
+        targetSdk = 35
+        versionCode = 15
+        versionName = "2.0.0-rc01"
 
         multiDexEnabled = true
 

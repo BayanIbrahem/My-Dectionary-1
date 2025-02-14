@@ -1,5 +1,9 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.write.MDFileWriterFactory
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.FileManager
@@ -16,13 +20,11 @@ import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.toStrHex
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import java.io.IOException
-import kotlin.time.Duration.Companion.seconds
 
 private const val EXPORT_FILE_TRASH_KEY = "exportFile"
 
@@ -70,19 +72,23 @@ sealed interface ExportProgress {
             val cause: Throwable,
         ) : Error("unable to open output file ${cause.message}")
 
-        override val strLabel: String
+        override val label: String
+            @Composable
+            @ReadOnlyComposable
             get() = when (this) {
-                is InvalidOutputDir -> "Invalid Directory, try select another one"
-                is UnreadableOutputDir -> "Selected Directory Can not be read"
-                is InvalidOutputStream -> "Can not open file in selected directory, check if selected directory is valid and not protected"
-            }// TODO, string res
+                is InvalidOutputDir -> firstCapStringResource(R.string.invalid_output_dir_hint)
+                is UnreadableOutputDir -> firstCapStringResource(R.string.unreadable_output_dir_hint)
+                is InvalidOutputStream -> firstCapStringResource(R.string.invalid_output_stream_hint)
+            }
 
         val errorName: String
+            @Composable
+            @ReadOnlyComposable
             get() = when (this) {
-                is InvalidOutputDir -> "Invalid Dir"
-                is InvalidOutputStream -> "Protected Dir"
-                is UnreadableOutputDir -> "Protected Dir"
-            } // TODO, string res
+                is InvalidOutputDir -> firstCapStringResource(R.string.invalid_output_dir_label)
+                is UnreadableOutputDir -> firstCapStringResource(R.string.unreadable_output_dir_label)
+                is InvalidOutputStream -> firstCapStringResource(R.string.invalid_output_stream_label)
+            }
     }
 }
 

@@ -9,6 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -26,7 +28,7 @@ fun MDAppThemeTopAppBar(
         isTopLevel = false,
         onNavigationIconClick = onNavigationIconClick,
         title = {
-            Text("Theme") // TODO, string res
+            Text(firstCapStringResource(R.string.theme))
         },
         actions = {
             val iconRes by remember(isDark) {

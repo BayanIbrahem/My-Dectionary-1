@@ -43,8 +43,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableField
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableFieldStatus
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
@@ -95,7 +98,7 @@ fun MDWordSpaceListItem(
         LocalLayoutDirection provides state.direction
     ) {
         WordsSpaceFieldEditDialog(
-            isTag = isTagEditField,
+            isWordClass = isTagEditField,
             showDialog = state.isEditDialogShown,
             onDismiss = actions::onHideDialog,
             onConfirm = { newValue ->
@@ -130,7 +133,8 @@ fun MDWordSpaceListItem(
                             pushStyle(MaterialTheme.typography.bodyLarge.toSpanStyle())
                             append(state.selfDisplayName)
                             pushStyle(MaterialTheme.typography.labelSmall.toSpanStyle())
-                            append("  ${state.wordsCount} Words") // TODO, string res
+                            append(" ")
+                            append(firstCapPluralsResource(R.plurals.word, state.wordsCount))
                         },
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -174,9 +178,9 @@ fun MDWordSpaceListItem(
         ) {
             if (state.tags.isEmpty() && !state.isEditModeOn) {
                 Text(
-                    text = "No tags yet in this language, press edit button on the card to add some",
+                    text = firstCapStringResource(R.string.no_word_class_hint),
                     style = MaterialTheme.typography.bodyLarge
-                ) // TODO, string res
+                )
             }
             Column(
                 modifier = Modifier
@@ -188,7 +192,7 @@ fun MDWordSpaceListItem(
                     WordSpaceEditableTagListItem(
                         label = {
                             val value =
-                                if (state.isEditModeOn) tag.current.name else "${tag.current.name} x${tag.current.wordsCount}" // TODO, string res
+                                if (state.isEditModeOn) tag.current.name else "${tag.current.name} x${tag.current.wordsCount}"
                             Text(
                                 text = value,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -223,7 +227,7 @@ fun MDWordSpaceListItem(
                             WordSpaceEditableTagListItem(
                                 label = {
                                     val value =
-                                        if (state.isEditModeOn) relation.label else "${relation.label} x${relation.wordsCount}" // TODO, string res
+                                        if (state.isEditModeOn) relation.label else "${relation.label} x${relation.wordsCount}"
                                     Text(
                                         text = value,
                                         style = MaterialTheme.typography.bodyMedium,
@@ -253,7 +257,7 @@ fun MDWordSpaceListItem(
                     if (state.isEditModeOn) {
                         WordSpaceEditableTagListItem(
                             label = {
-                                val value = "New Relation" // TODO, string res
+                                val value = firstCapStringResource(R.string.new_x, firstCapStringResource(R.string.relation))
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = value,
@@ -283,7 +287,7 @@ fun MDWordSpaceListItem(
                 if (state.isEditModeOn) {
                     WordSpaceEditableTagListItem(
                         label = {
-                            val value = "New Tag" // TODO, string res
+                            val value = firstCapStringResource(R.string.new_x, firstCapStringResource(R.string.word_class))
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = value,
@@ -403,7 +407,7 @@ private fun WordsSpaceFieldEditDialog(
     onConfirm: (newValue: String) -> Unit,
     modifier: Modifier = Modifier,
     getInitialValue: () -> String = { "" },
-    isTag: Boolean = true,
+    isWordClass: Boolean = true,
 ) {
     val isNew by remember {
         derivedStateOf { getInitialValue().isBlank() }
@@ -428,10 +432,16 @@ private fun WordsSpaceFieldEditDialog(
         modifier = modifier.width(250.dp),
         title = {
             Text(
-                text = if (isTag) {
-                    if (isNew) "Add Word Word Class" /* TODO, string res */ else "Edit Word Word Class" /* TODO, string res */
+                text = if (isWordClass) {
+                    firstCapStringResource(
+                        if (isNew) R.string.add_x else R.string.edit_x,
+                        firstCapStringResource(R.string.word_class)
+                    )
                 } else {
-                    if (isNew) "Add Word Word Class Relation" /* TODO, string res */ else "Edit Word Word Class Relation" /* TODO, string res */
+                    firstCapStringResource(
+                        if (isNew) R.string.add_x else R.string.edit_x,
+                        firstCapStringResource(R.string.word_class_relation)
+                    )
                 },
                 style = MaterialTheme.typography.titleMedium
             )
@@ -442,12 +452,16 @@ private fun WordsSpaceFieldEditDialog(
             modifier = Modifier.fillMaxWidth(),
             value = value,
             onChangeValue = { value = it },
-            leadingIcon = if (isTag) {
+            leadingIcon = if (isWordClass) {
                 MDIconsSet.WordClass
             } else {
                 MDIconsSet.WordRelatedWords
             },
-            placeholder = if (isTag) "Word Word Class name" else "Word Word Class Relation label", // TODO, string res
+            placeholder = if (isWordClass) {
+                firstCapStringResource(R.string.word_class_name)
+            } else {
+                firstCapStringResource(R.string.word_class_relation_label)
+            },
         )
     }
 }

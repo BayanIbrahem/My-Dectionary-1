@@ -1,5 +1,9 @@
 package dev.bayan_ibrahim.my_dictionary.domain.model.train_word
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import dev.bayan_ibrahim.my_dictionary.ui.util.IconedEnum
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
@@ -12,17 +16,19 @@ enum class MDTrainWordResultType : LabeledEnum, IconedEnum {
 
     override val icon: MDIconsSet
         get() = when (this) {
-            Pass -> MDIconsSet.Random // TODO, icon res
-            Right -> MDIconsSet.Check // TODO, icon res
-            Timeout -> MDIconsSet.CreateTime // TODO, icon res
-            Wrong -> MDIconsSet.Close // TODO, icon res
+            Pass -> MDIconsSet.Random
+            Right -> MDIconsSet.Check
+            Timeout -> MDIconsSet.CreateTime
+            Wrong -> MDIconsSet.Close
         }
 
-    override val strLabel: String
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
         get() = when (this) {
-            Wrong -> "Wrong"
-            Right -> "Right"
-            Pass -> "Pass"
-            Timeout -> "Timeout"
+            Wrong -> firstCapStringResource(R.string.wrong)
+            Right -> firstCapStringResource(R.string.right)
+            Pass -> firstCapStringResource(R.string.pass)
+            Timeout -> firstCapStringResource(R.string.timeout)
         }
 }

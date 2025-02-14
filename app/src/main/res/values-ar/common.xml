@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="all">الكل</string>
+    <string name="any">أي</string>
+    <string name="every">كل</string>
+    <string name="some">بعض</string>
+    <string name="none">لا شيء</string>
+    <string name="_new">جديد</string>
+    <string name="updated">مُحدَّث</string>
+    <string name="only">فقط</string>
+    <string name="on">في</string>
+    <string name="eg">مثال</string>
+    <string name="sorted_by">مصنف حسب</string>
+    <string name="sorted_by_order">مصنف حسب الترتيب</string>
+
+    <string name="all_x">كل %1$s</string>
+    <string name="any_x">أي %1$s</string>
+    <string name="every_x">كل %1$s</string>
+    <string name="some_x">بعض %1$s</string>
+    <string name="none_x">لا شيء %1$s</string>
+    <string name="new_x">جديد %1$s</string>
+    <string name="updated_x">مُحدَّث %1$s</string>
+    <string name="only_x">فقط %1$s</string>
+    <string name="x_only">%1$s فقط</string>
+    <string name="on_x">في %1$s</string>
+    <string name="eg_x">مثال %1$s</string>
+    <string name="sorted_by_x">مصنف حسب %1$s</string>
+    <string name="sorted_by_order_x">مصنف حسب الترتيب %1$s</string>
+
+    <string name="saved">محفوظ</string>
+    <string name="edited">مُعدَّل</string>
+
+    <string name="x_or_y">%1$s أو %2$s</string>
+    <string name="x_and_y">%1$s و %2$s</string>
+    <string name="x_like_y">%1$s مثل %2$s</string>
+    <string name="x_with_y">%1$s مع %2$s</string>
+    <string name="x_without_y">%1$s بدون %2$s</string>
+    <string name="x_selected_of_y">%1$s مُحدَّد من %2$s</string>
+    <string name="x_selected">%1$s مُحدَّد</string>
+    <string name="from_x_to_y">من %1$s% إلى %2$s%</string>
+
+    <string name="asc">تصاعدي</string>
+    <string name="desc">تنازلي</string>
+</resources>

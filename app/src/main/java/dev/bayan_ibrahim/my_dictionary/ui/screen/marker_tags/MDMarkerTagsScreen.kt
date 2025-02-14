@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
@@ -60,7 +62,7 @@ fun MDMarkerTagsScreen(
         ) {
             if (markerTags.isEmpty()) {
                 item {
-                    Text("No marker Tags Added") // TODO, string res
+                    Text(firstCapPluralsResource(R.plurals.marker_tag, 0))
                 }
             }
             items(items = markerTags) { tag ->

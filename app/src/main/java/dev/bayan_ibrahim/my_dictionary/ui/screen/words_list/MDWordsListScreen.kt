@@ -36,9 +36,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.pagination.grid.lazyPagingGridItems
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
@@ -98,7 +102,7 @@ fun MDWordsListScreen(
         ) {
             MDScreen(
                 uiState = uiState,
-                invalidDataMessage = "Select a language to start", // TODO, string res
+                invalidDataMessage = firstCapStringResource(R.string.select_language_hint),
                 contentWindowInsets = WindowInsets.displayCutout,
                 topBar = {
                     MDWordsListTopAppBar(
@@ -184,10 +188,10 @@ fun MDWordsListScreen(
                         emptyItemsPlaceHolder = {
                             Text(
                                 text = if (uiState.isViewPreferencesEffectiveFilter) {
-                                    "No words matches your filters..."
+                                    firstCapStringResource(R.string.no_words_filter_hint)
                                 } else {
-                                    "No words yet, add some words first"
-                                }, // TODO, string res
+                                    firstCapStringResource(R.string.no_words_add_hint)
+                                },
                                 style = MaterialTheme.typography.bodyLarge,
                             )
                         }
@@ -259,9 +263,12 @@ fun MDWordsListScreen(
         isDeleteRunning = uiState.isSelectedWordsDeleteProcessRunning,
         onCancel = uiActions::onCancelDeleteSelection,
         onConfirm = uiActions::onConfirmDeleteSelection,
-        title = "Delete Words", // TODO, string res
-        runningDeleteMessage = "Deletion process is running please wait...",// TODO, string res
-        confirmDeleteMessage = "Are you sure you want to delete $selectedWordsCount words?\n\nthis action can not be undone." // TODO, string res
+        title = firstCapStringResource(R.string.delete_x, firstCapStringResource(R.string.words)),
+        runningDeleteMessage = stringResource(R.string.delete_in_progress_hint),
+        confirmDeleteMessage = stringResource(
+            R.string.confirm_delete_x_hint,
+            firstCapPluralsResource(R.plurals.word, selectedWordsCount),
+        )
     )
     // delete word space confirm dialog:
     MDWordsListDeleteConfirmDialog(
@@ -269,8 +276,12 @@ fun MDWordsListScreen(
         isDeleteRunning = uiState.isLanguageWordSpaceDeleteProcessRunning,
         onCancel = uiActions::onCancelDeleteLanguageWordSpace,
         onConfirm = uiActions::onConfirmDeleteLanguageWordSpace,
-        title = "Delete Language", // TODO, string res
-        runningDeleteMessage = "Deletion process is running please wait...",// TODO, string res
-        confirmDeleteMessage = "Are you sure you want to delete ${selectedWordSpace.fullDisplayName} (${selectedWordSpace.wordsCount} words)?\n\n this action can not be undone."
+        title = firstCapStringResource(R.string.delete_x, firstCapStringResource(R.string.language)),
+        runningDeleteMessage = stringResource(R.string.delete_in_progress_hint),
+
+        confirmDeleteMessage = stringResource(
+            R.string.confirm_delete_x_hint,
+            "${selectedWordSpace.fullDisplayName} (${firstCapPluralsResource(R.plurals.word, selectedWordsCount)})",
+        ),
     )
 }

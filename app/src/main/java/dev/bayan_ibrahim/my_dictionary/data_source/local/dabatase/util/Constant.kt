@@ -76,7 +76,7 @@ const val dbTagPath = "contextTags_path"
 const val dbTagColor = "contextTags_color"
 const val dbTagPassColorToChildren = "contextTags_passColorToChildren"
 
-// context tags with words:
+// tags with words:
 const val dbWordsCrossTagsTable = "wordsWithContextTags"
 const val dbWordsCrossTagsId = "wordsWithContextTags_id"
 const val dbWordsCrossTagsWordId = "wordsWithContextTags_wordId"

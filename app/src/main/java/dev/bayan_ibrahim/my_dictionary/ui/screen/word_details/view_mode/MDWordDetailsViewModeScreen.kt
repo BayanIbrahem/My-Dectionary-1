@@ -32,9 +32,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.MDDateTimeFormat
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.format
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.toDefaultLocalDateTime
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTitleWithHint
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
@@ -124,36 +128,36 @@ fun MDWordDetailsViewModeScreen(
                 }
                 item {
                     WordInfoGroup(
-                        title = "Basic", // TODO, string res
+                        title = firstCapStringResource(R.string.basic),
                         icon = MDIconsSet.WordMeaning, // TODO, icon res
 
                     ) {
                         wordPropertyItem(
-                            label = "Meaning",/* TODO, string res */
+                            label = { firstCapStringResource(R.string.meaning) },
                             value = uiState.word.meaning,
                         )
                         wordPropertyItem(
-                            label = "Translation",/* TODO, string res */
+                            label = { firstCapStringResource(R.string.translation) },
                             value = uiState.word.translation,
                         )
                         wordPropertyItem(
-                            label = "Language",/* TODO, string res */
+                            label = { firstCapStringResource(R.string.language) },
                             value = uiState.word.language.fullDisplayName,
                         )
                         if (uiState.word.note.isNotEmpty())
                             wordPropertyItem(
-                                label = "Note",/* TODO, string res */
+                                label = { firstCapStringResource(R.string.note) },
                                 value = uiState.word.note,
                             )
                     }
                 }
                 item {
                     WordInfoGroup(
-                        title = "Phonetic", // TODO, string res
+                        title = firstCapStringResource(R.string.phonetic),
                         icon = MDIconsSet.WordTranscription,
                     ) {
                         wordPropertyItem(
-                            label = "Transcription",/* TODO, string res */
+                            label = { firstCapStringResource(R.string.transcription) },
                             value = uiState.word.transcription.ifBlank { "-" },
                             trailingIcon = {
                                 IconButton(
@@ -170,12 +174,13 @@ fun MDWordDetailsViewModeScreen(
                 item {
                     if (uiState.word.tags.isNotEmpty()) {
                         WordInfoGroup(
-                            title = "Context tags", // TODO, string res
+                            title = firstCapStringResource(R.string.tags),
                             icon = MDIconsSet.WordTag,
                         ) {
                             uiState.word.tags.forEach { tag ->
                                 wordPropertyItem(
                                     value = tag.value,
+                                    label = { null },
                                     trailingIcon = tag.color?.let { color ->
                                         {
                                             MDTagColorIcon(
@@ -193,11 +198,11 @@ fun MDWordDetailsViewModeScreen(
                 item {
                     if (uiState.word.additionalTranslations.isNotEmpty()) {
                         WordInfoGroup(
-                            title = "Additional Translations", // TODO, string res
+                            title = firstCapStringResource(R.string.additional_translations),
                             icon = MDIconsSet.WordAdditionalTranslation
                         ) {
-                            uiState.word.additionalTranslations.forEach { example ->
-                                wordPropertyItem(value = example)
+                            uiState.word.additionalTranslations.forEach { translation ->
+                                wordPropertyItem(value = translation, label = { null })
                             }
                         }
                     }
@@ -205,11 +210,11 @@ fun MDWordDetailsViewModeScreen(
                 item {
                     if (uiState.word.examples.isNotEmpty()) {
                         WordInfoGroup(
-                            title = "Examples", // TODO, string res
+                            title = firstCapStringResource(R.string.examples),
                             icon = MDIconsSet.WordExample,
                         ) {
                             uiState.word.examples.forEach { example ->
-                                wordPropertyItem(value = example)
+                                wordPropertyItem(value = example, label = { null })
                             }
                         }
                     }
@@ -218,12 +223,11 @@ fun MDWordDetailsViewModeScreen(
                 item {
                     uiState.word.wordClass?.let { wordClass ->
                         WordInfoGroup(
-                            title = "Word Class ${wordClass.name}", // TODO, string res
+                            title = "${firstCapStringResource(R.string.word_class)} ${wordClass.name.meaningViewNormalize}",
                             icon = MDIconsSet.WordRelatedWords,
                         ) {
                             if (uiState.word.relatedWords.isEmpty()) {
-                                // TODO, string res
-                                wordPropertyItem(label = "No Relations", value = "")
+                                wordPropertyItem(label = { firstCapPluralsResource(R.plurals.relation, 0) }, value = "")
                             } else {
                                 uiState.word.relatedWords.forEach { relation ->
                                     wordPropertyItem(
@@ -239,13 +243,14 @@ fun MDWordDetailsViewModeScreen(
                     if (relations.isNotEmpty()) {
                         item {
                             WordInfoGroup(
-                                title = type.relationName,
-                                titleHint = type.strLabel,
+                                title = type.label,
+                                titleHint = type.hintLikeExample,
                                 icon = MDIconsSet.WordRelatedWords
                             ) {
                                 relations.forEach { relation ->
                                     wordPropertyItem(
                                         value = relation.relatedWord,
+                                        label = { null },
                                     )
                                 }
                             }
@@ -254,15 +259,15 @@ fun MDWordDetailsViewModeScreen(
                 }
                 item {
                     WordInfoGroup(
-                        title = "Creation",
+                        title = firstCapStringResource(R.string.creation),
                         icon = MDIconsSet.CreateTime
                     ) {
                         wordPropertyItem(
-                            label = "Created at",
+                            label = { firstCapStringResource(R.string.created_at) },
                             value = uiState.word.createdAt.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
                         )
                         wordPropertyItem(
-                            label = "Updated at",
+                            label = { firstCapStringResource(R.string.updated_at) },
                             value = uiState.word.updatedAt.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
                         )
                     }
@@ -272,11 +277,26 @@ fun MDWordDetailsViewModeScreen(
     }
 }
 
+
 private fun MDHorizontalCardScope.wordPropertyItem(
     modifier: Modifier = Modifier,
     value: String = "",
     leadingIcon: MDIconsSet? = null,
     label: String? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
+) = wordPropertyItem(
+    modifier = modifier,
+    value = value,
+    leadingIcon = leadingIcon,
+    label = { label },
+    trailingIcon = trailingIcon
+)
+
+private fun MDHorizontalCardScope.wordPropertyItem(
+    modifier: Modifier = Modifier,
+    value: String = "",
+    leadingIcon: MDIconsSet? = null,
+    label: @Composable () -> String? = { null },
     trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     item(
@@ -292,7 +312,7 @@ private fun MDHorizontalCardScope.wordPropertyItem(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            label?.let {
+            label()?.let { label ->
                 Text(text = label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
             }
             Text(

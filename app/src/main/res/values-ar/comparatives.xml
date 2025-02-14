@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="moderate">معتدل</string>
+    <string name="medium">متوسط</string>
+    <string name="normal">طبيعي</string>
+    <string name="average">متوسط</string>
+
+    <string name="fast">سريع</string>
+    <string name="slow">بطيء</string>
+    <string name="long_">طويل</string>
+    <string name="short_">قصير</string>
+
+    <string name="faster">أسرع</string>
+    <string name="slower">أبطأ</string>
+    <string name="longer">أطول</string>
+    <string name="shorter">أقصر</string>
+
+    <string name="faster_than_x">أسرع من %s</string>
+    <string name="slower_than_x">أبطأ من %s</string>
+    <string name="longer_than_x">أطول من %s</string>
+    <string name="shorter_than_x">أقصر من %s</string>
+
+    <string name="the_fastest">الأسرع</string>
+    <string name="the_slowest">الأبطأ</string>
+    <string name="the_longest">الأطول</string>
+    <string name="the_shortest">الأقصر</string>
+</resources>

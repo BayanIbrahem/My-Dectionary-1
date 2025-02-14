@@ -1,5 +1,10 @@
 package dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util
 
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
 
 private const val BASE_DIRECTORY = ""
@@ -21,6 +26,8 @@ private fun mdJoinToString(vararg parts: String) = parts.filterNot {
 
 enum class MDTheme(
     val key: String,
+    @StringRes
+    val labelRes: Int,
 
     val standardLightFileName: String = key + "/" + mdJoinToString(key, NORMAL_CONTRAST_PART, LIGHT_PART),
     val standardDarkFileName: String = key + "/" + mdJoinToString(key, NORMAL_CONTRAST_PART, DARK_PART),
@@ -32,13 +39,15 @@ enum class MDTheme(
     val heightConstrainsDarkFileName: String? = key + "/" + mdJoinToString(key, DARK_PART, HIGH_CONTRAST_PART),
 
     ) : LabeledEnum {
-    Blue("blue"),
-    Green("green"),
-    Yellow("yellow"),
-    Red("red");
+    Blue("blue", R.string.blue),
+    Green("green", R.string.green),
+    Yellow("yellow", R.string.yellow),
+    Red("red", R.string.red);
 
-    // TODO, string res
-    override val strLabel: String = key.replaceFirstChar { it.uppercaseChar() }
+    override val label: String
+        @Composable
+        @ReadOnlyComposable
+        get() = firstCapStringResource(labelRes)
 
     /**
      * light and dark theme of contrast

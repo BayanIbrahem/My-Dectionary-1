@@ -19,6 +19,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.upperStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
@@ -78,7 +81,7 @@ private fun BackupAndRestoreGroup(
     MDHorizontalCardGroup(
         modifier = modifier,
         title = {
-            Text("Backup & Restore") // TODO, string res
+            Text(firstCapStringResource(R.string.backup_restore))
         }
     ) {
         item(
@@ -87,17 +90,16 @@ private fun BackupAndRestoreGroup(
                 MDIcon(MDIconsSet.ImportFromFile, contentDescription = null)
             }
         ) {
-            Text("Import from file")// TODO, string res
+            Text(firstCapStringResource(R.string.import_from_file))
         }
 
         item(
             onClick = onClickExportToFile,
-            enabled = true, // TODO, not implemented yet
             leadingIcon = {
                 MDIcon(MDIconsSet.ExportToFile, contentDescription = null)
             }
         ) {
-            Text("Export to file")// TODO, string res
+            Text(firstCapStringResource(R.string.export_to_file))
         }
 
         item(
@@ -107,7 +109,7 @@ private fun BackupAndRestoreGroup(
                 MDIcon(MDIconsSet.Sync, contentDescription = null)
             },
         ) {
-            Text("Sync")// TODO, string res
+            Text(firstCapStringResource(R.string.sync))
         }
     }
 }
@@ -120,8 +122,7 @@ private fun ThemeGroup(
     MDHorizontalCardGroup(
         modifier = modifier,
         title = {
-            // TODO, string resource
-            Text("App Theme")
+            Text(firstCapStringResource(R.string.app_theme))
         }
     ) {
         item(
@@ -130,8 +131,7 @@ private fun ThemeGroup(
                 MDIcon(icon = MDIconsSet.Colors, contentDescription = null)
             }
         ) {
-            // TODO, string resource
-            Text("Theme")
+            Text(firstCapStringResource(R.string.theme))
         }
     }
 }
@@ -145,7 +145,7 @@ private fun WordsListGroup(
     MDHorizontalCardGroup(
         modifier = modifier,
         title = {
-            Text("Words List") // TODO, string res
+            Text(firstCapStringResource(R.string.words_list))
         },
     ) {
         checkboxItem(
@@ -156,14 +156,14 @@ private fun WordsListGroup(
             subtitle = {
                 Text(
                     if (isLiveTemplateEnabled) {
-                        "probability would be calculated in real time"
+                        firstCapStringResource(R.string.memorize_probability_live_preview_checked)
                     } else {
-                        "probability would be calculated once for each word"
+                        firstCapStringResource(R.string.memorize_probability_live_preview_unchecked)
                     }
                 )
             }
         ) {
-            Text("Memorize Probability live preview") // TODO, string res
+            Text(firstCapStringResource(R.string.memorize_probability_live_preview))
         }
     }
 
@@ -178,10 +178,10 @@ private fun WordDetailsGroup(
     MDHorizontalCardGroup(
         modifier = modifier,
         title = {
-            Text("Word Details") // TODO, string res
+            Text(firstCapStringResource(R.string.word_details))
         },
         subtitle = {
-            Text("Choose alignment source (left to right or right to left")
+            Text(firstCapStringResource(R.string.alignment_hint))
         }
     ) {
         WordDetailsDirectionSource.entries.forEach { source ->
@@ -208,10 +208,10 @@ private fun WordDetailsGroup(
                                 )
                             )
                             val text = when (current) {
-                                LayoutDirection.Ltr -> "LTR" // TODO, string res
-                                LayoutDirection.Rtl -> "RTL"
+                                LayoutDirection.Ltr -> upperStringResource(R.string.ltr)
+                                LayoutDirection.Rtl -> upperStringResource(R.string.rtl)
                             }
-                            append("CURRENT $text") // TODO, string res
+                            append("${upperStringResource(R.string.current)} $text")
                         }
                     }
                 )

@@ -37,9 +37,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
@@ -91,7 +94,7 @@ fun MDExportToFileScreen(
                     enter = fadeIn() + slideInHorizontally(),
                     exit = fadeOut() + slideOutHorizontally(),
                 ) {
-                    Text("Export") // TODO, string res
+                    Text(firstCapStringResource(R.string.export))
                 }
             }
         }
@@ -247,12 +250,16 @@ private fun ExportProgressDialog(
             ) {
                 MDIcon(MDIconsSet.ExportToFile) // TODO, icon res
                 val text = when (exportProgress) {
-                    is ExportProgress.Done -> "Export Done"
-                    is ExportProgress.Error -> "Export Error"
-                    is ExportProgress.Running -> "Export Running - ${exportProgress.partIndex.inc()} of ${exportProgress.availableParts.count()}"
+                    is ExportProgress.Done -> firstCapStringResource(R.string.export_done)
+                    is ExportProgress.Error -> firstCapStringResource(R.string.export_error)
+                    is ExportProgress.Running -> firstCapStringResource(
+                        R.string.export_running_x_of_y,
+                        exportProgress.partIndex.inc(),
+                        exportProgress.availableParts.count()
+                    )
                     null -> ""
-                } // TODO, string res
-                Text(text) // TODO, string res
+                }
+                Text(text)
             }
         },
         actions = {
@@ -260,10 +267,10 @@ private fun ExportProgressDialog(
                 primaryClickEnabled = true,
                 onPrimaryClick = onCancelProgress,
                 primaryActionLabel = if (exportProgress?.isRunning == true) {
-                    "Cancel"
+                    firstCapStringResource(R.string.cancel)
                 } else {
-                    "Close"
-                },// TODO, string res
+                    firstCapStringResource(R.string.close)
+                },
                 hasPrimaryAction = true,
                 hasSecondaryAction = false,
                 hasTertiaryAction = false,
@@ -271,18 +278,17 @@ private fun ExportProgressDialog(
             )
         },
     ) {
-        // TODO, string res
         when (exportProgress) {
             is ExportProgress.Done -> {
                 Column {
                     Text(
-                        text = "Export Done",
+                        text = firstCapStringResource(R.string.export_done),
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Output",
+                        text = firstCapStringResource(R.string.output),
                         style = MaterialTheme.typography.bodyLarge,
                     )
                     Row(

@@ -25,9 +25,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapPluralsResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchDialogInputField
@@ -54,10 +59,10 @@ fun MDLanguageSelectionDialog(
     onSelectWordSpace: (LanguageWordSpace) -> Unit,
     modifier: Modifier = Modifier,
     primaryListCountTitleBuilder: @Composable (count: Int) -> String = {
-        "Primary languages $it" // TODO, string res
+        eachFirstCapPluralsResource(R.plurals.x_language, it, stringResource(R.string.primary))
     },
     secondaryListCountTitleBuilder: @Composable (count: Int) -> String = {
-        "Secondary languages $it" // TODO, string res
+        eachFirstCapPluralsResource(R.plurals.x_language, it, stringResource(R.string.secondary))
     },
     hideWordCountAndProgress: Boolean = false,
 ) {
@@ -94,7 +99,7 @@ fun MDLanguageSelectionDialog(
                 onPrimaryClick = {
                     selectedWordSpace?.let(onSelectWordSpace)
                 },
-                primaryActionLabel = "Select Language", // TODO, string res
+                primaryActionLabel = firstCapStringResource(R.string.select_x, firstCapStringResource(R.string.language)),
                 primaryClickEnabled = selectedWordSpace != null,
                 onSecondaryClick = onDismissRequest,
             )
@@ -129,10 +134,10 @@ fun MDSimpleLanguageSelectionDialog(
     primaryList: List<LanguageWordSpace>,
     secondaryList: List<LanguageWordSpace>,
     primaryListCountTitleBuilder: @Composable (count: Int) -> String = {
-        "Primary languages $it" // TODO, string res
+        eachFirstCapPluralsResource(R.plurals.x_language, it, stringResource(R.string.primary))
     },
     secondaryListCountTitleBuilder: @Composable (count: Int) -> String = {
-        "Secondary languages $it" // TODO, string res
+        eachFirstCapPluralsResource(R.plurals.x_language, it, stringResource(R.string.secondary))
     },
     hideWordCountAndProgress: Boolean = true,
 ) {
@@ -166,8 +171,8 @@ private fun LanguageSearchBar(
         searchQuery = query,
         onSearchQueryChange = onQueryChange,
         modifier = modifier,
-        label = "Language",// TODO, string res
-        placeholder = "${randomLanguage.code}, ${randomLanguage.selfDisplayName} or ${randomLanguage.localDisplayName}", // TODO, string res
+        label = stringResource(R.string.language),
+        placeholder = "${randomLanguage.code}, ${stringResource(R.string.x_or_y, randomLanguage.selfDisplayName, randomLanguage.localDisplayName)}",
     )
 }
 
@@ -181,10 +186,10 @@ private fun LanguagesContent(
     modifier: Modifier = Modifier,
     hideWordCountAndProgress: Boolean = false,
     primaryListCountTitleBuilder: @Composable (count: Int) -> String = {
-        "Primary languages $it" // TODO, string res
+        eachFirstCapPluralsResource(R.plurals.x_language, it, stringResource(R.string.primary))
     },
     secondaryListCountTitleBuilder: @Composable (count: Int) -> String = {
-        "Secondary languages $it" // TODO, string res
+        eachFirstCapPluralsResource(R.plurals.x_language, it, stringResource(R.string.secondary))
     },
 ) {
     val primaryItemsCount by remember(primaryList) {
@@ -278,7 +283,7 @@ private fun LanguagesContent(
             // empty list
             item {
                 Text(
-                    text = "No languages", // TODO, string res
+                    text = eachFirstCapPluralsResource(R.plurals.language, 0),
                     modifier = Modifier
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
@@ -324,7 +329,7 @@ private fun MDWordSpaceCardItem2(
             )
         },
         subtitle = {
-            Text("${wordSpace.wordsCount} words") // TODO string res
+            Text(pluralStringResource(R.plurals.word, 0))
         }
     ) {
         Text(wordSpace.localDisplayName)
