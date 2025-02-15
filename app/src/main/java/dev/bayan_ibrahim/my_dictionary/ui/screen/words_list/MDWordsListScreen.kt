@@ -267,7 +267,7 @@ fun MDWordsListScreen(
         runningDeleteMessage = stringResource(R.string.delete_in_progress_hint),
         confirmDeleteMessage = stringResource(
             R.string.confirm_delete_x_hint,
-            firstCapPluralsResource(R.plurals.word, selectedWordsCount),
+            firstCapPluralsResource(res = R.plurals.word, quantity = selectedWordsCount),
         )
     )
     // delete word space confirm dialog:

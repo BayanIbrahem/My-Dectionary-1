@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="word">
-        <item quantity="zero">no words</item>
-        <item quantity="one">one word</item>
-        <item quantity="other">%d words</item>
+        <item quantity="zero">%1$d no words</item>
+        <item quantity="one">%1$d one word</item>
+        <item quantity="other">%1$d words</item>
     </plurals>
     <plurals name="tag">
         <item quantity="zero">no tags</item>
         <item quantity="one">one tag</item>
-        <item quantity="other">%d tags</item>
+        <item quantity="other">%1$d tags</item>
     </plurals>
 
     <plurals name="tags_tree">
         <item quantity="zero">no tags trees</item>
         <item quantity="one">one tags tree</item>
-        <item quantity="other">%d tags trees</item>
+        <item quantity="other">%1$d tags trees</item>
     </plurals>
 
     <plurals name="marker_tag">
         <item quantity="zero">no marker tags</item>
         <item quantity="one">one marker tag</item>
-        <item quantity="other">%d marker tags</item>
+        <item quantity="other">%1$d marker tags</item>
     </plurals>
     <plurals name="word_class">
         <item quantity="zero">no word classes</item>
         <item quantity="one">one word class</item>
-        <item quantity="other">%d word classes</item>
+        <item quantity="other">%1$d word classes</item>
     </plurals>
     <plurals name="relation">
         <item quantity="zero">no word relations</item>
         <item quantity="one">one relation</item>
-        <item quantity="other">%d relations</item>
+        <item quantity="other">%1$d relations</item>
     </plurals>
     <plurals name="related_word">
         <item quantity="zero">no related words</item>
         <item quantity="one">one related word</item>
-        <item quantity="other">%d related words</item>
+        <item quantity="other">%1$d related words</item>
     </plurals>
     <plurals name="lexical_relation">
         <item quantity="zero">no lexical relations</item>
         <item quantity="one">one lexical relation</item>
-        <item quantity="other">%d lexical relations</item>
+        <item quantity="other">%1$d lexical relations</item>
     </plurals>
     <plurals name="word_class_relation">
         <item quantity="zero">no word class relations</item>
         <item quantity="one">one word class relation</item>
-        <item quantity="other">%d word class relations</item>
+        <item quantity="other">%1$d word class relations</item>
     </plurals>
     <plurals name="language">
         <item quantity="zero">no languages</item>
         <item quantity="one">one language</item>
-        <item quantity="other">%d languages</item>
+        <item quantity="other">%1$d languages</item>
     </plurals>
 
     <plurals name="x_language">
@@ -61,121 +61,121 @@
     <plurals name="word_space">
         <item quantity="zero">no word spaces</item>
         <item quantity="one">one word space</item>
-        <item quantity="other">%d word spaces</item>
+        <item quantity="other">%1$d word spaces</item>
     </plurals>
     <plurals name="color">
         <item quantity="zero">no colors</item>
         <item quantity="one">one color</item>
-        <item quantity="other">%d colors</item>
+        <item quantity="other">%1$d colors</item>
     </plurals>
     <plurals name="train">
         <item quantity="zero">no trains</item>
         <item quantity="one">one train</item>
-        <item quantity="other">%d trains</item>
+        <item quantity="other">%1$d trains</item>
     </plurals>
     <plurals name="history">
         <item quantity="zero">no histories</item>
         <item quantity="one">one history</item>
-        <item quantity="other">%d histories</item>
+        <item quantity="other">%1$d histories</item>
     </plurals>
 
     <plurals name="train_history">
         <item quantity="zero">no train histories</item>
         <item quantity="one">one train history</item>
-        <item quantity="other">%d train histories</item>
+        <item quantity="other">%1$d train histories</item>
     </plurals>
     <plurals name="entry">
         <item quantity="zero">no entries</item>
         <item quantity="one">one entry</item>
-        <item quantity="other">%d entries</item>
+        <item quantity="other">%1$d entries</item>
     </plurals>
     <plurals name="history_entry">
         <item quantity="zero">no history entries</item>
         <item quantity="one">one history entry</item>
-        <item quantity="other">%d history entries</item>
+        <item quantity="other">%1$d history entries</item>
     </plurals>
     <plurals name="example">
         <item quantity="zero">no examples</item>
         <item quantity="one">one example</item>
-        <item quantity="other">%d examples</item>
+        <item quantity="other">%1$d examples</item>
     </plurals>
     <plurals name="meaning">
         <item quantity="zero">no meanings</item>
         <item quantity="one">one meaning</item>
-        <item quantity="other">%d meanings</item>
+        <item quantity="other">%1$d meanings</item>
     </plurals>
     <plurals name="translation">
         <item quantity="zero">no translations</item>
         <item quantity="one">one translation</item>
-        <item quantity="other">%d translations</item>
+        <item quantity="other">%1$d translations</item>
     </plurals>
     <plurals name="additional_translation">
         <item quantity="zero">no additional translations</item>
         <item quantity="one">one additional translation</item>
-        <item quantity="other">%d additional translations</item>
+        <item quantity="other">%1$d additional translations</item>
     </plurals>
     <plurals name="note">
         <item quantity="zero">no notes</item>
         <item quantity="one">one note</item>
-        <item quantity="other">%d notes</item>
+        <item quantity="other">%1$d notes</item>
     </plurals>
 
     <plurals name="transcription">
         <item quantity="zero">no transcriptions</item>
         <item quantity="one">one transcription</item>
-        <item quantity="other">%d transcriptions</item>
+        <item quantity="other">%1$d transcriptions</item>
     </plurals>
 
     <plurals name="phonetic">
         <item quantity="zero">no phonetics</item>
         <item quantity="one">one phonetic</item>
-        <item quantity="other">%d phonetics</item>
+        <item quantity="other">%1$d phonetics</item>
     </plurals>
     <plurals name="theme">
         <item quantity="zero">no themes</item>
         <item quantity="one">one theme</item>
-        <item quantity="other">%d themes</item>
+        <item quantity="other">%1$d themes</item>
     </plurals>
 
     <plurals name="statistic">
         <item quantity="zero">no statistics</item>
         <item quantity="one">one statistic</item>
-        <item quantity="other">%d statistics</item>
+        <item quantity="other">%1$d statistics</item>
     </plurals>
 
     <plurals name="item">
         <item quantity="zero">no items</item>
         <item quantity="one">one item</item>
-        <item quantity="other">%d items</item>
+        <item quantity="other">%1$d items</item>
     </plurals>
 
     <plurals name="error">
         <item quantity="zero">no errors</item>
         <item quantity="one">one error</item>
-        <item quantity="other">%d errors</item>
+        <item quantity="other">%1$d errors</item>
     </plurals>
 
     <plurals name="warning">
         <item quantity="zero">no warnings</item>
         <item quantity="one">one warning</item>
-        <item quantity="other">%d warnings</item>
+        <item quantity="other">%1$d warnings</item>
     </plurals>
 
     <plurals name="profile">
         <item quantity="zero">no profiles</item>
         <item quantity="one">one profile</item>
-        <item quantity="other">%d profiles</item>
+        <item quantity="other">%1$d profiles</item>
     </plurals>
 
     <plurals name="tool">
         <item quantity="zero">no tools</item>
         <item quantity="one">one tool</item>
-        <item quantity="other">%d tools</item>
+        <item quantity="other">%1$d tools</item>
     </plurals>
 
     <plurals name="learning_group">
         <item quantity="zero">no learning groups</item>
         <item quantity="one">one learning group</item>
-        <item quantity="other">%d learning groups</item>
+        <item quantity="other">%1$d learning groups</item>
     </plurals>
 </resources>

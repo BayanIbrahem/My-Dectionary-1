@@ -67,7 +67,8 @@ enum class MDIconsSet {
     SystemTheme,
     Ltr,
     Rtl,
-    DeviceDirection,
+    DeviceDirection;
+    companion object
 }
 
 /**

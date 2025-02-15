@@ -193,9 +193,9 @@
     <string name="train_target">هدف التدريب</string>
     <string name="words_order">ترتيب الكلمات</string>
     <string name="select_language_hint">حدد لغة للبدء</string>
-    <string name="no_words_filter_hint">لا توجد كلمات تطابق عوامل التصفية الخاصة بك...</string>
+    <string name="no_words_filter_hint">لا توجد كلمات تطابق عوامل التصفية الخاصة بك…</string>
     <string name="no_words_add_hint">لا توجد كلمات حتى الآن، أضف بعض الكلمات أولاً</string>
-    <string name="delete_in_progress_hint">عملية الحذف قيد التشغيل، يرجى الانتظار...</string>
+    <string name="delete_in_progress_hint">عملية الحذف قيد التشغيل، يرجى الانتظار…</string>
     <string name="confirm_delete_x_hint">هل أنت متأكد من أنك تريد حذف %1$s؟\nلا يمكن التراجع عن هذا الإجراء.</string>
     <string name="search_query">استعلام البحث</string>
     <string name="car">سيارة</string>
@@ -203,4 +203,5 @@
     <string name="include_selected_tags_hint_on">يجب أن تحتوي أي نتيجة على الأقل على واحدة من العلامات المحددة</string>
     <string name="include_selected_tags_hint_off">يجب ألا تحتوي جميع النتائج على أي من العلامات المحددة</string>
     <string name="words_count_limit">حد عدد الكلمات</string>
+    <string name="train_statistics">إحصائيات التدريب</string>
 </resources>

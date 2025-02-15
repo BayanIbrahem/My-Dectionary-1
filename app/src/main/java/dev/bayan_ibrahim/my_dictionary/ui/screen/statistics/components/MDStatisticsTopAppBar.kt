@@ -17,8 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapPluralsResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
@@ -54,7 +58,7 @@ fun MDStatisticsTopAppBar(
     }
     MDTopAppBar(
         title = {
-            Text("Train Statistics")
+            Text(eachFirstCapStringResource(R.string.train_statistics))
         },
         modifier = modifier,
         isTopLevel = true,

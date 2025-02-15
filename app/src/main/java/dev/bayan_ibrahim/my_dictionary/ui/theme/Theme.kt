@@ -16,6 +16,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeVariant
@@ -114,3 +115,9 @@ fun MyDictionaryDynamicTheme(
         content = content
     )
 }
+
+val ColorScheme.logoGold
+    get() = Color(0xd4, 0xaf, 0x37)
+
+val ColorScheme.logoBlue
+    get() = Color(0x29, 0x4a, 0x73)

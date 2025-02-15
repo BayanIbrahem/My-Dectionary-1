@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Lexorge</string>
+    <string name="app_name" translatable="false">Lex</string>
     <string name="invalid_data">invalid data</string>
 
     <string name="abort_all">abort all</string>
@@ -204,5 +204,6 @@
     <string name="include_selected_tags_hint_on">any result should contains at least one of the selected tags</string>
     <string name="include_selected_tags_hint_off">all results should not contain any one of the selected tags</string>
     <string name="words_count_limit">words count limit</string>
+    <string name="train_statistics">train statistics</string>
 
 </resources>

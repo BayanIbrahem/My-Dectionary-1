@@ -14,7 +14,7 @@ fun capitalizeStringRes(
     capitalizer: StringCapitalizer,
     vararg args: Any,
 ): String {
-    return capitalizeString(stringResource(res, args), capitalizer)
+    return capitalizeString(stringResource(res, *args), capitalizer)
 }
 
 @Composable
@@ -23,7 +23,7 @@ fun capitalizeStringRes(
 fun StringCapitalizer.applyOn(
     @StringRes string: Int,
     vararg args: Any,
-) = capitalizeStringRes(string, this, args)
+) = capitalizeStringRes(string, this, *args)
 
 @Composable
 @ReadOnlyComposable
@@ -33,7 +33,7 @@ fun capitalizePluralsRes(
     capitalizer: StringCapitalizer,
     vararg args: Any,
 ): String {
-    return capitalizeString(pluralStringResource(res, quantity, args), capitalizer)
+    return capitalizeString(pluralStringResource(res, quantity, quantity, *args), capitalizer)
 }
 
 @Composable
@@ -43,35 +43,40 @@ fun StringCapitalizer.applyOn(
     @PluralsRes string: Int,
     quantity: Int,
     vararg args: Any,
-) = capitalizePluralsRes(string, quantity, this, args)
+) = capitalizePluralsRes(
+    string,
+    quantity,
+    this,
+    *args
+)
 
 @Composable
 @ReadOnlyComposable
 fun upperStringResource(
     @StringRes res: Int,
     vararg args: Any,
-) = StringCapitalizer.ALL_CAPS.applyOn(res, args)
+) = StringCapitalizer.ALL_CAPS.applyOn(res, *args)
 
 @Composable
 @ReadOnlyComposable
 fun lowerStringResource(
     @StringRes res: Int,
     vararg args: Any,
-) = StringCapitalizer.NONE_CAPS.applyOn(res, args)
+) = StringCapitalizer.NONE_CAPS.applyOn(res, *args)
 
 @Composable
 @ReadOnlyComposable
 fun firstCapStringResource(
     @StringRes res: Int,
     vararg args: Any,
-) = StringCapitalizer.FIRST_CHAR.applyOn(res, args)
+) = StringCapitalizer.FIRST_CHAR.applyOn(res, *args)
 
 @Composable
 @ReadOnlyComposable
 fun eachFirstCapStringResource(
     @StringRes res: Int,
     vararg args: Any,
-) = StringCapitalizer.EACH_FIRST_CHAR.applyOn(res, args)
+) = StringCapitalizer.EACH_FIRST_CHAR.applyOn(res, *args)
 
 @Composable
 @ReadOnlyComposable
@@ -79,7 +84,7 @@ fun upperPluralsResource(
     @PluralsRes res: Int,
     quantity: Int,
     vararg args: Any,
-) = StringCapitalizer.ALL_CAPS.applyOn(res, quantity, args)
+) = StringCapitalizer.ALL_CAPS.applyOn(res, quantity, *args)
 
 @Composable
 @ReadOnlyComposable
@@ -87,7 +92,7 @@ fun lowerPluralsResource(
     @PluralsRes res: Int,
     quantity: Int,
     vararg args: Any,
-) = StringCapitalizer.NONE_CAPS.applyOn(res, quantity, args)
+) = StringCapitalizer.NONE_CAPS.applyOn(res, quantity, *args)
 
 @Composable
 @ReadOnlyComposable
@@ -95,7 +100,7 @@ fun firstCapPluralsResource(
     @PluralsRes res: Int,
     quantity: Int,
     vararg args: Any,
-) = StringCapitalizer.FIRST_CHAR.applyOn(res, quantity, args)
+) = StringCapitalizer.FIRST_CHAR.applyOn(res, quantity, *args)
 
 @Composable
 @ReadOnlyComposable
@@ -103,4 +108,4 @@ fun eachFirstCapPluralsResource(
     @PluralsRes res: Int,
     quantity: Int,
     vararg args: Any,
-) = StringCapitalizer.EACH_FIRST_CHAR.applyOn(res, quantity, args)
+) = StringCapitalizer.EACH_FIRST_CHAR.applyOn(res, quantity, *args)
