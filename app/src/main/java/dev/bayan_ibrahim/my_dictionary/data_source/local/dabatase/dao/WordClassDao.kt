@@ -55,7 +55,7 @@ interface WordClassDao {
             SELECT * FROM $dbWordClassTable
         """
     )
-    fun getAllTagTypes(): Flow<List<WordClassWithRelation>>
+    fun getAllWordClasses(): Flow<List<WordClassWithRelation>>
 
     @Transaction
     @Query(
@@ -75,4 +75,5 @@ interface WordClassDao {
         """
     )
     fun getTagTypesOfLanguage(language: String): Flow<List<WordClassWithRelation>>
+
 }

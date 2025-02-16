@@ -3,7 +3,6 @@ package dev.bayan_ibrahim.my_dictionary.data
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.and
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
-import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassRelatedWordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassRelationWordsDao
@@ -19,11 +18,10 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordClassModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.MDFileWordPart
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.validateWith
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.file_part.validateWithDatabase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFilePartReader
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.core.read.MDFileReader
@@ -514,7 +512,7 @@ class MDRoomImportFromFileRepo(
         return let {
             scope.wordClassNameMapper[providedWordClassData.name.lowercase()]?.get(providedWordClassData.language.code)
         }?.let { id ->
-            wordClassDao.getTagType(id)?.asTagModel()
+            wordClassDao.getTagType(id)?.asWordClassModel()
         } ?: createNewWordClass(scope, providedWordClassData)
     }
 

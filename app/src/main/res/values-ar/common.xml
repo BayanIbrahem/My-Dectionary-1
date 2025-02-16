@@ -37,7 +37,7 @@
     <string name="x_without_y">%1$s بدون %2$s</string>
     <string name="x_selected_of_y">%1$s مُحدَّد من %2$s</string>
     <string name="x_selected">%1$s مُحدَّد</string>
-    <string name="from_x_to_y">من %1$s% إلى %2$s%</string>
+    <string name="from_x_to_y">من %1$s إلى %2$s</string>
 
     <string name="asc">تصاعدي</string>
     <string name="desc">تنازلي</string>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Lex</string>
+    <string name="app_name" translatable="false">Lexorge</string>
     <string name="invalid_data">invalid data</string>
 
     <string name="abort_all">abort all</string>
@@ -205,5 +205,10 @@
     <string name="include_selected_tags_hint_off">all results should not contain any one of the selected tags</string>
     <string name="words_count_limit">words count limit</string>
     <string name="train_statistics">train statistics</string>
+    <string name="export_preferences">Export Preferences</string>
+    <string name="export_file_type">Export file type</string>
+    <string name="choose_directory">Choose directory</string>
+    <string name="line_chart">Line chart</string>
+    <string name="bar_chart">Bar chart</string>
 
 </resources>

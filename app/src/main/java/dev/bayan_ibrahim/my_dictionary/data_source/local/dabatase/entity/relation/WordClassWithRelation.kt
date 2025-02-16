@@ -10,7 +10,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordCla
 
 data class WordClassWithRelation(
     @Embedded
-    val tag: WordClassEntity,
+    val wordClass: WordClassEntity,
     @Relation(
         entity = WordClassRelationEntity::class,
         parentColumn = dbWordClassId,

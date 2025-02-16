@@ -209,8 +209,8 @@ private fun FilterBody(
                     subtitle = {
                         val text = stringResource(
                             R.string.from_x_to_y,
-                            group.probabilityRange.start.times(100).roundToInt(),
-                            group.probabilityRange.endInclusive.times(100).roundToInt()
+                            group.probabilityRange.start.times(100).roundToInt().toString(),
+                            group.probabilityRange.endInclusive.times(100).roundToInt().toString()
                         )
                         Text(
                             text = text,

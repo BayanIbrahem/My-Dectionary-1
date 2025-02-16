@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -127,7 +128,6 @@ private val defaultMenuOffset = DpOffset(14.dp, 14.dp)
 private val defaultMenuPadding: Dp = 8.dp
 private val menuOffset = defaultMenuOffset + DpOffset(-defaultMenuPadding, defaultMenuPadding)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WordsListTopAppBarNormalMode(
     searchQuery: String,
@@ -140,7 +140,7 @@ private fun WordsListTopAppBarNormalMode(
     onNavigationIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var searchQuery by remember {
+    var localSearchQuery by remember {
         mutableStateOf(searchQuery)
     }
     val searchFieldFocusRequester by remember {
@@ -151,14 +151,19 @@ private fun WordsListTopAppBarNormalMode(
     var searchFieldHasFocus by remember {
         mutableStateOf(false)
     }
-    val searchFieldVisible by remember(searchQuery, searchFieldHasFocus) {
+    LaunchedEffect(searchQuery) {
+        if (!searchFieldHasFocus) {
+            localSearchQuery = searchQuery
+        }
+    }
+    val searchFieldVisible by remember(localSearchQuery, searchFieldHasFocus) {
         derivedStateOf {
             searchFieldHasFocus
         }
     }
-    val searchFieldNotEmpty by remember(searchQuery) {
+    val searchFieldNotEmpty by remember(localSearchQuery) {
         derivedStateOf {
-            searchQuery.isNotBlank()
+            localSearchQuery.isNotBlank()
         }
     }
 
@@ -258,10 +263,10 @@ private fun WordsListTopAppBarNormalMode(
         val factor by animateFloatAsState(if (searchFieldVisible) 1f else 0f)
         val height by animateDpAsState(if (searchFieldVisible) 92.dp else 0.dp)
         MDWordFieldTextField(
-            value = searchQuery,
+            value = localSearchQuery,
             onValueChange = {
                 onSearchQueryChange(it)
-                searchQuery = it
+                localSearchQuery = it
             },
             leadingIcon = MDIconsSet.SearchList,
             modifier = Modifier
@@ -356,7 +361,7 @@ private fun WordsListTopAppBarSelectionMode(
                     )
                     MenuItem(
                         leadingIcon = MDIconsSet.WordTag, // TODO, icon res
-                        text = "Append Context tags",
+                        text = firstCapStringResource(R.string.append_x, firstCapStringResource(R.string.tags)),
                         onClick = {
                             dismiss()
                             showSelectedTagsDialog = true

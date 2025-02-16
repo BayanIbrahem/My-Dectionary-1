@@ -204,4 +204,9 @@
     <string name="include_selected_tags_hint_off">يجب ألا تحتوي جميع النتائج على أي من العلامات المحددة</string>
     <string name="words_count_limit">حد عدد الكلمات</string>
     <string name="train_statistics">إحصائيات التدريب</string>
+    <string name="export_preferences">Export Preferences</string>
+    <string name="export_file_type">Export file type</string>
+    <string name="choose_directory">Choose directory</string>
+    <string name="line_chart">Line chart</string>
+    <string name="bar_chart">Bar chart</string>
 </resources>

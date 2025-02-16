@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.lowerPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchDialogInputField
@@ -329,7 +330,7 @@ private fun MDWordSpaceCardItem2(
             )
         },
         subtitle = {
-            Text(pluralStringResource(R.plurals.word, 0))
+            Text(lowerPluralsResource(R.plurals.word, wordSpace.wordsCount))
         }
     ) {
         Text(wordSpace.localDisplayName)

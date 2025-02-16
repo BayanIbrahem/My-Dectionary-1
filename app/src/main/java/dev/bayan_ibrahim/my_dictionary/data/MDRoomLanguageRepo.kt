@@ -2,6 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.data
 
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageWordSpaceDao
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.LanguageEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asLanguageModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordSpaceModel
@@ -12,6 +13,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.repo.LanguageRepo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map

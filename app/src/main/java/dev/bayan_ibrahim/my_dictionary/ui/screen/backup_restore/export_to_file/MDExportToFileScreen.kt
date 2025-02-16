@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.R
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
@@ -107,48 +108,48 @@ fun MDExportToFileScreen(
             modifier = Modifier.verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Column {
-                Text(
-                    text = "Export Preferences",
-                    style = MDHorizontalCardDefaults.styles().titleStyle
-                )
-                MDPlainTooltip(
-                    tooltipContent = {
-                        Column {
-                            Text("Move to each screen to select export data")
-                            Row {
-                                Text("* Words: ", fontWeight = FontWeight.Bold)
-                                Text("Words list screen")
-                            }
-                            Row {
-                                Text("* Languages: ", fontWeight = FontWeight.Bold)
-                                Text("Word spaces screen")
-                            }
-                            // TODO, add other options, and make options navigable
-                        }
-                    }
-                ) {
-                    Text(
-                        text = "Want select another strategy?",
-                        style = MDHorizontalCardDefaults.styles().subtitleStyle
-                    )
-                }
-                InputChip(
-                    selected = false,
-                    enabled = false,
-                    onClick = {},
-                    label = {
-                        Text(uiState.exportPreferences.label)
-                    }
-                )
-            }
+//            Column {
+//                Text(
+//                    text = eachFirstCapStringResource(R.string.export_preferences),
+//                    style = MDHorizontalCardDefaults.styles().titleStyle
+//                )
+//                MDPlainTooltip(
+//                    tooltipContent = {
+//                        Column {
+//                            Text("Move to each screen to select export data")
+//                            Row {
+//                                Text("* Words: ", fontWeight = FontWeight.Bold)
+//                                Text("Words list screen")
+//                            }
+//                            Row {
+//                                Text("* Languages: ", fontWeight = FontWeight.Bold)
+//                                Text("Word spaces screen")
+//                            }
+//                            // TODO, add other options, and make options navigable
+//                        }
+//                    }
+//                ) {
+//                    Text(
+//                        text = "Want select another strategy?",
+//                        style = MDHorizontalCardDefaults.styles().subtitleStyle
+//                    )
+//                }
+//                InputChip(
+//                    selected = false,
+//                    enabled = false,
+//                    onClick = {},
+//                    label = {
+//                        Text(uiState.exportPreferences.label)
+//                    }
+//                )
+//            }
 
             MDFilePartsSelector(
                 selectedParts = uiState.selectedParts,
                 onToggleAvailablePart = uiActions::onToggleSelectAvailablePart
             )
             MDOptionSelectionGroup(
-                title = "Export file type",
+                title = firstCapStringResource(R.string.export_file_type),
                 availableOptions = MDFileType.validEntries,
                 onSelectOption = uiActions::onSelectExportFileType,
                 selectedOption = uiState.exportFileType
@@ -158,9 +159,10 @@ fun MDExportToFileScreen(
             ) { result ->
                 result.data?.data?.let(uiActions::onExportDirectoryChange)
             }
+            val chooseDirectory = firstCapStringResource(R.string.choose_directory)
             val directoryValue by remember(uiState) {
                 derivedStateOf {
-                    uiState.exportDirectory?.name?.plus('/') ?: "Choose directory"
+                    uiState.exportDirectory?.name?.plus('/') ?: chooseDirectory
                 }
             }
             val onPrimaryContainer = MaterialTheme.colorScheme.onPrimaryContainer

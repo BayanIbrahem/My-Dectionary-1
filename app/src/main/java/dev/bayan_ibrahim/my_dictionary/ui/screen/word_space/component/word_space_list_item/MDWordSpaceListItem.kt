@@ -191,8 +191,11 @@ fun MDWordSpaceListItem(
                 state.tags.forEachIndexed { tagIndex, tag ->
                     WordSpaceEditableTagListItem(
                         label = {
-                            val value =
-                                if (state.isEditModeOn) tag.current.name else "${tag.current.name} x${tag.current.wordsCount}"
+                            val value by remember(state.isEditModeOn, tag.current.name, tag.current.wordsCount) {
+                                derivedStateOf{
+                                    if (state.isEditModeOn||tag.current.wordsCount == 0) tag.current.name else "${tag.current.name} x${tag.current.wordsCount}"
+                                }
+                            }
                             Text(
                                 text = value,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -226,8 +229,11 @@ fun MDWordSpaceListItem(
                         tag.current.relations.forEachIndexed { relationIndex, relation ->
                             WordSpaceEditableTagListItem(
                                 label = {
-                                    val value =
-                                        if (state.isEditModeOn) relation.label else "${relation.label} x${relation.wordsCount}"
+                                    val value by remember(state.isEditModeOn, relation.label, relation.wordsCount) {
+                                        derivedStateOf {
+                                            if (state.isEditModeOn || relation.wordsCount == 0) relation.label else "${relation.label} x${relation.wordsCount}"
+                                        }
+                                    }
                                     Text(
                                         text = value,
                                         style = MaterialTheme.typography.bodyMedium,

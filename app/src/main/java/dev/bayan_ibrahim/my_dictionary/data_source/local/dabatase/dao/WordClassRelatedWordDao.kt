@@ -75,5 +75,13 @@ interface WordClassRelatedWordDao {
             GROUP BY $dbWordClassRelatedWordRelationId
         """
     )
-    fun getRelatedWordsCount(): Map<@MapColumn("id") Long, @MapColumn("count") Int>
+    fun getRelatedWordsCount(): Flow<Map<@MapColumn("id") Long, @MapColumn("count") Int>>
+
+//    @Query(
+//        """
+//            SELECT $dbWordClassRelatedWordRelationId, COUNT($dbWordClassRelatedWordBaseWordId) as count FROM $dbWordClassRelatedWordTable
+//            GROUP BY $dbWordClassRelatedWordRelationId
+//        """
+//    )
+//    fun getWordsCountOfRelation(): Flow<Map<@MapColumn(dbWordClassRelatedWordRelationId) Long, @MapColumn("count") Int>>
 }

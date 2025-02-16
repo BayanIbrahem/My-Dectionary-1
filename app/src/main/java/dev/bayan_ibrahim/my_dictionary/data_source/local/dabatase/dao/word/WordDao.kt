@@ -3,6 +3,7 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
@@ -20,6 +21,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordMem
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordTranslation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClass
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassId
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import kotlinx.coroutines.flow.Flow
 
@@ -183,4 +185,19 @@ interface WordDao {
         if (query.isEmpty()) return "%"
         return query.searchQueryDbNormalize
     }
+
+    @Transaction
+    @Query(
+        """
+            SELECT $dbWordLanguageCode, COUNT(*) as "count" FROM $dbWordTable GROUP BY $dbWordLanguageCode
+        """
+    )
+    fun getWordsCountOfLanguage():Flow<Map<@MapColumn(dbWordLanguageCode) String, @MapColumn("count") Int>>
+    @Transaction
+    @Query(
+        """
+            SELECT $dbWordClass, COUNT(*) as "count" FROM $dbWordTable GROUP BY $dbWordClass
+        """
+    )
+    fun getWordsCountOfWordClasses():Flow<Map<@MapColumn(dbWordClass) Long, @MapColumn("count") Int>>
 }

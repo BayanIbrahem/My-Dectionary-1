@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="word">
-        <item quantity="zero">%1$d no words</item>
+        <item quantity="zero">no words</item>
         <item quantity="one">%1$d one word</item>
         <item quantity="other">%1$d words</item>
     </plurals>

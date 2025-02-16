@@ -22,7 +22,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.W
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelatedWords
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagModel
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordClassModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordModel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
@@ -151,7 +151,7 @@ class MDRoomWordRepo(
         val word = wordWithTagsAndRelatedWordsDao.getWordWithTagsAndRelatedWordsRelation(wordId) ?: return null
         val wordClass = word.word.wordClassId?.let { wordClassId ->
             wordClassDao.getTagType(wordClassId)
-        }?.asTagModel()
+        }?.asWordClassModel()
         return word.asWordModel(wordClass)
     }
 
@@ -159,8 +159,8 @@ class MDRoomWordRepo(
         .getWordsWithTagsAndRelatedWordsRelations(
             ids = ids
         ).map { list ->
-            val wordsClasses = wordClassDao.getAllTagTypes().first().associate {
-                it.tag.id to it.asTagModel()
+            val wordsClasses = wordClassDao.getAllWordClasses().first().associate {
+                it.wordClass.id to it.asWordClassModel()
             }
             list.asSequence().map { entity ->
                 entity.asWordModel(wordsClasses[entity.word.wordClassId])
@@ -179,7 +179,7 @@ class MDRoomWordRepo(
         mapper = { wordWithRelation ->
             val wordClass = wordWithRelation.word.wordClassId?.let { wordClassId ->
                 wordClassDao.getTagType(wordClassId)
-            }?.asTagModel()
+            }?.asWordClassModel()
             wordWithRelation.asWordModel(wordClass)
         }
     ) {

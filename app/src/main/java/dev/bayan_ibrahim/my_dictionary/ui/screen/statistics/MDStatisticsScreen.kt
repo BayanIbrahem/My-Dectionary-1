@@ -148,6 +148,7 @@ fun MDStatisticsScreen(
             item {
                 HorizontalPager(
                     modifier = Modifier.sizeIn(maxWidth = 400.dp, maxHeight = 400.dp),// TODO, fix chart size using a better way
+                    userScrollEnabled = false,
                     state = pagerState,
                 ) {
                     when (selectedChart) {

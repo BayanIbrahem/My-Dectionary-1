@@ -97,7 +97,7 @@ class DataModule {
         db: MDDataBase,
     ): LanguageRepo = MDRoomLanguageRepo(
         languageDao = db.getLanguageDao(),
-        wordSpaceDao = db.getLanguageWordSpaceDao()
+        wordSpaceDao = db.getLanguageWordSpaceDao(),
     )
 
     @Singleton

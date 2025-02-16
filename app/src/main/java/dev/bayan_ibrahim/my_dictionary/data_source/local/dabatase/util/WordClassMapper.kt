@@ -9,11 +9,15 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
 
-fun WordClassWithRelation.asTagModel(): WordClass = WordClass(
-    id = this.tag.id!!,
-    name = this.tag.name,
-    language = this.tag.language.code.getLanguage(),
-    relations = this.relations.map { it.asModelRelation() }
+fun WordClassWithRelation.asWordClassModel(
+    wordsCount: Int = 0,
+    relationWordsCount: Map<Long, Int> = emptyMap(),
+) = WordClass(
+    id = this.wordClass.id!!,
+    name = this.wordClass.name,
+    language = this.wordClass.language.code.getLanguage(),
+    relations = this.relations.map { it.asModelRelation(relationWordsCount[it.id] ?: 0) },
+    wordsCount = wordsCount,
 )
 
 private fun WordClassRelationEntity.asModelRelation(wordsCount: Int = 0) = WordClassRelation(label = label, id = id!!, wordsCount = wordsCount)
@@ -21,9 +25,9 @@ private fun WordClassRelationEntity.asModelRelation(wordsCount: Int = 0) = WordC
 fun WordClassWithRelation.asTagModelWithCount(relationsCount: Map<Long, Int>): WordClass {
     var tagWordsCount = 0
     return WordClass(
-        id = this.tag.id!!,
-        name = this.tag.name,
-        language = this.tag.language.code.getLanguage(),
+        id = this.wordClass.id!!,
+        name = this.wordClass.name,
+        language = this.wordClass.language.code.getLanguage(),
         relations = this.relations.map {
             it.asModelRelation(
                 wordsCount = relationsCount[it.id]?.also { relationWordCount ->
