@@ -139,6 +139,10 @@ dependencies {
 
     testImplementation(libs.junit)
 
+    // poi
+    implementation(libs.poi)
+    implementation(libs.poi.ooxml)
+
     coreLibraryDesugaring(libs.core.desugaring)
 
     androidTestImplementation(libs.androidx.junit)

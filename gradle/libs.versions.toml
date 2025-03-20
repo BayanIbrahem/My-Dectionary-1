@@ -7,7 +7,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
-composeBom = "2025.01.01"
+composeBom = "2025.02.00"
 paging = "3.3.5"
 coroutines = "1.9.0"
 hilt = "2.52"
@@ -26,7 +26,7 @@ protobuf = "3.25.2"
 protobufPlugin = "0.9.4"
 coil = "2.7.0"
 kotlinComposeCompiler = "1.5.15"
-desugaring = "2.1.4"
+desugaring = "2.1.5"
 storage = "1.5.0"
 kotlinxDatetime = "0.6.1"
 junitJunit = "4.12"
@@ -107,6 +107,8 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
 # desugaring
 # ______
+poi-ooxml = { group = "org.apache.poi", name = "poi-ooxml", version = "4.0.1" }
+poi = { group = "org.apache.poi", name = "poi", version = "4.0.1" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
