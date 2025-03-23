@@ -8,6 +8,7 @@ import org.xmlpull.v1.XmlPullParser
 fun XmlPullParser.getNextText(): Result<String> = runCatching {
     nextText()
 }
+
 /**
  * @return true if navigated to tag or false if tag is not found
  */
@@ -21,3 +22,10 @@ fun XmlPullParser.navigateToTag(tag: String): Result<Boolean> {
         return@runCatching false
     }
 }
+
+fun XmlPullParser.getAttributesMap(): Map<String, String> = (0..<this.attributeCount).mapNotNull {
+    Pair(
+        first = getAttributeName(it) ?: return@mapNotNull null,
+        second = getAttributeValue(it) ?: return@mapNotNull null
+    )
+}.toMap()

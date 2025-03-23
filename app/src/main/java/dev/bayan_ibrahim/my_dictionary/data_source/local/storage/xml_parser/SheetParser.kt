@@ -68,12 +68,7 @@ object SheetParser {
 
     private fun XmlPullParser.parserSheetCell(): Result<SheetCell> = navigateToTag(TAG_SHEET_DATA_CELL).mapCatching { exists ->
         if (exists) {
-            val attrs = (0..<this.attributeCount).mapNotNull {
-                Pair(
-                    first = getAttributeName(it) ?: return@mapNotNull null,
-                    second = getAttributeValue(it) ?: return@mapNotNull null
-                )
-            }.toMap()
+            val attrs = getAttributesMap()
 
             val key = attrs[ATTR_CELL_ID]?.let { SheetCellKey(it) } ?: throw IllegalArgumentException("Cell doesn't have a cell id")
             val type = attrs[ATTR_CELL_TYPE]
@@ -118,6 +113,7 @@ object SheetParser {
             throw IllegalArgumentException("Cell is not found")
         }
     }
+
 
     /**
      * parse cell value if it doesn't have a specific type

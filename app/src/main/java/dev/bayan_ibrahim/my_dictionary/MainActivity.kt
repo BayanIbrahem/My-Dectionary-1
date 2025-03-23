@@ -31,9 +31,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.FileManager
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.MDAndroidFileManager
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SharedStringsParser
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SheetCell
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SheetCellKey
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SheetParser
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SheetStyles
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.StylesParser
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFilePicker
@@ -79,7 +79,8 @@ class MainActivity : ComponentActivity() {
 fun XmlParserScreen(
     modifier: Modifier = Modifier,
     parser: SheetParser = SheetParser,
-    sharedStringsParser: SharedStringsParser = SharedStringsParser
+    sharedStringsParser: SharedStringsParser = SharedStringsParser,
+    stylesParser: StylesParser = StylesParser,
 ) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),
@@ -131,24 +132,45 @@ fun XmlParserScreen(
 //            Text(it.values.toString())
 //        }
 
-        var sheetSharedStrings: List<String>? by remember {
+//        var sheetSharedStrings: List<String>? by remember {
+//            mutableStateOf(null)
+//        }
+//        Column {
+//            Button(
+//                onClick = {
+//                    val result = inputStream?.let {
+//                        sharedStringsParser.parseSharedStrings(it)
+//                    }
+//                    sheetSharedStrings = result?.getOrNull()
+//                }
+//            ) {
+//                Text("Parse")
+//            }
+//        }
+//        Text("parse result")
+//        sheetSharedStrings?.let {
+//            Text(it.joinToString("\n"))
+//        }
+//    }
+
+        var sheetStyles: SheetStyles? by remember {
             mutableStateOf(null)
         }
         Column {
             Button(
                 onClick = {
                     val result = inputStream?.let {
-                        sharedStringsParser.parseSharedStrings(it)
+                        stylesParser.parseStyles(it)
                     }
-                    sheetSharedStrings = result?.getOrNull()
+                    sheetStyles = result?.getOrNull()
                 }
             ) {
                 Text("Parse")
             }
         }
         Text("parse result")
-        sheetSharedStrings?.let {
-            Text(it.joinToString("\n"))
+        sheetStyles?.let {
+            Text(it.toString())
         }
     }
 }
