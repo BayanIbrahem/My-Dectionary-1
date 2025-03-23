@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.FileManager
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.MDAndroidFileManager
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SharedStringsParser
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SheetCell
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SheetCellKey
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SheetParser
@@ -78,6 +79,7 @@ class MainActivity : ComponentActivity() {
 fun XmlParserScreen(
     modifier: Modifier = Modifier,
     parser: SheetParser = SheetParser,
+    sharedStringsParser: SharedStringsParser = SharedStringsParser
 ) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),
@@ -109,24 +111,44 @@ fun XmlParserScreen(
                 }
             }
         }
-        var sheetCells: Map<SheetCellKey, SheetCell>? by remember {
+//        var sheetCells: Map<SheetCellKey, SheetCell>? by remember {
+//            mutableStateOf(null)
+//        }
+//        Column {
+//            Button(
+//                onClick = {
+//                    val result = inputStream?.let {
+//                        parser.parseSheet(it)
+//                    }
+//                    sheetCells = result?.getOrNull()
+//                }
+//            ) {
+//                Text("Parse")
+//            }
+//        }
+//        Text("parse result")
+//        sheetCells?.let {
+//            Text(it.values.toString())
+//        }
+
+        var sheetSharedStrings: List<String>? by remember {
             mutableStateOf(null)
         }
         Column {
             Button(
                 onClick = {
                     val result = inputStream?.let {
-                        parser.parseSheet(it)
+                        sharedStringsParser.parseSharedStrings(it)
                     }
-                    sheetCells = result?.getOrNull()
+                    sheetSharedStrings = result?.getOrNull()
                 }
             ) {
                 Text("Parse")
             }
         }
         Text("parse result")
-        sheetCells?.let {
-            Text(it.values.toString())
+        sheetSharedStrings?.let {
+            Text(it.joinToString("\n"))
         }
     }
 }
