@@ -109,6 +109,8 @@ androidx-storage = { group = "androidx.test.services", name = "storage", version
 # ______
 poi-ooxml = { group = "org.apache.poi", name = "poi-ooxml", version = "4.0.1" }
 poi = { group = "org.apache.poi", name = "poi", version = "4.0.1" }
+xmlPull = {group = "xmlpull", name = "xmlpull", version = "1.1.3.1"}
+javax-xml-stream = {group = "javax.xml.stream", name = "stax-api", version = "1.0"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

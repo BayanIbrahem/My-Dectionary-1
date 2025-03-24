@@ -140,8 +140,11 @@ dependencies {
     testImplementation(libs.junit)
 
     // poi
-    implementation(libs.poi)
-    implementation(libs.poi.ooxml)
+//    implementation(libs.poi)
+//    implementation(libs.poi.ooxml)
+//    implementation(libs.xmlPull)
+//    implementation(libs.javax.xml.stream)
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     coreLibraryDesugaring(libs.core.desugaring)
 

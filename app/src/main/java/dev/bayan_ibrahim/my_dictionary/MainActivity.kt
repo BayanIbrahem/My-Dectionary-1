@@ -32,8 +32,8 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.Fi
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.file_manager.MDAndroidFileManager
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SharedStringsParser
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SheetParser
-import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.SheetStyles
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.StylesParser
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.poi.parseExcel
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDDocumentData
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFilePicker
@@ -153,24 +153,48 @@ fun XmlParserScreen(
 //        }
 //    }
 
-        var sheetStyles: SheetStyles? by remember {
+//        var sheetStyles: SheetStyles? by remember {
+//            mutableStateOf(null)
+//        }
+//        Column {
+//            Button(
+//                onClick = {
+//                    val result = inputStream?.let {
+//                        stylesParser.parseStyles(it)
+//                    }
+//                    sheetStyles = result?.getOrNull()
+//                }
+//            ) {
+//                Text("Parse")
+//            }
+//        }
+//        Text("parse result")
+//        sheetStyles?.let {
+//            Text(it.toString())
+//        }
+        var sheetData: List<List<String>>? by remember {
             mutableStateOf(null)
         }
         Column {
             Button(
                 onClick = {
                     val result = inputStream?.let {
-                        stylesParser.parseStyles(it)
+                        runCatching {
+                            parseExcel(it)
+                        }
+//                        stylesParser.parseStyles(it)
                     }
-                    sheetStyles = result?.getOrNull()
+                    sheetData = result?.getOrNull()
                 }
             ) {
                 Text("Parse")
             }
         }
         Text("parse result")
-        sheetStyles?.let {
-            Text(it.toString())
+        sheetData?.let {
+            Text(it.joinToString("\n") {
+                it.joinToString(" - ")
+            })
         }
     }
 }
