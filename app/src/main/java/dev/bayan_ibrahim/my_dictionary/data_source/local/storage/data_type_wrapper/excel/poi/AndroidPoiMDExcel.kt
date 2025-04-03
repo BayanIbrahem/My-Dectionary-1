@@ -1,6 +1,10 @@
-package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.poi
+package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.data_type_wrapper.excel.poi
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.atDefaultStartOfDay
+import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.data_type_wrapper.excel.MDExcel
+import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDCellData
+import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDRowCell
+import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDSheet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -16,8 +20,6 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.PipedInputStream
@@ -25,7 +27,7 @@ import java.io.PipedOutputStream
 import java.util.Date
 
 /**
- * An [ExcelManager] implementation for Android using Apache POI to handle Excel files.
+ * An [MDExcel] implementation for Android using Apache POI to handle Excel files.
  *
  * This class provides functionality for reading, writing, and manipulating Excel files,
  * including creating copies of templates, copying sheets, and exporting the modified file.
@@ -35,7 +37,7 @@ import java.util.Date
  *
  * @property isDisposed Indicates whether the workbook has been disposed.
  */
-class AndroidPoiExcelManager private constructor(private val workbook: Workbook) : ExcelManager {
+class AndroidPoiMDExcel private constructor(private val workbook: Workbook) : MDExcel {
     var isDisposed: Boolean = false
         private set
 
@@ -53,7 +55,7 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
 
     companion object {
         /**
-         * Creates an [AndroidPoiExcelManager] instance for working with XLSX files.
+         * Creates an [AndroidPoiMDExcel] instance for working with XLSX files.
          *
          * * **File Format**: Supports the modern, XML-based `.xlsx` format (Office Open XML).
          * * **Memory Usage**: Loads the entire file into memory, suitable for moderate-sized files.
@@ -62,19 +64,19 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
          * * **Use Cases**: Recommended for most `.xlsx` file operations.
          *
          * @param inputStream The [InputStream] containing the XLSX file data.
-         * @return A [Result] containing the created [AndroidPoiExcelManager], or an error.
+         * @return A [Result] containing the created [AndroidPoiMDExcel], or an error.
          * @see createSXSSF For very large XLSX files.
          * @see createHSSF For legacy XLS files.
          */
-        suspend fun createXSSF(inputStream: InputStream): Result<AndroidPoiExcelManager> {
+        suspend fun createXSSF(inputStream: InputStream): Result<AndroidPoiMDExcel> {
             return runCatching {
                 val workbook = XSSFWorkbook(inputStream)
-                return@runCatching AndroidPoiExcelManager(workbook)
+                return@runCatching AndroidPoiMDExcel(workbook)
             }
         }
 
         /**
-         * Creates an [AndroidPoiExcelManager] instance for processing very large XLSX files using streaming.
+         * Creates an [AndroidPoiMDExcel] instance for processing very large XLSX files using streaming.
          *
          * * **File Format**: Supports the modern, XML-based `.xlsx` format.
          * * **Memory Usage**: Minimizes memory usage by streaming data to disk, ideal for large files.
@@ -88,23 +90,23 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
          * @param rowAccessWindowSize The number of rows to keep in memory (default: 100).
          * @param compressTmpFiles Whether to compress temporary files (default: false).
          * @param useSharedStringsTable Whether to use a shared strings table (default: false).
-         * @return A [Result] containing the created [AndroidPoiExcelManager], or an error.
+         * @return A [Result] containing the created [AndroidPoiMDExcel], or an error.
          */
         suspend fun createSXSSF(
             inputStream: InputStream,
             rowAccessWindowSize: Int = 100,
             compressTmpFiles: Boolean = false,
-            useSharedStringsTable: Boolean = false
-        ): Result<AndroidPoiExcelManager> {
+            useSharedStringsTable: Boolean = false,
+        ): Result<AndroidPoiMDExcel> {
             return runCatching {
                 val xssfWorkbook = XSSFWorkbook(inputStream)
                 val workbook = SXSSFWorkbook(xssfWorkbook, rowAccessWindowSize, compressTmpFiles, useSharedStringsTable)
-                return@runCatching AndroidPoiExcelManager(workbook)
+                return@runCatching AndroidPoiMDExcel(workbook)
             }
         }
 
         /**
-         * Creates an [AndroidPoiExcelManager] instance for working with legacy XLS files.
+         * Creates an [AndroidPoiMDExcel] instance for working with legacy XLS files.
          *
          * * **File Format**: Supports the older, binary `.xls` format (Excel 97-2003).
          * * **Memory Usage**: Loads the entire file into memory, which can cause issues for large files.
@@ -113,12 +115,12 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
          * * **Use Cases**: Use for reading or writing smaller `.xls` files.
          *
          * @param inputStream The [InputStream] containing the XLS file data.
-         * @return A [Result] containing the created [AndroidPoiExcelManager], or an error.
+         * @return A [Result] containing the created [AndroidPoiMDExcel], or an error.
          */
-        suspend fun createHSSF(inputStream: InputStream): Result<AndroidPoiExcelManager> {
+        suspend fun createHSSF(inputStream: InputStream): Result<AndroidPoiMDExcel> {
             return runCatching {
                 val workbook = HSSFWorkbook(inputStream)
-                return@runCatching AndroidPoiExcelManager(workbook)
+                return@runCatching AndroidPoiMDExcel(workbook)
             }
         }
     }
@@ -138,6 +140,8 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
         sheetName: String,
         startRow: Int?,
         endRow: Int?,
+        limit: Int?,
+        countInvalidRows: Boolean,
         onRowRead: suspend (rowNumber: Int, rowData: List<MDRowCell>) -> Unit,
     ): Boolean {
         requireNotDisposed()
@@ -146,6 +150,8 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
             sheet = sheet,
             startRow = startRow,
             endRow = endRow,
+            limit = limit,
+            countInvalidRows = countInvalidRows,
             onRowRead = onRowRead,
         )
         return true
@@ -155,6 +161,8 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
         sheetIndex: Int,
         startRow: Int?,
         endRow: Int?,
+        limit: Int?,
+        countInvalidRows: Boolean,
         onRowRead: suspend (rowNumber: Int, rowData: List<MDRowCell>) -> Unit,
     ): Boolean {
         requireNotDisposed()
@@ -163,6 +171,8 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
             sheet = sheet,
             startRow = startRow,
             endRow = endRow,
+            limit = limit,
+            countInvalidRows = countInvalidRows,
             onRowRead = onRowRead,
         )
         return true
@@ -172,27 +182,39 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
      * Reads the rows from a specified sheet and provides the parsed data to a callback function.
      *
      * @param sheet The sheet to read.
-     * @param startRow The starting row index (optional, defaults to the first row).
-     * @param endRow The ending row index (optional, defaults to the last row).
+     * @param startRow The starting row index (optional, defaults to the first row), coerced at least to sheet first row.
+     * @param endRow The ending row index (optional, defaults to the last row), coerced at most to sheet last row.
+     * @param limit max lines of rows to read
+     * @param countInvalidRows if true then blank and invalid rows would be counted for the limit
      * @param onRowRead A callback function that receives the row number and a list of [MDRowCell] objects for each row.
      */
     private suspend fun readSheetData(
         sheet: Sheet,
         startRow: Int? = null,
         endRow: Int? = null,
+        limit: Int? = null,
+        countInvalidRows: Boolean = false,
         onRowRead: suspend (rowNumber: Int, rowData: List<MDRowCell>) -> Unit,
     ) {
         requireNotDisposed()
-        val firstRow = startRow ?: sheet.firstRowNum
-        val lastRow = endRow ?: sheet.lastRowNum
+        val firstRow = startRow?.coerceAtLeast(sheet.firstRowNum) ?: sheet.firstRowNum
+        val lastRow = endRow?.coerceAtMost(sheet.lastRowNum) ?: sheet.lastRowNum
+
+        var readRowsCount = 0
 
         for (rowIndex in firstRow..lastRow) {
-            val row = sheet.getRow(rowIndex) ?: continue // Skip if row is null
+            if (limit != null && readRowsCount >= limit) break
+            val row = sheet.getRow(rowIndex)
             val rowData = mutableListOf<MDRowCell>()
 
-            for (cell in row.cellIterator()) {
+            val iterator = row?.cellIterator() ?: (emptyList<Cell>().listIterator())
+            for (cell in iterator) {
                 rowData.add(getRowCell(cell))
             }
+            if (countInvalidRows || rowData.isNotEmpty()) {
+                readRowsCount++
+            }
+
             onRowRead(rowIndex, rowData)
         }
     }
@@ -273,17 +295,17 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
         workbook.write(outputStream)
     }
 
-    override suspend fun dispose() {
+    override fun close() {
         isDisposed = true
         workbook.close()
     }
 
     /**
-     * Copies the current [AndroidPoiExcelManager] instance into a new instance using XSSFWorkbook with streaming.
+     * Copies the current [AndroidPoiMDExcel] instance into a new instance using XSSFWorkbook with streaming.
      *
-     * @return A [Result] containing the new [AndroidPoiExcelManager] instance, or an error.
+     * @return A [Result] containing the new [AndroidPoiMDExcel] instance, or an error.
      */
-    suspend fun copyAsXSSF(): Result<AndroidPoiExcelManager> = withContext(Dispatchers.IO){
+    suspend fun copyAsXSSF(): Result<AndroidPoiMDExcel> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
             val pipedInputStream = PipedInputStream()
             val pipedOutputStream = PipedOutputStream(pipedInputStream)
@@ -298,18 +320,18 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
     }
 
     /**
-     * Copies the current [AndroidPoiExcelManager] instance into a new instance using SXSSFWorkbook with streaming.
+     * Copies the current [AndroidPoiMDExcel] instance into a new instance using SXSSFWorkbook with streaming.
      *
      * @param rowAccessWindowSize The number of rows to keep in memory (default: 100).
      * @param compressTmpFiles Whether to compress temporary files (default: false).
      * @param useSharedStringsTable Whether to use a shared strings table (default: false).
-     * @return A [Result] containing the new [AndroidPoiExcelManager] instance, or an error.
+     * @return A [Result] containing the new [AndroidPoiMDExcel] instance, or an error.
      */
     suspend fun copyAsSXSSF(
         rowAccessWindowSize: Int = 100,
         compressTmpFiles: Boolean = false,
-        useSharedStringsTable: Boolean = false
-    ): Result<AndroidPoiExcelManager> = withContext(Dispatchers.IO){
+        useSharedStringsTable: Boolean = false,
+    ): Result<AndroidPoiMDExcel> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
             val pipedInputStream = PipedInputStream()
             val pipedOutputStream = PipedOutputStream(pipedInputStream)
@@ -323,11 +345,11 @@ class AndroidPoiExcelManager private constructor(private val workbook: Workbook)
     }
 
     /**
-     * Copies the current [AndroidPoiExcelManager] instance into a new instance using HSSFWorkbook with streaming.
+     * Copies the current [AndroidPoiMDExcel] instance into a new instance using HSSFWorkbook with streaming.
      *
-     * @return A [Result] containing the new [AndroidPoiExcelManager] instance, or an error.
+     * @return A [Result] containing the new [AndroidPoiMDExcel] instance, or an error.
      */
-    suspend fun copyAsHSSF(): Result<AndroidPoiExcelManager> = withContext(Dispatchers.IO){
+    suspend fun copyAsHSSF(): Result<AndroidPoiMDExcel> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
             val pipedInputStream = PipedInputStream()
             val pipedOutputStream = PipedOutputStream(pipedInputStream)

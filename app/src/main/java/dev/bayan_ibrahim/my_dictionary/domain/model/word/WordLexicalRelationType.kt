@@ -85,7 +85,8 @@ enum class WordLexicalRelationType : IconedEnum, LabeledEnum {
         get() = stringResource(R.string.x_like_y, hint, example)
     override val icon: MDIconsSet
         get() = MDIconsSet.WordRelatedWords // TODO icon res
-//        get() = when(this) {
+
+    //        get() = when(this) {
 //            Synonym -> TODO()
 //            Antonym -> TODO()
 //            Hyponym -> TODO()
@@ -100,4 +101,14 @@ enum class WordLexicalRelationType : IconedEnum, LabeledEnum {
 //            Homograph -> TODO()
 //            Homophone -> TODO()
 //        }
+    companion object {
+        fun fromKeyOrNull(key: String): WordLexicalRelationType? = entries.firstOrNull {
+            it.name.equals(key, true)
+        }
+
+        fun validKey(
+            key: String,
+            ignoreCase: Boolean = true,
+        ): Boolean = entries.any { it.name.equals(key, ignoreCase) }
+    }
 }

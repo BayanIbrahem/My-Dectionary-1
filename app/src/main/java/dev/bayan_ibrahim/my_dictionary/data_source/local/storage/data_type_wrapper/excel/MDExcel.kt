@@ -1,9 +1,15 @@
-package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser.poi
+package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.data_type_wrapper.excel
 
-import java.io.InputStream
+import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDRowCell
+import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDSheet
+import java.io.Closeable
 import java.io.OutputStream
 
-interface ExcelManager {
+/**
+ * excel file wrapper, used for single file instance and should be disposed calling [close] or
+ * use [use] block
+ */
+interface MDExcel : Closeable {
     /**
      * Retrieves a list of sheets from the Excel file, with their types extracted from their names.
      *
@@ -17,6 +23,8 @@ interface ExcelManager {
      * @param sheetName The name of the sheet to read.
      * @param startRow optional value of the start row, if null first valid row in sheet would be taken
      * @param endRow optional value of the end row, if null last valid row in sheet would be taken
+     * @param limit max lines of rows to read
+     * @param countInvalidRows if true then blank and invalid rows would be counted for the limit
      * @param onRowRead A callback function that receives a list of [MDCellData] objects for each row.
      * @return true if the sheet is found (even if it is empty) false otherwise
      *
@@ -26,6 +34,8 @@ interface ExcelManager {
         sheetName: String,
         startRow: Int? = null,
         endRow: Int? = null,
+        limit: Int? = null,
+        countInvalidRows: Boolean = false,
         onRowRead: suspend (rowNumber: Int, rowData: List<MDRowCell>) -> Unit,
     ): Boolean
 
@@ -35,6 +45,8 @@ interface ExcelManager {
      * @param sheetIndex The index of the sheet to read.*
      * @param startRow optional value of the start row, if null first valid row in sheet would be taken
      * @param endRow optional value of the end row, if null last valid row in sheet would be taken
+     * @param limit max lines of rows to read
+     * @param countInvalidRows if true then blank and invalid rows would be counted for the limit
      * @param onRowRead A callback function that receives a list of [MDCellData] objects for each row.
      * @return true if the sheet is found (even if it is empty) false otherwise
      * **NOTE** this method is faster than [readSheetRows] that takes the sheet name
@@ -43,6 +55,8 @@ interface ExcelManager {
         sheetIndex: Int,
         startRow: Int? = null,
         endRow: Int? = null,
+        limit: Int? = null,
+        countInvalidRows: Boolean = false,
         onRowRead: suspend (rowNumber: Int, rowData: List<MDRowCell>) -> Unit,
     ): Boolean
 
@@ -52,6 +66,8 @@ interface ExcelManager {
      * @param sheet The sheet to read (in the code we use the [MDSheet.index] with [readSheetRows]).
      * @param startRow optional value of the start row, if null first valid row in sheet would be taken
      * @param endRow optional value of the end row, if null last valid row in sheet would be taken
+     * @param limit max lines of rows to read
+     * @param countInvalidRows if true then blank and invalid rows would be counted for the limit
      * @param onRowRead A callback function that receives a list of [MDCellData] objects for each row.
      * @return true if the sheet is found (even if it is empty) false otherwise
      */
@@ -59,9 +75,18 @@ interface ExcelManager {
         sheet: MDSheet,
         startRow: Int? = null,
         endRow: Int? = null,
+        limit: Int? = null,
+        countInvalidRows: Boolean = false,
         onRowRead: suspend (rowNumber: Int, rowData: List<MDRowCell>) -> Unit,
     ): Boolean {
-        return readSheetRows(sheetIndex = sheet.index, startRow = startRow, endRow = endRow, onRowRead = onRowRead)
+        return readSheetRows(
+            sheetIndex = sheet.index,
+            startRow = startRow,
+            endRow = endRow,
+            limit = limit,
+            countInvalidRows = countInvalidRows,
+            onRowRead = onRowRead
+        )
     }
 
 
@@ -95,7 +120,7 @@ interface ExcelManager {
         sheetName: String,
         startRow: Int = 0,
         writeProgress: (rowCount: Int) -> Unit = {},
-        rowDataProvider: suspend () -> List<MDRowCell>?
+        rowDataProvider: suspend () -> List<MDRowCell>?,
     ): Result<Int>
 
     /**
@@ -111,7 +136,7 @@ interface ExcelManager {
         sheetIndex: Int,
         startRow: Int = 0,
         writeProgress: (rowCount: Int) -> Unit = {},
-        rowDataProvider: suspend () -> List<MDRowCell>?
+        rowDataProvider: suspend () -> List<MDRowCell>?,
     ): Result<Int>
 
     /**
@@ -127,22 +152,18 @@ interface ExcelManager {
         sheet: MDSheet,
         startRow: Int = 0,
         writeProgress: (rowCount: Int) -> Unit = {},
-        rowDataProvider: suspend () -> List<MDRowCell>?
+        rowDataProvider: suspend () -> List<MDRowCell>?,
     ): Result<Int> = writeSheetRows(
         sheetIndex = sheet.index,
         startRow = startRow,
         writeProgress = writeProgress,
         rowDataProvider = rowDataProvider
     )
+
     /**
      * Exports the modified Excel file to a specified output stream.
      *
      * @param outputStream The output stream to write the exported file to.
      */
     suspend fun export(outputStream: OutputStream): Result<Unit>
-
-    /**
-     * Disposes of the Excel manager, releasing any resources.
-     */
-    suspend fun dispose()
 }

@@ -1,4 +1,4 @@
-package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.xml_parser
+package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.DEPRECATED_xml_parser
 
 import org.xmlpull.v1.XmlPullParser
 
