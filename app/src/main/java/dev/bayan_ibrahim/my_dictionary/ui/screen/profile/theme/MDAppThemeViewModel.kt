@@ -57,7 +57,7 @@ class MDAppThemeViewModel @Inject constructor(
     private suspend fun List<MDThemeContrast>.asThemeData(
         context: Context,
     ): MDThemeCardData = associateWith {
-        it.buildColorScheme(context).identifierTriple()
+        it.buildColorScheme(context)
     }
 
     fun getUiActions(

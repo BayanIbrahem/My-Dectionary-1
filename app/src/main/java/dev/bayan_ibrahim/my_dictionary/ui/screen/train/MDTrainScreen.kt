@@ -62,6 +62,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCa
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGridGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
@@ -69,6 +70,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDV
 import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
 import dev.bayan_ibrahim.my_dictionary.core.ui.IconSegmentedButton
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDTrainQuestionExtraInfo
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
@@ -545,27 +547,18 @@ private fun ExtraInfoDataAnimatedPart(
     valuesItems: Collection<String>,
     modifier: Modifier = Modifier,
 ) {
-    MDVerticalCard(
+    MDCard2(
         modifier = modifier
             .animateContentSize { _, _ -> }
             .width(IntrinsicSize.Max),
         header = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                MDIcon(icon)
-                Text(
-                    text = title,
-                    maxLines = 1
-                )
-            }
+            MDCard2ListItem(
+                title = title,
+                leadingIcon = {
+                    MDIcon(icon)
+                }
+            )
         },
-        cardClickable = false,
-        headerClickable = false,
-        contentModifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
     ) {
         FlowRow(
             modifier = Modifier

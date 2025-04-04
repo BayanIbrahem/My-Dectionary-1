@@ -1,36 +1,22 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,22 +28,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.MDNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningSearchNormalizer
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.searchQueryRegexNormalizer
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2Defaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_INSTANT
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
@@ -65,9 +48,8 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerp
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.DEFAULT_FRACTION
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun MDWordListItem(
     word: Word,
@@ -77,183 +59,147 @@ fun MDWordListItem(
      */
     searchQuery: Pair<String?, String?>,
     modifier: Modifier = Modifier,
-    colors: MDCardColors = MDCardDefaults.colors(),
+    headerTheme: MDCard2ListItemTheme = MDCard2Defaults.defaultHeaderTheme,
+    contentTheme: MDCard2ListItemTheme = MDCard2Defaults.defaultContentTheme,
     overrideHeaderColorsFromTags: Boolean = true,
     expanded: Boolean = true,
-    animationDuration: Int = 300,
-    animationEasing: Easing = FastOutSlowInEasing,
-    headerClickable: Boolean = true,
-    cardClickable: Boolean = true,
-    onClickHeader: () -> Unit = {},
-    onLongClickHeader: () -> Unit = {},
-    onClick: () -> Unit = {},
-    onLongClick: () -> Unit = {},
+    onClickHeader: (() -> Unit)? = null,
+    onLongClickHeader: (() -> Unit)? = null,
+    onDoubleClickHeader: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     isSpeakInProgress: Boolean = false,
-    onSpeak: () -> Unit = {},
-    primaryAction: @Composable RowScope.() -> Unit = {},
-    secondaryAction: @Composable RowScope.() -> Unit = {},
+    onSpeak: (() -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
+    onTrailingClick: (() -> Unit)? = null,
 ) {
-    val intSizeTween by remember(animationEasing, animationDuration) {
-        derivedStateOf { tween<IntSize>(animationDuration, easing = animationEasing) }
-    }
-    val floatTween by remember(animationEasing, animationDuration) {
-        derivedStateOf { tween<Float>(animationDuration, easing = animationEasing) }
-    }
-
     val mayNotMatchMeaningOrTranslation: Boolean by remember(searchQuery) {
         derivedStateOf {
             searchQuery.first != null && searchQuery.second != null
         }
     }
-    val surfaceColor = MaterialTheme.colorScheme.surface
-    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
-    val updatedColors by remember(colors, overrideHeaderColorsFromTags, surfaceColor, onSurfaceColor) {
+    val firstValidTagColor by remember(overrideHeaderColorsFromTags, word.tags) {
         derivedStateOf {
             if (overrideHeaderColorsFromTags) {
-                word.tags.firstNotNullOfOrNull { it.color }?.let { seed ->
-                    colors.copy(
-                        headerContainerColor = seed.lerp(surfaceColor),
-                        headerContentColor = seed.lerp(onSurfaceColor),
-                    )
-                } ?: colors
+                word.tags.firstNotNullOfOrNull { it.color }
             } else {
-                colors
+                null
             }
         }
     }
-    MDVerticalCard(
+
+    val updatedHeaderTheme = firstValidTagColor?.let {
+        contentTheme.lerp(seed = it, fraction = DEFAULT_FRACTION)
+    } ?: headerTheme
+
+    MDCard2(
         modifier = modifier,
-        headerClickable = headerClickable,
-        colors = updatedColors,
-        cardClickable = cardClickable,
-        onClickHeader = onClickHeader,
-        onLongClickHeader = onLongClickHeader,
         onClick = onClick,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        headerTheme = updatedHeaderTheme,
+        contentTheme = contentTheme,
         header = {
-            Row(
-                modifier = Modifier.align(Alignment.CenterStart),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-
-                ) {
-                IconButton(
-                    enabled = !isSpeakInProgress,
-                    onClick = onSpeak
-                ) {
+            MDCard2ListItem(
+                title = buildAnnotatedString {
+                    val meaning = word.meaning.formatBySearchQuery(
+                        searchQuery = searchQuery.first,
+                        style = MaterialTheme.typography.bodyLarge.toSpanStyle(),
+                        mayNotMatch = mayNotMatchMeaningOrTranslation,
+                        contentColor = updatedHeaderTheme.titleColor,
+                        containerColor = updatedHeaderTheme.containerColor,
+                    )
+                    append(meaning)
+                },
+                subtitle = word.transcription.nullIfInvalid()?.let {
+                    buildAnnotatedString {
+                        append(it)
+                    }
+                },
+                onClick = onClickHeader,
+                onLongClick = onLongClickHeader,
+                onDoubleClick = onDoubleClickHeader,
+                onLeadingClick = onSpeak,
+                leadingIcon = {
                     AnimatedContent(
                         targetState = isSpeakInProgress,
                     ) {
                         if (it) {
-                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator()
                         } else {
                             MDIcon(MDIconsSet.WordTranscription) // TODO, icon res
                         }
                     }
-                }
-                Text(
-                    text = buildAnnotatedString {
-                        val meaning = word.meaning.formatBySearchQuery(
-                            searchQuery = searchQuery.first,
-                            style = MaterialTheme.typography.bodyLarge.toSpanStyle(),
-                            mayNotMatch = mayNotMatchMeaningOrTranslation,
-                            textColor = updatedColors.headerContentColor,
-                            backgroundColor = updatedColors.headerContainerColor
-                        )
-                        append(meaning)
-                        pushStyle(MaterialTheme.typography.labelSmall.toSpanStyle())
-                        append("  " + word.transcription)
-                    },
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                primaryAction()
-                secondaryAction()
-            }
-        },
-        footerModifier = Modifier
-            .fillMaxWidth()
-            .padding(MDCardDefaults.footerPaddingValues),
-        footer = {
-            if (word.tags.isNotEmpty()) {
-                Text(
-                    modifier = Modifier.align(Alignment.BottomStart),
-                    text = word.tags.random().value,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Text(
-                modifier = Modifier.align(Alignment.BottomEnd),
-                text = word.wordClass?.name ?: "",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                trailingIcon = trailingIcon,
+                onTrailingClick = onTrailingClick,
             )
-        },
+        }
     ) {
-        Column(
-            modifier = Modifier.align(Alignment.CenterStart),
-        ) {
-            val enterTransaction by remember(floatTween, intSizeTween) {
-                derivedStateOf {
-                    fadeIn(animationSpec = floatTween) + expandVertically(animationSpec = intSizeTween)
-                }
-            }
-
-            val exitTransaction by remember(floatTween, intSizeTween) {
-                derivedStateOf {
-                    fadeOut(animationSpec = floatTween) + shrinkVertically(animationSpec = intSizeTween)
-                }
-            }
-            FlowRow {
-                Text(
-                    text = word.translation.formatBySearchQuery(
-                        searchQuery = searchQuery.second,
-                        style = MaterialTheme.typography.bodyMedium.toSpanStyle().copy(
-                            fontWeight = FontWeight.Bold,
-                        ),
-                        mayNotMatch = mayNotMatchMeaningOrTranslation,
-                        textColor = colors.contentContentColor,
-                        backgroundColor = colors.contentContainerColor,
-                    ),
-                )
-                word.additionalTranslations.forEach { additionalTranslation ->
-                    AnimatedVisibility(
-                        visible = expanded,
-                        enter = enterTransaction,
-                        exit = exitTransaction,
-                    ) {
-                        Text(
-                            text = ", $additionalTranslation",
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                        )
-                    }
-                }
-            }
-            AnimatedVisibility(
-                visible = expanded,
-                enter = enterTransaction,
-                exit = exitTransaction,
+        // Translation
+        MDCard2ListItem(
+            title = word.translation,
+            subtitle = word.wordClass?.name,
+            leadingIcon = {
+                MDIcon(MDIconsSet.WordMeaning)
+            },
+        )
+        AnimatedContent(expanded) { expanded ->
+            CompositionLocalProvider(
+                LocalTextStyle provides contentTheme.subtitleStyle,
+                LocalContentColor provides contentTheme.subtitleColor,
             ) {
-                Column(
-                    modifier = Modifier.padding(top = 4.dp),
-                ) {
-                    Text(
-                        modifier = Modifier.basicMarquee(),
-                        text = if (word.examples.isEmpty()) {
-                            firstCapPluralsResource(R.plurals.example, 0)
-                        } else {
-                            firstCapStringResource(R.string.examples)
-                        },
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    word.examples.forEach { example ->
-                        Text(
-                            modifier = Modifier.basicMarquee(),
-                            text = example,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
+                if (expanded) {
+                    val source by remember(word) {
+                        derivedStateOf {
+                            if (word.note.isNotBlank()) {
+                                listOf(word.note)
+                            } else if (word.examples.isNotEmpty()) {
+                                word.examples
+                            } else if (word.additionalTranslations.isNotEmpty()) {
+                                word.additionalTranslations
+                            } else if (word.tags.isNotEmpty()) {
+                                word.tags.map { it.value }
+                            } else if (word.wordClass != null) {
+                                listOf(word.wordClass.name) + word.relatedWords.map {
+                                    buildString {
+                                        append(it.relationLabel)
+                                        append(": ")
+                                        append(it.value)
+                                    }
+                                }
+                            } else {
+                                emptyList()
+                            }
+                        }
+                    }
+                    val itemModifier by remember(source.count()) {
+                        derivedStateOf {
+                            if (source.count() == 1) {
+                                Modifier
+                            } else {
+                                Modifier.basicMarquee(Int.MAX_VALUE, animationMode = MarqueeAnimationMode.WhileFocused)
+                            }
+                        }
+                    }
+                    val itemMaxLines by remember(source.count()) {
+                        derivedStateOf {
+                            if (source.count() == 1) {
+                                3
+                            } else {
+                                1
+                            }
+                        }
+                    }
+                    Column {
+                        source.forEach {
+                            Text(
+                                text = it,
+                                maxLines = itemMaxLines,
+                                modifier = itemModifier,
+                            )
+                        }
                     }
                 }
             }
@@ -261,13 +207,14 @@ fun MDWordListItem(
     }
 }
 
+
 private fun String.formatBySearchQuery(
     searchQuery: String?,
     style: SpanStyle,
-    textColor: Color,
-    backgroundColor: Color,
-    highlightedTextColor: Color = backgroundColor,
-    highlightBackgroundColor: Color = textColor,
+    contentColor: Color,
+    containerColor: Color,
+    highlightedTextColor: Color = containerColor,
+    highlightBackgroundColor: Color = contentColor,
     textNormalizer: MDNormalizer = meaningSearchNormalizer,
     queryNormalizer: MDNormalizer = searchQueryRegexNormalizer,
     mayNotMatch: Boolean = false,
@@ -294,8 +241,8 @@ private fun String.formatBySearchQuery(
         }.flatten().toSet()
     }
     val normalTextStyle = style.copy(
-        color = textColor,
-        background = backgroundColor
+        color = contentColor,
+        background = containerColor
     )
 
     val highlightedTextStyle = style.copy(
@@ -354,6 +301,7 @@ private fun MDWordListItemPreview() {
                         meaning = "Auge",
                         translation = "Eye",
                         additionalTranslations = listOf("Human Eye", "Human Eye 2"),
+                        note = "THis is some long note for the word THis is some long note for the word THis is some long note for the word THis is some long note for the word THis is some long note for the word ",
                         language = Language("de", "Deutsch", "German"),
                         tags = setOf(
                             Tag(value = "Human body"),
@@ -372,16 +320,13 @@ private fun MDWordListItemPreview() {
                         )
                     ),
                     expanded = expanded,
-                    primaryAction = {
+                    trailingIcon = {
                         IconButton(onClick = {
                             expanded = !expanded
                         }) {
                             MDIcon(MDIconsSet.Close)
                         }
                     },
-                    secondaryAction = {
-                        Checkbox(checked = false, onCheckedChange = null)
-                    }
                 )
             }
         }

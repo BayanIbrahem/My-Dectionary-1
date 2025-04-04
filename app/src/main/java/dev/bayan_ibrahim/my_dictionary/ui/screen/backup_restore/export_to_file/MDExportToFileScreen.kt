@@ -1,10 +1,10 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -15,17 +15,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,25 +30,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.R
-import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2Action
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
-import dev.bayan_ibrahim.my_dictionary.core.ui.MDPlainTooltip
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.data.ExportProgress
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
@@ -71,7 +61,6 @@ fun MDExportToFileScreen(
     uiState: MDExportToFileUiState,
     uiActions: MDExportToFileUiActions,
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
 ) {
     val scrollState = rememberScrollState()
     MDScreen(
@@ -175,35 +164,26 @@ fun MDExportToFileScreen(
                     }
                 }
             }
-            MDVerticalCard(
-                headerModifier = Modifier.height(56.dp),
-                headerClickable = true,
-                contentModifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp),
-                onClickHeader = {
-                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-                        addFlags(
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                                    Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-                        )
-                    }
-                    launcher.launch(intent)
-                },
+            MDCard2(
                 header = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    MDCard2ListItem(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                                addFlags(
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                                            Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                                )
+                            }
+                            launcher.launch(intent)
+                        },
+                        leading = {
+                            MDIcon(MDIconsSet.ExportToFile)
+                        }
                     ) {
-                        MDIcon(MDIconsSet.ExportToFile) // TODO, icon res, directory res
                         Text(
                             text = directoryValue,
-                            style = MDTextFieldDefaults.textStyle,
                             color = directoryColor,
-                            modifier = Modifier.weight(1f),
                         )
                     }
                 }
@@ -237,155 +217,149 @@ private fun ExportProgressDialog(
             exportProgress != null
         }
     }
-    MDAlertDialog(
-        modifier = modifier
-            .widthIn(250.dp, 300.dp)
-            .fillMaxWidth(),
-        showDialog = show,
-        onDismissRequest = {},
-        contentModifier = Modifier.padding(16.dp),
-        title = {
-            Row(
-                modifier = Modifier.fillMaxHeight(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                MDIcon(MDIconsSet.ExportToFile) // TODO, icon res
-                val text = when (exportProgress) {
-                    is ExportProgress.Done -> firstCapStringResource(R.string.export_done)
-                    is ExportProgress.Error -> firstCapStringResource(R.string.export_error)
-                    is ExportProgress.Running -> firstCapStringResource(
-                        R.string.export_running_x_of_y,
-                        exportProgress.partIndex.inc(),
-                        exportProgress.availableParts.count()
-                    )
-                    null -> ""
-                }
-                Text(text)
-            }
-        },
-        actions = {
-            MDAlertDialogActions(
-                primaryClickEnabled = true,
-                onPrimaryClick = onCancelProgress,
-                primaryActionLabel = if (exportProgress?.isRunning == true) {
-                    firstCapStringResource(R.string.cancel)
-                } else {
-                    firstCapStringResource(R.string.close)
-                },
-                hasPrimaryAction = true,
-                hasSecondaryAction = false,
-                hasTertiaryAction = false,
-                colors = MDDialogDefaults.colors(primaryActionColor = MaterialTheme.colorScheme.error),
-            )
-        },
-    ) {
-        when (exportProgress) {
-            is ExportProgress.Done -> {
-                Column {
-                    Text(
-                        text = firstCapStringResource(R.string.export_done),
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = firstCapStringResource(R.string.output),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val path by remember(exportProgress) {
-                            derivedStateOf {
-                                exportProgress.outputFile.filePath ?: "${exportProgress.outputDir.name}/${exportProgress.outputFile.name}"
-                            }
+    if (show)
+        Dialog(
+            onDismissRequest = {},
+            content = {
+                MDCard2(
+                    modifier = modifier,
+                    header = {
+                        val text = when (exportProgress) {
+                            is ExportProgress.Done -> firstCapStringResource(R.string.export_done)
+                            is ExportProgress.Error -> firstCapStringResource(R.string.export_error)
+                            is ExportProgress.Running -> firstCapStringResource(
+                                R.string.export_running_x_of_y,
+                                exportProgress.partIndex.inc(),
+                                exportProgress.availableParts.count()
+                            )
+
+                            null -> ""
                         }
-                        Text(
-                            text = path, // TODO, trim from start if long instead of trim from end
-                            modifier = Modifier.weight(1f),
-                            maxLines = 1
+                        MDCard2ListItem(
+                            title = text,
+                            leadingIcon = {
+                                MDIcon(MDIconsSet.ExportToFile) // TODO, icon res
+                            }
                         )
-                        IconButton(
-                            onClick = {
-                                // TODO, open export file location
-                            }
-                        ) {
-                            MDIcon(MDIconsSet.ExportToFile) // TODO, icon res
-                        }
-                    }
-                }
-            }
-
-            is ExportProgress.Error -> {
-                Column {
-                    Text(
-                        text = exportProgress.errorName,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.error
-                    )
-
-                    Text(
-                        text = exportProgress.label,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-
-            is ExportProgress.Running -> {
-                Column {
-                    val parts by remember(exportProgress.availableParts) {
-                        derivedStateOf {
-                            exportProgress.availableParts.sorted()
-                        }
-                    }
-                    parts.forEach { part ->
-                        val isCurrentPart by remember(part, exportProgress.currentFilePart) {
-                            derivedStateOf { exportProgress.currentFilePart == part }
-                        }
-                        val scale by animateFloatAsState(if (isCurrentPart) 1f else 0.67f)
-                        val alpha by animateFloatAsState(if (isCurrentPart) 1f else 0.5f)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .graphicsLayer {
-                                    this.scaleX = scale
-                                    this.scaleY = scale
-                                    this.alpha = alpha
+                    },
+                    footer = {
+                        MDCard2ActionRow {
+                            MDCard2Action(
+                                theme = if (exportProgress?.isRunning == true) {
+                                    MDCard2ListItemTheme.ErrorOnSurface
+                                } else {
+                                    MDCard2ListItemTheme.SurfaceContainer
                                 },
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(part.label)
-                            AnimatedVisibility(
+                                label = if (exportProgress?.isRunning == true) {
+                                    firstCapStringResource(R.string.cancel)
+                                } else {
+                                    firstCapStringResource(R.string.close)
+                                },
                                 modifier = Modifier.weight(1f),
-                                visible = isCurrentPart,
-                                enter = fadeIn(),
-                                exit = fadeOut(),
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    MDLinearProgressIndicator(
-                                        progress = exportProgress.progress,
-                                        modifier = Modifier.weight(1f)
+                                onClick = onCancelProgress,
+                            )
+                        }
+                    }
+                ) {
+                    AnimatedContent(exportProgress) { exportProgress ->
+                        when (exportProgress) {
+                            is ExportProgress.Done -> {
+                                Column {
+                                    MDCard2ListItem(
+                                        theme = MDCard2ListItemTheme.PrimaryOnSurface,
+                                        title = {
+                                            Text(
+                                                text = firstCapStringResource(R.string.export_done),
+                                                modifier = Modifier.fillMaxWidth(),
+                                                textAlign = TextAlign.Center,
+
+                                                )
+                                        },
                                     )
-                                    Text(
-                                        text = "${exportProgress.progress.times(100).roundToInt()}%",
-                                        style = MaterialTheme.typography.bodyMedium
+                                    val path by remember(exportProgress) {
+                                        derivedStateOf {
+                                            exportProgress.outputFile.filePath
+                                                ?: "${exportProgress.outputDir.name}/${exportProgress.outputFile.name}"
+                                        }
+                                    }
+                                    MDCard2ListItem(
+                                        title = path,
+                                        onLeadingClick = {
+                                            // TODO, open export file location
+                                        },
+                                        leadingIcon = {
+                                            MDIcon(MDIconsSet.ExportToFile) // TODO, icon res
+                                        }
                                     )
                                 }
                             }
+
+                            is ExportProgress.Error -> {
+                                MDCard2ListItem(
+                                    theme = MDCard2ListItemTheme.ErrorOnSurface,
+                                    title = exportProgress.errorName,
+                                    subtitle = exportProgress.label,
+                                    subtitleMaxLines = 3,
+                                )
+                            }
+
+                            is ExportProgress.Running -> {
+                                Column {
+                                    val parts by remember(exportProgress.availableParts) {
+                                        derivedStateOf {
+                                            exportProgress.availableParts.sorted()
+                                        }
+                                    }
+                                    parts.forEach { part ->
+                                        val isCurrentPart by remember(part, exportProgress.currentFilePart) {
+                                            derivedStateOf { exportProgress.currentFilePart == part }
+                                        }
+                                        val scale by animateFloatAsState(if (isCurrentPart) 1f else 0.67f)
+                                        val alpha by animateFloatAsState(if (isCurrentPart) 1f else 0.5f)
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .graphicsLayer {
+                                                    this.scaleX = scale
+                                                    this.scaleY = scale
+                                                    this.alpha = alpha
+                                                },
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Text(part.label)
+                                            AnimatedVisibility(
+                                                modifier = Modifier.weight(1f),
+                                                visible = isCurrentPart,
+                                                enter = fadeIn(),
+                                                exit = fadeOut(),
+                                            ) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                ) {
+                                                    MDLinearProgressIndicator(
+                                                        progress = exportProgress.progress,
+                                                        modifier = Modifier.weight(1f)
+                                                    )
+                                                    Text(
+                                                        text = "${exportProgress.progress.times(100).roundToInt()}%",
+                                                        style = MaterialTheme.typography.bodyMedium
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            null -> {}
                         }
                     }
                 }
-            }
 
-            null -> {}
-        }
-    }
+            }
+        )
 }
 
 @Preview

@@ -50,7 +50,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordListItem
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListDeleteConfirmDialog
+import dev.bayan_ibrahim.my_dictionary.core.ui.dialog.MDDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.component.MDWordsListTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.language_selection_dialog.MDLanguageSelectionDialogRoute
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -221,7 +221,7 @@ fun MDWordsListScreen(
                             word = word,
                             searchQuery = uiState.viewPreferencesQuery,
                             expanded = isExpanded,
-                            primaryAction = {
+                            trailingIcon = {
                                 if (uiState.isSelectModeOn) {
                                     Checkbox(checked = isSelected, onCheckedChange = null)
                                 } else {
@@ -258,7 +258,7 @@ fun MDWordsListScreen(
         onDismissDialog = uiActions::onHideLanguageWordSpacesDialog,
     )
     // delete words confirm dialog:
-    MDWordsListDeleteConfirmDialog(
+    MDDeleteConfirmDialog(
         showDialog = uiState.isSelectedWordsDeleteDialogShown,
         isDeleteRunning = uiState.isSelectedWordsDeleteProcessRunning,
         onCancel = uiActions::onCancelDeleteSelection,
@@ -271,7 +271,7 @@ fun MDWordsListScreen(
         )
     )
     // delete word space confirm dialog:
-    MDWordsListDeleteConfirmDialog(
+    MDDeleteConfirmDialog(
         showDialog = uiState.isLanguageWordSpaceDeleteDialogShown,
         isDeleteRunning = uiState.isLanguageWordSpaceDeleteProcessRunning,
         onCancel = uiActions::onCancelDeleteLanguageWordSpace,

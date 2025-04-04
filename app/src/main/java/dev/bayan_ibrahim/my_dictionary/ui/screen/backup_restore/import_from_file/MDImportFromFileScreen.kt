@@ -11,7 +11,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +28,6 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -48,22 +46,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutput
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabData
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CancelAction
+import dev.bayan_ibrahim.my_dictionary.core.ui.format
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDExtraTagsStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStrategy
@@ -242,62 +244,57 @@ private fun FileProgressDialog(
             }
         }
     }
-    MDBasicDialog(
-        modifier = modifier,
-        showDialog = showDialog,
-        onDismissRequest = {},
-        title = {
-            Row {
-                Text(
-                    text = firstCapStringResource(R.string.importing_data),
-                    modifier = Modifier.weight(1f),
-                )
-                passedTime?.let {
-                    Text("$passedTime", style = MaterialTheme.typography.labelMedium)
-                }
-            }
-        },
-        actions = {
-            TextButton(
-                onClick = onCancel,
-            ) {
-                Text(firstCapStringResource(R.string.cancel))
-            }
-        }
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    if (showDialog)
+        Dialog(
+            onDismissRequest = {},
         ) {
-            MDImportProgressStep(currentStep = summary.currentStep)
-            val horizontalPagerState = rememberPagerState { 2 }
-            val scope = rememberCoroutineScope()
-            Column {
-                MDTabRow(
-                    tabs = listOf(
-                        MDTabData.Label(eachFirstCapPluralsResource(R.plurals.error, summary.exceptions.values.sum())),
-                        MDTabData.Label(eachFirstCapPluralsResource(R.plurals.warning, summary.warnings.values.sum())),
-                    ),
-                    selectedTabIndex = horizontalPagerState.currentPage,
-                    onClickTab = { i, _ ->
-                        scope.launch {
-                            horizontalPagerState.animateScrollToPage(i)
+            MDCard2(
+                header = {
+                    MDCard2ListItem(
+                        title = firstCapStringResource(R.string.importing_data),
+                        subtitle = passedTime?.format
+                    )
+                },
+                footer = {
+                    MDCard2ActionRow {
+                        MDCard2CancelAction(onClick = onCancel)
+                    }
+                }
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    MDImportProgressStep(currentStep = summary.currentStep)
+                    val horizontalPagerState = rememberPagerState { 2 }
+                    val scope = rememberCoroutineScope()
+                    Column {
+                        MDTabRow(
+                            tabs = listOf(
+                                MDTabData.Label(eachFirstCapPluralsResource(R.plurals.error, summary.exceptions.values.sum())),
+                                MDTabData.Label(eachFirstCapPluralsResource(R.plurals.warning, summary.warnings.values.sum())),
+                            ),
+                            selectedTabIndex = horizontalPagerState.currentPage,
+                            onClickTab = { i, _ ->
+                                scope.launch {
+                                    horizontalPagerState.animateScrollToPage(i)
+                                }
+                            }
+                        )
+                        HorizontalPager(
+                            state = horizontalPagerState,
+                            modifier = Modifier.heightIn(max = 200.dp),
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            if (it == 0) {
+                                SummaryExceptions(exceptions = summary.exceptions)
+                            } else {
+                                SummaryWarnings(warnings = summary.warnings)
+                            }
                         }
                     }
-                )
-                HorizontalPager(
-                    state = horizontalPagerState,
-                    modifier = Modifier.heightIn(max = 200.dp),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    if (it == 0) {
-                        SummaryExceptions(exceptions = summary.exceptions)
-                    } else {
-                        SummaryWarnings(warnings = summary.warnings)
-                    }
                 }
             }
         }
-    }
 }
 
 
@@ -404,26 +401,22 @@ private fun SummaryLogs(
             val currentExpanded by remember(expanded, log) {
                 derivedStateOf { expanded == log }
             }
-            MDVerticalCard(
+            MDCard2(
                 modifier = Modifier.animateItem(),
-                colors = colors,
-                headerClickable = true,
-                onClickHeader = {
-                    if (expanded == log) {
-                        expanded = null
-                    } else {
-                        expanded = log
-                    }
-                },
-                cardClickable = false,
                 header = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        MDIcon(MDIconsSet.Close) // TODO, icon res
-                        Text("$labelPrefix$duplicationsSuffix ${log.label}")
-                    }
+                    MDCard2ListItem(
+                        title = "$labelPrefix$duplicationsSuffix ${log.label}",
+                        leadingIcon = {
+                            MDIcon(MDIconsSet.Close) // TODO, icon res
+                        },
+                        onClick = {
+                            expanded = if (expanded == log) {
+                                null
+                            } else {
+                                log
+                            }
+                        },
+                    )
                 }
             ) {
                 AnimatedVisibility(

@@ -7,7 +7,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
@@ -43,24 +42,25 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toOffset
+import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.calculateOutput
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.upperStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.DEFAULT_FRACTION
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.HsvColor
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MutableHsvColor
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.blue
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.green
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.hsvColor
-import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerpOnSurface
-import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerpSurface
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.red
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.rgbColor
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.strHex
@@ -88,36 +88,42 @@ fun MDColorPickerDialog(
     var selectedColor by remember(initialColor) {
         mutableStateOf(initialColor)
     }
-    val selectedSurfaceColor = selectedColor.lerpSurface()
-    val selectedOnSurfaceColor = selectedColor.lerpOnSurface()
-    MDAlertDialog(
-        modifier = modifier.width( IntrinsicSize.Min),
-        showDialog = showDialog,
-        onDismissRequest = onDismissRequest,
-        colors = MDDialogDefaults.colors(
-            cardColors = MDCardDefaults.colors(
-                headerContainerColor = selectedSurfaceColor,
-                headerContentColor = selectedOnSurfaceColor,
-            ),
-        ),
-        title = {
-            Text("#" + selectedColor.toArgb().toHexString(HexFormat.UpperCase).substring(2))
-        },
-        actions = {
-            MDAlertDialogActions(
-                primaryActionLabel = firstCapStringResource(R.string.pick),
-                onDismissRequest = onDismissRequest,
-                onPrimaryClick = { onConfirm(selectedColor) },
-            )
+    val headerTheme = MDCard2ListItemTheme.SurfaceContainer.lerp(selectedColor, DEFAULT_FRACTION)
+    if (showDialog)
+        Dialog(
+            onDismissRequest = onDismissRequest,
+        ) {
+            MDCard2(
+                modifier = modifier,
+                headerTheme = headerTheme,
+                header = {
+                    val strHex by remember(selectedColor) {
+                        derivedStateOf {
+                            "#" + selectedColor.toArgb().toHexString(HexFormat.UpperCase).substring(2)
+                        }
+                    }
+                    MDCard2ListItem(title = strHex)
+                },
+                footer = {
+                    MDCard2ActionRow {
+                        MDCard2ConfirmAction(
+                            label = firstCapStringResource(R.string.pick),
+                            onClick = {
+                                onConfirm(selectedColor)
+                                onDismissRequest()
+                            },
+                        )
+                    }
+                }
+            ) {
+                MDColorPicker(
+                    selectedColor = selectedColor,
+                    onSelectColor = { selectedColor = it },
+                    wheelHeight = wheelHeight,
+                    horizontalAlignment = horizontalAlignment,
+                )
+            }
         }
-    ) {
-        MDColorPicker(
-            selectedColor = selectedColor,
-            onSelectColor = { selectedColor = it },
-            wheelHeight = wheelHeight,
-            horizontalAlignment = horizontalAlignment,
-        )
-    }
 }
 
 @Composable

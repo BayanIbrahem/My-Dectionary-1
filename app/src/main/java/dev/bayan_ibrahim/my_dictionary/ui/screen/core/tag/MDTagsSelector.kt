@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -28,8 +27,8 @@ import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
@@ -205,32 +204,13 @@ private fun MDTagListItem(
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
 ) {
-    MDVerticalCard(
+    MDCard2ListItem(
+        title = value,
         modifier = modifier,
-        headerModifier = Modifier,
-        footerModifier = Modifier,
-        contentModifier = Modifier,
-        cardClickable = onClick != null,
-        onClick = {
-            onClick?.invoke()
-        },
-        onLongClick = {
-            onLongClick?.invoke()
-        },
-        colors = MDCardDefaults.colors(
-            contentContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        leadingIcon = {
             MDIcon(MDIconsSet.WordTag)
-            Text(text = value, style = MDTextFieldDefaults.textStyle)
-        }
-    }
+        },
+        onClick = onClick,
+        onLongClick = onLongClick
+    )
 }

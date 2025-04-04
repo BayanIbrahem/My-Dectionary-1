@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
@@ -37,23 +36,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableField
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDEditableFieldStatus
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CancelAction
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
@@ -108,72 +109,79 @@ fun MDWordSpaceListItem(
                 editingTextFieldInitialValue
             }
         )
-        MDVerticalCard(
+        MDCard2(
             modifier = modifier,
-            contentModifier = MDCardDefaults.contentModifier.padding(vertical = 8.dp),
-            headerClickable = false,
-            cardClickable = false,
             header = {
-                Row(
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-
-                    ) {
-                    Text(
-                        text = state.uppercaseCode,
-                        style = if (state.isLongCode) {
-                            MaterialTheme.typography.titleSmall
-                        } else {
-                            MaterialTheme.typography.titleLarge
-                        },
-                    )
-                    Text(
-                        text = buildAnnotatedString {
-                            pushStyle(MaterialTheme.typography.bodyLarge.toSpanStyle())
-                            append(state.selfDisplayName)
-                            pushStyle(MaterialTheme.typography.labelSmall.toSpanStyle())
-                            append(" ")
-                            append(firstCapPluralsResource(R.plurals.word, state.wordsCount))
-                        },
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    if (state.isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                    } else if (state.isEditModeOn) {
+                MDCard2ListItem(
+                    leading = {
+                        MDLanguageCode(state)
+                    },
+                    title = {
                         Row {
-                            IconButton(
-                                onClick = actions::onCancel,
-                                enabled = isEditable,
-                            ) {
-                                MDIcon(MDIconsSet.Close)
-                            }
+                            Text(
+                                text = state.selfDisplayName,
+                                modifier = Modifier.weight(1f),
+                                maxLines = 1
+                            )
+                            if (state.isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(MDCard2ListItemDefaults.trailingIconSize)
+                                )
+                            } else if (state.isEditModeOn) {
+                                Row {
+                                    IconButton(
+                                        onClick = actions::onCancel,
+                                        enabled = isEditable,
+                                        modifier = Modifier.size(MDCard2ListItemDefaults.trailingSize)
+                                    ) {
+                                        MDIcon(
+                                            icon = MDIconsSet.Close,
+                                            modifier = Modifier.size(MDCard2ListItemDefaults.trailingIconSize)
+                                        )
+                                    }
 
-                            IconButton(
-                                onClick = actions::onSubmit,
-                                enabled = isEditable,
-                            ) {
-                                MDIcon(MDIconsSet.Check)
-                            }
-                        }
-                    } else {
-                        Row {
-                            IconButton(
-                                onClick = {
-                                    navigateToStatistics(state)
+                                    IconButton(
+                                        onClick = actions::onSubmit,
+                                        enabled = isEditable,
+                                        modifier = Modifier.size(MDCard2ListItemDefaults.trailingSize)
+                                    ) {
+                                        MDIcon(
+                                            icon = MDIconsSet.Check,
+                                            modifier = Modifier.size(MDCard2ListItemDefaults.trailingIconSize)
+                                        )
+                                    }
                                 }
-                            ) {
-                                MDIcon(MDIconsSet.Statistics)
-                            }
-                            IconButton(
-                                onClick = actions::onEnableEditMode,
-                                enabled = isEditable,
-                            ) {
-                                MDIcon(MDIconsSet.Edit)
+                            } else {
+                                Row {
+                                    IconButton(
+                                        onClick = {
+                                            navigateToStatistics(state)
+                                        },
+                                        modifier = Modifier.size(MDCard2ListItemDefaults.trailingSize)
+                                    ) {
+                                        MDIcon(
+                                            icon = MDIconsSet.Statistics,
+                                            modifier = Modifier.size(MDCard2ListItemDefaults.trailingIconSize)
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = actions::onEnableEditMode,
+                                        enabled = isEditable,
+                                        modifier = Modifier.size(MDCard2ListItemDefaults.trailingSize)
+                                    ) {
+                                        MDIcon(
+                                            icon = MDIconsSet.Edit,
+                                            modifier = Modifier.size(MDCard2ListItemDefaults.trailingIconSize)
+                                        )
+                                    }
+                                }
                             }
                         }
+                    },
+                    subtitle = {
+                        Text(firstCapPluralsResource(R.plurals.word, state.wordsCount))
                     }
-                }
+                )
             }
         ) {
             if (state.tags.isEmpty() && !state.isEditModeOn) {
@@ -192,8 +200,8 @@ fun MDWordSpaceListItem(
                     WordSpaceEditableTagListItem(
                         label = {
                             val value by remember(state.isEditModeOn, tag.current.name, tag.current.wordsCount) {
-                                derivedStateOf{
-                                    if (state.isEditModeOn||tag.current.wordsCount == 0) tag.current.name else "${tag.current.name} x${tag.current.wordsCount}"
+                                derivedStateOf {
+                                    if (state.isEditModeOn || tag.current.wordsCount == 0) tag.current.name else "${tag.current.name} x${tag.current.wordsCount}"
                                 }
                             }
                             Text(
@@ -323,6 +331,18 @@ fun MDWordSpaceListItem(
 }
 
 @Composable
+fun MDLanguageCode(code: LanguageCode) {
+    Text(
+        text = code.uppercaseCode,
+        style = if (code.isLongCode) {
+            MaterialTheme.typography.titleSmall
+        } else {
+            MaterialTheme.typography.titleLarge
+        },
+    )
+}
+
+@Composable
 private fun WordSpaceEditableTagListItem(
     label: @Composable () -> Unit,
     status: MDEditableFieldStatus,
@@ -421,54 +441,53 @@ private fun WordsSpaceFieldEditDialog(
     var value by remember(showDialog) {
         mutableStateOf(getInitialValue())
     }
-    MDAlertDialog(
-        showDialog = showDialog,
-        onDismissRequest = onDismiss,
-        actions = {
-            MDAlertDialogActions(
-                onDismissRequest = onDismiss,
-                onPrimaryClick = {
-                    onConfirm(value)
+    if (showDialog) {
+        Dialog(
+            onDismissRequest = onDismiss,
+        ) {
+            MDCard2(
+                modifier = modifier,
+                header = {
+                    val text = if (isWordClass) {
+                        firstCapStringResource(
+                            if (isNew) R.string.add_x else R.string.edit_x,
+                            firstCapStringResource(R.string.word_class)
+                        )
+                    } else {
+                        firstCapStringResource(
+                            if (isNew) R.string.add_x else R.string.edit_x,
+                            firstCapStringResource(R.string.word_class_relation)
+                        )
+                    }
+                    MDCard2ListItem(text)
                 },
-                onSecondaryClick = onDismiss,
-                dismissOnPrimaryClick = true,
-                dismissOnSecondaryClick = true,
-            )
-        },
-        modifier = modifier.width(250.dp),
-        title = {
-            Text(
-                text = if (isWordClass) {
-                    firstCapStringResource(
-                        if (isNew) R.string.add_x else R.string.edit_x,
-                        firstCapStringResource(R.string.word_class)
-                    )
-                } else {
-                    firstCapStringResource(
-                        if (isNew) R.string.add_x else R.string.edit_x,
-                        firstCapStringResource(R.string.word_class_relation)
-                    )
+                footer = {
+                    MDCard2ActionRow {
+                        MDCard2ConfirmAction {
+                            onConfirm(value)
+                            onDismiss()
+                        }
+                        MDCard2CancelAction(onClick = onDismiss)
+                    }
                 },
-                style = MaterialTheme.typography.titleMedium
-            )
-        },
-        contentModifier = MDCardDefaults.contentModifier.padding(16.dp)
-    ) {
-        WordSpaceTagInputField(
-            modifier = Modifier.fillMaxWidth(),
-            value = value,
-            onChangeValue = { value = it },
-            leadingIcon = if (isWordClass) {
-                MDIconsSet.WordClass
-            } else {
-                MDIconsSet.WordRelatedWords
-            },
-            placeholder = if (isWordClass) {
-                firstCapStringResource(R.string.word_class_name)
-            } else {
-                firstCapStringResource(R.string.word_class_relation_label)
-            },
-        )
+            ) {
+                WordSpaceTagInputField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = value,
+                    onChangeValue = { value = it },
+                    leadingIcon = if (isWordClass) {
+                        MDIconsSet.WordClass
+                    } else {
+                        MDIconsSet.WordRelatedWords
+                    },
+                    placeholder = if (isWordClass) {
+                        firstCapStringResource(R.string.word_class_name)
+                    } else {
+                        firstCapStringResource(R.string.word_class_relation_label)
+                    },
+                )
+            }
+        }
     }
 }
 

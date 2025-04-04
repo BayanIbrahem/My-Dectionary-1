@@ -6,13 +6,14 @@ import androidx.compose.runtime.setValue
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDMutableUiState
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.theme.component.MDThemeCardIdentifier
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDColorScheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrast
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.MDThemeContrastType
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
 
-typealias MDThemeCardData = Map<MDThemeContrast, MDThemeCardIdentifier>
+typealias MDThemeCardData = Map<MDThemeContrast, MDColorScheme>
 
 interface MDAppThemeUiState : MDUiState {
     val selectedTheme: MDTheme

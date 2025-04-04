@@ -10,7 +10,6 @@ private val languageCodeRegex = "[a-z]{2,3}".toRegex()
 @Serializable(LanguageCodeSerializer::class)
 open class LanguageCode(code: String) {
     val code: String = code.lowercase()
-
     val validLength: Boolean
         get() = code.length in 2..3
 

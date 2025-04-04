@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LazyCard2(
+fun LazyListCard2(
     modifier: Modifier = Modifier,
     @IntRange(from = 0)
     contentCount: Int,

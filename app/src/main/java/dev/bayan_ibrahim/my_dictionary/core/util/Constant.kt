@@ -29,4 +29,4 @@ fun Long?.invalidIfNull() = invalidIfNull(INVALID_ID)
 fun String?.invalidIfNull() = invalidIfNull(INVALID_ID)
 
 @JvmName("TInvalidIfNull")
-fun <T : Any> T?.invalidIfNull(invalidValue: T) = this ?: invalidValue
+fun <T : Any> T?.invalidIfNull(invalidValue: T): T = this ?: invalidValue

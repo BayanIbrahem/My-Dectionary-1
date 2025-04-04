@@ -17,35 +17,39 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
 @Composable
 fun MDCard2SelectableAction(
-    label: String,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    checkIcon: (@Composable () -> Unit)? = {
-        val tint by animateColorAsState(LocalContentColor.current)
-        Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = tint)
-    },
-    trailing: (@Composable () -> Unit)? = null,
     normalTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceContainer,
     selectedTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryContainer,
-    weightedLabel: Boolean = false,
     enabled: Boolean = true,
+    label: String? = null,
+    icon: @Composable () -> Unit,
 ) {
     val theme = if (selected) selectedTheme else normalTheme
+    /**
+     *
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    theme: MDCard2ListItemTheme = LocalMDCard2ListItemTheme.current,
+    enabled: Boolean = true,
+    actionLabel: String? = null,
+    icon: @Composable () -> Unit,
+     */
     MDCard2Action(
-        label = label,
         onClick = onClick,
         modifier = modifier,
-        leading = if (selected) checkIcon else null,
-        trailing = trailing,
         theme = theme,
-        weightedLabel = weightedLabel,
-        enabled = enabled
+        enabled = enabled,
+        actionLabel = label,
+        icon = icon
     )
 }
 
@@ -66,6 +70,9 @@ private fun MDCard2SelectableActionPreview() {
                 MDCard2SelectableAction(
                     selected = selected,
                     label = "Action",
+                    icon = {
+                        MDIcon(MDIconsSet.BarChart)
+                    },
                     onClick = { selected = !selected }
                 )
             }

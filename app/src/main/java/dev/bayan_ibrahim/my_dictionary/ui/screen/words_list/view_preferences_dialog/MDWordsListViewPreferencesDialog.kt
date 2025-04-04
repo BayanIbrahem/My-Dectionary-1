@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -22,16 +21,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDialog
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ImportantAction
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelector
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
@@ -58,67 +59,67 @@ fun MDWordsListViewPreferencesDialog(
     LaunchedEffect(selectedTab) {
         pagerState.animateScrollToPage(selectedTab.ordinal)
     }
-    MDBasicDialog(
-        showDialog = showDialog,
-        onDismissRequest = uiActions::onDismissDialog,
-        modifier = modifier.widthIn(max = 325.dp),
-        headerModifier = Modifier,
-        title = {
-            MDTabRow(
-                tabs = MDWordsListViewPreferencesTab.entries.map { it.tabData },
-                selectedTabIndex = selectedTab.ordinal,
-                onClickTab = { i, _ ->
-                    selectedTab = MDWordsListViewPreferencesTab.entries[i]
+    if (showDialog)
+        Dialog(
+            onDismissRequest = uiActions::onDismissDialog,
+        ) {
+            MDCard2(
+                modifier = modifier,
+                header = {
+                    MDTabRow(
+                        tabs = MDWordsListViewPreferencesTab.entries.map { it.tabData },
+                        selectedTabIndex = selectedTab.ordinal,
+                        onClickTab = { i, _ ->
+                            selectedTab = MDWordsListViewPreferencesTab.entries[i]
+                        },
+                    )
                 },
-            )
-        },
+                footer = {
+                    MDCard2ActionRow {
+                        MDCard2ImportantAction(
+                            label = firstCapStringResource(R.string.reset),
+                        ) {
+                            uiActions.onClearViewPreferences()
+                            uiActions.onDismissDialog()
+                        }
+                    }
+                }
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.height(300.dp),
+                    contentPadding = PaddingValues(8.dp),
+                    userScrollEnabled = false,
+                    pageSpacing = 8.dp,
+                    verticalAlignment = Alignment.Top,
+                ) { i ->
+                    when (MDWordsListViewPreferencesTab.entries[i]) {
+                        MDWordsListViewPreferencesTab.Search -> SearchBody(
+                            searchQuery = uiState.searchQuery,
+                            onSearchQueryChange = uiActions::onSearchQueryChange,
+                            selectedSearchTarget = uiState.searchTarget,
+                            onSelectSearchTarget = uiActions::onSelectSearchTarget,
+                        )
 
-        actions = {
-            MDAlertDialogActions(
-                onDismissRequest = uiActions::onDismissDialog,
-                hasPrimaryAction = false,
-                hasSecondaryAction = false,
-                hasTertiaryAction = true,
-                tertiaryActionLabel = "Reset",
-                onTertiaryClick = uiActions::onClearViewPreferences
+                        MDWordsListViewPreferencesTab.Filter -> FilterBody(
+                            tagsSelectionState = tagsSelectionState,
+                            tagsSelectionActions = tagsSelectionActions,
+                            includeSelectedTags = uiState.includeSelectedTags,
+                            selectedMemorizingProbabilityGroups = uiState.selectedMemorizingProbabilityGroups,
+                            onToggleSelectedTags = uiActions::onToggleIncludeSelectedTags,
+                            onSelectLearningGroup = uiActions::onSelectLearningGroup,
+                        )
 
-            )
-        }
-    ) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.height(300.dp),
-            contentPadding = PaddingValues(8.dp),
-            userScrollEnabled = false,
-            pageSpacing = 8.dp,
-            verticalAlignment = Alignment.Top,
-        ) { i ->
-            when (MDWordsListViewPreferencesTab.entries[i]) {
-                MDWordsListViewPreferencesTab.Search -> SearchBody(
-                    searchQuery = uiState.searchQuery,
-                    onSearchQueryChange = uiActions::onSearchQueryChange,
-                    selectedSearchTarget = uiState.searchTarget,
-                    onSelectSearchTarget = uiActions::onSelectSearchTarget,
-                )
-
-                MDWordsListViewPreferencesTab.Filter -> FilterBody(
-                    tagsSelectionState = tagsSelectionState,
-                    tagsSelectionActions = tagsSelectionActions,
-                    includeSelectedTags = uiState.includeSelectedTags,
-                    selectedMemorizingProbabilityGroups = uiState.selectedMemorizingProbabilityGroups,
-                    onToggleSelectedTags = uiActions::onToggleIncludeSelectedTags,
-                    onSelectLearningGroup = uiActions::onSelectLearningGroup,
-                )
-
-                MDWordsListViewPreferencesTab.Sort -> SortBody(
-                    selectedSortBy = uiState.sortBy,
-                    selectedSortByOrder = uiState.sortByOrder,
-                    onSelectSortBy = uiActions::onSelectWordsSortBy,
-                    onSelectSortByOrder = uiActions::onSelectWordsSortByOrder,
-                )
+                        MDWordsListViewPreferencesTab.Sort -> SortBody(
+                            selectedSortBy = uiState.sortBy,
+                            selectedSortByOrder = uiState.sortByOrder,
+                            onSelectSortBy = uiActions::onSelectWordsSortBy,
+                            onSelectSortByOrder = uiActions::onSelectWordsSortByOrder,
+                        )
+                    }
+                }
             }
         }
-    }
 }
 
 @Composable

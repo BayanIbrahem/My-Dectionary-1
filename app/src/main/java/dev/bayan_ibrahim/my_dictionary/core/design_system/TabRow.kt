@@ -1,21 +1,15 @@
 package dev.bayan_ibrahim.my_dictionary.core.design_system
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,61 +24,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2SelectableAction
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
-
-data object MDTabRowDefaults {
-    val leadingEdgeAnimation: FiniteAnimationSpec<Float> = spring(
-        dampingRatio = Spring.DampingRatioHighBouncy,
-        stiffness = Spring.StiffnessHigh,
-    )
-    val trailingEdgeAnimation: FiniteAnimationSpec<Float> = spring(
-        dampingRatio = Spring.DampingRatioLowBouncy,
-        stiffness = Spring.StiffnessLow,
-    )
-
-    @Composable
-    fun colors(
-        indicatorColor: Color = MaterialTheme.colorScheme.onPrimary,
-        containerColor: Color = MaterialTheme.colorScheme.primary,
-        contentColor: Color = MaterialTheme.colorScheme.onPrimary,
-        selectedContentColor: Color = MaterialTheme.colorScheme.primary,
-    ): MDTabRowColors = MDTabRowColors(
-        indicatorColor = indicatorColor,
-        containerColor = containerColor,
-        contentColor = contentColor,
-        selectedContentColor = selectedContentColor,
-    )
-
-    @Composable
-    fun colorsPrimary() = colors()
-
-    @Composable
-    fun colorsSecondary() = MDTabRowColors(
-        indicatorColor = MaterialTheme.colorScheme.onSecondary,
-        containerColor = MaterialTheme.colorScheme.secondary,
-        contentColor = MaterialTheme.colorScheme.onSecondary,
-        selectedContentColor = MaterialTheme.colorScheme.secondary,
-    )
-}
-
-data class MDTabRowColors(
-    val indicatorColor: Color,
-    val containerColor: Color,
-    val contentColor: Color,
-    val selectedContentColor: Color,
-)
 
 @Composable
 fun <K : Any> MDTabRow(
@@ -93,9 +44,8 @@ fun <K : Any> MDTabRow(
     onClickTab: (i: Int, key: K?) -> Unit,
     modifier: Modifier = Modifier,
     layoutDirection: LayoutDirection = LocalLayoutDirection.current,
-    leadingEdgeAnimation: FiniteAnimationSpec<Float> = MDTabRowDefaults.leadingEdgeAnimation,
-    trailingEdgeAnimation: FiniteAnimationSpec<Float> = MDTabRowDefaults.trailingEdgeAnimation,
-    colors: MDTabRowColors = MDTabRowDefaults.colors(),
+    normalTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceContainer,
+    selectedTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryContainer,
     isTabEnabled: (i: Int, key: K?) -> Boolean = { _, _ -> true },
 ) {
     val tabsCount by remember {
@@ -113,109 +63,35 @@ fun <K : Any> MDTabRow(
         selectedTab = selectedTabIndex
     }
 
-    val transition = updateTransition(selectedTab, "offset transition")
-    val indicatorStartOffset by transition.animateFloat(
-        transitionSpec = {
-            if (isMovingForward) {
-                trailingEdgeAnimation
-            } else {
-                leadingEdgeAnimation
-            }
-        },
-        label = "start",
-    ) {
-        it.toFloat().div(tabsCount)
-    }
-
-    val indicatorEndOffset by transition.animateFloat(
-        transitionSpec = {
-            if (isMovingForward) {
-                leadingEdgeAnimation
-            } else {
-                trailingEdgeAnimation
-            }
-        },
-        label = "start",
-    ) {
-        it.inc().toFloat().div(tabsCount)
-    }
-    // TODO, fix animation
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .drawBehind {
-                val scale = when (layoutDirection) {
-                    LayoutDirection.Ltr -> 1f
-                    LayoutDirection.Rtl -> -1f
-                }
-                scale(scale) {
-                    drawRect(colors.containerColor)
-                    val width = (indicatorEndOffset - indicatorStartOffset) * size.width
-                    drawRect(
-                        colors.indicatorColor,
-                        topLeft = Offset(indicatorStartOffset * size.width, 0f),
-                        size = Size(width, size.height)
-                    )
-                }
-            }
-    ) {
+    MDCard2ActionRow {
         tabs.forEachIndexed { i, data ->
-            MDTab(
-                data = data,
-                selected = i == selectedTab,
-                enabled = isTabEnabled(i, data.key),
-                contentColor = colors.contentColor,
-                selectedContentColor = colors.selectedContentColor,
-                onClick = {
-                    onClickTab(i, data.key)
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun <K : Any> RowScope.MDTab(
-    data: MDTabData<K>,
-    selected: Boolean,
-    contentColor: Color,
-    selectedContentColor: Color,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-) {
-    val color by animateColorAsState(
-        targetValue = if (selected) selectedContentColor else contentColor,
-        animationSpec = tween(durationMillis = 500, easing = LinearEasing),
-        label = "content color"
-    )
-    val alpha by animateFloatAsState(
-        targetValue = if (enabled || selected) 1f else 0.38f,
-        animationSpec = tween(durationMillis = 500, easing = LinearEasing),
-        label = "content alpha"
-    )
-    Row(
-        modifier = modifier
-            .heightIn(min = 40.dp, 52.dp)
-            .weight(1f)
-            .graphicsLayer {
-                this.alpha = alpha
+            if (data.icon != null)
+                MDCard2SelectableAction(
+                    modifier = modifier.weight(1f),
+                    label = data.label,
+                    icon = { MDIcon(data.icon!!) },
+//                data = data,
+                    selected = i == selectedTab,
+                    enabled = isTabEnabled(i, data.key),
+                    normalTheme = normalTheme,
+                    selectedTheme = selectedTheme,
+                    onClick = {
+                        onClickTab(i, data.key)
+                    }
+                )
+            else if (data.label != null) {
+                MDCard2SelectableAction(
+                    modifier = modifier.weight(1f),
+                    label = data.label!!,
+                    selected = i == selectedTab,
+                    enabled = isTabEnabled(i, data.key),
+                    normalTheme = normalTheme,
+                    selectedTheme = selectedTheme,
+                    onClick = {
+                        onClickTab(i, data.key)
+                    }
+                )
             }
-            .clickable(enabled = enabled, onClick = onClick),
-        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        data.icon?.let { icon ->
-            MDIcon(
-                icon = icon,
-                outline = data.outlinedIcon,
-                tint = color,
-                // if the tab has label then there is no need for icon content description
-                contentDescription = if (data.label == null) "" else null
-            )
-        }
-        data.label?.let { label ->
-            Text(text = label, style = MaterialTheme.typography.labelMedium, color = color)
         }
     }
 }
@@ -267,8 +143,8 @@ private fun MDTabRowPreview() {
                 MDTabRow(
                     tabs = listOf(
                         MDTabData.Label("label only"),
-                        MDTabData.Icon(MDIconsSet.WordsList), 
-                        MDTabData.LabelWithIcon("label with icon", MDIconsSet.WordsList), 
+                        MDTabData.Icon(MDIconsSet.WordsList),
+                        MDTabData.LabelWithIcon("label with icon", MDIconsSet.WordsList),
                     ),
                     selectedTabIndex = selectedTabIndex,
                     onClickTab = { i, _ ->

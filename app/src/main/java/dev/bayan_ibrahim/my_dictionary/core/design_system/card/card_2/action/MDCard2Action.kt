@@ -35,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAnimatedContent
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.LocalMDCard2ListItemTheme
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2Defaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
@@ -63,7 +62,7 @@ fun MDCard2Action(
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
     theme: MDCard2ListItemTheme = LocalMDCard2ListItemTheme.current,
-    weightedLabel: Boolean = false,
+    weightedLabel: Boolean = true,
     enabled: Boolean = true,
 ) {
     val opacity by animateFloatAsState(if (enabled) 1f else 0.38f)
@@ -87,8 +86,6 @@ fun MDCard2Action(
     ) {
         MDAnimatedContent(
             flagContent = leading,
-            enter = MDCard2Defaults.iconEnterAnimation,
-            exit = MDCard2Defaults.iconExitAnimation
         ) { leading ->
             Box(
                 modifier = Modifier.size(18.dp),
@@ -116,8 +113,6 @@ fun MDCard2Action(
         )
         MDAnimatedContent(
             flagContent = trailing,
-            enter = MDCard2Defaults.iconEnterAnimation,
-            exit = MDCard2Defaults.iconExitAnimation
         ) { trailing ->
             Box(
                 modifier = Modifier.size(18.dp),

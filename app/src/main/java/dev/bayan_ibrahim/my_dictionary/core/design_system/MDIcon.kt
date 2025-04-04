@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.core.design_system
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -54,6 +55,7 @@ fun MDIcon(
             }
         }
     }
+    val animatedTint by animateColorAsState(tint)
     Icon(
         painter = builder(),
         contentDescription = contentDescription?.let {
@@ -62,6 +64,6 @@ fun MDIcon(
             }
         },
         modifier = modifierWithFill,
-        tint = tint,
+        tint = animatedTint,
     )
 }

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenuItem
@@ -44,17 +43,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicIconDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIconDropdown
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelector
@@ -231,7 +233,7 @@ private fun WordsListTopAppBarNormalMode(
                     expanded = true
                 }
             ) {
-                MDBasicIconDropDownMenu(
+                MDIconDropdown(
                     expanded = expanded,
                     onDismissRequest = dismiss,
                     menuOffset = menuOffset,
@@ -341,7 +343,7 @@ private fun WordsListTopAppBarSelectionMode(
                     expanded = true
                 }
             ) {
-                MDBasicIconDropDownMenu(
+                MDIconDropdown(
                     expanded = expanded,
                     onDismissRequest = dismiss,
                     menuOffset = menuOffset,
@@ -393,43 +395,32 @@ private fun ExtraTagsDialog(
     onConfirm: (selectedTags: List<Tag>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MDAlertDialog(
-        modifier = modifier.widthIn(max = 300.dp),
-        showDialog = showDialog,
-        onDismissRequest = onDismissRequest,
-        headerModifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        title = {
-            Column {
-                Text(text = firstCapStringResource(R.string.append_x, firstCapStringResource(R.string.tag)))
-                Text(
-                    text = firstCapStringResource(R.string.x_selected, firstCapPluralsResource(R.plurals.word, selectedWordsCount)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline
+    if (showDialog) {
+        Dialog(onDismissRequest = onDismissRequest) {
+            MDCard2(
+                modifier = modifier,
+                header = {
+                    MDCard2ListItem(
+                        title = firstCapStringResource(R.string.append_x, firstCapStringResource(R.string.tag)),
+                        subtitle = firstCapStringResource(R.string.x_selected, firstCapPluralsResource(R.plurals.word, selectedWordsCount)),
+                    )
+                },
+                footer = {
+                    MDCard2ActionRow {
+                        MDCard2ConfirmAction(enabled = tagsSelectionState.selectedTags.isNotEmpty()) {
+                            onConfirm(tagsSelectionState.selectedTags)
+                            tagsSelectionActions.clearSelectedTags()
+                            tagsSelectionActions.onResetToRoot()
+                            onDismissRequest()
+                        }
+                    }
+                }
+            ) {
+                MDTagsSelector(
+                    state = tagsSelectionState,
+                    actions = tagsSelectionActions
                 )
             }
-        },
-        actions = {
-            MDAlertDialogActions(
-                onDismissRequest = onDismissRequest,
-                primaryClickEnabled = tagsSelectionState.selectedTags.isNotEmpty(),
-                onPrimaryClick = {
-                    onConfirm(tagsSelectionState.selectedTags)
-                    tagsSelectionActions.clearSelectedTags()
-                    tagsSelectionActions.onResetToRoot()
-                },
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            MDTagsSelector(
-                state = tagsSelectionState,
-                actions = tagsSelectionActions
-            )
         }
     }
 

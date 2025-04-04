@@ -43,7 +43,7 @@ data class MDColorScheme(
     val surfaceContainerLow: String,
     val surfaceContainerLowest: String,
 ) {
-    fun toColorScheme() = ColorScheme(
+    fun toColorScheme(): ColorScheme = ColorScheme(
         primary.toColor(),
         onPrimary.toColor(),
         primaryContainer.toColor(),

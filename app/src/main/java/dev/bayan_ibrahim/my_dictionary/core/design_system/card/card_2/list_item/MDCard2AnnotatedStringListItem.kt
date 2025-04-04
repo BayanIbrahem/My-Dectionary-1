@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.LocalMDCard2ListItemTheme
@@ -52,7 +53,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
  */
 @Composable
 fun MDCard2ListItem(
-    title: String,
+    title: AnnotatedString,
     modifier: Modifier = Modifier,
     leadingIcon: (@Composable () -> Unit)? = null,
     onLeadingClick: (() -> Unit)? = null,
@@ -60,7 +61,7 @@ fun MDCard2ListItem(
     trailingIcon: (@Composable () -> Unit)? = null,
     enableTrailing: Boolean = true,
     onTrailingClick: (() -> Unit)? = null,
-    subtitle: String? = null,
+    subtitle: AnnotatedString? = null,
     titleMaxLines: Int = MDCard2ListItemDefaults.titleMaxLines,
     subtitleMaxLines: Int = MDCard2ListItemDefaults.subtitleMaxLines,
     onClick: (() -> Unit)? = null,

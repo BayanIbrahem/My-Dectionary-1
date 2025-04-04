@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -27,17 +25,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDDialogDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CancelAction
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ImportantAction
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -62,63 +63,67 @@ fun MDWordsListTrainPreferencesDialog(
     LaunchedEffect(selectedTab) {
         pagerState.animateScrollToPage(selectedTab.ordinal)
     }
-    MDAlertDialog(
-        showDialog = showDialog,
-        onDismissRequest = uiActions::onDismissDialog,
-        modifier = modifier.width(IntrinsicSize.Max),
-        headerModifier = Modifier,
-        title = {
-            MDTabRow(
-                tabs = MDWordsListTrainPreferencesTab.entries.map { it.tabData },
-                selectedTabIndex = selectedTab.ordinal,
-                onClickTab = { i, _ ->
-                    selectedTab = MDWordsListTrainPreferencesTab.entries[i]
+    if (showDialog)
+        Dialog(
+            onDismissRequest = uiActions::onDismissDialog,
+        ) {
+            MDCard2(
+                modifier = modifier,
+                header = {
+                    MDTabRow(
+                        tabs = MDWordsListTrainPreferencesTab.entries.map { it.tabData },
+                        selectedTabIndex = selectedTab.ordinal,
+                        onClickTab = { i, _ ->
+                            selectedTab = MDWordsListTrainPreferencesTab.entries[i]
+                        },
+                    )
                 },
-            )
-        },
-        actions = {
-            MDAlertDialogActions(
-                onDismissRequest = uiActions::onDismissDialog,
-                primaryActionLabel = firstCapStringResource(R.string.train),
-                secondaryActionLabel = firstCapStringResource(R.string.cancel),
-                tertiaryActionLabel = firstCapStringResource(R.string.reset),
-                colors = MDDialogDefaults.colors(
-                    tertiaryActionColor = MaterialTheme.colorScheme.error
-                ),
-                onPrimaryClick = uiActions::onConfirmTrain,
-                onSecondaryClick = uiActions::onDismissDialog,
-                onTertiaryClick = uiActions::onResetTrainPreferences,
-                hasTertiaryAction = true,
-            )
-        }
-    ) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.size(350.dp, 350.dp),
-            contentPadding = PaddingValues(8.dp),
-            userScrollEnabled = false,
-            pageSpacing = 8.dp,
-            verticalAlignment = Alignment.Top,
-        ) { i ->
-            when (MDWordsListTrainPreferencesTab.entries[i]) {
-                MDWordsListTrainPreferencesTab.TrainType -> TrainTypeBody(
-                    selectedType = uiState.trainType,
-                    selectedTarget = uiState.trainTarget,
-                    onSelectType = uiActions::onSelectTrainType,
-                    onSelectTarget = uiActions::onSelectTrainTarget,
-                )
+                footer = {
+                    MDCard2ActionRow {
+                        MDCard2ConfirmAction(
+                            label = firstCapStringResource(R.string.train),
+                            onClick = uiActions::onConfirmTrain,
+                        )
 
-                MDWordsListTrainPreferencesTab.WordsOrder -> WordsOrderBody(
-                    selectedLimit = uiState.limit,
-                    selectedSortBy = uiState.sortBy,
-                    selectedSortByOrder = uiState.sortByOrder,
-                    onSelectLimit = uiActions::onSelectLimit,
-                    onSelectSortBy = uiActions::onSelectSortBy,
-                    onSelectSortByOrder = uiActions::onSelectSortByOrder,
-                )
+                        MDCard2CancelAction(
+                            onClick = uiActions::onDismissDialog,
+                        )
+
+                        MDCard2ImportantAction(
+                            label = firstCapStringResource(R.string.reset),
+                            onClick = uiActions::onResetTrainPreferences,
+                        )
+                    }
+                }
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.size(350.dp, 350.dp),
+                    contentPadding = PaddingValues(8.dp),
+                    userScrollEnabled = false,
+                    pageSpacing = 8.dp,
+                    verticalAlignment = Alignment.Top,
+                ) { i ->
+                    when (MDWordsListTrainPreferencesTab.entries[i]) {
+                        MDWordsListTrainPreferencesTab.TrainType -> TrainTypeBody(
+                            selectedType = uiState.trainType,
+                            selectedTarget = uiState.trainTarget,
+                            onSelectType = uiActions::onSelectTrainType,
+                            onSelectTarget = uiActions::onSelectTrainTarget,
+                        )
+
+                        MDWordsListTrainPreferencesTab.WordsOrder -> WordsOrderBody(
+                            selectedLimit = uiState.limit,
+                            selectedSortBy = uiState.sortBy,
+                            selectedSortByOrder = uiState.sortByOrder,
+                            onSelectLimit = uiActions::onSelectLimit,
+                            onSelectSortBy = uiActions::onSelectSortBy,
+                            onSelectSortByOrder = uiActions::onSelectSortByOrder,
+                        )
+                    }
+                }
             }
         }
-    }
 }
 
 @Composable

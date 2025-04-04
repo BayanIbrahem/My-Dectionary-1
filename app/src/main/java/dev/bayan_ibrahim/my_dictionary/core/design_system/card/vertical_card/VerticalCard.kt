@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 @Suppress("MemberVisibilityCanBePrivate")
+@Deprecated("Use Card 2 instead")
 data object MDCardDefaults {
     val shape: CornerBasedShape
         @Composable
@@ -114,6 +115,7 @@ data class MDCardTextStyle(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
+@Deprecated("Use card 2 instead")
 fun MDVerticalCard(
     modifier: Modifier = Modifier,
     shape: CornerBasedShape = MDCardDefaults.shape,

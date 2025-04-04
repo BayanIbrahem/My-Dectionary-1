@@ -33,64 +33,14 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2Lis
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme.SurfaceContainerHighest
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme.SurfaceContainerLow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme.SurfaceContainerLowest
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.DEFAULT_FRACTION
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerp
 
 object MDCard2Defaults {
     val defaultHeaderTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryContainer
     val defaultContentTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceContainer
     val defaultFooterTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface
     val cornerRadius = 16.dp
-    val overline: MDCard2OverlineDefaults get() = MDCard2OverlineDefaults
-    val iconEnterAnimation = fadeIn(
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        )
-    ) + expandIn(
-        expandFrom = Alignment.Center,
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        )
-    )
-
-    val iconExitAnimation = fadeOut(
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        )
-    ) + shrinkOut(
-        shrinkTowards = Alignment.Center,
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        )
-    )
-
-    val itemEnterAnimation = fadeIn(
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        )
-    ) + expandVertically(
-        expandFrom = Alignment.CenterVertically,
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        )
-    )
-
-    val itemExitAnimation = fadeOut(
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        )
-    ) + shrinkVertically(
-        shrinkTowards = Alignment.CenterVertically,
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        )
-    )
 }
 
 object MDCard2OverlineDefaults {
@@ -313,6 +263,30 @@ sealed interface MDCard2ListItemTheme {
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSecondaryContainer
         override val filledTrailingContentColor: Color
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.secondaryContainer
+    }
+
+    data object SurfaceVariant : MDCard2ListItemTheme {
+        override val titleColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+        override val subtitleColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.5f)
+        override val containerColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
+        override val leadingColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+
+        override val filledLeadingContainerColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+        override val filledLeadingContentColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
+
+        override val trailingColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+
+        override val filledTrailingContainerColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+        override val filledTrailingContentColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
     }
 
     data object SurfaceContainer : MDCard2ListItemTheme {
@@ -647,4 +621,110 @@ sealed interface MDCard2ListItemTheme {
             get() = MaterialTheme.colorScheme.onError
     }
 
+    data class Custom(
+        private val title: Color,
+        private val subtitle: Color,
+        private val container: Color,
+        private val leading: Color,
+        private val trailing: Color,
+        private val filledLeadingContainer: Color = leading,
+        private val filledLeadingContent: Color = container,
+        private val filledTrailingContainer: Color = trailing,
+        private val filledTrailingContent: Color = container,
+        private val titleStl: TextStyle,
+        private val subtitleStl: TextStyle,
+    ) : MDCard2ListItemTheme {
+        companion object {
+            @Composable
+            operator fun invoke(theme: MDCard2ListItemTheme): Custom {
+                return Custom(
+                    title = theme.titleColor,
+                    subtitle = theme.subtitleColor,
+                    container = theme.containerColor,
+                    leading = theme.leadingColor,
+                    trailing = theme.trailingColor,
+                    filledLeadingContainer = theme.filledLeadingContainerColor,
+                    filledLeadingContent = theme.filledLeadingContentColor,
+                    filledTrailingContainer = theme.filledTrailingContainerColor,
+                    filledTrailingContent = theme.filledTrailingContentColor,
+                    titleStl = theme.titleStyle,
+                    subtitleStl = theme.subtitleStyle,
+                )
+            }
+        }
+
+        override val titleColor: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = title
+        override val subtitleColor: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = subtitle
+        override val containerColor: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = container
+        override val leadingColor: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = leading
+        override val trailingColor: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = trailing
+        override val filledLeadingContentColor: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = filledLeadingContent
+        override val filledLeadingContainerColor: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = filledLeadingContainer
+        override val filledTrailingContentColor: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = filledTrailingContent
+        override val filledTrailingContainerColor: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = filledTrailingContainer
+        override val titleStyle: TextStyle
+            @Composable
+            @ReadOnlyComposable
+            get() = titleStl
+
+        override val subtitleStyle: TextStyle
+            @Composable
+            @ReadOnlyComposable
+            get() = subtitleStl
+
+        @Composable
+        override fun lerp(
+            seed: Color,
+            fraction: Float,
+        ): Custom {
+            return Custom(
+                title = seed.lerp(titleColor, fraction),
+                subtitle = seed.lerp(subtitleColor, fraction),
+                container = seed.lerp(containerColor, fraction),
+                leading = seed.lerp(leadingColor, fraction),
+                trailing = seed.lerp(trailingColor, fraction),
+                filledLeadingContainer = seed.lerp(filledLeadingContainerColor, fraction),
+                filledLeadingContent = seed.lerp(filledLeadingContentColor, fraction),
+                filledTrailingContainer = seed.lerp(filledTrailingContainerColor, fraction),
+                filledTrailingContent = seed.lerp(filledTrailingContentColor, fraction),
+                titleStl = titleStyle,
+                subtitleStl = subtitleStyle
+            )
+        }
+    }
+
+    @Composable
+    fun lerp(
+        seed: Color,
+        fraction: Float,
+    ): MDCard2ListItemTheme {
+        return Custom(this).lerp(seed, fraction)
+    }
 }

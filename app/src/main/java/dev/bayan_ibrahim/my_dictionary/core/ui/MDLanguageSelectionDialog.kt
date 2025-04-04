@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
@@ -25,26 +24,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.lowerPluralsResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialog
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAlertDialogActions
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchDialogInputField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.horizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CancelAction
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
+import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.MDLanguageCode
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.bottomOnly
 import dev.bayan_ibrahim.my_dictionary.ui.theme.topOnly
@@ -81,46 +83,50 @@ fun MDLanguageSelectionDialog(
             }
         }
     }
-    MDAlertDialog(
-        showDialog = showDialog,
-        onDismissRequest = onDismissRequest,
-        headerModifier = Modifier,
-        title = {
-            LanguageSearchBar(
-                query = query,
-                onQueryChange = queryChangeAction,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth(),
-            )
-        },
-        actions = {
-            MDAlertDialogActions(
-                onDismissRequest = onDismissRequest,
-                onPrimaryClick = {
-                    selectedWordSpace?.let(onSelectWordSpace)
+    if (showDialog)
+        Dialog(
+            onDismissRequest = onDismissRequest,
+        ) {
+            MDCard2(
+                header = {
+                    LanguageSearchBar(
+                        query = query,
+                        onQueryChange = queryChangeAction,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                    )
                 },
-                primaryActionLabel = firstCapStringResource(R.string.select_x, firstCapStringResource(R.string.language)),
-                primaryClickEnabled = selectedWordSpace != null,
-                onSecondaryClick = onDismissRequest,
-            )
-        },
-        showActionsHorizontalDivider = false,
-        modifier = modifier.width(250.dp),
-    ) {
-        LanguagesContent(
-            primaryList = primaryList,
-            secondaryList = secondaryList,
-            selectedLanguageCode = selectedWordSpace,
-            onClickWordSpace = { selectedWordSpace = it },
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-                .sizeIn(maxWidth = 300.dp, maxHeight = 350.dp),
-            primaryListCountTitleBuilder = primaryListCountTitleBuilder,
-            secondaryListCountTitleBuilder = secondaryListCountTitleBuilder,
-            hideWordCountAndProgress = hideWordCountAndProgress,
-        )
-    }
+                footer = {
+                    MDCard2ActionRow {
+                        MDCard2ConfirmAction(
+                            label = firstCapStringResource(R.string.select_x, firstCapStringResource(R.string.language)),
+                            enabled = selectedWordSpace != null,
+                        ) {
+                            selectedWordSpace?.let {
+                                onSelectWordSpace(it)
+                                onDismissRequest()
+                            }
+                        }
+                        MDCard2CancelAction(onClick = onDismissRequest)
+
+                    }
+                },
+            ) {
+                LanguagesContent(
+                    primaryList = primaryList,
+                    secondaryList = secondaryList,
+                    selectedLanguageCode = selectedWordSpace,
+                    onClickWordSpace = { selectedWordSpace = it },
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .sizeIn(maxWidth = 300.dp, maxHeight = 350.dp),
+                    primaryListCountTitleBuilder = primaryListCountTitleBuilder,
+                    secondaryListCountTitleBuilder = secondaryListCountTitleBuilder,
+                    hideWordCountAndProgress = hideWordCountAndProgress,
+                )
+            }
+        }
 }
 
 
@@ -320,14 +326,7 @@ private fun MDWordSpaceCardItem2(
         modifier = modifier,
         colors = colors,
         leadingIcon = {
-            Text(
-                text = wordSpace.uppercaseCode,
-                style = if (wordSpace.isLongCode) {
-                    MaterialTheme.typography.titleSmall
-                } else {
-                    MaterialTheme.typography.titleLarge
-                },
-            )
+            MDLanguageCode(wordSpace)
         },
         subtitle = {
             Text(lowerPluralsResource(R.plurals.word, wordSpace.wordsCount))

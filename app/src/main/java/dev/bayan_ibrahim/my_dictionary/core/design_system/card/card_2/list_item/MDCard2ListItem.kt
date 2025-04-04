@@ -1,7 +1,8 @@
 package dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,12 +42,14 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
  * list item with [leading], [trailing], [title] and [subtitle]
  * @param theme current them of the card, default value is the provided value with [LocalMDCard2ListItemTheme]
  * @param onClick click action on the entire list item.
- * @param titleWeight if true then a weight is applied to the [title]-[subtitle] column to make the trailing as the most end
+ * @param onLongClick click action on the entire list item.
+ * @param onDoubleClick click action on the entire list item.
  * if false then the title would width would be wrap content
  * * max size of [leading] is [MDCard2ListItemDefaults.leadingSize]
  * * max size of [trailing] is [MDCard2ListItemDefaults.trailingSize]
  * * min height of the item is [MDCard2ListItemDefaults.minHeight]
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MDCard2ListItem(
     modifier: Modifier = Modifier,
@@ -55,12 +58,14 @@ fun MDCard2ListItem(
     subtitle: (@Composable () -> Unit)? = null,
     theme: MDCard2ListItemTheme = LocalMDCard2ListItemTheme.current,
     onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     title: @Composable () -> Unit,
 ) {
     val clickableModifier by remember(onClick) {
         derivedStateOf {
-            if (onClick == null) Modifier
-            else Modifier.clickable(onClick = onClick)
+            if (onClick == null && onLongClick == null && onDoubleClick == null) Modifier
+            else Modifier.combinedClickable(onClick = onClick ?: {}, onLongClick = onLongClick, onDoubleClick = onDoubleClick)
         }
     }
     val containerColor by animateColorAsState(theme.containerColor)
@@ -76,8 +81,6 @@ fun MDCard2ListItem(
 
         MDAnimatedContent(
             flagContent = leading,
-            enter = MDCard2Defaults.iconEnterAnimation,
-            exit = MDCard2Defaults.iconExitAnimation
         ) { leading ->
             CompositionLocalProvider(
                 LocalContentColor provides theme.leadingColor,
@@ -120,8 +123,6 @@ fun MDCard2ListItem(
 
         MDAnimatedContent(
             flagContent = trailing,
-            enter = MDCard2Defaults.iconEnterAnimation,
-            exit = MDCard2Defaults.iconExitAnimation
         ) { trailing ->
             CompositionLocalProvider(
                 LocalContentColor provides theme.trailingColor,

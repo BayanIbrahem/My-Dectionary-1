@@ -1,5 +1,7 @@
-package dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2
+package dev.bayan_ibrahim.my_dictionary.core.ui.card
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -14,17 +16,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAnimatedContent
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.LocalMDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2Defaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2SelectableAction
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MDCard2(
     modifier: Modifier = Modifier,
@@ -34,15 +43,22 @@ fun MDCard2(
     headerTheme: MDCard2ListItemTheme = MDCard2Defaults.defaultHeaderTheme,
     contentTheme: MDCard2ListItemTheme = MDCard2Defaults.defaultContentTheme,
     footerTheme: MDCard2ListItemTheme = MDCard2Defaults.defaultFooterTheme,
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val clickableModifier by remember(onClick) {
+        derivedStateOf {
+            if (onClick == null && onLongClick == null && onDoubleClick == null) Modifier
+            else Modifier.combinedClickable(onClick = onClick ?: {}, onLongClick = onLongClick, onDoubleClick = onDoubleClick)
+        }
+    }
     Column(
         modifier = modifier,
     ) {
         MDAnimatedContent(
             flagContent = overline,
-            enter = MDCard2Defaults.itemEnterAnimation,
-            exit = MDCard2Defaults.itemExitAnimation,
         )
         CompositionLocalProvider(
             value = LocalMDCard2ListItemTheme provides contentTheme
@@ -50,12 +66,11 @@ fun MDCard2(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(MDCard2Defaults.cornerRadius)),
+                    .clip(RoundedCornerShape(MDCard2Defaults.cornerRadius))
+                    .then(clickableModifier),
             ) {
                 MDAnimatedContent(
                     flagContent = header,
-                    enter = MDCard2Defaults.itemEnterAnimation,
-                    exit = MDCard2Defaults.itemExitAnimation,
                 ) { header ->
                     CompositionLocalProvider(
                         value = LocalMDCard2ListItemTheme provides headerTheme
@@ -69,8 +84,6 @@ fun MDCard2(
                 MDAnimatedContent(
                     modifier = modifier.fillMaxWidth(),
                     flagContent = footer,
-                    enter = MDCard2Defaults.itemEnterAnimation,
-                    exit = MDCard2Defaults.itemExitAnimation,
                 ) { footer ->
                     CompositionLocalProvider(
                         value = LocalMDCard2ListItemTheme provides footerTheme
