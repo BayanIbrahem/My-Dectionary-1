@@ -51,7 +51,6 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CancelAction
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
@@ -118,6 +117,7 @@ fun MDTagExplorerDialog(
             onDismissRequest = onDismissRequest,
         ) {
             MDCard2(
+                modifier = modifier,
                 header = {
                     DialogHeader(
                         state = state,

@@ -27,8 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.ContentWithHint
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
@@ -73,8 +75,16 @@ fun MDWordDetailsEditModeScreen(
             verticalArrangement = Arrangement.spacedBy(spacedBy)
         ) {
             editableGroup(
-                title = { firstCapStringResource(R.string.basic) },
-                icon = MDIconsSet.WordMeaning, // TODO, icon res
+                content = {
+                    MDCard2Overline(
+                        title = firstCapStringResource(R.string.basic),
+                        leading = {
+                            MDIcon(MDIconsSet.WordMeaning)
+
+                        }
+
+                    )
+                },
             ) {
                 item {
                     MDWordFieldTextField(
@@ -111,8 +121,15 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                title = { firstCapStringResource(R.string.phonetic) },
-                icon = MDIconsSet.WordTranscription,
+                content = {
+                    MDCard2Overline(
+                        title = firstCapStringResource(R.string.phonetic),
+                        leading = {
+                            MDIcon(MDIconsSet.WordTranscription)
+                        }
+
+                    )
+                },
             ) {
                 item {
                     MDWordFieldTextField(
@@ -127,8 +144,16 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                title = { firstCapStringResource(R.string.tags) },
-                icon = MDIconsSet.WordTag,
+                content = {
+                    MDCard2Overline(
+                        title = firstCapStringResource(R.string.tags),
+                        leading = {
+                            MDIcon(MDIconsSet.WordTag)
+
+                        }
+
+                    )
+                },
             ) {
                 tagsSelector(
                     state = tagsState,
@@ -140,8 +165,16 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                title = { firstCapStringResource(R.string.additional_translations) },
-                icon = MDIconsSet.WordAdditionalTranslation,
+                content = {
+                    MDCard2Overline(
+                        title = firstCapStringResource(R.string.additional_translations),
+                        leading = {
+                            MDIcon(MDIconsSet.WordAdditionalTranslation)
+
+                        }
+
+                    )
+                },
             ) {
                 itemsIndexed(
                     items = uiState.additionalTranslations.toList().sortedBy { it.first },
@@ -171,8 +204,15 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                title = { firstCapStringResource(R.string.examples) },
-                icon = MDIconsSet.WordExample,
+                content = {
+                    MDCard2Overline(
+                        title = firstCapStringResource(R.string.examples),
+                        leading = {
+                            MDIcon(MDIconsSet.WordExample)
+
+                        }
+                    )
+                },
             ) {
                 itemsIndexed(
                     items = uiState.examples.toList().sortedBy { it.first },
@@ -202,8 +242,14 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                title = { firstCapStringResource(R.string.word_class) },
-                icon = MDIconsSet.WordRelatedWords,
+                content = {
+                    MDCard2Overline(
+                        title = firstCapStringResource(R.string.word_class),
+                        leading = {
+                            MDIcon(MDIconsSet.WordRelatedWords)
+                        }
+                    )
+                },
             ) {
                 item {
                     MDBasicDropDownMenu(
@@ -272,11 +318,17 @@ fun MDWordDetailsEditModeScreen(
                 it.key
             }.forEach { (type, relations) ->
                 editableGroup(
-                    title = { type.label },
-                    titleHint = {
+                    hint = {
                         type.hintLikeExample
                     },
-                    icon = MDIconsSet.WordRelatedWords // TODO, icon res
+                    content = {
+                        MDCard2Overline(
+                            title = type.label,
+                            leading = {
+                                MDIcon(MDIconsSet.WordRelatedWords)
+                            }
+                        )
+                    },
                 ) {
                     itemsIndexed(
                         items = relations.toList().sortedBy { it.first },
@@ -309,27 +361,14 @@ fun MDWordDetailsEditModeScreen(
     }
 }
 
-private fun LazyListScope.editableGroup(
-    title: String,
-    titleHint: String? = null,
-    icon: MDIconsSet? = null,
-    items: LazyListScope.() -> Unit,
-) = editableGroup(
-    title = { title },
-    titleHint = { titleHint },
-    icon = icon,
-    items = items
-)
-
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.editableGroup(
-    title: @Composable () -> String,
-    titleHint: @Composable () -> String? = { null },
-    icon: MDIconsSet? = null,
+    hint: (@Composable () -> String)? = null,
+    content: @Composable () -> Unit,
     items: LazyListScope.() -> Unit,
 ) {
     stickyHeader {
-        ContentWithHint(title = title(), icon = icon, titleHint = titleHint())
+        ContentWithHint(hint = hint?.invoke(), content = content)
     }
     items()
     item {
