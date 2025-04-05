@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredHeightIn
@@ -39,13 +40,13 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.format
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.toDefaultLocalDateTime
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
+import dev.bayan_ibrahim.my_dictionary.core.design_system.ContentWithHint
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTitleWithHint
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardScope
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
 import dev.bayan_ibrahim.my_dictionary.core.ui.IconSegmentedButton
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordDetailsDirectionSource
@@ -132,21 +133,21 @@ fun MDWordDetailsViewModeScreen(
                         icon = MDIconsSet.WordMeaning, // TODO, icon res
 
                     ) {
-                        wordPropertyItem(
-                            label = { firstCapStringResource(R.string.meaning) },
+                        WordPropertyItem(
+                            label = firstCapStringResource(R.string.meaning),
                             value = uiState.word.meaning,
                         )
-                        wordPropertyItem(
-                            label = { firstCapStringResource(R.string.translation) },
+                        WordPropertyItem(
+                            label = firstCapStringResource(R.string.translation),
                             value = uiState.word.translation,
                         )
-                        wordPropertyItem(
-                            label = { firstCapStringResource(R.string.language) },
+                        WordPropertyItem(
+                            label = firstCapStringResource(R.string.language),
                             value = uiState.word.language.fullDisplayName,
                         )
                         if (uiState.word.note.isNotEmpty())
-                            wordPropertyItem(
-                                label = { firstCapStringResource(R.string.note) },
+                            WordPropertyItem(
+                                label = firstCapStringResource(R.string.note),
                                 value = uiState.word.note,
                             )
                     }
@@ -156,8 +157,8 @@ fun MDWordDetailsViewModeScreen(
                         title = firstCapStringResource(R.string.phonetic),
                         icon = MDIconsSet.WordTranscription,
                     ) {
-                        wordPropertyItem(
-                            label = { firstCapStringResource(R.string.transcription) },
+                        WordPropertyItem(
+                            label = firstCapStringResource(R.string.transcription),
                             value = uiState.word.transcription.ifBlank { "-" },
                             trailingIcon = {
                                 IconButton(
@@ -178,9 +179,8 @@ fun MDWordDetailsViewModeScreen(
                             icon = MDIconsSet.WordTag,
                         ) {
                             uiState.word.tags.forEach { tag ->
-                                wordPropertyItem(
+                                WordPropertyItem(
                                     value = tag.value,
-                                    label = { null },
                                     trailingIcon = tag.color?.let { color ->
                                         {
                                             MDTagColorIcon(
@@ -202,7 +202,7 @@ fun MDWordDetailsViewModeScreen(
                             icon = MDIconsSet.WordAdditionalTranslation
                         ) {
                             uiState.word.additionalTranslations.forEach { translation ->
-                                wordPropertyItem(value = translation, label = { null })
+                                WordPropertyItem(value = translation)
                             }
                         }
                     }
@@ -214,7 +214,7 @@ fun MDWordDetailsViewModeScreen(
                             icon = MDIconsSet.WordExample,
                         ) {
                             uiState.word.examples.forEach { example ->
-                                wordPropertyItem(value = example, label = { null })
+                                WordPropertyItem(value = example)
                             }
                         }
                     }
@@ -227,10 +227,13 @@ fun MDWordDetailsViewModeScreen(
                             icon = MDIconsSet.WordRelatedWords,
                         ) {
                             if (uiState.word.relatedWords.isEmpty()) {
-                                wordPropertyItem(label = { firstCapPluralsResource(R.plurals.relation, 0) }, value = "")
+                                WordPropertyItem(
+                                    label = firstCapPluralsResource(R.plurals.relation, 0),
+                                    value = ""
+                                )
                             } else {
                                 uiState.word.relatedWords.forEach { relation ->
-                                    wordPropertyItem(
+                                    WordPropertyItem(
                                         label = relation.relationLabel,
                                         value = relation.value,
                                     )
@@ -248,9 +251,8 @@ fun MDWordDetailsViewModeScreen(
                                 icon = MDIconsSet.WordRelatedWords
                             ) {
                                 relations.forEach { relation ->
-                                    wordPropertyItem(
+                                    WordPropertyItem(
                                         value = relation.relatedWord,
-                                        label = { null },
                                     )
                                 }
                             }
@@ -262,12 +264,12 @@ fun MDWordDetailsViewModeScreen(
                         title = firstCapStringResource(R.string.creation),
                         icon = MDIconsSet.CreateTime
                     ) {
-                        wordPropertyItem(
-                            label = { firstCapStringResource(R.string.created_at) },
+                        WordPropertyItem(
+                            label = firstCapStringResource(R.string.created_at),
                             value = uiState.word.createdAt.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
                         )
-                        wordPropertyItem(
-                            label = { firstCapStringResource(R.string.updated_at) },
+                        WordPropertyItem(
+                            label = firstCapStringResource(R.string.updated_at),
                             value = uiState.word.updatedAt.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
                         )
                     }
@@ -278,47 +280,37 @@ fun MDWordDetailsViewModeScreen(
 }
 
 
-private fun MDHorizontalCardScope.wordPropertyItem(
+@Composable
+private fun WordPropertyItem(
     modifier: Modifier = Modifier,
     value: String = "",
     leadingIcon: MDIconsSet? = null,
     label: String? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
-) = wordPropertyItem(
-    modifier = modifier,
-    value = value,
-    leadingIcon = leadingIcon,
-    label = { label },
-    trailingIcon = trailingIcon
-)
-
-private fun MDHorizontalCardScope.wordPropertyItem(
-    modifier: Modifier = Modifier,
-    value: String = "",
-    leadingIcon: MDIconsSet? = null,
-    label: @Composable () -> String? = { null },
-    trailingIcon: (@Composable () -> Unit)? = null,
 ) {
-    item(
+    MDCard2ListItem(
         modifier = modifier.requiredHeightIn(42.dp, Dp.Unspecified),
-        leadingIcon = leadingIcon?.let {
+        leading = leadingIcon?.let {
             {
                 MDIcon(leadingIcon)
             }
         },
-        trailingIcon = trailingIcon
+        trailing = trailingIcon
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            label()?.let { label ->
-                Text(text = label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+            if (label != null) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
+                )
             }
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
-//                modifier = Modifier.basicMarquee(Int.MAX_VALUE)
             )
         }
     }
@@ -330,15 +322,23 @@ private fun WordInfoGroup(
     modifier: Modifier = Modifier,
     titleHint: String? = null,
     icon: MDIconsSet? = null,
-    content: MDHorizontalCardScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
-    MDHorizontalCardGroup(
-        title = {
-            MDTitleWithHint(
-                title = title,
-                icon = icon,
-                titleHint = titleHint,
-            )
+    MDCard2(
+        overline = {
+
+            ContentWithHint(
+                hint = titleHint,
+            ) {
+                MDCard2Overline(
+                    leading = if (icon != null) {
+                        {
+                            MDIcon(icon)
+                        }
+                    } else null,
+                    title = title,
+                )
+            }
         },
         modifier = modifier,
         content = content,

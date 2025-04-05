@@ -2,14 +2,9 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.marker_tags.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,19 +13,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2Action
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGridGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDColorPickerDialog
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CheckboxItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ImportantAction
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -79,38 +74,28 @@ fun MDMarkerTagListItem(
             )
         }
     ) {
-        MDHorizontalCardGridGroup(
-            modifier = Modifier.height(84.dp), // two lines
-            columns = GridCells.Fixed(2),
-            shape = MaterialTheme.shapes.small.copy(CornerSize(0.dp)),
+        MDCard2(
+            footer = {
+                MDCard2ActionRow {
+                    MDCard2ImportantAction(
+                        label = firstCapStringResource(R.string.delete_x, firstCapStringResource(R.string.tag)),
+                        onClick = onRemoveTag
+                    )
+                    MDCard2Action(
+                        label = firstCapStringResource(R.string.remove_x, firstCapStringResource(R.string.color)),
+                        onClick = onRemoveMarker,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
         ) {
-            checkboxItem(
+            MDCard2CheckboxItem(
                 checked = tag.passColorToChildren,
-                onClick = {
+                onCheckedChange = {
                     onToggleInheritedMarkerColor(!tag.passColorToChildren)
                 },
-                span = {
-                    GridItemSpan(this.maxLineSpan)
-                },
-                title = {
-                    Text(firstCapStringResource(R.string.apply_to_inner_tags))
-                },
+                title = firstCapStringResource(R.string.apply_to_inner_tags),
             )
-            item(onClick = onRemoveTag) {
-                Text(
-                    text = firstCapStringResource(R.string.delete_x, firstCapStringResource(R.string.tag)),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-            item(onClick = onRemoveMarker) {
-                Text(
-                    text = firstCapStringResource(R.string.remove_x, firstCapStringResource(R.string.color)),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                )
-            }
         }
     }
 }

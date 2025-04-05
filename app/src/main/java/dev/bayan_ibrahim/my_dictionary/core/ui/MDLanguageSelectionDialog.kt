@@ -1,6 +1,5 @@
 package dev.bayan_ibrahim.my_dictionary.core.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,12 +32,10 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFir
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.lowerPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchDialogInputField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCard
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardColors
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.horizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.card2Content
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CancelAction
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
@@ -48,8 +44,6 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageWordSpace
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.allLanguages
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_space.component.word_space_list_item.MDLanguageCode
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
-import dev.bayan_ibrahim.my_dictionary.ui.theme.bottomOnly
-import dev.bayan_ibrahim.my_dictionary.ui.theme.topOnly
 
 @Composable
 fun MDLanguageSelectionDialog(
@@ -88,6 +82,7 @@ fun MDLanguageSelectionDialog(
             onDismissRequest = onDismissRequest,
         ) {
             MDCard2(
+                modifier = modifier,
                 header = {
                     LanguageSearchBar(
                         query = query,
@@ -183,7 +178,6 @@ private fun LanguageSearchBar(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun LanguagesContent(
     primaryList: List<LanguageWordSpace>,
@@ -206,47 +200,37 @@ private fun LanguagesContent(
         derivedStateOf { secondaryList.count() }
     }
     val state = rememberLazyListState()
-    val singleListShape = MDHorizontalCardGroupDefaults.shape
-    val firstItemShape = singleListShape.topOnly
-    val lastItemShape = singleListShape.bottomOnly
-    val middleItemShape = singleListShape.copy(CornerSize(0.dp))
-    val selectedColor = MDHorizontalCardDefaults.primaryColors
-    val normalColor = MDHorizontalCardDefaults.colors(
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
-    )
-    val cardColors = MDHorizontalCardGroupDefaults.colors()
-    val cardStyles = MDHorizontalCardGroupDefaults.styles()
+
+    val selectedTheme = MDCard2ListItemTheme.PrimaryContainer
+    val normalTheme = MDCard2ListItemTheme.SurfaceContainerHighest
     LazyColumn(
-        modifier = modifier.scrollbar(state, stickHeadersContentType = "Label"),
+        modifier = modifier
+            .scrollbar(state = state, stickHeadersContentType = "Label"),
         state = state,
     ) {
-        if (primaryItemsCount > 0) {
-            stickyHeader(contentType = "Label") {
-                HeaderTitle(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    text = primaryListCountTitleBuilder(primaryItemsCount),
-                )
-            }
-        }
-        horizontalCardGroup(
-            itemsCount = primaryItemsCount,
-            shape = singleListShape,
-            topOnlyShape = firstItemShape,
-            bottomOnlyShape = lastItemShape,
-            middleShape = middleItemShape,
-            colors = cardColors,
-            styles = cardStyles
+        card2Content(
+            contentCount = primaryItemsCount,
+            headerContentType = "Label",
+            header = if (primaryItemsCount > 0) {
+                {
+                    HeaderTitle(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        text = primaryListCountTitleBuilder(primaryItemsCount),
+                    )
+                }
+            } else null,
+            stickyHeader = true,
         ) { i ->
             val wordSpace by remember(primaryList, i) {
                 derivedStateOf {
                     primaryList[i]
                 }
             }
-            MDWordSpaceCardItem2(
+            MDWordSpaceListItem(
                 selectedLanguageCode = selectedLanguageCode,
                 wordSpace = wordSpace,
-                selectedColor = selectedColor,
-                normalColor = normalColor,
+                selectedTheme = selectedTheme,
+                normalTheme = normalTheme,
                 onClickWordSpace = onClickWordSpace
             )
         }
@@ -254,34 +238,31 @@ private fun LanguagesContent(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
             }
-            stickyHeader(contentType = "Label") {
-                HeaderTitle(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    text = secondaryListCountTitleBuilder(secondaryItemsCount),
+
+            card2Content(
+                contentCount = secondaryItemsCount,
+                headerContentType = "Label",
+                header = {
+                    HeaderTitle(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        text = secondaryListCountTitleBuilder(secondaryItemsCount),
+                    )
+                },
+                stickyHeader = true,
+            ) { i ->
+                val wordSpace by remember(secondaryList, i) {
+                    derivedStateOf {
+                        secondaryList[i]
+                    }
+                }
+                MDWordSpaceListItem(
+                    selectedLanguageCode = selectedLanguageCode,
+                    wordSpace = wordSpace,
+                    selectedTheme = selectedTheme,
+                    normalTheme = normalTheme,
+                    onClickWordSpace = onClickWordSpace
                 )
             }
-        }
-        horizontalCardGroup(
-            itemsCount = secondaryItemsCount,
-            shape = singleListShape,
-            topOnlyShape = firstItemShape,
-            bottomOnlyShape = lastItemShape,
-            middleShape = middleItemShape,
-            colors = cardColors,
-            styles = cardStyles
-        ) { i ->
-            val wordSpace by remember(secondaryList, i) {
-                derivedStateOf {
-                    secondaryList[i]
-                }
-            }
-            MDWordSpaceCardItem2(
-                selectedLanguageCode = selectedLanguageCode,
-                wordSpace = wordSpace,
-                selectedColor = selectedColor,
-                normalColor = normalColor,
-                onClickWordSpace = onClickWordSpace
-            )
         }
         item {
             Spacer(modifier = Modifier.height(8.dp))
@@ -302,38 +283,35 @@ private fun LanguagesContent(
 }
 
 @Composable
-private fun MDWordSpaceCardItem2(
+private fun MDWordSpaceListItem(
     selectedLanguageCode: LanguageCode?,
     wordSpace: LanguageWordSpace,
-    selectedColor: MDHorizontalCardColors,
-    normalColor: MDHorizontalCardColors,
+    selectedTheme: MDCard2ListItemTheme,
+    normalTheme: MDCard2ListItemTheme,
     onClickWordSpace: (LanguageWordSpace) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors by remember(selectedLanguageCode) {
+    val theme by remember(selectedLanguageCode) {
         derivedStateOf {
             if (selectedLanguageCode?.code == wordSpace.code) {
-                selectedColor
+                selectedTheme
             } else {
-                normalColor
+                normalTheme
             }
         }
     }
-    MDHorizontalCard(
-        onClick = {
-            onClickWordSpace(wordSpace)
-        },
+    MDCard2ListItem(
+        title = wordSpace.localDisplayName,
         modifier = modifier,
-        colors = colors,
         leadingIcon = {
             MDLanguageCode(wordSpace)
         },
-        subtitle = {
-            Text(lowerPluralsResource(R.plurals.word, wordSpace.wordsCount))
-        }
-    ) {
-        Text(wordSpace.localDisplayName)
-    }
+        onClick = {
+            onClickWordSpace(wordSpace)
+        },
+        theme = theme,
+        subtitle = lowerPluralsResource(R.plurals.word, wordSpace.wordsCount)
+    )
 }
 
 @Composable

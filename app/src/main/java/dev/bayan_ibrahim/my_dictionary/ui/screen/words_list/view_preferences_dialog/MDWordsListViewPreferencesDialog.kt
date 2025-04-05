@@ -1,6 +1,5 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog
 
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,7 +9,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,13 +24,13 @@ import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CheckboxItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ImportantAction
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2RadioButtonItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelector
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
@@ -130,21 +128,16 @@ private fun SearchBody(
     onSelectSearchTarget: (MDWordsListSearchTarget) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = MDHorizontalCardDefaults.primaryColors
-    Column(
+    MDCard2(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        MDHorizontalCardGroup {
-            MDWordsListSearchTarget.entries.forEach { target ->
-                radioItem(
-                    selected = target == selectedSearchTarget,
-                    colors = colors,
-                    onClick = { onSelectSearchTarget(target) }
-                ) {
-                    Text(target.label)
-                }
-            }
+        MDWordsListSearchTarget.entries.forEach { target ->
+            MDCard2RadioButtonItem(
+                selected = target == selectedSearchTarget,
+                theme = MDCard2ListItemTheme.PrimaryOnSurface,
+                onClick = { onSelectSearchTarget(target) },
+                title = target.label
+            )
         }
     }
 }
@@ -157,9 +150,9 @@ private fun FilterBody(
     selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     onToggleSelectedTags: (Boolean) -> Unit,
     onSelectLearningGroup: (MDWordsListMemorizingProbabilityGroup) -> Unit,
+    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface,
     modifier: Modifier = Modifier,
 ) {
-    val colors = MDHorizontalCardDefaults.primaryColors
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -173,55 +166,39 @@ private fun FilterBody(
             allowRemoveTags = false,
             allowEditTags = true,
         )
-        MDHorizontalCardGroup {
-            checkboxItem(
+        MDCard2 {
+            MDCard2CheckboxItem(
                 checked = includeSelectedTags,
-                colors = colors,
-                onClick = {
+                theme = theme,
+                onCheckedChange = {
                     onToggleSelectedTags(!includeSelectedTags)
                 },
-                subtitle = {
-                    val text = if (includeSelectedTags) {
-                        firstCapStringResource(R.string.include_selected_tags_hint_on)
-                    } else {
-                        firstCapStringResource(R.string.include_selected_tags_hint_off)
-                    }
-                    Text(
-                        text = text,
-                        maxLines = 1,
-                        modifier = Modifier.basicMarquee(Int.MAX_VALUE)
-                    )
+                subtitle = if (includeSelectedTags) {
+                    firstCapStringResource(R.string.include_selected_tags_hint_on)
+                } else {
+                    firstCapStringResource(R.string.include_selected_tags_hint_off)
                 },
-            ) {
-                Text(text = firstCapStringResource(R.string.include_selected_tags))
-            }
+                title = firstCapStringResource(R.string.include_selected_tags)
+            )
         }
 
-        MDHorizontalCardGroup(
-            title = { Text(firstCapStringResource(R.string.learning_groups)) }
+        MDCard2(
+            overline = { MDCard2Overline(firstCapStringResource(R.string.learning_groups)) }
         ) {
             MDWordsListMemorizingProbabilityGroup.entries.forEach { group ->
-                checkboxItem(
+                MDCard2CheckboxItem(
                     checked = group in selectedMemorizingProbabilityGroups,
-                    colors = colors,
-                    onClick = {
+                    theme = theme,
+                    onCheckedChange = {
                         onSelectLearningGroup(group)
                     },
-                    subtitle = {
-                        val text = stringResource(
-                            R.string.from_x_to_y,
-                            group.probabilityRange.start.times(100).roundToInt().toString(),
-                            group.probabilityRange.endInclusive.times(100).roundToInt().toString()
-                        )
-                        Text(
-                            text = text,
-                            maxLines = 1,
-                            modifier = Modifier.basicMarquee(Int.MAX_VALUE)
-                        )
-                    },
-                ) {
-                    Text(text = group.label)
-                }
+                    subtitle = stringResource(
+                        R.string.from_x_to_y,
+                        group.probabilityRange.start.times(100).roundToInt().toString(),
+                        group.probabilityRange.endInclusive.times(100).roundToInt().toString()
+                    ),
+                    title = group.label
+                )
             }
         }
     }
@@ -233,47 +210,45 @@ private fun SortBody(
     selectedSortByOrder: MDWordsListSortByOrder,
     onSelectSortBy: (MDWordsListViewPreferencesSortBy) -> Unit,
     onSelectSortByOrder: (MDWordsListSortByOrder) -> Unit,
+    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface,
     modifier: Modifier = Modifier,
 ) {
-    val colors = MDHorizontalCardDefaults.primaryColors
     Column(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
-        MDHorizontalCardGroup(
-            title = { Text(firstCapStringResource(R.string.sorted_by)) }
+        MDCard2(
+            overline = { MDCard2Overline(firstCapStringResource(R.string.sorted_by)) }
         ) {
             MDWordsListViewPreferencesSortBy.entries.forEach { sortBy ->
-                radioItem(
+                MDCard2RadioButtonItem(
                     selected = sortBy == selectedSortBy,
-                    colors = colors,
+                    theme = theme,
                     onClick = { onSelectSortBy(sortBy) },
-                    trailingIcon = {
+                    secondary = {
                         // item has a label so no need for content description
                         MDIcon(icon = sortBy.icon, contentDescription = null)
-                    }
-                ) {
-                    Text(text = sortBy.label)
-                }
+                    },
+                    leadingRadioButton = true,
+                    title = sortBy.label
+                )
             }
         }
 
-        MDHorizontalCardGroup(
-            title = { Text(firstCapStringResource(R.string.sorted_by_order)) }
+        MDCard2(
+            overline = { MDCard2Overline(firstCapStringResource(R.string.sorted_by_order)) }
         ) {
             MDWordsListSortByOrder.entries.forEach { sortByOrder ->
-                radioItem(
-                    colors = colors,
+                MDCard2RadioButtonItem(
+                    theme = theme,
                     selected = sortByOrder == selectedSortByOrder,
                     onClick = { onSelectSortByOrder(sortByOrder) },
-                    trailingIcon = {
-                        // item has a label so no need for content description
+                    secondary = {
                         MDIcon(icon = sortByOrder.icon, contentDescription = null)
-                    }
-                ) {
-                    Text(text = sortByOrder.label)
-                }
+                    },
+                    title = sortByOrder.label
+                )
             }
         }
     }

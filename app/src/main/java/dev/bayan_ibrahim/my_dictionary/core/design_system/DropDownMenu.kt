@@ -43,10 +43,12 @@ import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDImeAction
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.LocalMDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupColors
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_TEXT
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
@@ -58,13 +60,6 @@ data object MDDropDownMenuDefaults {
     val fieldColors: TextFieldColors
         @Composable
         get() = MDTextFieldDefaults.colors()
-
-    val menuShape: CornerBasedShape
-        @Composable
-        get() = MDHorizontalCardGroupDefaults.shape
-    val menuColors: MDHorizontalCardGroupColors
-        @Composable
-        get() = MDHorizontalCardGroupDefaults.colors()
 }
 
 
@@ -94,7 +89,7 @@ fun <Data : Any> MDBasicDropDownMenu(
     focusManager: FocusManager = LocalFocusManager.current,
     fieldColors: TextFieldColors = MDDropDownMenuDefaults.fieldColors,
     fieldShape: CornerBasedShape = MDDropDownMenuDefaults.fieldShape,
-    menuColors: MDHorizontalCardGroupColors = MDDropDownMenuDefaults.menuColors,
+    menuTheme: MDCard2ListItemTheme = LocalMDCard2ListItemTheme.current,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     labelStyle: TextStyle = MDTextFieldDefaults.labelStyle,
     hasBottomHorizontalDivider: Boolean = false,
@@ -129,7 +124,7 @@ fun <Data : Any> MDBasicDropDownMenu(
         focusManager = focusManager,
         fieldColors = fieldColors,
         fieldShape = fieldShape,
-        menuColors = menuColors,
+        menuTheme = menuTheme,
         textStyle = textStyle,
         labelStyle = labelStyle,
         hasBottomHorizontalDivider = hasBottomHorizontalDivider,
@@ -169,8 +164,7 @@ fun <Data : Any> MDBasicDropDownMenu(
     focusManager: FocusManager = LocalFocusManager.current,
     fieldColors: TextFieldColors = MDDropDownMenuDefaults.fieldColors,
     fieldShape: CornerBasedShape = MDDropDownMenuDefaults.fieldShape,
-    menuColors: MDHorizontalCardGroupColors = MDDropDownMenuDefaults.menuColors,
-    menuShape: CornerBasedShape = MDDropDownMenuDefaults.menuShape,
+    menuTheme: MDCard2ListItemTheme = LocalMDCard2ListItemTheme.current,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     labelStyle: TextStyle = MDTextFieldDefaults.labelStyle,
     hasBottomHorizontalDivider: Boolean = false,
@@ -237,39 +231,42 @@ fun <Data : Any> MDBasicDropDownMenu(
                         third = it.suggestionAnnotatedSubtitle(),
                     )
                 }
-                MDHorizontalCardGroup(
+                MDCard2(
                     modifier = modifier.width(IntrinsicSize.Max),
-                    colors = menuColors,
-                    shape = menuShape,
-                ) {
-                    if (allowCancelSelection) {
-                        item(
-                            onClick = {
-                                onSelectSuggestion(0, null)
-                                onValueChange(INVALID_TEXT)
-                                showDropDownMenu = false
-                            },
-                        ) {
-                            Text(
-                                text = firstCapStringResource(R.string.cancel_selection),
-                                fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Italic,
-                            )
+                    contentTheme = menuTheme,
+                    headerTheme = menuTheme,
+                    header = if (allowCancelSelection) {
+                        {
+
+                            MDCard2ListItem(
+                                onClick = {
+                                    onSelectSuggestion(0, null)
+                                    onValueChange(INVALID_TEXT)
+                                    showDropDownMenu = false
+                                },
+                            ) {
+                                Text(
+                                    text = firstCapStringResource(R.string.cancel_selection),
+                                    fontWeight = FontWeight.Bold,
+                                    fontStyle = FontStyle.Italic,
+                                )
+                            }
                         }
+                    } else {
+                        null
                     }
-                    labledSuggestions.forEachIndexed { i, (suggestion, title, subtitle) ->
-                        item(
+                ) {
+                    suggestions.forEachIndexed { i, suggestion ->
+                        val title = suggestion.suggestionAnnotatedTitle()
+                        MDCard2ListItem(
                             onClick = {
                                 onSelectSuggestion(i, suggestion)
                                 onValueChange(title.text)
                                 showDropDownMenu = false
                             },
-                            subtitle = subtitle?.let {
-                                { Text(it) }
-                            }
-                        ) {
-                            Text(title)
-                        }
+                            subtitle = suggestion.suggestionAnnotatedSubtitle(),
+                            title = title,
+                        )
                     }
                 }
             }

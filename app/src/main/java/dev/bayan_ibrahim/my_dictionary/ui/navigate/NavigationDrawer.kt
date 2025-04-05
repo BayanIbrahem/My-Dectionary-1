@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.ui.navigate
 
 import android.os.Build
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
@@ -30,15 +32,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCard
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
 import dev.bayan_ibrahim.my_dictionary.core.ui.getLogoPainter
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -145,7 +147,6 @@ private fun DrawerContentMainGroup(
             ContentGroupListItem(
                 label = topLevel.label,
                 leadingIcon = topLevel.icon,
-                modifier = Modifier.clip(MDHorizontalCardGroupDefaults.shape),
                 associatedDestination = topLevel.route::class,
                 currentDestination = currentDestination,
                 onClick = { onNavigate(topLevel.route) }
@@ -167,7 +168,6 @@ private fun DrawerContentToolsGroup(
         ContentGroupListItem(
             label = firstCapStringResource(R.string.marker_tags),
             leadingIcon = MDIconsSet.Colors,
-            modifier = Modifier.clip(MDHorizontalCardGroupDefaults.shape),
             currentDestination = currentDestination,
             associatedDestination = MDDestination.MarkerTags::class,
             onClick = {
@@ -248,25 +248,35 @@ private fun ContentGroupListItem(
             associatedDestination != null && currentDestination == associatedDestination
         }
     }
-    val onNonSelectedClick by remember {
+    val onNonSelectedClick: (() -> Unit)? by remember(enabled, selected) {
         derivedStateOf {
-            {
-                if (!selected) onClick()
+            if (enabled) {
+                {
+                    if (!selected) onClick()
+                }
+            } else {
+                null
             }
         }
     }
-    MDHorizontalCard(
+    val theme by remember(selected) {
+        derivedStateOf {
+            if (selected)
+                MDCard2ListItemTheme.PrimaryContainer
+            else
+                MDCard2ListItemTheme.SurfaceContainerHighest
+        }
+    }
+    val opacity by animateFloatAsState(if (enabled) 1f else 0.38f)
+    MDCard2ListItem(
         onClick = onNonSelectedClick,
-        modifier = modifier.clip(MDHorizontalCardGroupDefaults.shape),
-        enabled = enabled,
-        colors = if (selected) MDHorizontalCardDefaults.primaryColors else MDHorizontalCardDefaults.colors(containerColor = Color.Transparent),
-        bottomHorizontalDividerThickness = 0.dp,
+        modifier = modifier.graphicsLayer { alpha = opacity },
+        theme = theme,
         leadingIcon = {
             MDIcon(leadingIcon, contentDescription = null)
-        }
-    ) {
-        Text(label)
-    }
+        },
+        title = label,
+    )
 }
 
 /** app name with version */

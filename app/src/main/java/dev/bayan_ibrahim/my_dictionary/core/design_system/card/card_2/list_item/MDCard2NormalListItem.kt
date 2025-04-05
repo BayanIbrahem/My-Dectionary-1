@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Close
@@ -14,18 +15,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.LocalMDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2Defaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
+
+val LocalClipCardListItem: ProvidableCompositionLocal<Boolean> = compositionLocalOf(structuralEqualityPolicy()) {
+    true
+}
 
 /**
  * card list item
@@ -47,6 +58,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
  * @param onTrailingClick callback of the trailing icon button click, if null, then trailing would be a normal icon,
  * size of icon button would be [MDCard2ListItemDefaults.trailingSize]
  * @param enableTrailing enable of disable the trailing icon button if [onTrailingClick] is null then this param has no effect
+ * @param clip wither clip the list item or not, the default value is true, and when used in a card
+ * it would provide a false value for [LocalClipCardListItem]
  *
  * * min height of the item is [MDCard2ListItemDefaults.minHeight]
  */
@@ -66,12 +79,14 @@ fun MDCard2ListItem(
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
+    clip: Boolean = LocalClipCardListItem.current,
     theme: MDCard2ListItemTheme = LocalMDCard2ListItemTheme.current,
 ) {
     MDCard2ListItem(
         theme = theme,
         modifier = modifier,
         onClick = onClick,
+        clip = clip,
         onLongClick = onLongClick,
         onDoubleClick = onDoubleClick,
         title = {

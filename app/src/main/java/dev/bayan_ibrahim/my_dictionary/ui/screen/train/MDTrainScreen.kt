@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -62,15 +61,15 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCa
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.LazyGridCard2
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGridGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDVerticalCard
 import dev.bayan_ibrahim.my_dictionary.core.design_system.progress_indicator.linear.MDLinearProgressIndicator
+import dev.bayan_ibrahim.my_dictionary.core.design_system.toAnnotatedString
 import dev.bayan_ibrahim.my_dictionary.core.ui.IconSegmentedButton
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2SelectableItem
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDTrainQuestionExtraInfo
 import dev.bayan_ibrahim.my_dictionary.domain.model.RelatedWord
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
@@ -316,40 +315,30 @@ private fun WordSelectAnswerTrainPage(
             onSelectVisibleInfo = { selectedVisibleInfo = it },
             modifier = Modifier.weight(1f),
         )
-        val selectedItemColors = MDHorizontalCardDefaults.primaryColors
-        val normalItemColors = MDHorizontalCardDefaults.colors()
-        MDHorizontalCardGridGroup(
-            columns = GridCells.Fixed(columnsCount)
-        ) {
-            train.options.forEachIndexed { i, option ->
-                item(
-                    onClick = {
-                        selectedAnswerIndex = i
-                    },
-                    colors = if (i == selectedAnswerIndex) {
-                        selectedItemColors
+        LazyGridCard2(
+            columns = GridCells.Fixed(columnsCount),
+            contentCount = train.options.count()
+        ) { i ->
+            val option = train.options[i]
+            MDCard2SelectableItem(
+                checked = i == selectedAnswerIndex,
+                onClick = {
+                    selectedAnswerIndex = i
+                },
+                theme = MDCard2ListItemTheme.SurfaceContainerHighest,
+                checkedTheme = MDCard2ListItemTheme.PrimaryContainer,
+                leading = {
+                    if (i == selectedAnswerIndex) {
+                        MDIcon(MDIconsSet.Check)
                     } else {
-                        normalItemColors
-                    },
-                    leadingIcon = {
-                        if (i == selectedAnswerIndex) {
-                            MDIcon(MDIconsSet.Check)
-                        } else {
-                            Box(modifier = Modifier.width(24.dp))
-                        }
-                    },
-                    trailingIcon = {
-                        // to keep the title in the middle
                         Box(modifier = Modifier.width(24.dp))
-                    },
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(option)
                     }
-                }
+                },
+                trailing = {
+                    // trailing takes a width to keep the title in the middle
+                },
+            ) {
+                Text(option.toAnnotatedString(), textAlign = TextAlign.Center)
             }
         }
     }

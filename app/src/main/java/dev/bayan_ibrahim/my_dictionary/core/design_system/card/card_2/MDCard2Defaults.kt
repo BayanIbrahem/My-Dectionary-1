@@ -1,20 +1,11 @@
 package dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.structuralEqualityPolicy
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
@@ -33,7 +24,6 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2Lis
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme.SurfaceContainerHighest
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme.SurfaceContainerLow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme.SurfaceContainerLowest
-import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.DEFAULT_FRACTION
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerp
 
 object MDCard2Defaults {
@@ -128,6 +118,8 @@ val LocalMDCard2ListItemTheme: ProvidableCompositionLocal<MDCard2ListItemTheme> 
  * * [Error]
  * * [ErrorContainer]
  * * [ErrorOnSurface]
+ * * [DisabledSurface]
+ * * [SurfaceVariant]
  * * [SurfaceContainer]
  * * [SurfaceContainerLow]
  * * [SurfaceContainerLowest]
@@ -263,6 +255,30 @@ sealed interface MDCard2ListItemTheme {
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSecondaryContainer
         override val filledTrailingContentColor: Color
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.secondaryContainer
+    }
+
+    data object DisabledSurface : MDCard2ListItemTheme {
+        override val titleColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
+        override val subtitleColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline.copy(0.5f)
+        override val containerColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
+        override val leadingColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
+
+        override val filledLeadingContainerColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
+        override val filledLeadingContentColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
+
+        override val trailingColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
+
+        override val filledTrailingContainerColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
+        override val filledTrailingContentColor: Color
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
     }
 
     data object SurfaceVariant : MDCard2ListItemTheme {

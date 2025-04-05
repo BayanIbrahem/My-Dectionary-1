@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2RadioButtonItem
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.util.LabeledEnum
@@ -25,31 +25,21 @@ fun <E : LabeledEnum> MDOptionSelectionGroup(
     subtitle: String? = null,
     label: @Composable (E) -> String = { it.label },
 ) {
-    MDHorizontalCardGroup(
+    MDCard2(
         modifier = modifier,
-        title = {
-            Text(title)
+        header = {
+            MDCard2ListItem(title, subtitle = subtitle)
         },
-        subtitle = subtitle?.let {
-            {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
     ) {
         availableOptions.forEach { strategy ->
             val selected = selectedOption == strategy
-            radioItem(
+            MDCard2RadioButtonItem(
                 selected = selected,
                 onClick = {
                     onSelectOption(strategy)
                 },
-            ) {
-                Text(label(strategy))
-            }
+                title = label(strategy)
+            )
         }
     }
 }

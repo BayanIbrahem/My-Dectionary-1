@@ -48,13 +48,14 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchDialogInputField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CancelAction
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2SelectableItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.dialog.MDDeleteConfirmDialog
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.TagSegmentSeparator
@@ -159,95 +160,97 @@ fun MDTagExplorerDialog(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                MDHorizontalCardGroup {
-                    state.currentTagsTree.nextLevel.forEach { (segment, subTree) ->
-                        val (isVisible, isEnabled) = subTree.tag?.let { tag ->
-                            val matchSearchQuery = tag.segments.last().tagMatchNormalize.startsWith(searchQuery.tagMatchNormalize)
-                            val isVisible = searchFilterHidesTagsOnly || matchSearchQuery
-                            val isEnabled = isVisible && matchSearchQuery && subTree.tag !in state.disabledTags
-                            Pair(isVisible, isEnabled)
-                        } ?: Pair(true, true)
-                        if (isVisible) {
-                            item(
-                                enabled = isEnabled,
-                                leadingIcon = {
-                                    subTree.tag?.let {
-                                        tagLeadingIcon(it, subTree.isLeaf)
-                                    }
-                                },
-                                trailingIcon = tagTrailingIcon?.let { composable ->
-                                    subTree.tag?.let { tag ->
-                                        { composable(tag) }
-                                    }
-                                },
-                                onClick = {
-                                    subTree.tag?.let { actions.onClickTag(it) }
-                                },
-                                onLongClick = if (allowRemoveTags) {
-                                    {
-                                        deleteConfirmTag = subTree.tag
-                                    }
-                                } else null
-                            ) {
-                                Text(segment)
-                            }
+                state.currentTagsTree.nextLevel.forEach { (segment, subTree) ->
+                    val isVisibleWithEnabled by remember(subTree.tag) {
+                        derivedStateOf {
+                            subTree.tag?.let { tag ->
+                                val matchSearchQuery = tag.segments.last().tagMatchNormalize.startsWith(searchQuery.tagMatchNormalize)
+                                val isVisible = searchFilterHidesTagsOnly || matchSearchQuery
+                                val isEnabled = isVisible && matchSearchQuery && subTree.tag !in state.disabledTags
+                                Pair(isVisible, isEnabled)
+                            } ?: Pair(true, true)
                         }
                     }
-                    if (state.currentTagsTree.isLeaf) {
-                        item {
-                            Text("No Inner tags for current")
-                        }
+                    if (isVisibleWithEnabled.first) {
+                        MDCard2SelectableItem(
+                            checked = isVisibleWithEnabled.second,
+                            leading = {
+                                subTree.tag?.let {
+                                    tagLeadingIcon(it, subTree.isLeaf)
+                                }
+                            },
+                            trailing = tagTrailingIcon?.let { composable ->
+                                subTree.tag?.let { tag ->
+                                    { composable(tag) }
+                                }
+                            },
+                            onClick = {
+                                subTree.tag?.let { actions.onClickTag(it) }
+                            },
+                            onLongClick = if (allowRemoveTags) {
+                                {
+                                    deleteConfirmTag = subTree.tag
+                                }
+                            } else null,
+                            theme = MDCard2ListItemTheme.DisabledSurface,
+                            checkedTheme = MDCard2ListItemTheme.SurfaceContainer,
+                            title = segment,
+                        )
                     }
                 }
-                if (isAddNewTagInProgress) {
-                    var isFieldFocused by remember {
-                        mutableStateOf(false)
-                    }
-                    MDBasicTextField(
-                        colors = MDTextFieldDefaults.colors(
-                            unfocusedContainerColor = MDCardDefaults.colors().contentContainerColor
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onFocusChanged {
-                                isFieldFocused = it.isFocused
-                            },
-                        value = newTagSegmentText,
-                        placeholder = "new Tag",
-                        onValueChange = {
-                            newTagSegmentText = it.split(TagSegmentSeparator).joinToString("")
+                if (state.currentTagsTree.isLeaf) {
+                    // TODO, string res
+                    MDCard2ListItem("No Inner tags for current")
+                }
+            }
+            if (isAddNewTagInProgress) {
+                var isFieldFocused by remember {
+                    mutableStateOf(false)
+                }
+                MDBasicTextField(
+                    colors = MDTextFieldDefaults.colors(
+                        unfocusedContainerColor = MDCard2ListItemTheme.SurfaceContainer.containerColor,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged {
+                            isFieldFocused = it.isFocused
                         },
-                        onKeyboardAction = {
-                            // cancel
-                            actions.onAddNewTag(newTagSegmentText)
-                            newTagSegmentText = ""
-                            isAddNewTagInProgress = false
-                        },
-                        trailingIcons = {
-                            if (isFieldFocused) {
+                    value = newTagSegmentText,
+                    placeholder = "new Tag",
+                    onValueChange = {
+                        newTagSegmentText = it.split(TagSegmentSeparator).joinToString("")
+                    },
+                    onKeyboardAction = {
+                        // cancel
+                        actions.onAddNewTag(newTagSegmentText)
+                        newTagSegmentText = ""
+                        isAddNewTagInProgress = false
+                    },
+                    trailingIcons = {
+                        if (isFieldFocused) {
+                            IconButton(
+                                onClick = {
+                                    isAddNewTagInProgress = false
+                                }
+                            ) {
+                                MDIcon(MDIconsSet.Close)
+                            }
+
+                            if (newTagSegmentText.isNotBlank()) {
                                 IconButton(
                                     onClick = {
+                                        actions.onAddNewTag(newTagSegmentText)
+                                        newTagSegmentText = ""
                                         isAddNewTagInProgress = false
                                     }
                                 ) {
-                                    MDIcon(MDIconsSet.Close)
-                                }
-
-                                if (newTagSegmentText.isNotBlank()) {
-                                    IconButton(
-                                        onClick = {
-                                            actions.onAddNewTag(newTagSegmentText)
-                                            newTagSegmentText = ""
-                                            isAddNewTagInProgress = false
-                                        }
-                                    ) {
-                                        MDIcon(MDIconsSet.Check)
-                                    }
+                                    MDIcon(MDIconsSet.Check)
                                 }
                             }
                         }
-                    )
-                }
+                    }
+                )
             }
         }
     }

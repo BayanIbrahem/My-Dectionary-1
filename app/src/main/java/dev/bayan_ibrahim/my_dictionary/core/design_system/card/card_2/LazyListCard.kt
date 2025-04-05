@@ -41,35 +41,39 @@ fun LazyListCard2(
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-private fun LazyListScope.card2Content(
+fun LazyListScope.card2Content(
     @IntRange(from = 0)
     contentCount: Int,
     overline: (@Composable () -> Unit)? = null,
     stickyOverline: Boolean = false,
+    overlineContentType: Any? = null,
     header: (@Composable () -> Unit)? = null,
+    headerContentType: Any? = null,
     stickyHeader: Boolean = false,
-    footer: @Composable (() -> Unit)?,
+    footer: @Composable (() -> Unit)? = null,
+    footerContentType: Any? = null,
+    contentType: (i: Int) -> Any? = { null },
     content: @Composable (i: Int) -> Unit,
 ) {
     if (overline != null) {
         if (stickyOverline) {
-            stickyHeader {
+            stickyHeader(contentType = overlineContentType) {
                 overline()
             }
         } else {
-            item {
+            item(contentType = overlineContentType) {
                 overline()
             }
         }
     }
     if (header != null) {
-        card2Header(item = header, stickyHeader = stickyHeader)
+        card2Header(item = header, stickyHeader = stickyHeader, contentType = headerContentType)
     }
-    items(contentCount) {
+    items(contentCount, contentType = contentType) {
         content(it)
     }
     if (footer != null) {
-        card2Footer(item = footer)
+        card2Footer(item = footer, contentType = footerContentType)
 
     }
 }
@@ -79,9 +83,12 @@ fun LazyListScope.card2Item(
     clipBottom: Boolean = true,
     clipStart: Boolean = true,
     clipEnd: Boolean = true,
+    contentType: Any? = null,
     item: @Composable () -> Unit,
 ) {
-    item {
+    item(
+        contentType = contentType,
+    ) {
         val shape by remember(clipTop, clipBottom, clipStart, clipEnd) {
             derivedStateOf {
                 cardShape(
@@ -104,9 +111,10 @@ fun LazyListScope.card2StickyHeader(
     clipBottom: Boolean = true,
     clipStart: Boolean = true,
     clipEnd: Boolean = true,
+    contentType: Any? = null,
     item: @Composable () -> Unit,
 ) {
-    stickyHeader {
+    stickyHeader(contentType = contentType) {
         val shape by remember(clipTop, clipBottom, clipStart, clipEnd) {
             derivedStateOf {
                 cardShape(
@@ -128,6 +136,7 @@ fun LazyListScope.card2Header(
     clipStart: Boolean = true,
     clipEnd: Boolean = true,
     stickyHeader: Boolean = false,
+    contentType: Any? = null,
     item: @Composable () -> Unit,
 ) {
     if (stickyHeader) {
@@ -136,6 +145,7 @@ fun LazyListScope.card2Header(
             clipBottom = clipBottom,
             clipStart = clipStart,
             clipEnd = clipEnd,
+            contentType = contentType,
             item = item
         )
     } else {
@@ -144,6 +154,7 @@ fun LazyListScope.card2Header(
             clipBottom = clipBottom,
             clipStart = clipStart,
             clipEnd = clipEnd,
+            contentType = contentType,
             item = item
         )
     }
@@ -154,6 +165,7 @@ fun LazyListScope.card2Footer(
     clipTop: Boolean = false,
     clipStart: Boolean = true,
     clipEnd: Boolean = true,
+    contentType: Any? = null,
     item: @Composable () -> Unit,
 ) {
     card2Item(
@@ -161,6 +173,7 @@ fun LazyListScope.card2Footer(
         clipBottom = true,
         clipStart = clipStart,
         clipEnd = clipEnd,
+        contentType = contentType,
         item = item
     )
 }
@@ -170,6 +183,7 @@ fun cardShape(
     clipBottom: Boolean = true,
     clipStart: Boolean = true,
     clipEnd: Boolean = true,
+
     radius: Dp = MDCard2Defaults.cornerRadius,
 ): RoundedCornerShape {
     return RoundedCornerShape(

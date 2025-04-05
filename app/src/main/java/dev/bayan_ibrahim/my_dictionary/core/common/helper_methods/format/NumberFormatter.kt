@@ -37,20 +37,22 @@ enum class NumberFormatGroup(val sfx: String) {
     x1_000_000_000_000_000("QD")
 }
 
+/**
+ * examples:
+ * * 1 -> 1
+ * * 10 -> 10
+ * * 100 -> 0.1k
+ * * 1 000 -> 1k
+ * * 10 000 -> 10k
+ * * 100 000 -> 0.1m
+ * * 1 000 000 -> 1m
+ * * 10 000 000 -> 10m
+ * * 100 000 000 -> 0.1b
+ * * 1 000 100 000 -> 1b
+ */
 fun Long.asFormattedString(
     getSuffix: (NumberFormatGroup) -> String = { it.sfx },
 ): String {
-    //             1 -> 1
-    //            10 -> 10
-    //           100 -> 0.1k
-    //         1 000 -> 1k
-    //        10 000 -> 10k
-    //       100 000 -> 0.1m
-    //     1 000 000 -> 1m
-    //    10 000 000 -> 10m
-    //   100 000 000 -> 0.1b
-    // 1 000 100 000 -> 1b
-    // 610
     val len = absoluteValue.toString().length
     val negative = this < 0
     val group = NumberFormatGroup.entries[(len / 3).coerceIn(0, 5)]

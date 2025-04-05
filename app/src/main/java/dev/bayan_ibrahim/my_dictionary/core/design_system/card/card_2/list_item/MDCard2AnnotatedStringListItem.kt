@@ -48,6 +48,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
  * @param onTrailingClick callback of the trailing icon button click, if null, then trailing would be a normal icon,
  * size of icon button would be [MDCard2ListItemDefaults.trailingSize]
  * @param enableTrailing enable of disable the trailing icon button if [onTrailingClick] is null then this param has no effect
+ * @param clip wither clip the list item or not, the default value is true, and when used in a card
+ * it would provide a false value for [LocalClipCardListItem]
  *
  * * min height of the item is [MDCard2ListItemDefaults.minHeight]
  */
@@ -68,11 +70,13 @@ fun MDCard2ListItem(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     theme: MDCard2ListItemTheme = LocalMDCard2ListItemTheme.current,
+    clip: Boolean = LocalClipCardListItem.current,
 ) {
     MDCard2ListItem(
         theme = theme,
         modifier = modifier,
         onClick = onClick,
+        clip = clip,
         onLongClick = onLongClick,
         onDoubleClick = onDoubleClick,
         title = {

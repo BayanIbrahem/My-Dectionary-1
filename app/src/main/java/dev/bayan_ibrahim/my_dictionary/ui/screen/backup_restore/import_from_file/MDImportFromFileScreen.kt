@@ -57,11 +57,6 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabData
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardColors
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.vertical_card.MDCardDefaults
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CancelAction
@@ -146,28 +141,30 @@ fun MDImportFromFileScreen(
                 visible = uiState.selectedParts.isNotEmpty() && !uiState.isFetchingAvailablePartsInProgress,
                 onToggleAvailablePart = uiActions::onToggleSelectAvailablePart
             )
-            val primaryColors = MDHorizontalCardDefaults.primaryColors
-            MDHorizontalCardGroup {
-                item(
-                    colors = primaryColors,
-                    onClick = {
-                        showTagsExplorerDialog = true
-                    },
-                    subtitle = { Text(firstCapStringResource(R.string.extra_tags_hint)) }
-                ) {
-                    Text(firstCapStringResource(R.string.extra_tags))
-                }
-                tagsSelectorUiState.selectedTags.forEach { tag ->
-                    item(
-                        onLongClick = {
-                            tagsSelectorUiActions.onDeleteTag(tag)
+            MDCard2(
+                header = {
+                    MDCard2ListItem(
+                        onClick = {
+                            showTagsExplorerDialog = true
                         },
+                        title = firstCapStringResource(R.string.extra_tags),
+                        subtitle = firstCapStringResource(R.string.extra_tags_hint)
+                    )
+                }
+            ) {
+                tagsSelectorUiState.selectedTags.forEach { tag ->
+                    MDCard2ListItem(
+                        title = tag.value,
                         leadingIcon = {
                             MDIcon(MDIconsSet.WordTag)
-                        }
-                    ) {
-                        Text(tag.value)
-                    }
+                        },
+                        trailingIcon = {
+                            MDIcon(MDIconsSet.Close)
+                        },
+                        onTrailingClick = {
+                            tagsSelectorUiActions.onDeleteTag(tag)
+                        },
+                    )
                 }
             }
             val hasSelectedTags by remember {
@@ -347,11 +344,6 @@ private fun SummaryExceptions(
         logs = exceptions,
         labelPrefix = firstCapStringResource(R.string.error),
         modifier = modifier,
-        colors = MDCardDefaults.colors(
-            headerContainerColor = MaterialTheme.colorScheme.errorContainer,
-            headerContentColor = MaterialTheme.colorScheme.onErrorContainer,
-            contentContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        )
     )
 }
 
@@ -364,11 +356,6 @@ private fun SummaryWarnings(
         logs = warnings,
         labelPrefix = firstCapStringResource(R.string.warning),
         modifier = modifier,
-        colors = MDCardDefaults.colors(
-            headerContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            headerContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            contentContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        )
     )
 }
 
@@ -377,7 +364,6 @@ private fun SummaryLogs(
     logs: Map<out MDFileProcessingSummaryLog, Int>,
     labelPrefix: String,
     modifier: Modifier = Modifier,
-    colors: MDCardColors = MDCardDefaults.colors(),
 ) {
     val logsList by remember(logs) {
         derivedStateOf {

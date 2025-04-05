@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Close
@@ -28,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,8 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
  * @param onClick click action on the entire list item.
  * @param onLongClick click action on the entire list item.
  * @param onDoubleClick click action on the entire list item.
+ * @param clip wither clip the list item or not, the default value is true, and when used in a card
+ * it would provide a false value for [LocalClipCardListItem]
  * if false then the title would width would be wrap content
  * * max size of [leading] is [MDCard2ListItemDefaults.leadingSize]
  * * max size of [trailing] is [MDCard2ListItemDefaults.trailingSize]
@@ -60,12 +64,19 @@ fun MDCard2ListItem(
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
+    clip: Boolean = LocalClipCardListItem.current,
     title: @Composable () -> Unit,
 ) {
     val clickableModifier by remember(onClick) {
         derivedStateOf {
             if (onClick == null && onLongClick == null && onDoubleClick == null) Modifier
             else Modifier.combinedClickable(onClick = onClick ?: {}, onLongClick = onLongClick, onDoubleClick = onDoubleClick)
+        }
+    }
+
+    val clipModifier by remember(clip) {
+        derivedStateOf {
+            if(clip) Modifier.clip(RoundedCornerShape(MDCard2Defaults.cornerRadius)) else Modifier
         }
     }
     val containerColor by animateColorAsState(theme.containerColor)
@@ -75,6 +86,7 @@ fun MDCard2ListItem(
             .drawBehind {
                 drawRect(containerColor)
             }
+            .then(clipModifier)
             .then(clickableModifier),
         verticalAlignment = Alignment.CenterVertically,
     ) {

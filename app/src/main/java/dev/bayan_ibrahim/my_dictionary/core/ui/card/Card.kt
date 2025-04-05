@@ -29,10 +29,15 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2Def
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2SelectableAction
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.LocalClipCardListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
+/**
+ * @param content for content param, this container provide `false` value for [LocalClipCardListItem]
+ * so list item within it would not be clipped
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MDCard2(
@@ -79,7 +84,11 @@ fun MDCard2(
                     }
                 }
 
-                content()
+                CompositionLocalProvider(
+                    value = LocalClipCardListItem provides false
+                ) {
+                    content()
+                }
 
                 MDAnimatedContent(
                     modifier = modifier.fillMaxWidth(),

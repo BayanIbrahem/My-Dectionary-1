@@ -31,14 +31,14 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCa
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CancelAction
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ImportantAction
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2RadioButtonItem
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.WordsListTrainPreferencesLimit
 import dev.bayan_ibrahim.my_dictionary.domain.model.train_word.TrainWordType
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -227,25 +227,27 @@ private fun <E> CheckableGroup(
     modifier: Modifier = Modifier,
     getLabel: @Composable (E) -> String = { it.label },
 ) where E : LabeledEnum, E : IconedEnum {
-    val colors = MDHorizontalCardGroupDefaults.primaryColors()
-    MDHorizontalCardGroup(
+    MDCard2(
         modifier = modifier,
-        title = { Text(title) },
+        overline = {
+            MDCard2Overline(title)
+        },
     ) {
         data.forEach { item ->
-            checkboxItem(
-                checked = selected == item,
-                colors = colors.cardColors,
-                leadingIcon = {
+            MDCard2RadioButtonItem(
+                selected == item,
+                onClick = {
+                    onClick(item)
+                },
+                theme = MDCard2ListItemTheme.PrimaryOnSurface,
+                secondary = {
                     MDIcon(
                         icon = item.icon,
                         outline = item.outline,
                         contentDescription = null // the checkable group has a label itself
                     )
                 },
-                onClick = {
-                    onClick(item)
-                }
+                leadingRadioButton = false,
             ) {
                 Text(getLabel(item))
             }

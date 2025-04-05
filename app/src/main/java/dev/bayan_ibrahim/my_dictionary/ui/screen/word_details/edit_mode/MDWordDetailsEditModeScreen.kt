@@ -28,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTitleWithHint
+import dev.bayan_ibrahim.my_dictionary.core.design_system.ContentWithHint
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
@@ -329,7 +329,7 @@ private fun LazyListScope.editableGroup(
     items: LazyListScope.() -> Unit,
 ) {
     stickyHeader {
-        MDTitleWithHint(title = title(), icon = icon, titleHint = titleHint())
+        ContentWithHint(title = title(), icon = icon, titleHint = titleHint())
     }
     items()
     item {

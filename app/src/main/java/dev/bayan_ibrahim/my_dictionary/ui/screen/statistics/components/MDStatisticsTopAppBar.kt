@@ -21,11 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIconDropdown
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIconDropdown
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.util.removePadding
 import dev.bayan_ibrahim.my_dictionary.domain.model.count_enum.MDStatisticsMostResentHistoryCount
 import dev.bayan_ibrahim.my_dictionary.domain.model.date.MDDateUnit
@@ -76,7 +76,7 @@ fun MDStatisticsTopAppBar(
                                 expandDropDownMenu = true
                             }
                         ) {
-                            MDIcon(MDIconsSet.MoreVert) 
+                            MDIcon(MDIconsSet.MoreVert)
                         }
                     }
                 ) {
@@ -144,18 +144,19 @@ private fun MDMostRecentTrainHistoryActions(
             }
         }
     }
-    MDHorizontalCardGroup(
+    MDCard2(
         modifier = modifier,
-    ) {
-        item(
-            leadingIcon = {
-                MDIcon(MDIconsSet.LatestTrainsCount, contentDescription = null) 
-            }
-        ) {
-            Text("View Preferences")
+        header = {
+            MDCard2ListItem(
+                leadingIcon = {
+                    MDIcon(MDIconsSet.LatestTrainsCount, contentDescription = null)
+                },
+                title = "View Preferences" // TODO, string res
+            )
         }
+    ) {
         availableOptions.forEach { count ->
-            item(
+            MDCard2ListItem(
                 onClick = {
                     onSelectTrainHistoryCount(count)
                 },
@@ -163,12 +164,11 @@ private fun MDMostRecentTrainHistoryActions(
                     it == count
                 }?.let {
                     {
-                        MDIcon(MDIconsSet.Check, contentDescription = null) 
+                        MDIcon(MDIconsSet.Check, contentDescription = null)
                     }
-                }
-            ) {
-                Text(count.label)
-            }
+                },
+                title = count.label
+            )
         }
     }
 }
@@ -179,29 +179,33 @@ private fun MDDateUnitActions(
     onSelectDateUnit: (MDDateUnit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MDHorizontalCardGroup(
+    MDCard2(
         modifier = modifier,
-    ) {
-        item(
-            leadingIcon = {
-                MDIcon(MDIconsSet.TrainHistoryDateGroup, contentDescription = null) 
-            }
-        ) {
-            Text("View Preferences")
+        header = {
+            MDCard2ListItem(
+                leadingIcon = {
+                    MDIcon(MDIconsSet.TrainHistoryDateGroup, contentDescription = null)
+                },
+                // TODO, string res
+                title = "View Preferences"
+            )
+
         }
+    ) {
         MDDateUnit.entries.forEach { unit ->
-            item(
+            MDCard2ListItem(
                 onClick = {
                     onSelectDateUnit(unit)
                 },
-                trailingIcon = unit.takeIf { it == dateUnit }?.let {
+                trailingIcon = unit.takeIf {
+                    it == dateUnit
+                }?.let {
                     {
                         MDIcon(MDIconsSet.Check, contentDescription = null) //checked
                     }
-                }
-            ) {
-                Text(unit.label)
-            }
+                },
+                title = unit.label
+            )
         }
     }
 }

@@ -23,11 +23,12 @@ import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.upperStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroup
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.checkboxItem
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.item
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.radioItem
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CheckboxItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2RadioButtonItem
 import dev.bayan_ibrahim.my_dictionary.domain.model.MDUserPreferences
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordDetailsDirectionSource
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
@@ -78,39 +79,36 @@ private fun BackupAndRestoreGroup(
     onClickSync: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MDHorizontalCardGroup(
+    MDCard2(
         modifier = modifier,
-        title = {
-            Text(firstCapStringResource(R.string.backup_restore))
+        header = {
+            MDCard2ListItem(firstCapStringResource(R.string.backup_restore))
         }
     ) {
-        item(
+        MDCard2ListItem(
             onClick = onClickImportFromFile,
             leadingIcon = {
                 MDIcon(MDIconsSet.ImportFromFile, contentDescription = null)
-            }
-        ) {
-            Text(firstCapStringResource(R.string.import_from_file))
-        }
+            },
+            title = firstCapStringResource(R.string.import_from_file)
+        )
 
-        item(
+        MDCard2ListItem(
             onClick = onClickExportToFile,
             leadingIcon = {
                 MDIcon(MDIconsSet.ExportToFile, contentDescription = null)
-            }
-        ) {
-            Text(firstCapStringResource(R.string.export_to_file))
-        }
+            },
+            title = firstCapStringResource(R.string.export_to_file)
+        )
 
-        item(
-            onClick = onClickSync,
-            enabled = false, // TODO, not implemented yet
+        MDCard2ListItem(
+            onClick = null, // TODO onClickSync
+            theme = MDCard2ListItemTheme.DisabledSurface,
             leadingIcon = {
                 MDIcon(MDIconsSet.Sync, contentDescription = null)
             },
-        ) {
-            Text(firstCapStringResource(R.string.sync))
-        }
+            title = firstCapStringResource(R.string.sync),
+        )
     }
 }
 
@@ -119,20 +117,19 @@ private fun ThemeGroup(
     onClickAppTheme: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MDHorizontalCardGroup(
+    MDCard2(
         modifier = modifier,
-        title = {
-            Text(firstCapStringResource(R.string.app_theme))
+        header = {
+            MDCard2ListItem(firstCapStringResource(R.string.app_theme))
         }
     ) {
-        item(
+        MDCard2ListItem(
             onClick = onClickAppTheme,
             leadingIcon = {
                 MDIcon(icon = MDIconsSet.Colors, contentDescription = null)
-            }
-        ) {
-            Text(firstCapStringResource(R.string.theme))
-        }
+            },
+            title = firstCapStringResource(R.string.theme)
+        )
     }
 }
 
@@ -142,31 +139,25 @@ private fun WordsListGroup(
     onToggleLiveTemplate: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MDHorizontalCardGroup(
+    MDCard2(
         modifier = modifier,
-        title = {
-            Text(firstCapStringResource(R.string.words_list))
-        },
+        header = {
+            MDCard2ListItem(title = firstCapStringResource(R.string.words_list))
+        }
     ) {
-        checkboxItem(
+        MDCard2CheckboxItem(
             checked = isLiveTemplateEnabled,
-            onClick = {
+            onCheckedChange = {
                 onToggleLiveTemplate(!isLiveTemplateEnabled)
             },
-            subtitle = {
-                Text(
-                    if (isLiveTemplateEnabled) {
-                        firstCapStringResource(R.string.memorize_probability_live_preview_checked)
-                    } else {
-                        firstCapStringResource(R.string.memorize_probability_live_preview_unchecked)
-                    }
-                )
-            }
-        ) {
-            Text(firstCapStringResource(R.string.memorize_probability_live_preview))
-        }
+            subtitle = if (isLiveTemplateEnabled) {
+                firstCapStringResource(R.string.memorize_probability_live_preview_checked)
+            } else {
+                firstCapStringResource(R.string.memorize_probability_live_preview_unchecked)
+            },
+            title = firstCapStringResource(R.string.memorize_probability_live_preview)
+        )
     }
-
 }
 
 @Composable
@@ -175,24 +166,25 @@ private fun WordDetailsGroup(
     onSelectSource: (WordDetailsDirectionSource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MDHorizontalCardGroup(
+    MDCard2(
         modifier = modifier,
-        title = {
-            Text(firstCapStringResource(R.string.word_details))
+        header = {
+            MDCard2ListItem(
+                title = firstCapStringResource(R.string.word_details),
+                subtitle = firstCapStringResource(R.string.alignment_hint)
+            )
         },
-        subtitle = {
-            Text(firstCapStringResource(R.string.alignment_hint))
-        }
     ) {
         WordDetailsDirectionSource.entries.forEach { source ->
-            radioItem(
+            MDCard2RadioButtonItem(
                 selected = source == selectedAlignmentSource,
                 onClick = {
                     onSelectSource(source)
                 },
-                trailingIcon = {
+                secondary = {
                     MDIcon(source.icon)
-                }
+                },
+                leadingRadioButton = true
             ) {
                 Text(
                     text = buildAnnotatedString {

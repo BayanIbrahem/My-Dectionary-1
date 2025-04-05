@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -42,16 +40,13 @@ import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.MDDateTimeFormat
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.format
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.toDefaultLocalDateTime
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.asFormattedString
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.upperStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCard
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupColors
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupDefaults
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.MDHorizontalCardGroupStyles
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.horizontal_card.horizontalCardGroup
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.card2Content
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.bar_chart.MDBarChart
 import dev.bayan_ibrahim.my_dictionary.core.design_system.chart.line_chart.MDLineChart
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
@@ -66,9 +61,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.components.MDStatisticsTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.screen.statistics.util.MDStatisticsChartTypeTab
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
-import dev.bayan_ibrahim.my_dictionary.ui.theme.bottomOnly
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
-import dev.bayan_ibrahim.my_dictionary.ui.theme.topOnly
 import kotlin.math.roundToInt
 
 @Composable
@@ -108,25 +101,6 @@ fun MDStatisticsScreen(
             }
         }
 
-        val singleListShape = MDHorizontalCardGroupDefaults.shape
-        val firstItemShape by remember(singleListShape) {
-            derivedStateOf {
-                singleListShape.topOnly
-            }
-        }
-        val lastItemShape by remember(singleListShape) {
-            derivedStateOf {
-                singleListShape.bottomOnly
-            }
-        }
-        val middleItemShape by remember {
-            derivedStateOf {
-                singleListShape.copy(CornerSize(0.dp))
-            }
-        }
-
-        val colors: MDHorizontalCardGroupColors = MDHorizontalCardGroupDefaults.colors()
-        val styles: MDHorizontalCardGroupStyles = MDHorizontalCardGroupDefaults.styles()
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -167,75 +141,59 @@ fun MDStatisticsScreen(
                 }
                 uiState.trainHistoryRecord.forEach { trainHistory ->
                     if (trainHistory.words.isNotEmpty()) { // TODO, replace by filter from view model
-                        item {
-                            val formattedTime by remember(
-                                trainHistory.time
-                            ) {
-                                derivedStateOf {
-                                    trainHistory.time.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
-                                }
-                            }
-                            Text(
-                                text = formattedTime,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 4.dp)
-                            )
-                        }
-                        item {
-                            val trainType by remember {
-                                derivedStateOf {
-                                    trainHistory.words.first().trainType
-                                }
-                            }
-                            val resultsPercentages by remember(trainHistory.words) {
-                                derivedStateOf {
-                                    trainHistory.words.groupBy {
-                                        it.trainResult.type
-                                    }.mapValues { (_, results) ->
-                                        results.count().times(100f).div(trainHistory.words.count()).roundToInt().coerceIn(0, 100)
-                                    }.entries.sortedBy { it.key.ordinal }
-                                }
-                            }
-                            MDHorizontalCard(
-                                modifier = Modifier.clip(firstItemShape),
-                                colors = MDHorizontalCardDefaults.primaryColors,
-                                leadingIcon = {
-                                    MDIcon(trainType.icon)
-                                },
-                                trailingIcon = {
-                                    Text(
-                                        text = "x${trainHistory.words.count()}",
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                },
-                                subtitle = {
-                                    val stringifiedList = resultsPercentages.map {
-                                        "${it.key.label} %${it.value}"
+                        card2Content(
+                            contentCount = trainHistory.words.count(),
+                            overline = {
+                                val formattedTime by remember(
+                                    trainHistory.time
+                                ) {
+                                    derivedStateOf {
+                                        trainHistory.time.toDefaultLocalDateTime().format(MDDateTimeFormat.EuropeanDateTime)
                                     }
-                                    Text(
-                                        text = stringifiedList.joinToString(" - "),
-                                        modifier = Modifier.basicMarquee(Int.MAX_VALUE)
-                                    )
                                 }
-                            ) {
-                                Text(trainType.label)
-                            }
-                        }
-                        horizontalCardGroup(
-                            itemsCount = trainHistory.words.count(),
-                            shape = lastItemShape, // because it has a header that is in place of first item (for corner clipping)
-                            topOnlyShape = middleItemShape,// because it has a header that is in place of first item (for corner clipping)
-                            bottomOnlyShape = lastItemShape,
-                            middleShape = middleItemShape,
-                            colors = colors,
-                            styles = styles,
+                                Text(
+                                    text = formattedTime,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 4.dp)
+                                )
+                            },
+                            header = {
+                                val trainType by remember {
+                                    derivedStateOf {
+                                        trainHistory.words.first().trainType
+                                    }
+                                }
+                                val resultsPercentages by remember(trainHistory.words) {
+                                    derivedStateOf {
+                                        trainHistory.words.groupBy {
+                                            it.trainResult.type
+                                        }.mapValues { (_, results) ->
+                                            results.count().times(100f).div(trainHistory.words.count()).roundToInt().coerceIn(0, 100)
+                                        }.entries.sortedBy { it.key.ordinal }
+                                    }
+                                }
+                                MDCard2ListItem(
+                                    modifier = Modifier,
+                                    leadingIcon = { MDIcon(trainType.icon) },
+                                    trailingIcon = {
+                                        Text(
+                                            text = "x${trainHistory.words.count().asFormattedString()}",
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                    },
+                                    subtitle = resultsPercentages.map {
+                                        "${it.key.label} %${it.value}"
+                                    }.joinToString(" - "),
+                                    title = trainType.label,
+                                )
+                            },
                         ) { i ->
                             val wordHistory by remember(i, trainHistory) {
                                 derivedStateOf { trainHistory.words[i] }
                             }
-                            MDHorizontalCard(
-                                leadingIcon = {
+                            MDCard2ListItem(
+                                leading = {
                                     MDIcon(
                                         icon = wordHistory.trainResult.type.icon,
                                         tint = getTrainResultTypeColor(wordHistory.trainResult.type)
@@ -247,7 +205,7 @@ fun MDStatisticsScreen(
                                     ) {
                                         Text(wordHistory.trainResult.submitOption.label)
                                         Spacer(modifier = Modifier.weight(1f))
-                                        MDIcon(MDIconsSet.TrainTime, modifier = Modifier.size(16.dp)) // TODO, icon res
+                                        MDIcon(MDIconsSet.TrainTime, modifier = Modifier.size(16.dp))
                                         Text(wordHistory.trainResult.consumedDuration.format)
                                     }
                                 }
