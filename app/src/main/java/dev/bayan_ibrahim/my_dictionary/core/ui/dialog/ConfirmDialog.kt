@@ -2,7 +2,9 @@ package dev.bayan_ibrahim.my_dictionary.core.ui.dialog
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,7 +39,7 @@ fun MDConfirmDialog(
     runningMessage: String = confirmMessage,
     headerTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryContainer,
     confirmButtonTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface,
-    cancelButtonTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceVariant,
+    cancelButtonTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.Outline,
     confirmButtonLabel: String = firstCapStringResource(R.string.confirm),
     cancelButtonLabel: String = firstCapStringResource(R.string.cancel),
 ) {
@@ -57,6 +59,7 @@ fun MDConfirmDialog(
         ) {
             MDCard2(
                 modifier = modifier,
+                cardModifier = Modifier.width(IntrinsicSize.Max),
                 headerTheme = headerTheme,
                 header = {
                     MDCard2ListItem(

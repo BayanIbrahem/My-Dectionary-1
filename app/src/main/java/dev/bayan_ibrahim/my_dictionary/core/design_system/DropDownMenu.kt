@@ -222,13 +222,6 @@ fun <Data : Any> MDBasicDropDownMenu(
             matchTextFieldWidth = menuMatchFieldWidth,
         ) {
             Box {
-                val labledSuggestions = suggestions.map {
-                    Triple(
-                        first = it,
-                        second = it.suggestionAnnotatedTitle(),
-                        third = it.suggestionAnnotatedSubtitle(),
-                    )
-                }
                 MDCard2(
                     modifier = modifier.width(IntrinsicSize.Max),
                     contentTheme = menuTheme,

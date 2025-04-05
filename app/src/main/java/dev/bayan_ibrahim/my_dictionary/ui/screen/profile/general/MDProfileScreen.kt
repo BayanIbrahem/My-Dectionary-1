@@ -103,7 +103,7 @@ private fun BackupAndRestoreGroup(
 
         MDCard2ListItem(
             onClick = null, // TODO onClickSync
-            theme = MDCard2ListItemTheme.DisabledSurface,
+            theme = MDCard2ListItemTheme.SurfaceDisabled,
             leadingIcon = {
                 MDIcon(MDIconsSet.Sync, contentDescription = null)
             },

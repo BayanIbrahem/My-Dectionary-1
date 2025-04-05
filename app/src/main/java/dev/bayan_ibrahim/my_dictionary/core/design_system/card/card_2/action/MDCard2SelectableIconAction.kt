@@ -1,12 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -27,7 +22,7 @@ fun MDCard2SelectableAction(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    normalTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceContainer,
+    normalTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.Outline,
     selectedTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryContainer,
     enabled: Boolean = true,
     label: String? = null,

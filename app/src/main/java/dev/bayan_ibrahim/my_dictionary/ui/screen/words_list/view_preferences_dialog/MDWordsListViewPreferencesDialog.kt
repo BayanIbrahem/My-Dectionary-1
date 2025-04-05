@@ -1,10 +1,17 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -63,6 +70,7 @@ fun MDWordsListViewPreferencesDialog(
         ) {
             MDCard2(
                 modifier = modifier,
+                cardModifier = Modifier.width(IntrinsicSize.Max),
                 header = {
                     MDTabRow(
                         tabs = MDWordsListViewPreferencesTab.entries.map { it.tabData },
@@ -85,7 +93,7 @@ fun MDWordsListViewPreferencesDialog(
             ) {
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.height(300.dp),
+                    modifier = Modifier.size(300.dp, 300.dp),
                     contentPadding = PaddingValues(8.dp),
                     userScrollEnabled = false,
                     pageSpacing = 8.dp,
@@ -131,10 +139,12 @@ private fun SearchBody(
     MDCard2(
         modifier = modifier,
     ) {
+        val selectedTheme = MDCard2ListItemTheme.PrimaryOnSurface.onSurfaceHighest
         MDWordsListSearchTarget.entries.forEach { target ->
             MDCard2RadioButtonItem(
                 selected = target == selectedSearchTarget,
-                theme = MDCard2ListItemTheme.PrimaryOnSurface,
+                theme = MDCard2ListItemTheme.SurfaceContainerHighest,
+                selectedTheme = selectedTheme,
                 onClick = { onSelectSearchTarget(target) },
                 title = target.label
             )
@@ -150,7 +160,7 @@ private fun FilterBody(
     selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     onToggleSelectedTags: (Boolean) -> Unit,
     onSelectLearningGroup: (MDWordsListMemorizingProbabilityGroup) -> Unit,
-    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface,
+    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceContainerHighest,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -166,20 +176,28 @@ private fun FilterBody(
             allowRemoveTags = false,
             allowEditTags = true,
         )
-        MDCard2 {
-            MDCard2CheckboxItem(
-                checked = includeSelectedTags,
-                theme = theme,
-                onCheckedChange = {
-                    onToggleSelectedTags(!includeSelectedTags)
-                },
-                subtitle = if (includeSelectedTags) {
-                    firstCapStringResource(R.string.include_selected_tags_hint_on)
-                } else {
-                    firstCapStringResource(R.string.include_selected_tags_hint_off)
-                },
-                title = firstCapStringResource(R.string.include_selected_tags)
-            )
+        val selectedTheme = MDCard2ListItemTheme.PrimaryOnSurface.onSurfaceHighest
+        AnimatedVisibility(
+            visible = tagsSelectionState.selectedTags.isNotEmpty(),
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically(),
+        ) {
+            MDCard2 {
+                MDCard2CheckboxItem(
+                    checked = includeSelectedTags,
+                    theme = theme,
+                    checkedTheme = selectedTheme,
+                    onCheckedChange = {
+                        onToggleSelectedTags(!includeSelectedTags)
+                    },
+                    subtitle = if (includeSelectedTags) {
+                        firstCapStringResource(R.string.include_selected_tags_hint_on)
+                    } else {
+                        firstCapStringResource(R.string.include_selected_tags_hint_off)
+                    },
+                    title = firstCapStringResource(R.string.include_selected_tags)
+                )
+            }
         }
 
         MDCard2(
@@ -189,6 +207,7 @@ private fun FilterBody(
                 MDCard2CheckboxItem(
                     checked = group in selectedMemorizingProbabilityGroups,
                     theme = theme,
+                    checkedTheme = selectedTheme,
                     onCheckedChange = {
                         onSelectLearningGroup(group)
                     },
@@ -210,9 +229,10 @@ private fun SortBody(
     selectedSortByOrder: MDWordsListSortByOrder,
     onSelectSortBy: (MDWordsListViewPreferencesSortBy) -> Unit,
     onSelectSortByOrder: (MDWordsListSortByOrder) -> Unit,
-    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface,
+    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceContainerHighest,
     modifier: Modifier = Modifier,
 ) {
+    val selectedTheme = MDCard2ListItemTheme.PrimaryOnSurface.onSurfaceHighest
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -225,6 +245,7 @@ private fun SortBody(
                 MDCard2RadioButtonItem(
                     selected = sortBy == selectedSortBy,
                     theme = theme,
+                    selectedTheme = selectedTheme,
                     onClick = { onSelectSortBy(sortBy) },
                     secondary = {
                         // item has a label so no need for content description
@@ -243,6 +264,7 @@ private fun SortBody(
                 MDCard2RadioButtonItem(
                     theme = theme,
                     selected = sortByOrder == selectedSortByOrder,
+                    selectedTheme = selectedTheme,
                     onClick = { onSelectSortByOrder(sortByOrder) },
                     secondary = {
                         MDIcon(icon = sortByOrder.icon, contentDescription = null)

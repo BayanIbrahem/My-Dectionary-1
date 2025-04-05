@@ -12,7 +12,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDC
 fun RowScope.MDCard2ImportantAction(
     modifier: Modifier = Modifier,
     label: String = firstCapStringResource(R.string.delete),
-    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.ErrorOnSurface,
+    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.ErrorOnSurface.onSurfaceHigh,
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -29,7 +29,7 @@ fun RowScope.MDCard2ImportantAction(
 fun RowScope.MDCard2ConfirmAction(
     modifier: Modifier = Modifier,
     label: String = firstCapStringResource(R.string.confirm),
-    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface,
+    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface.onSurfaceHigh,
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -46,7 +46,7 @@ fun RowScope.MDCard2ConfirmAction(
 fun RowScope.MDCard2CancelAction(
     modifier: Modifier = Modifier,
     label: String = firstCapStringResource(R.string.cancel),
-    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceVariant,
+    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.Outline.onSurfaceHigh,
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {

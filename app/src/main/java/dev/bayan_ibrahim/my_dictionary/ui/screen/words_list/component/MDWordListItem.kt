@@ -145,7 +145,9 @@ fun MDWordListItem(
                 MDIcon(MDIconsSet.WordMeaning)
             },
         )
-        AnimatedContent(expanded) { expanded ->
+        AnimatedContent(
+            targetState = expanded,
+        ) { expanded ->
             CompositionLocalProvider(
                 LocalTextStyle provides contentTheme.subtitleStyle,
                 LocalContentColor provides contentTheme.subtitleColor,
@@ -192,7 +194,14 @@ fun MDWordListItem(
                             }
                         }
                     }
-                    Column {
+                    Column (
+                        modifier = Modifier
+                            .padding(
+                                end = MDCard2Defaults.cornerRadius,
+                                start = MDCard2Defaults.cornerRadius,
+                                bottom = MDCard2Defaults.cornerRadius
+                            ),
+                    ) {
                         source.forEach {
                             Text(
                                 text = it,

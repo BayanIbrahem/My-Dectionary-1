@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -56,7 +57,7 @@ fun MDCard2Action(
     val containerColor by animateColorAsState(theme.containerColor)
     Column(
         modifier = modifier
-            .height(32.dp)
+            .heightIn(min =32.dp)
             .clickable(enabled = enabled, onClick = onClick)
             .drawBehind {
                 drawRect(containerColor)
@@ -66,12 +67,15 @@ fun MDCard2Action(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        icon()
+        CompositionLocalProvider(
+            LocalContentColor provides theme.titleColor,
+            content = icon
+        )
         MDAnimatedContent(
             flagContent = label,
         ) { label ->
             CompositionLocalProvider(
-                LocalContentColor provides theme.subtitleColor,
+                LocalContentColor provides theme.titleColor,
                 LocalTextStyle provides theme.subtitleStyle,
                 content = label
             )

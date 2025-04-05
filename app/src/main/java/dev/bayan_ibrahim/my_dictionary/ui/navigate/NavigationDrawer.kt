@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
@@ -30,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -40,7 +38,7 @@ import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2SelectableItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.getLogoPainter
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -258,20 +256,17 @@ private fun ContentGroupListItem(
             }
         }
     }
-    val theme by remember(selected) {
-        derivedStateOf {
-            if (selected)
-                MDCard2ListItemTheme.PrimaryContainer
-            else
-                MDCard2ListItemTheme.SurfaceContainerHighest
-        }
-    }
     val opacity by animateFloatAsState(if (enabled) 1f else 0.38f)
-    MDCard2ListItem(
-        onClick = onNonSelectedClick,
+    MDCard2SelectableItem(
+        checked = selected,
+        clip=   true,
+        onClick = {
+            onNonSelectedClick?.invoke()
+        },
         modifier = modifier.graphicsLayer { alpha = opacity },
-        theme = theme,
-        leadingIcon = {
+        theme = MDCard2ListItemTheme.SurfaceContainerHighest,
+        checkedTheme = MDCard2ListItemTheme.PrimaryContainer,
+        leading = {
             MDIcon(leadingIcon, contentDescription = null)
         },
         title = label,

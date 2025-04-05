@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.LocalMDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.LocalClipCardListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 
 /**
@@ -22,7 +23,6 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.
 @Composable
 fun MDCard2SelectableItem(
     checked: Boolean,
-    onClick: (currentState: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
@@ -31,24 +31,27 @@ fun MDCard2SelectableItem(
     checkedTheme: MDCard2ListItemTheme = theme,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
+    onClick: ((currentState: Boolean) -> Unit)? = null,
     title: @Composable () -> Unit,
 ) {
-    val theme by remember(checked, theme, checkedTheme) {
+    val checkableTheme by remember(checked, theme, checkedTheme) {
         derivedStateOf {
             if (checked) checkedTheme else theme
         }
     }
     MDCard2ListItem(
         modifier = modifier,
-        onClick = {
-            onClick(checked)
+        onClick = onClick?.let {
+            {
+                it(!checked)
+            }
         },
         onLongClick = onLongClick,
         onDoubleClick = onDoubleClick,
         leading = leading,
         trailing = trailing,
         subtitle = subtitle,
-        theme = theme,
+        theme = checkableTheme,
         title = title,
     )
 }
@@ -65,7 +68,6 @@ fun MDCard2SelectableItem(
 @Composable
 fun MDCard2SelectableItem(
     checked: Boolean,
-    onClick: (currentState: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
@@ -74,30 +76,35 @@ fun MDCard2SelectableItem(
     checkedTheme: MDCard2ListItemTheme = theme,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
+    clip: Boolean = LocalClipCardListItem.current,
+    onClick: ((currentState: Boolean) -> Unit)? = null,
     title: String,
 ) {
-    val theme by remember(checked, theme, checkedTheme) {
+    val checkableTheme by remember(checked, theme, checkedTheme) {
         derivedStateOf {
             if (checked) checkedTheme else theme
         }
     }
     MDCard2ListItem(
         modifier = modifier,
-        onClick = {
-            onClick(checked)
+        onClick = onClick?.let {
+            {
+                it(!checked)
+            }
         },
         onLongClick = onLongClick,
         onDoubleClick = onDoubleClick,
         leading = leading,
         trailing = trailing,
-        subtitle = if(subtitle != null){
+        subtitle = if (subtitle != null) {
             {
                 Text(subtitle)
             }
         } else {
             null
         },
-        theme = theme,
+        theme = checkableTheme,
+        clip = clip,
         title = {
             Text(title)
         },

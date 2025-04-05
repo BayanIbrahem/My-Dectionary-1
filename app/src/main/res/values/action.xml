@@ -92,9 +92,9 @@
     <string name="_import">import</string>
     <string name="export">export</string>
     <string name="show">show</string>
-    <string name="show_first">show_first</string>
-    <string name="show_last">show_last</string>
-    <string name="show_only">show_only</string>
+    <string name="show_first">show first</string>
+    <string name="show_last">show last</string>
+    <string name="show_only">show only</string>
 
     <string name="show_x">show %1$s</string>
     <string name="show_first_x">show first %1$s</string>

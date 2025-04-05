@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,10 +45,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 
 object MDTextFieldDefaults {
-    val shape: CornerBasedShape
-        @Composable
-        @ReadOnlyComposable
-        get() = MaterialTheme.shapes.medium
+    val shape: CornerBasedShape = RoundedCornerShape(16.dp)
     val textStyle: TextStyle
         @Composable
         @ReadOnlyComposable
@@ -182,7 +180,7 @@ fun MDBasicTextField(
                 text = label,
                 style = labelStyle,
                 modifier = Modifier
-                    .padding(start = 8.dp)
+                    .padding(start = 16.dp)
                     .basicMarquee(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

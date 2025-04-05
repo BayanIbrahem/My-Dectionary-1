@@ -83,10 +83,10 @@ fun MDCard2ListItem(
     Row(
         modifier = modifier
             .heightIn(min = MDCard2ListItemDefaults.minHeight)
+            .then(clipModifier)
             .drawBehind {
                 drawRect(containerColor)
             }
-            .then(clipModifier)
             .then(clickableModifier),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -114,10 +114,16 @@ fun MDCard2ListItem(
                 if (leading == null) MDCard2ListItemDefaults.noLeadingStartPadding else 0.dp
             }
         }
+
+        val endPadding by remember(trailing == null) {
+            derivedStateOf {
+                if (trailing == null) MDCard2ListItemDefaults.noLeadingStartPadding else 0.dp
+            }
+        }
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(start = startPadding),
+                .padding(start = startPadding, end = endPadding),
         ) {
             CompositionLocalProvider(
                 LocalContentColor provides theme.titleColor,

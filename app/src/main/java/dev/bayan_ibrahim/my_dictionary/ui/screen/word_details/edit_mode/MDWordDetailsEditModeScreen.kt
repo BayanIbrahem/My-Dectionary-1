@@ -155,6 +155,7 @@ fun MDWordDetailsEditModeScreen(
                     )
                 },
             ) {
+                // TODO, refactor, fix extra container with surface container color that appearse under the clicable tag
                 tagsSelector(
                     state = tagsState,
                     actions = tagsActions,

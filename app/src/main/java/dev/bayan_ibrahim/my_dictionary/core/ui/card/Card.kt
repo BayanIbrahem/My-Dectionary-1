@@ -22,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDAnimatedContent
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.LocalMDCard2ListItemTheme
@@ -35,6 +37,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.M
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 
 /**
+ * @param cardModifier modifier of the card without the outline
  * @param content for content param, this container provide `false` value for [LocalClipCardListItem]
  * so list item within it would not be clipped
  */
@@ -42,6 +45,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 @Composable
 fun MDCard2(
     modifier: Modifier = Modifier,
+    cardModifier: Modifier = Modifier,
     overline: (@Composable () -> Unit)? = null,
     header: (@Composable () -> Unit)? = null,
     footer: (@Composable () -> Unit)? = null,
@@ -51,6 +55,7 @@ fun MDCard2(
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
+    cardColor: Color = MDCard2Defaults.cardColor,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val clickableModifier by remember(onClick) {
@@ -69,16 +74,19 @@ fun MDCard2(
             value = LocalMDCard2ListItemTheme provides contentTheme
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = cardModifier
                     .clip(RoundedCornerShape(MDCard2Defaults.cornerRadius))
+                    .drawBehind {
+                        drawRect(cardColor)
+                    }
                     .then(clickableModifier),
             ) {
                 MDAnimatedContent(
                     flagContent = header,
                 ) { header ->
                     CompositionLocalProvider(
-                        value = LocalMDCard2ListItemTheme provides headerTheme
+                        LocalMDCard2ListItemTheme provides headerTheme,
+                        LocalClipCardListItem provides false,
                     ) {
                         header()
                     }

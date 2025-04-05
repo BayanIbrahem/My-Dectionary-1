@@ -24,7 +24,6 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.
 @Composable
 fun MDCard2CheckboxItem(
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     secondary: (@Composable () -> Unit)? = null,
     subtitle: (@Composable () -> Unit)? = null,
@@ -33,11 +32,16 @@ fun MDCard2CheckboxItem(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     leadingCheckbox: Boolean = true,
+    onCheckedChange: ((Boolean) -> Unit)? = null,
     title: @Composable () -> Unit,
 ) {
     MDCard2SelectableItem(
         checked = checked,
-        onClick = { onCheckedChange(!it) },
+        onClick = onCheckedChange?.let { callback ->
+            { checked ->
+                callback(!checked)
+            }
+        },
         modifier = modifier,
         leading = if (leadingCheckbox) {
             {
@@ -77,7 +81,6 @@ fun MDCard2CheckboxItem(
 fun MDCard2CheckboxItem(
     checked: Boolean,
     title: String,
-    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     secondary: (@Composable () -> Unit)? = null,
     subtitle: String? = null,
@@ -85,11 +88,16 @@ fun MDCard2CheckboxItem(
     checkedTheme: MDCard2ListItemTheme = theme,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
+    onCheckedChange: ((Boolean) -> Unit)? = null,
     leadingCheckbox: Boolean = true,
 ) {
     MDCard2SelectableItem(
         checked = checked,
-        onClick = { onCheckedChange(!it) },
+        onClick = onCheckedChange?.let { callback ->
+            { checked ->
+                callback(!checked)
+            }
+        },
         modifier = modifier,
         leading = if (leadingCheckbox) {
             { Check(checked) }

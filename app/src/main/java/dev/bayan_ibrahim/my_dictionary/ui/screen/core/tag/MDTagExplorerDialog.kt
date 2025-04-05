@@ -1,22 +1,18 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -48,6 +44,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicTextField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchDialogInputField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTextFieldDefaults
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemDefaults
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
@@ -118,15 +115,11 @@ fun MDTagExplorerDialog(
         ) {
             MDCard2(
                 modifier = modifier,
+                cardModifier = Modifier.width(IntrinsicSize.Max),
                 header = {
                     DialogHeader(
                         state = state,
                         actions = actions,
-                        isAddNewTagInProgress = isAddNewTagInProgress,
-                        allowAddTags = allowAddTags,
-                        onAddNewTag = {
-                            isAddNewTagInProgress = true
-                        }
                     )
                 },
                 footer = {
@@ -138,119 +131,130 @@ fun MDTagExplorerDialog(
                                 onDismissRequest()
                             },
                             enabled = state.isSelectEnabled,
-                            modifier = Modifier.weight(1f),
                         )
+                        if (allowAddTags) {
+                            MDCard2ConfirmAction(
+                                label = firstCapStringResource(R.string.add),
+                                // TODO, make the same button to save the new tag
+                                enabled = !isAddNewTagInProgress,
+                                onClick = {
+                                    isAddNewTagInProgress = true
+                                },
+                            )
+                        }
                         MDCard2CancelAction(onClick = onDismissRequest)
                     }
                 }
             ) {
-
-            }
-            var deleteConfirmTag: Tag? by remember {
-                mutableStateOf(null)
-            }
-            DeleteTagConfirmDialog(
-                selectedTag = deleteConfirmTag,
-                onDismissRequest = { deleteConfirmTag = null },
-                onConfirm = actions::onDeleteTag
-            )
-            Column(
-                modifier = Modifier
-                    .heightIn(max = 250.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                state.currentTagsTree.nextLevel.forEach { (segment, subTree) ->
-                    val isVisibleWithEnabled by remember(subTree.tag) {
-                        derivedStateOf {
-                            subTree.tag?.let { tag ->
-                                val matchSearchQuery = tag.segments.last().tagMatchNormalize.startsWith(searchQuery.tagMatchNormalize)
-                                val isVisible = searchFilterHidesTagsOnly || matchSearchQuery
-                                val isEnabled = isVisible && matchSearchQuery && subTree.tag !in state.disabledTags
-                                Pair(isVisible, isEnabled)
-                            } ?: Pair(true, true)
+                var deleteConfirmTag: Tag? by remember {
+                    mutableStateOf(null)
+                }
+                DeleteTagConfirmDialog(
+                    selectedTag = deleteConfirmTag,
+                    onDismissRequest = { deleteConfirmTag = null },
+                    onConfirm = actions::onDeleteTag
+                )
+                Column(
+                    modifier = Modifier
+                        .heightIn(max = 250.dp)
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    state.currentTagsTree.nextLevel.forEach { (segment, subTree) ->
+                        val isVisibleWithEnabled by remember(subTree.tag) {
+                            derivedStateOf {
+                                subTree.tag?.let { tag ->
+                                    val matchSearchQuery = tag.segments.last().tagMatchNormalize.startsWith(searchQuery.tagMatchNormalize)
+                                    val isVisible = searchFilterHidesTagsOnly || matchSearchQuery
+                                    val isEnabled = isVisible && matchSearchQuery && subTree.tag !in state.disabledTags
+                                    Pair(isVisible, isEnabled)
+                                } ?: Pair(true, true)
+                            }
+                        }
+                        if (isVisibleWithEnabled.first) {
+                            MDCard2SelectableItem(
+                                checked = isVisibleWithEnabled.second,
+                                leading = {
+                                    subTree.tag?.let {
+                                        tagLeadingIcon(it, subTree.isLeaf)
+                                    }
+                                },
+                                trailing = tagTrailingIcon?.let { composable ->
+                                    subTree.tag?.let { tag ->
+                                        { composable(tag) }
+                                    }
+                                },
+                                onClick = if (isVisibleWithEnabled.second) {
+                                    {
+                                        subTree.tag?.let { actions.onClickTag(it) }
+                                    }
+                                } else null,
+                                onLongClick = if (allowRemoveTags) {
+                                    {
+                                        deleteConfirmTag = subTree.tag
+                                    }
+                                } else null,
+                                theme = MDCard2ListItemTheme.SurfaceDisabled,
+                                checkedTheme = MDCard2ListItemTheme.SurfaceContainer,
+                                // TODO, string res
+                                subtitle = if (allowRemoveTags) "Long click to remove" else null,
+                                title = segment,
+                            )
                         }
                     }
-                    if (isVisibleWithEnabled.first) {
-                        MDCard2SelectableItem(
-                            checked = isVisibleWithEnabled.second,
-                            leading = {
-                                subTree.tag?.let {
-                                    tagLeadingIcon(it, subTree.isLeaf)
-                                }
-                            },
-                            trailing = tagTrailingIcon?.let { composable ->
-                                subTree.tag?.let { tag ->
-                                    { composable(tag) }
-                                }
-                            },
-                            onClick = {
-                                subTree.tag?.let { actions.onClickTag(it) }
-                            },
-                            onLongClick = if (allowRemoveTags) {
-                                {
-                                    deleteConfirmTag = subTree.tag
-                                }
-                            } else null,
-                            theme = MDCard2ListItemTheme.DisabledSurface,
-                            checkedTheme = MDCard2ListItemTheme.SurfaceContainer,
-                            title = segment,
-                        )
+                    if (state.currentTagsTree.isLeaf) {
+                        // TODO, string res
+                        MDCard2ListItem("No Inner tags for current")
                     }
                 }
-                if (state.currentTagsTree.isLeaf) {
-                    // TODO, string res
-                    MDCard2ListItem("No Inner tags for current")
-                }
-            }
-            if (isAddNewTagInProgress) {
-                var isFieldFocused by remember {
-                    mutableStateOf(false)
-                }
-                MDBasicTextField(
-                    colors = MDTextFieldDefaults.colors(
-                        unfocusedContainerColor = MDCard2ListItemTheme.SurfaceContainer.containerColor,
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .onFocusChanged {
-                            isFieldFocused = it.isFocused
+                if (isAddNewTagInProgress) {
+                    var isFieldFocused by remember {
+                        mutableStateOf(false)
+                    }
+                    MDBasicTextField(
+                        colors = MDTextFieldDefaults.colors(
+                            unfocusedContainerColor = MDCard2ListItemTheme.SurfaceContainer.containerColor,
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged {
+                                isFieldFocused = it.isFocused
+                            },
+                        value = newTagSegmentText,
+                        placeholder = "new Tag",
+                        onValueChange = {
+                            newTagSegmentText = it.split(TagSegmentSeparator).joinToString("")
                         },
-                    value = newTagSegmentText,
-                    placeholder = "new Tag",
-                    onValueChange = {
-                        newTagSegmentText = it.split(TagSegmentSeparator).joinToString("")
-                    },
-                    onKeyboardAction = {
-                        // cancel
-                        actions.onAddNewTag(newTagSegmentText)
-                        newTagSegmentText = ""
-                        isAddNewTagInProgress = false
-                    },
-                    trailingIcons = {
-                        if (isFieldFocused) {
-                            IconButton(
-                                onClick = {
-                                    isAddNewTagInProgress = false
-                                }
-                            ) {
-                                MDIcon(MDIconsSet.Close)
-                            }
-
-                            if (newTagSegmentText.isNotBlank()) {
+                        onKeyboardAction = {
+                            // cancel
+                            actions.onAddNewTag(newTagSegmentText)
+                            newTagSegmentText = ""
+                            isAddNewTagInProgress = false
+                        },
+                        trailingIcons = {
+                            if (isFieldFocused) {
                                 IconButton(
                                     onClick = {
-                                        actions.onAddNewTag(newTagSegmentText)
-                                        newTagSegmentText = ""
                                         isAddNewTagInProgress = false
                                     }
                                 ) {
-                                    MDIcon(MDIconsSet.Check)
+                                    MDIcon(MDIconsSet.Close)
+                                }
+
+                                if (newTagSegmentText.isNotBlank()) {
+                                    IconButton(
+                                        onClick = {
+                                            actions.onAddNewTag(newTagSegmentText)
+                                            newTagSegmentText = ""
+                                            isAddNewTagInProgress = false
+                                        }
+                                    ) {
+                                        MDIcon(MDIconsSet.Check)
+                                    }
                                 }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
@@ -288,17 +292,13 @@ private fun DeleteTagConfirmDialog(
             R.string.delete_x,
             "${selectedTag?.value ?: ""}, ${stringResource(R.string.permanent_delete_warning)}"
         ),
-
-        )
+    )
 }
 
 @Composable
 private fun DialogHeader(
     state: MDTagsSelectorUiState,
     actions: MDTagsSelectorUiActions,
-    isAddNewTagInProgress: Boolean,
-    allowAddTags: Boolean,
-    onAddNewTag: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // TODO, improve dialog
@@ -312,57 +312,52 @@ private fun DialogHeader(
             state.currentTagsTree.isRoot
         }
     }
-    Row(
+    MDCard2ListItem(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AnimatedVisibility(
-            visible = !isCurrentRoot,
-            enter = fadeIn() + expandHorizontally(),
-            exit = fadeOut() + shrinkHorizontally(),
-        ) {
-            IconButton(
-                enabled = !isCurrentRoot,
-                onClick = actions::onNavigateUp
+        leading = if (isCurrentRoot) null else {
+            {
+                IconButton(
+                    onClick = actions::onNavigateUp
+                ) {
+                    Icon(
+                        modifier = Modifier.size(MDCard2ListItemDefaults.leadingIconSize),
+                        painter = painterResource(R.drawable.arrow_back), // TODO, icon res
+                        contentDescription = null
+                    )
+                }
+            }
+        },
+        title = {
+            Column(
+                modifier = Modifier
+                    .width(IntrinsicSize.Max)
+                    .padding(vertical = 8.dp)
+                    .animateContentSize { initialValue, targetValue -> },
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.arrow_back), // TODO, icon res
-                    contentDescription = null
+                Text(
+                    text = firstCapStringResource(R.string.tags_tree),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(start = 16.dp),
                 )
-            }
-        }
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .animateContentSize { initialValue, targetValue -> },
-        ) {
-            Text(firstCapStringResource(R.string.tags_tree), style = MaterialTheme.typography.titleMedium)
-            MDSearchDialogInputField(
-                modifier = Modifier.fillMaxWidth(),
-                searchQuery = state.searchQuery,
-                onSearchQueryChange = actions::onSearchQueryChange,
-                label = "",
-                placeholder = randomTagLastSegment?.let { stringResource(R.string.eg_x, it) } ?: ""
-            )
-            state.currentTagsTree.tag?.let {
-                MDTagPath(
-                    tag = it,
-                    onClickSegment = { i, s ->
-                        val parentTag = it.parentAtLevel(i.inc())
-                        actions.onClickTag(parentTag)
-                    }
+                MDSearchDialogInputField(
+                    modifier = Modifier.fillMaxWidth(),
+                    searchQuery = state.searchQuery,
+                    onSearchQueryChange = actions::onSearchQueryChange,
+//                    label = "",
+                    placeholder = randomTagLastSegment?.let { stringResource(R.string.eg_x, it) } ?: ""
                 )
+                state.currentTagsTree.tag?.let {
+                    MDTagPath(
+                        tag = it,
+                        onClickSegment = { i, s ->
+                            val parentTag = it.parentAtLevel(i.inc())
+                            actions.onClickTag(parentTag)
+                        }
+                    )
+                }
             }
-        }
-        if (allowAddTags) {
-            IconButton(
-                enabled = !isAddNewTagInProgress,
-                onClick = onAddNewTag
-            ) {
-                MDIcon(MDIconsSet.Add) // TODO, icon res
-            }
-        }
-    }
+        },
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)

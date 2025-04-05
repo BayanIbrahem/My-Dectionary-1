@@ -31,6 +31,10 @@ object MDCard2Defaults {
     val defaultContentTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceContainer
     val defaultFooterTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface
     val cornerRadius = 16.dp
+    val cardColor: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.colorScheme.surfaceContainer
 }
 
 object MDCard2OverlineDefaults {
@@ -118,8 +122,8 @@ val LocalMDCard2ListItemTheme: ProvidableCompositionLocal<MDCard2ListItemTheme> 
  * * [Error]
  * * [ErrorContainer]
  * * [ErrorOnSurface]
- * * [DisabledSurface]
- * * [SurfaceVariant]
+ * * [SurfaceDisabled]
+ * * [Outline]
  * * [SurfaceContainer]
  * * [SurfaceContainerLow]
  * * [SurfaceContainerLowest]
@@ -257,7 +261,7 @@ sealed interface MDCard2ListItemTheme {
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.secondaryContainer
     }
 
-    data object DisabledSurface : MDCard2ListItemTheme {
+    data object SurfaceDisabled : MDCard2ListItemTheme {
         override val titleColor: Color
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
         override val subtitleColor: Color
@@ -281,26 +285,26 @@ sealed interface MDCard2ListItemTheme {
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
     }
 
-    data object SurfaceVariant : MDCard2ListItemTheme {
+    data object Outline : MDCard2ListItemTheme {
         override val titleColor: Color
-            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
         override val subtitleColor: Color
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.5f)
         override val containerColor: Color
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
         override val leadingColor: Color
-            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
 
         override val filledLeadingContainerColor: Color
-            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
         override val filledLeadingContentColor: Color
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
 
         override val trailingColor: Color
-            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
 
         override val filledTrailingContainerColor: Color
-            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.onSurfaceVariant
+            @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.outline
         override val filledTrailingContentColor: Color
             @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
     }
@@ -512,6 +516,7 @@ sealed interface MDCard2ListItemTheme {
     }
 
     data object PrimaryOnSurface : MDCard2ListItemTheme {
+
         override val titleColor: Color
             @Composable
             @ReadOnlyComposable
@@ -743,4 +748,33 @@ sealed interface MDCard2ListItemTheme {
     ): MDCard2ListItemTheme {
         return Custom(this).lerp(seed, fraction)
     }
+
+
+    /**
+     * map the container to container lowest
+     */
+    val onSurfaceLowest: MDCard2ListItemTheme
+        @Composable
+        get() = Custom(this).copy(container = MaterialTheme.colorScheme.surfaceContainerLowest)
+
+    /**
+     * map the container to container low
+     */
+    val onSurfaceLow: MDCard2ListItemTheme
+        @Composable
+        get() = Custom(this).copy(container = MaterialTheme.colorScheme.surfaceContainerLow)
+
+    /**
+     * map the container to container highest
+     */
+    val onSurfaceHighest: MDCard2ListItemTheme
+        @Composable
+        get() = Custom(this).copy(container = MaterialTheme.colorScheme.surfaceContainerHighest)
+
+    /**
+     * map the container to container high
+     */
+    val onSurfaceHigh: MDCard2ListItemTheme
+        @Composable
+        get() = Custom(this).copy(container = MaterialTheme.colorScheme.surfaceContainerHigh)
 }

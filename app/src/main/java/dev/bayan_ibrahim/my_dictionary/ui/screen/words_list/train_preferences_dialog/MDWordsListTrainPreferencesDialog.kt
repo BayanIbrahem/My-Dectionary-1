@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -15,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -69,6 +73,7 @@ fun MDWordsListTrainPreferencesDialog(
         ) {
             MDCard2(
                 modifier = modifier,
+                cardModifier = Modifier.width(IntrinsicSize.Max),
                 header = {
                     MDTabRow(
                         tabs = MDWordsListTrainPreferencesTab.entries.map { it.tabData },
@@ -80,18 +85,21 @@ fun MDWordsListTrainPreferencesDialog(
                 },
                 footer = {
                     MDCard2ActionRow {
-                        MDCard2ConfirmAction(
-                            label = firstCapStringResource(R.string.train),
-                            onClick = uiActions::onConfirmTrain,
+                        MDCard2ImportantAction(
+                            label = firstCapStringResource(R.string.reset),
+                            theme = MDCard2ListItemTheme.ErrorOnSurface.onSurfaceHighest,
+                            onClick = uiActions::onResetTrainPreferences,
                         )
 
                         MDCard2CancelAction(
                             onClick = uiActions::onDismissDialog,
+                            theme = MDCard2ListItemTheme.SurfaceContainerHighest
                         )
 
-                        MDCard2ImportantAction(
-                            label = firstCapStringResource(R.string.reset),
-                            onClick = uiActions::onResetTrainPreferences,
+                        MDCard2ConfirmAction(
+                            label = firstCapStringResource(R.string.train),
+                            onClick = uiActions::onConfirmTrain,
+                            theme = MDCard2ListItemTheme.PrimaryOnSurface.onSurfaceHighest
                         )
                     }
                 }
@@ -168,12 +176,17 @@ private fun WordsOrderBody(
     ) {
         MDBasicDropDownMenu(
             modifier = Modifier,
+            fieldModifier = Modifier.fillMaxWidth(),
             value = selectedLimit,
-            fieldModifier = Modifier,
             onValueChange = {},
             fieldReadOnly = true,
             menuMatchFieldWidth = false,
             allowCancelSelection = false,
+            menuTheme = MDCard2ListItemTheme.SurfaceContainerHighest,
+            fieldColors = TextFieldDefaults.colors(
+                unfocusedContainerColor = MDCard2ListItemTheme.SurfaceContainerHighest.containerColor,
+            ),
+            hasBottomHorizontalDivider = false,
             label = firstCapStringResource(R.string.words_count_limit),
             onSelectSuggestion = { i, limit ->
                 limit?.let(onSelectLimit)
@@ -234,12 +247,14 @@ private fun <E> CheckableGroup(
         },
     ) {
         data.forEach { item ->
+            val selectedTheme = MDCard2ListItemTheme.PrimaryOnSurface.onSurfaceHighest
             MDCard2RadioButtonItem(
                 selected == item,
                 onClick = {
                     onClick(item)
                 },
-                theme = MDCard2ListItemTheme.PrimaryOnSurface,
+                theme = MDCard2ListItemTheme.SurfaceContainerHighest,
+                selectedTheme = selectedTheme,
                 secondary = {
                     MDIcon(
                         icon = item.icon,

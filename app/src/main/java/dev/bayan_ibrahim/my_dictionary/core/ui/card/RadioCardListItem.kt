@@ -24,7 +24,6 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.
 @Composable
 fun MDCard2RadioButtonItem(
     selected: Boolean,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     secondary: (@Composable () -> Unit)? = null,
     subtitle: (@Composable () -> Unit)? = null,
@@ -33,11 +32,16 @@ fun MDCard2RadioButtonItem(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     leadingRadioButton: Boolean = true,
+    onClick: (() -> Unit)? = null,
     title: @Composable () -> Unit,
 ) {
     MDCard2SelectableItem(
         checked = selected,
-        onClick = { onClick() },
+        onClick = onClick?.let { callback ->
+            {
+                callback()
+            }
+        },
         modifier = modifier,
         leading = if (leadingRadioButton) {
             {
@@ -77,7 +81,6 @@ fun MDCard2RadioButtonItem(
 fun MDCard2RadioButtonItem(
     selected: Boolean,
     title: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     secondary: (@Composable () -> Unit)? = null,
     subtitle: String? = null,
@@ -85,11 +88,16 @@ fun MDCard2RadioButtonItem(
     selectedTheme: MDCard2ListItemTheme = theme,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
     leadingRadioButton: Boolean = true,
 ) {
     MDCard2SelectableItem(
         checked = selected,
-        onClick = { onClick() },
+        onClick = onClick?.let { callback ->
+            {
+                callback()
+            }
+        },
         modifier = modifier,
         leading = if (leadingRadioButton) {
             { Radio(selected) }
