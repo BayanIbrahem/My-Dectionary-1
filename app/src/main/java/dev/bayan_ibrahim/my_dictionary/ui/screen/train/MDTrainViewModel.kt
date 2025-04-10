@@ -184,13 +184,13 @@ class MDTrainViewModel @Inject constructor(
                     val targetAnswer = answerSelector(targetWord)
                     val similarTags = allWords.maxNBy(maxCount = TrainWordType.SELECTION_TAGS_GROUP_COUNT) { otherWord ->
                         // we don't need the same word
-                        if (otherWord.id == targetWord.id) return@maxNBy Int.MIN_VALUE
+                        if (otherWord.id == targetWord.id) return@maxNBy null
 
                         (targetWord.tags and otherWord.tags).count()
                     }
                     val similarWords = allWords.minNBy(maxCount = TrainWordType.SELECTION_LEVENSHTEIN_GROUP_COUNT) { otherWord ->
-                        // we don't need the same word
-                        if (otherWord.id == targetWord.id) return@minNBy Float.MAX_VALUE
+                        // we don't need the same word, so we should return null
+                        if (otherWord.id == targetWord.id) return@minNBy null
 
                         levensteinDistance(
                             s1 = targetAnswer,
@@ -199,6 +199,9 @@ class MDTrainViewModel @Inject constructor(
                     }
                     val optionsWords =
                         ((similarTags + similarWords).shuffled().distinct()
+                            .filter {
+                                it.id != targetWord.id
+                            }
                             .safeSubList(0, TrainWordType.MAX_SELECTIONS_COUNT.dec()) + targetWord).shuffled()
                     val currentCorrectOption = optionsWords.indexOfFirst { it.id == targetWord.id }
                     MDTrainWordQuestion.SelectAnswer(

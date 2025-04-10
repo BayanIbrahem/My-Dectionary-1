@@ -1,5 +1,6 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -60,6 +62,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.tag.depth
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.parentAtLevel
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
+import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.lerp
 
 @Composable
 fun MDTagExplorerDialog(
@@ -68,16 +71,16 @@ fun MDTagExplorerDialog(
     state: MDTagsSelectorUiState,
     actions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
-    // ui
-    tagTrailingIcon: (@Composable (Tag) -> Unit)? = { tag ->
-        tag.wordsCount?.takeIf {
-            it > 0
-        }?.let {
-            Text("x$it")
-        }
-    },
-    tagLeadingIcon: @Composable (tag: Tag, isLeaf: Boolean) -> Unit = { _, _ ->
-        MDIcon(MDIconsSet.WordTag) // TODO, icons tag
+    tagLeadingIcon: @Composable (tag: Tag, isLeaf: Boolean) -> Unit = { tag, isLeaf ->
+        val fill = tag.color?.lerp(MaterialTheme.colorScheme.surfaceContainer)
+        val tint = tag.color?.lerp(MaterialTheme.colorScheme.onSurface) ?: LocalContentColor.current
+        Log.i("Tag", tag.toString())
+        MDIcon(
+            icon = MDIconsSet.WordTag,
+            fill = fill,
+            outline = tag.color == null,
+            tint = tint,
+        ) // TODO, icons tag
     },
     primaryActionLabel: String = firstCapStringResource(R.string.select),
     /**
@@ -85,7 +88,7 @@ fun MDTagExplorerDialog(
      * tag is leaf or not
      */
     // search:
-    searchFilterHidesTagsOnly: Boolean = false,
+    searchFilterHidesTagsOnly: Boolean = true,
     // permissions:
     /**
      * toggle permission to create new tags to database
@@ -164,7 +167,7 @@ fun MDTagExplorerDialog(
                             derivedStateOf {
                                 subTree.tag?.let { tag ->
                                     val matchSearchQuery = tag.segments.last().tagMatchNormalize.startsWith(searchQuery.tagMatchNormalize)
-                                    val isVisible = searchFilterHidesTagsOnly || matchSearchQuery
+                                    val isVisible = !searchFilterHidesTagsOnly || matchSearchQuery
                                     val isEnabled = isVisible && matchSearchQuery && subTree.tag !in state.disabledTags
                                     Pair(isVisible, isEnabled)
                                 } ?: Pair(true, true)
@@ -178,25 +181,24 @@ fun MDTagExplorerDialog(
                                         tagLeadingIcon(it, subTree.isLeaf)
                                     }
                                 },
-                                trailing = tagTrailingIcon?.let { composable ->
-                                    subTree.tag?.let { tag ->
-                                        { composable(tag) }
+                                trailing = if (allowRemoveTags) {
+                                    {
+                                        IconButton(
+                                            onClick = {
+                                                deleteConfirmTag = subTree.tag
+                                            }
+                                        ) {
+                                            MDIcon(MDIconsSet.Delete)
+                                        }
                                     }
-                                },
+                                } else null,
                                 onClick = if (isVisibleWithEnabled.second) {
                                     {
                                         subTree.tag?.let { actions.onClickTag(it) }
                                     }
                                 } else null,
-                                onLongClick = if (allowRemoveTags) {
-                                    {
-                                        deleteConfirmTag = subTree.tag
-                                    }
-                                } else null,
                                 theme = MDCard2ListItemTheme.SurfaceDisabled,
                                 checkedTheme = MDCard2ListItemTheme.SurfaceContainer,
-                                // TODO, string res
-                                subtitle = if (allowRemoveTags) "Long click to remove" else null,
                                 title = segment,
                             )
                         }
@@ -444,9 +446,6 @@ private fun MDTagSelectorDialogPreview() {
                     },
                     state = state,
                     actions = actions,
-                    tagTrailingIcon = {
-                        MDIcon(MDIconsSet.Delete)
-                    },
                 )
             }
         }

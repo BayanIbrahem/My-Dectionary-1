@@ -259,7 +259,7 @@ private fun MDTextFieldPreview() {
                     onValueChange = { value = it },
                     label = "label",
                     placeholder = "Place holder",
-                    hasBottomHorizontalDivider = false,
+                    hasBottomHorizontalDivider = true,
                     leadingIcons = {
                         IconButton(
                             onClick = {},

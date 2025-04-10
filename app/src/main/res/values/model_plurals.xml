@@ -2,7 +2,7 @@
 <resources>
     <plurals name="word">
         <item quantity="zero">no words</item>
-        <item quantity="one">%1$d one word</item>
+        <item quantity="one">one word</item>
         <item quantity="other">%1$d words</item>
     </plurals>
     <plurals name="tag">

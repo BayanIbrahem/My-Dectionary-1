@@ -2,6 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode
 
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -27,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.ContentWithHint
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
@@ -75,14 +77,14 @@ fun MDWordDetailsEditModeScreen(
             verticalArrangement = Arrangement.spacedBy(spacedBy)
         ) {
             editableGroup(
-                content = {
+                overline = {
                     MDCard2Overline(
                         title = firstCapStringResource(R.string.basic),
                         leading = {
                             MDIcon(MDIconsSet.WordMeaning)
 
-                        }
-
+                        },
+                        modifier = Modifier.headerGradientBackground(),
                     )
                 },
             ) {
@@ -121,13 +123,13 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                content = {
+                overline = {
                     MDCard2Overline(
                         title = firstCapStringResource(R.string.phonetic),
                         leading = {
                             MDIcon(MDIconsSet.WordTranscription)
-                        }
-
+                        },
+                        modifier = Modifier.headerGradientBackground(),
                     )
                 },
             ) {
@@ -144,36 +146,36 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                content = {
+                overline = {
                     MDCard2Overline(
                         title = firstCapStringResource(R.string.tags),
                         leading = {
                             MDIcon(MDIconsSet.WordTag)
 
-                        }
-
+                        },
+                        modifier = Modifier.headerGradientBackground(),
                     )
                 },
             ) {
-                // TODO, refactor, fix extra container with surface container color that appearse under the clicable tag
                 tagsSelector(
                     state = tagsState,
                     actions = tagsActions,
                     spacedBy = spacedBy,
                     showTitle = false,
                     showHorizontalDivider = false,
+                    allowEditTags = true
                 )
             }
 
             editableGroup(
-                content = {
+                overline = {
                     MDCard2Overline(
                         title = firstCapStringResource(R.string.additional_translations),
                         leading = {
                             MDIcon(MDIconsSet.WordAdditionalTranslation)
 
-                        }
-
+                        },
+                        modifier = Modifier.headerGradientBackground(),
                     )
                 },
             ) {
@@ -205,13 +207,13 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                content = {
+                overline = {
                     MDCard2Overline(
                         title = firstCapStringResource(R.string.examples),
                         leading = {
                             MDIcon(MDIconsSet.WordExample)
-
-                        }
+                        },
+                        modifier = Modifier.headerGradientBackground(),
                     )
                 },
             ) {
@@ -243,12 +245,13 @@ fun MDWordDetailsEditModeScreen(
             }
 
             editableGroup(
-                content = {
+                overline = {
                     MDCard2Overline(
                         title = firstCapStringResource(R.string.word_class),
                         leading = {
                             MDIcon(MDIconsSet.WordRelatedWords)
-                        }
+                        },
+                        modifier = Modifier.headerGradientBackground(),
                     )
                 },
             ) {
@@ -319,15 +322,14 @@ fun MDWordDetailsEditModeScreen(
                 it.key
             }.forEach { (type, relations) ->
                 editableGroup(
-                    hint = {
-                        type.hintLikeExample
-                    },
-                    content = {
+                    overline = {
                         MDCard2Overline(
                             title = type.label,
+                            subtitle = type.hintLikeExample,
                             leading = {
                                 MDIcon(MDIconsSet.WordRelatedWords)
-                            }
+                            },
+                            modifier = Modifier.headerGradientBackground(),
                         )
                     },
                 ) {
@@ -362,14 +364,21 @@ fun MDWordDetailsEditModeScreen(
     }
 }
 
+@Composable
+private fun Modifier.headerGradientBackground(): Modifier = background(
+    Brush.verticalGradient(
+        Pair(0.5f, MaterialTheme.colorScheme.surface),
+        Pair(1f, Color.Transparent),
+    )
+)
+
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.editableGroup(
-    hint: (@Composable () -> String)? = null,
-    content: @Composable () -> Unit,
+    overline: @Composable () -> Unit,
     items: LazyListScope.() -> Unit,
 ) {
     stickyHeader {
-        ContentWithHint(hint = hint?.invoke(), content = content)
+        overline()
     }
     items()
     item {

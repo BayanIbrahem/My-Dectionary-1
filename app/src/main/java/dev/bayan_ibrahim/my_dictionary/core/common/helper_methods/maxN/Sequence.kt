@@ -8,7 +8,7 @@ import kotlin.math.log
  */
 inline fun <T, R : Comparable<R>> Sequence<T>.maxNBy(
     maxCount: Int,
-    crossinline selector: (T) -> R,
+    crossinline selector: (T) -> R?,
 ): List<T> {
     val count = count()
     if (count <= maxCount) return toList()
@@ -27,13 +27,17 @@ inline fun <T, R : Comparable<R>> Sequence<T>.maxNBy(
  */
 inline fun <R : Comparable<R>, T> Sequence<T>.maxNBySorting(
     maxCount: Int,
-    crossinline selector: (T) -> R,
-) = sortedByDescending {
-    selector(it)
+    crossinline selector: (T) -> R?,
+): MutableList<T> = mapNotNull { t ->
+    selector(t)?.let { r ->
+        Pair(t, r)
+    }
+}.sortedByDescending { (t, r) ->
+    r
 }.iterator().let { iterator ->
     val subList = mutableListOf<T>()
     repeat(maxCount) {
-        subList.add(iterator.next())
+        subList.add(iterator.next().first )
     }
     subList
 }
@@ -45,7 +49,7 @@ inline fun <R : Comparable<R>, T> Sequence<T>.maxNBySorting(
  */
 inline fun <R : Comparable<R>, T> Sequence<T>.maxNByIterativeMax(
     maxCount: Int,
-    selector: (T) -> R,
+    selector: (T) -> R?,
 ): MutableList<T> {
     val results = mutableListOf<T>()
     val selectedIndexes = mutableSetOf<Int>()
@@ -56,10 +60,12 @@ inline fun <R : Comparable<R>, T> Sequence<T>.maxNByIterativeMax(
         forEachIndexed { i, item ->
             if (i !in selectedIndexes) {
                 val currentSelector = selector(item)
-                if (maxSelector == null || maxSelector!! < currentSelector) {
-                    max = item
-                    maxI = i
-                    maxSelector = currentSelector
+                if (currentSelector != null) {
+                    if (maxSelector == null || maxSelector!! < currentSelector) {
+                        max = item
+                        maxI = i
+                        maxSelector = currentSelector
+                    }
                 }
             }
         }

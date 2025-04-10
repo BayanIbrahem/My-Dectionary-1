@@ -40,7 +40,6 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.format
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.toDefaultLocalDateTime
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.ContentWithHint
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
@@ -90,6 +89,14 @@ fun MDWordDetailsViewModeScreen(
     CompositionLocalProvider(
         LocalLayoutDirection provides direction,
     ) {
+        /**
+         * true if the scroll is at top or last scroll is backward (top)
+         */
+        val atOrScrolledToTop by remember(lazyListState.lastScrolledBackward, lazyListState.canScrollBackward) {
+            derivedStateOf {
+                lazyListState.lastScrolledBackward || !lazyListState.canScrollBackward
+            }
+        }
         MDScreen(
             uiState = uiState,
             modifier = modifier,
@@ -103,7 +110,7 @@ fun MDWordDetailsViewModeScreen(
             },
             floatingActionButton = {
                 AnimatedVisibility(
-                    visible = lazyListState.lastScrolledBackward || !lazyListState.canScrollBackward,
+                    visible = atOrScrolledToTop,
                     enter = fadeIn() + expandIn(),
                     exit = fadeOut() + shrinkOut(),
 
@@ -121,7 +128,7 @@ fun MDWordDetailsViewModeScreen(
                 item {
                     IconSegmentedButton(
                         horizontalAlignment = Alignment.End,
-
+                        modifier = Modifier.animateItem(),
                         selected = wordAlignmentSource,
                         allItems = WordDetailsDirectionSource.entries,
                         onSelectItem = uiActions::onToggleWordDetailsAlignmentSource
@@ -152,28 +159,30 @@ fun MDWordDetailsViewModeScreen(
                             )
                     }
                 }
-                item {
-                    WordInfoGroup(
-                        title = firstCapStringResource(R.string.phonetic),
-                        icon = MDIconsSet.WordTranscription,
-                    ) {
-                        WordPropertyItem(
-                            label = firstCapStringResource(R.string.transcription),
-                            value = uiState.word.transcription.ifBlank { "-" },
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        // TODO, on pronounce word
+                if (uiState.word.transcription.isNotBlank()) {
+                    item {
+                        WordInfoGroup(
+                            title = firstCapStringResource(R.string.phonetic),
+                            icon = MDIconsSet.WordTranscription,
+                        ) {
+                            WordPropertyItem(
+                                label = firstCapStringResource(R.string.transcription),
+                                value = uiState.word.transcription.ifBlank { "-" },
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            // TODO, on pronounce word
+                                        }
+                                    ) {
+                                        MDIcon(MDIconsSet.WordTranscription/* TODO, icon res */)
                                     }
-                                ) {
-                                    MDIcon(MDIconsSet.WordTranscription/* TODO, icon res */)
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
-                item {
-                    if (uiState.word.tags.isNotEmpty()) {
+                if (uiState.word.tags.isNotEmpty()) {
+                    item {
                         WordInfoGroup(
                             title = firstCapStringResource(R.string.tags),
                             icon = MDIconsSet.WordTag,
@@ -195,8 +204,8 @@ fun MDWordDetailsViewModeScreen(
                         }
                     }
                 }
-                item {
-                    if (uiState.word.additionalTranslations.isNotEmpty()) {
+                if (uiState.word.additionalTranslations.isNotEmpty()) {
+                    item {
                         WordInfoGroup(
                             title = firstCapStringResource(R.string.additional_translations),
                             icon = MDIconsSet.WordAdditionalTranslation
@@ -207,8 +216,8 @@ fun MDWordDetailsViewModeScreen(
                         }
                     }
                 }
-                item {
-                    if (uiState.word.examples.isNotEmpty()) {
+                if (uiState.word.examples.isNotEmpty()) {
+                    item {
                         WordInfoGroup(
                             title = firstCapStringResource(R.string.examples),
                             icon = MDIconsSet.WordExample,
@@ -220,8 +229,8 @@ fun MDWordDetailsViewModeScreen(
                     }
                 }
 
-                item {
-                    uiState.word.wordClass?.let { wordClass ->
+                uiState.word.wordClass?.let { wordClass ->
+                    item {
                         WordInfoGroup(
                             title = "${firstCapStringResource(R.string.word_class)} ${wordClass.name.meaningViewNormalize}",
                             icon = MDIconsSet.WordRelatedWords,
@@ -247,7 +256,7 @@ fun MDWordDetailsViewModeScreen(
                         item {
                             WordInfoGroup(
                                 title = type.label,
-                                titleHint = type.hintLikeExample,
+                                subtitle = type.hintLikeExample,
                                 icon = MDIconsSet.WordRelatedWords
                             ) {
                                 relations.forEach { relation ->
@@ -320,31 +329,27 @@ private fun WordPropertyItem(
 private fun WordInfoGroup(
     title: String,
     modifier: Modifier = Modifier,
-    titleHint: String? = null,
+    subtitle: String? = null,
     icon: MDIconsSet? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     MDCard2(
         overline = {
+            MDCard2Overline(
 
-            ContentWithHint(
-                hint = titleHint,
-            ) {
-                MDCard2Overline(
-                    leading = if (icon != null) {
-                        {
-                            MDIcon(icon)
-                        }
-                    } else null,
-                    title = title,
-                )
-            }
+                leading = if (icon != null) {
+                    {
+                        MDIcon(icon)
+                    }
+                } else null,
+                title = title,
+                subtitle = subtitle,
+            )
         },
         modifier = modifier,
         content = content,
     )
 }
-
 
 @Preview(device = "id:pixel_9_pro")
 @Composable

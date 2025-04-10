@@ -287,6 +287,7 @@ private fun WordsListTopAppBarNormalMode(
             placeholder = firstCapStringResource(R.string.eg_x, firstCapStringResource(R.string.car)),
             showTrailingActionsIfNotFocused = true,
             showTrailingActionsIfBlank = true,
+            clearFocusOnClearButton = true,
             onKeyboardAction = { searchFieldFocusRequester.freeFocus() }
         )
     }

@@ -78,6 +78,7 @@ class TagsMutableTree(
 
     fun addTag(
         segment: String,
+        // TODO, pass other tag data like id or color
     ): TagsMutableTree {
         return nextLevel.getOrPut(segment) {
             TagsMutableTree(

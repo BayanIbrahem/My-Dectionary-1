@@ -51,12 +51,13 @@ fun MDWordFieldTextField(
     readOnly: Boolean = false,
     focusManager: FocusManager = LocalFocusManager.current,
     onFocusEvent: (FocusState) -> Unit = {},
+    clearFocusOnClearButton: Boolean = false,
     maxLines: Int = 1,
     colors: TextFieldColors = MDTextFieldDefaults.colors(),
     hasBottomHorizontalDivider: Boolean = false,
     textStyle: TextStyle = MDTextFieldDefaults.textStyle,
     index: Int? = null,
-    showTrailingActionsIfNotFocused: Boolean = true,
+    showTrailingActionsIfNotFocused: Boolean = false,
     showTrailingActionsIfBlank: Boolean = true,
     indexFormat: (Int) -> String = { "$it. " },
     imeAction: MDImeAction = MDImeAction.Next,
@@ -110,7 +111,8 @@ fun MDWordFieldTextField(
             isFocused = isFocused,
             showActions = showTrailingActions,
             onValueChange = onValueChange,
-            focusManager = focusManager
+            focusManager = focusManager,
+            clearFocusOnClearButton = clearFocusOnClearButton,
         ),
         colors = colors,
         textStyle = textStyle,
@@ -136,8 +138,8 @@ fun <Data : Any> MDWordFieldTextField(
     showLabelOnPreviewMode: Boolean = false,
     fieldReadOnly: Boolean = false,
     menuReadOnly: Boolean = false,
-
-    showTrailingActionsIfNotFocused: Boolean = true,
+    clearFocusOnClearButton: Boolean = false,
+    showTrailingActionsIfNotFocused: Boolean = false,
     enabled: Boolean = true,
     focusManager: FocusManager = LocalFocusManager.current,
     onFocusEvent: (FocusState) -> Unit = {},
@@ -200,9 +202,10 @@ fun <Data : Any> MDWordFieldTextField(
         },
         trailingIcons = fieldTrailingIcons(
             isFocused = isFocused,
-            showActions = showLabelOnPreviewMode,
+            showActions = showTrailingActions,
             onValueChange = onValueChange,
-            focusManager = focusManager
+            focusManager = focusManager,
+            clearFocusOnClearButton = clearFocusOnClearButton,
         ),
         fieldColors = colors,
         textStyle = textStyle,
@@ -233,6 +236,7 @@ private fun fieldTrailingIcons(
     showActions: Boolean,
     onValueChange: (String) -> Unit,
     focusManager: FocusManager,
+    clearFocusOnClearButton: Boolean,
 ): (@Composable RowScope.() -> Unit)? {
     return if (showActions) {
         {
@@ -240,6 +244,9 @@ private fun fieldTrailingIcons(
             IconButton(
                 onClick = {
                     onValueChange("")
+                    if (clearFocusOnClearButton) {
+                        focusManager.clearFocus()
+                    }
                 },
                 modifier = Modifier.size(36.dp),
             ) {

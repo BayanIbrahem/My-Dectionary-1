@@ -38,7 +38,7 @@ fun MDConfirmDialog(
     isConfirmRunning: Boolean = false,
     runningMessage: String = confirmMessage,
     headerTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryContainer,
-    confirmButtonTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface,
+    confirmButtonTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.PrimaryOnSurface.onSurfaceContainer,
     cancelButtonTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.Outline,
     confirmButtonLabel: String = firstCapStringResource(R.string.confirm),
     cancelButtonLabel: String = firstCapStringResource(R.string.cancel),

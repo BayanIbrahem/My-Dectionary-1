@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.minN
 
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.nextOrNull
+import org.apache.poi.ss.formula.functions.T
 import kotlin.math.log
 
 /**
@@ -9,7 +10,7 @@ import kotlin.math.log
  */
 inline fun <T, R : Comparable<R>> Sequence<T>.minNBy(
     maxCount: Int,
-    crossinline selector: (T) -> R,
+    crossinline selector: (T) -> R?,
 ): List<T> {
     val count = count()
     if (count <= maxCount) return toList()
@@ -28,10 +29,32 @@ inline fun <T, R : Comparable<R>> Sequence<T>.minNBy(
  */
 inline fun <R : Comparable<R>, T> Sequence<T>.minNBySorting(
     maxCount: Int,
-    crossinline selector: (T) -> R,
-) = sortedBy {
-    selector(it)
-}.iterator().subList(maxCount)
+    crossinline selector: (T) -> R?,
+) = mapNotNull { t ->
+    selector(t)?.let { r ->
+        Pair(t, r)
+    }
+}.sortedBy { (t, r) ->
+    r
+}.iterator()
+    .subList(maxCount) {
+        it.first
+    }
+
+
+fun <T, R> Iterator<T>.subList(
+    maxCount: Int,
+    mapper: (T) -> R,
+): List<R> {
+    val subList = mutableListOf<R>()
+    var i = 0
+    while (i < maxCount) {
+        val next = nextOrNull() ?: break
+        subList.add(mapper(next))
+        i++
+    }
+    return subList
+}
 
 fun <T> Iterator<T>.subList(maxCount: Int): List<T> {
     val subList = mutableListOf<T>()
@@ -51,7 +74,7 @@ fun <T> Iterator<T>.subList(maxCount: Int): List<T> {
  */
 inline fun <R : Comparable<R>, T> Sequence<T>.minNByIterativeMin(
     maxCount: Int,
-    selector: (T) -> R,
+    selector: (T) -> R?,
 ): MutableList<T> {
     val results = mutableListOf<T>()
     val selectedIndexes = mutableSetOf<Int>()
@@ -62,10 +85,12 @@ inline fun <R : Comparable<R>, T> Sequence<T>.minNByIterativeMin(
         forEachIndexed { i, item ->
             if (i !in selectedIndexes) {
                 val currentSelector = selector(item)
-                if (minSelector == null || minSelector!! > currentSelector) {
-                    min = item
-                    minI = i
-                    minSelector = currentSelector
+                if (currentSelector != null) {
+                    if (minSelector == null || minSelector!! > currentSelector) {
+                        min = item
+                        minI = i
+                        minSelector = currentSelector
+                    }
                 }
             }
         }

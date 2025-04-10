@@ -33,12 +33,14 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTabRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CheckboxItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ImportantAction
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2RadioButtonItem
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagExplorerDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagListItem
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
@@ -46,6 +48,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSear
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesTab
+import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
 import kotlin.math.roundToInt
 
 @Composable
@@ -169,20 +172,40 @@ private fun FilterBody(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        MDTagsSelector(
-            state = tagsSelectionState,
-            actions = tagsSelectionActions,
-            allowAddTags = false,
-            allowRemoveTags = false,
-            allowEditTags = true,
-        )
+        var showTagExploreDialog by remember {
+            mutableStateOf(false)
+        }
         val selectedTheme = MDCard2ListItemTheme.PrimaryOnSurface.onSurfaceHighest
-        AnimatedVisibility(
-            visible = tagsSelectionState.selectedTags.isNotEmpty(),
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically(),
+        MDCard2(
+            header = {
+                MDCard2ListItem(
+                    title = firstCapStringResource(R.string.tags),
+                    subtitle = if (tagsSelectionState.selectedTags.isEmpty()) {
+                        null
+                    } else if (includeSelectedTags) {
+                        firstCapStringResource(R.string.include_selected_tags_hint_on)
+                    } else {
+                        firstCapStringResource(R.string.include_selected_tags_hint_off)
+                    },
+                    subtitleMaxLines = 2,
+                    leadingIcon = {
+                        MDIcon(MDIconsSet.WordTag)
+                    },
+                    trailingIcon = {
+                        MDIcon(MDIconsSet.Add)
+                    },
+                    onTrailingClick = {
+                        showTagExploreDialog = true
+                    }
+                )
+            },
+            contentTheme = theme
         ) {
-            MDCard2 {
+            AnimatedVisibility(
+                visible = tagsSelectionState.selectedTags.isNotEmpty(),
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
+            ) {
                 MDCard2CheckboxItem(
                     checked = includeSelectedTags,
                     theme = theme,
@@ -190,14 +213,26 @@ private fun FilterBody(
                     onCheckedChange = {
                         onToggleSelectedTags(!includeSelectedTags)
                     },
-                    subtitle = if (includeSelectedTags) {
-                        firstCapStringResource(R.string.include_selected_tags_hint_on)
-                    } else {
-                        firstCapStringResource(R.string.include_selected_tags_hint_off)
-                    },
                     title = firstCapStringResource(R.string.include_selected_tags)
                 )
             }
+            tagsSelectionState.selectedTags.forEachIndexed { i, tag ->
+                MDTagListItem(
+                    tag = tag,
+                    onTrailingIconClick = {
+                        tagsSelectionActions.onUnSelectTag(tag)
+                    },
+                    tagOrder = i.inc()
+                )
+            }
+            MDTagExplorerDialog(
+                showDialog = showTagExploreDialog,
+                onDismissRequest = { showTagExploreDialog = false },
+                state = tagsSelectionState,
+                actions = tagsSelectionActions,
+                allowAddTags = false,
+                allowRemoveTags = false,
+            )
         }
 
         MDCard2(

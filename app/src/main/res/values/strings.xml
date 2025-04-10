@@ -201,8 +201,8 @@
     <string name="search_query">search query</string>
     <string name="car">car</string>
     <string name="include_selected_tags">include selected tags</string>
-    <string name="include_selected_tags_hint_on">any result should contains at least one of the selected tags</string>
-    <string name="include_selected_tags_hint_off">all results should not contain any one of the selected tags</string>
+    <string name="include_selected_tags_hint_on">any word should contain at least one of the selected tags</string>
+    <string name="include_selected_tags_hint_off">all words should not contain any one of the selected tags</string>
     <string name="words_count_limit">words count limit</string>
     <string name="train_statistics">train statistics</string>
     <string name="export_preferences">Export Preferences</string>

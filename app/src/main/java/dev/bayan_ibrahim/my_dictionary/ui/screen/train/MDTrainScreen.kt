@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -164,7 +165,11 @@ private fun ScreenHeader(
         MDLinearProgressIndicator(
             progress = currentIndex,
             total = totalCount,
-            markLastProgressedItemAsDone = false
+            markLastProgressedItemAsDone = false,
+            // active color
+            color = MaterialTheme.colorScheme.primary,
+            // non active color
+            trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -353,6 +358,11 @@ private fun WordWriteTrainPage(
     var answer by remember {
         mutableStateOf("")
     }
+    val onSubmitEnabled by remember(answer) {
+        derivedStateOf {
+            answer.isNotBlank()
+        }
+    }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -360,6 +370,7 @@ private fun WordWriteTrainPage(
         QuestionPagePart(
             question = train.question,
             currentAnswer = answer,
+            onSubmitEnabled = onSubmitEnabled,
             onSubmit = {
                 onSubmit(answer, it)
             },
@@ -452,9 +463,6 @@ private fun QuestionPagePart(
                     label = {
                         Text(option.label)
                     },
-                    leadingIcon = {
-                        MDIcon(option.icon)
-                    }
                 )
             }
         }
@@ -551,6 +559,7 @@ private fun ExtraInfoDataAnimatedPart(
     ) {
         FlowRow(
             modifier = Modifier
+                .padding(8.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)

@@ -24,7 +24,7 @@ fun MDDeleteConfirmDialog(
     isDeleteRunning: Boolean = false,
     runningDeleteMessage: String = confirmDeleteMessage,
     headerTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.ErrorContainer,
-    confirmButtonTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.ErrorOnSurface,
+    confirmButtonTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.ErrorOnSurface.onSurfaceContainer,
     cancelButtonTheme: MDCard2ListItemTheme = MDCard2ListItemTheme.Outline,
     confirmButtonLabel: String = firstCapStringResource(R.string.delete),
     cancelButtonLabel: String = firstCapStringResource(R.string.cancel),

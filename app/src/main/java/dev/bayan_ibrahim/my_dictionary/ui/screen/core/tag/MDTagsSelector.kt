@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
@@ -52,14 +53,14 @@ fun LazyListScope.tagsSelector(
         }
     }
     itemsIndexed(state.selectedTags) { i, tag ->
-        val onLongClick: () -> Unit by remember(allowEditTags) {
+        val onTrailingClick: (() -> Unit)? by remember(allowEditTags) {
             derivedStateOf {
                 if (allowEditTags) {
                     {
                         actions.onUnSelectTag(tag)
                     }
                 } else {
-                    {}
+                    null
                 }
             }
         }
@@ -67,8 +68,7 @@ fun LazyListScope.tagsSelector(
             modifier = Modifier.animateItem(),
             tag = tag,
             tagOrder = i.inc(),
-            onClick = {}, // must has onClick to be onLongClick enabled
-            onLongClick = onLongClick
+            onTrailingIconClick = onTrailingClick
         )
         if (i != state.selectedTags.count().dec()) {
             Spacer(modifier = Modifier.height(spacedBy))
@@ -80,9 +80,10 @@ fun LazyListScope.tagsSelector(
             var showExploreDialog by remember {
                 mutableStateOf(false)
             }
-            Spacer(modifier = Modifier.height(spacedBy))
             MDNewTagListItem(
-                modifier = Modifier.animateItem(),
+                modifier = Modifier
+                    .padding(top = spacedBy)
+                    .animateItem(),
                 onAddNewTagClick = {
                     showExploreDialog = true
                 }
@@ -132,22 +133,27 @@ fun ColumnScope.MDTagsSelector(
         allowAddTags = allowAddTags,
         allowRemoveTags = allowRemoveTags,
     )
-    val onLongClick: (Tag) -> Unit by remember(allowEditTags) {
-        derivedStateOf {
-            if (allowEditTags) actions::onUnSelectTag
-            else {
-                {}
-            }
-        }
-    }
+//    val onLongClick: (Tag) -> Unit by remember(allowEditTags) {
+//        derivedStateOf {
+//            if (allowEditTags) actions::onUnSelectTag
+//            else {
+//                {}
+//            }
+//        }
+//    }
     state.selectedTags.forEachIndexed { i, tag ->
         MDTagListItem(
             tag = tag,
             tagOrder = i.inc(),
-            onClick = {}, // must has onClick to be onLongClick enabled
-            onLongClick = {
-                onLongClick(tag)
-            }
+//            onClick = {}, // must has onClick to be onLongClick enabled
+//            onLongClick = {
+//                onLongClick(tag)
+//            }
+            onTrailingIconClick = if (allowEditTags) {
+                {
+                    actions.onUnSelectTag(tag)
+                }
+            } else null
         )
     }
     AnimatedVisibility(allowEditTags) {
@@ -165,6 +171,7 @@ fun MDTagListItem(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
+    onTrailingIconClick: (() -> Unit)? = null,
     tagOrder: Int? = null,
 ) {
     MDTagListItem(
@@ -172,6 +179,7 @@ fun MDTagListItem(
         modifier = modifier,
         onClick = onClick,
         onLongClick = onLongClick,
+        onTrailingIconClick = onTrailingIconClick,
     )
 }
 
@@ -197,6 +205,7 @@ private fun MDTagListItem(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
+    onTrailingIconClick: (() -> Unit)? = null,
 ) {
     MDCard2ListItem(
         title = value,
@@ -204,6 +213,12 @@ private fun MDTagListItem(
         leadingIcon = {
             MDIcon(MDIconsSet.WordTag)
         },
+        trailingIcon = if (onTrailingIconClick != null) {
+            {
+                MDIcon(MDIconsSet.Close)
+            }
+        } else null,
+        onTrailingClick = onTrailingIconClick,
         onClick = onClick,
         onLongClick = onLongClick,
     )

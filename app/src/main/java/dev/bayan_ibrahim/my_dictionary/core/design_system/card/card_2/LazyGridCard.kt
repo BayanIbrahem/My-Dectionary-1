@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.LocalClipCardListItem
 
 @Composable
 fun LazyGridCard2(
@@ -24,14 +27,21 @@ fun LazyGridCard2(
     footer: (@Composable () -> Unit)? = null,
     content: @Composable (i: Int) -> Unit,
 ) {
-    LazyVerticalGrid(modifier = modifier, columns = columns) {
-        card2Content(
-            contentCount = contentCount,
-            overline = overline,
-            header = header,
-            footer = footer,
-            content = content
-        )
+    CompositionLocalProvider(
+        LocalClipCardListItem provides false
+    ) {
+        LazyVerticalGrid(
+            modifier = modifier.clip(RoundedCornerShape(MDCard2Defaults.cornerRadius)),
+            columns = columns
+        ) {
+            card2Content(
+                contentCount = contentCount,
+                overline = overline,
+                header = header,
+                footer = footer,
+                content = content,
+            )
+        }
     }
 }
 

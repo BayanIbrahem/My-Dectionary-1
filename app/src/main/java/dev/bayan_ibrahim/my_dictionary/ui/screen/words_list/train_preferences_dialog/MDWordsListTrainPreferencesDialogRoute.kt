@@ -32,6 +32,7 @@ fun MDWordsListTrainPreferencesDialogRoute(
                 }
 
                 override fun navigateToTrainScreen() {
+                    onDismissDialog()
                     onNavigateToTrainScreen()
                 }
             }
