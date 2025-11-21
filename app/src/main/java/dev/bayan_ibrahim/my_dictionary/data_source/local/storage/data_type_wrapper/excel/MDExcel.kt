@@ -1,7 +1,8 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.data_type_wrapper.excel
 
+import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDExcelFileType
 import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDRowCell
-import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDSheet
+import dev.bayan_ibrahim.my_dictionary.domain.model.excel.sheet.MDSheet
 import java.io.Closeable
 import java.io.OutputStream
 
@@ -10,6 +11,8 @@ import java.io.OutputStream
  * use [use] block
  */
 interface MDExcel : Closeable {
+    /// type of excel file
+    val type: MDExcelFileType
     /**
      * Retrieves a list of sheets from the Excel file, with their types extracted from their names.
      *
@@ -166,4 +169,7 @@ interface MDExcel : Closeable {
      * @param outputStream The output stream to write the exported file to.
      */
     suspend fun export(outputStream: OutputStream): Result<Unit>
+    fun readSheetRows(sheetName: String): Result<Pair<Int, Int>>
+    fun readSheetRows(sheetIndex: Int): Result<Pair<Int, Int>>
+    fun readSheetRows(sheet: MDSheet): Result<Pair<Int, Int>> = readSheetRows(sheet.index)
 }

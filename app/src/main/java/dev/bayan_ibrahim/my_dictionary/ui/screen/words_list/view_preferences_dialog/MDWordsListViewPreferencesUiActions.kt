@@ -17,6 +17,7 @@ interface MDWordsListViewPreferencesBusinessUiActions {
     fun onSelectWordsSortBy(sortBy: MDWordsListViewPreferencesSortBy)
     fun onSelectWordsSortByOrder(order: MDWordsListSortByOrder)
     fun onUpdateSelectedTags(selectedTags: List<Tag>)
+    fun onRemoveSelectedTag(tag: Tag)
 }
 
 interface MDWordsListViewPreferencesNavigationUiActions {

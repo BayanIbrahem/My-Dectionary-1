@@ -1,22 +1,21 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag
 
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.tagMatchNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.setAll
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ParentedTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.TagsMutableTree
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.TagsTree
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.contains
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.isContained
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.parentOrNull
 import dev.bayan_ibrahim.my_dictionary.domain.repo.TagRepo
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,62 +34,98 @@ class MDTagsSelectorViewModel @Inject constructor(
         allowedFilter: (Tag) -> Boolean = { true },
         forbiddenFilter: (Tag) -> Boolean = { false },
         selectedTagsMaxSize: Int = Int.MAX_VALUE,
+        isSelectEnabled: Boolean = false,
+        isAddEnabled: Boolean = false,
+        isEditEnabled: Boolean = false,
+        isDeleteEnabled: Boolean = false,
+        isDeleteSubtreeEnabled: Boolean = false,
     ) {
         this.selectedTagsMaxSize = selectedTagsMaxSize.coerceAtLeast(1)
         tagsStateAllTagsStreamCollectorJob?.cancel()
         tagsStateAllTagsStreamCollectorJob = viewModelScope.launch {
-            repo.getTagsStream().collect { allTags ->
-                _uiState.allTagsTree.setFrom(allTags)
-                refreshCurrentTree()
+            // no need to listen to stream cause the tree is mutable and change itself after each edit
+            repo.getTagsStream().first().let { allTags ->
+                _uiState.tagsTree.setFrom(allTags)
             }
         }
         this.allowedFilter = allowedFilter
         this.forbiddenFilter = forbiddenFilter
+        _uiState.isSelectEnabled = isSelectEnabled
+        _uiState.isAddEnabled = isAddEnabled
+        _uiState.isEditEnabled = isEditEnabled
+        _uiState.isDeleteEnabled = isDeleteEnabled
+        _uiState.isDeleteSubtreeEnabled = isDeleteSubtreeEnabled
     }
 
-    private fun onAddTagToTree(tag: Tag) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.addOrUpdateTag(tag)
-        }
-    }
+    /**
+     * store the selected tags in order, the top of the queue is the list start
+     */
+    private val selectionQueue = mutableListOf<Long>()
 
-    private fun onRemoveTagFromTree(tag: Tag) {
+    private fun onRemoveTag(tag: Tag) {
+        if (!uiState.isDeleteEnabled) return
         viewModelScope.launch(Dispatchers.IO) {
-            repo.removeTag(tag)
+            if (tag.id >= 0) { // valid stored tag
+                repo.removeTag(tag)
+            }
+            withContext(Dispatchers.Main.immediate) {
+                _uiState.tagsTree.onDelete(tag.id)
+                _uiState.selectedTagsIds = _uiState.selectedTagsIds.remove(tag.id)
+            }
         }
     }
 
     fun getUiActions(
         navActions: MDTagsSelectorNavigationUiActions,
     ): MDTagsSelectorUiActions = MDTagsSelectorUiActions(
-        navigationActions = navActions,
-        businessActions = getBusinessUiActions(navActions)
+        navigationActions = navActions, businessActions = getBusinessUiActions(navActions)
     )
 
     private fun onUpdateDisabledTags() {
-        val query = _uiState.searchQuery
-        _uiState.disabledTags = _uiState.currentTagsTree.nextLevel.mapNotNull {
-            val matchQuery = it.key.tagMatchNormalize.startsWith(query.tagMatchNormalize)
-            val isSelected = _uiState.selectedTags.contains(it.value.tag)
-            if (!matchQuery || isSelected) {
-                it.value.tag
-            } else null
+        _uiState.disabledTags = _uiState.tagsTree.tags.mapNotNull { tag ->
+            val forbidden = !allowedFilter(tag) || forbiddenFilter(tag)
+            if (forbidden) {
+                tag.id
+            } else {
+                null
+            }
         }.toPersistentSet()
     }
 
     private fun getBusinessUiActions(
         navActions: MDTagsSelectorNavigationUiActions,
     ): MDTagsSelectorBusinessUiActions = object : MDTagsSelectorBusinessUiActions {
+        private suspend fun onUpdateVisibleTagsList() {
+            val query = _uiState.searchQuery
+            val newVisibleTags = if (query.isBlank()) {
+                uiState.tagsTree.tags
+            } else {
+                uiState.tagsTree.tags.filter { tag ->
+                    val matchQuery = tag.label.tagMatchNormalize.startsWith(query.tagMatchNormalize)
+                    matchQuery
+                }
+            }
 
-        private fun onUpdateSelectedTags() {
-            navActions.onUpdateSelectedTags(_uiState.selectedTags)
-            onUpdateSelectEnableState()
-            onUpdateDisabledTags()
+            _uiState.visibleTagsList.setAll(newVisibleTags)
+            onSortVisibleTagsList()
+
         }
 
-        override fun onClickTag(tag: Tag) {
-            setCurrentTree(_uiState.allTagsTree[tag] ?: _uiState.allTagsTree)
-            onSearchQueryChange(_uiState.searchQuery)
+        override fun onClickTag(tag: Tag, index: Int) {
+            onToggleSelectTag(tag, tag.id !in uiState.selectedTagsIds)
+        }
+
+        override fun onToggleSelectTag(tag: Tag, select: Boolean) {
+            _uiState.selectedTagsIds = if (select) {
+                if (selectionQueue.count() >= selectedTagsMaxSize && selectionQueue.isNotEmpty()) {
+                    selectionQueue.removeAt(0)
+                }
+                selectionQueue.add(tag.id)
+                _uiState.selectedTagsIds.add(tag.id)
+            } else {
+                selectionQueue.remove(tag.id)
+                _uiState.selectedTagsIds.remove(tag.id)
+            }
         }
 
         override fun onSearchQueryChange(query: String) {
@@ -98,122 +133,168 @@ class MDTagsSelectorViewModel @Inject constructor(
             onUpdateDisabledTags()
         }
 
-
-        override fun onSelectTag(tag: Tag) {
-            val indexOfLastContainer = _uiState.selectedTags.indexOfLast { it.contains(tag) }
-            val firstValidIndexAfterTrim = _uiState.selectedTags.size.inc().minus(selectedTagsMaxSize).coerceAtLeast(0)
-
-            if (indexOfLastContainer >= firstValidIndexAfterTrim) {
-                // if a parent of this tag already exists then we don't add this tag
-                return
+        override fun onClearSearchQuery() {
+            _uiState.searchQuery = ""
+            viewModelScope.launch {
+                onUpdateVisibleTagsList()
             }
-            _uiState.selectedTags.removeIf {
-                it.isContained(tag) // current param tag return true in isContained so we make adding after removing
+        }
+
+        override fun onToggleSelectEnabled(selectEnabled: Boolean) {
+            _uiState.isSelectEnabled = selectEnabled
+        }
+
+        override fun onToggleAddEnabled(addEnabled: Boolean) {
+            _uiState.isAddEnabled = addEnabled
+        }
+
+        override fun onToggleEditEnabled(editEnabled: Boolean) {
+            _uiState.isEditEnabled = editEnabled
+        }
+
+        override fun onToggleDeleteEnabled(deleteEnabled: Boolean) {
+            _uiState.isDeleteEnabled = deleteEnabled
+        }
+
+        override fun onToggleDeleteSubtreeEnabled(deleteSubtreeEnabled: Boolean) {
+            _uiState.isDeleteSubtreeEnabled = deleteSubtreeEnabled
+        }
+
+        override fun onConfirmSelectedTags() {
+            val selectedTags = uiState.selectedTagsIds.map {
+                uiState.tagsTree[it]
             }
-            _uiState.selectedTags.add(tag)
-            if (firstValidIndexAfterTrim > 0) {
-                _uiState.selectedTags.removeRange(0, firstValidIndexAfterTrim.dec())
+            _uiState.selectedTagsIds.clear()
+            navActions.onNotifyConfirmSelectedTags(selectedTags = selectedTags)
+            navActions.onPop()
+        }
+
+        override fun onChangeParent(
+            tag: Tag,
+            parent: Tag?,
+        ) {
+            val oldParent = uiState.tagsTree.parent(tag.id)
+            if (oldParent != parent) {
+                if (parent == null) {
+                    _uiState.tagsTree.removeParent(tag.id)
+                } else {
+                    _uiState.tagsTree.setParent(parentId = parent.id, childId = tag.id)
+                }
+                onSortVisibleTagsList()
             }
-            onUpdateSelectedTags()
-            onResetToRoot()
         }
 
-        override fun onSelectCurrentTag() {
-            _uiState.currentTagsTree.tag?.let { onSelectTag(it) }
+        private fun onSortVisibleTagsList() {
+            _uiState.visibleTagsList.sortBy { tag -> _uiState.tagsTree.tagsOrderKeys[tag.id] }
         }
 
-        override fun onUnSelectTag(tag: Tag) {
-            _uiState.selectedTags.remove(tag)
-            onUpdateSelectedTags()
-        }
 
-        override fun onSetInitialSelectedTags(tags: Collection<Tag>) {
-            _uiState.selectedTags.setAll(tags)
-            onUpdateSelectedTags()
-        }
-
-        override fun clearSelectedTags() {
-            _uiState.selectedTags.clear()
-            onUpdateSelectedTags()
-        }
-
-        override fun onAddNewTag(tag: Tag) {
-            onAddTagToTree(tag)
-            val mutableCurrent = TagsMutableTree(_uiState.currentTagsTree)
-            mutableCurrent.addTag(tag)
-            setCurrentTree(mutableCurrent)
-        }
-
-        override fun onAddNewTag(segment: String) {
-            if (segment.isNotBlank()) {
-                val tag = Tag((_uiState.currentTagsTree.tag?.segments ?: emptyList()) + segment)
-                onAddNewTag(tag)
+        override fun onAddChild(parent: Tag?) {
+            viewModelScope.launch {
+                _uiState.currentEditTagId = MDTagsSelectorUiState.NEW_TAG_ID
+                val tag = Tag(
+                    label = "", id = _uiState.currentEditTagId!!
+                )
+                _uiState.tagsTree.onUpdateOrInsert(tag)
+                if (parent != null) {
+                    _uiState.tagsTree.setParent(parent.id, tag.id)
+                }
+                onUpdateVisibleTagsList()
+                val index = uiState.visibleTagsList.indexOfFirst { it.id == tag.id }
+                if (index >= 0) {
+                    withContext(Dispatchers.Main.immediate) {
+                        navActions.onAnimateScrollToIndex(index)
+                    }
+                }
             }
+        }
+
+        override fun onRequestEditTagLabel(tag: Tag) {
+            viewModelScope.launch {
+                _uiState.currentEditTagId = tag.id
+                val index = uiState.visibleTagsList.indexOfFirst { it.id == tag.id }
+                if (index >= 0) {
+                    withContext(Dispatchers.Main.immediate) {
+                        navActions.onAnimateScrollToIndex(index)
+                    }
+                }
+            }
+        }
+
+        override fun onConfirmEditTagLabel(tag: Tag, newLabel: String) {
+            viewModelScope.launch {
+                val newId = _uiState.tagsTree.run {
+                    val newTagValue = tag.onCopy(label = newLabel)
+                    val newTag = repo.addOrUpdateTag(
+                        tag = ParentedTag(tag = newTagValue, parentId = parent(tag.id)?.id)
+                    )
+                    onUpdate(newTag)
+                    newTag.id
+                }
+                _uiState.currentEditTagId = null
+                onSortVisibleTagsList()
+                val index = uiState.visibleTagsList.indexOfFirst { it.id == tag.id }
+                if (index >= 0) {
+                    withContext(Dispatchers.Main.immediate) {
+                        navActions.onAnimateScrollToIndex(index)
+                    }
+                }
+            }
+        }
+
+        override fun onEditColor(id: Long, color: Color?, passColor: Boolean) {
+            viewModelScope.launch {
+                val tag = uiState.tagsTree[id]
+                val newTag = tag.onCopy(color = color, passColor = passColor || color == null)
+                repo.addOrUpdateTag(newTag)
+                _uiState.tagsTree.onUpdate(newTag)
+            }
+        }
+
+        override fun onCancelEditTagLabel() {
+            _uiState.currentEditTagId = null
         }
 
         override fun onDeleteTag(tag: Tag) {
-            onRemoveTagFromTree(tag)
-            val mutableCurrent = TagsMutableTree(_uiState.currentTagsTree)
-            mutableCurrent.removeTag(tag)
-            setCurrentTree(mutableCurrent)
+            viewModelScope.launch {
+                onRemoveTag(tag)
+                onUpdateVisibleTagsList()
+            }
         }
 
-        override fun onNavigateUp() {
-            _uiState.currentTagsTree.tag?.parentOrNull?.let(::onClickTag) ?: setCurrentTree(_uiState.allTagsTree)
-        }
-
-        override fun onResetToRoot() {
-            setCurrentTree(_uiState.allTagsTree)
+        override fun onDeleteTagSubtree(tag: Tag) {
+            viewModelScope.launch {
+                _uiState.tagsTree.onDeleteSubtree(tag.id)
+                onUpdateVisibleTagsList()
+            }
         }
 
         override fun onSetAllowedTagsFilter(filter: (Tag) -> Boolean) {
-            allowedFilter = filter
-            onUpdateSelectEnableState()
+            viewModelScope.launch {
+                allowedFilter = filter
+                onUpdateVisibleTagsList()
+            }
         }
 
         override fun onResetAllowedTagsFilter() {
-            allowedFilter = { true }
-            onUpdateSelectEnableState()
+            viewModelScope.launch {
+                allowedFilter = { true }
+                onUpdateVisibleTagsList()
+            }
         }
 
         override fun onSetForbiddenTagsFilter(filter: (Tag) -> Boolean) {
-            forbiddenFilter = filter
-            onUpdateSelectEnableState()
+            viewModelScope.launch {
+                forbiddenFilter = filter
+                onUpdateVisibleTagsList()
+            }
         }
 
         override fun onResetForbiddenTagsFilter() {
-            forbiddenFilter = { false }
-            onUpdateSelectEnableState()
+            viewModelScope.launch {
+                forbiddenFilter = { false }
+                onUpdateVisibleTagsList()
+            }
         }
-
-        override fun onResetTagsFilter() {
-            allowedFilter = { true }
-            forbiddenFilter = { false }
-            onUpdateSelectEnableState()
-        }
-
-        override fun refreshCurrentTree() {
-            this@MDTagsSelectorViewModel.refreshCurrentTree()
-        }
-    }
-
-    private fun refreshCurrentTree() {
-        setCurrentTree(
-            _uiState.currentTagsTree.tag?.let { tag ->
-                _uiState.allTagsTree[tag]
-            } ?: _uiState.allTagsTree
-        )
-    }
-
-    private fun setCurrentTree(tree: TagsTree) {
-        _uiState.currentTagsTree.setFrom(tree)
-        onUpdateSelectEnableState()
-        onUpdateDisabledTags()
-    }
-
-    private fun onUpdateSelectEnableState() {
-        _uiState.isSelectEnabled = _uiState.currentTagsTree.tag?.let {
-            allowedFilter(it) && !forbiddenFilter(it)
-        } == true
     }
 }

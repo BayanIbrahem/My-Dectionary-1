@@ -2,28 +2,33 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfNegative
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.TagEntity
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ParentedTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 
-fun TagEntity.asModel(wordsCount: Int = 0): Tag = Tag(
+fun TagEntity.asModel(): ParentedTag = ParentedTag(
     id = this.tagId!!,
-    value = this.path,
-    wordsCount = wordsCount,
+    label = this.label,
     color = this.color?.let { Color(it) },
-    passColorToChildren = this.passToChildren,
-    currentColorIsPassed = this.color == null,
+    passColor = this.passToChildren,
+    parentId = this.parentId,
 )
 
 fun Collection<TagEntity>.asModelSet(
-    wordsCount: Map<Long, Int> = emptyMap(),
-): Set<Tag> = map { it.asModel(wordsCount[it.tagId] ?: 0) }.toSet()
+): Set<ParentedTag> = map { it.asModel() }.toSet()
 
 fun Tag.asEntity(
-    id: Long? = this.id.nullIfInvalid(),
+    id: Long? = this.id.nullIfNegative(),
+    parentId: Long? = null,
 ): TagEntity = TagEntity(
     tagId = id,
-    path = this.value,
-    passToChildren = if (this.color == null) true else this.passColorToChildren,
-    color = if (this.currentColorIsPassed) null else this.color?.toArgb()
+    parentId = parentId,
+    label = this.label,
+    passToChildren = if (this.color == null) true else this.passColor,
+    color = this.color?.toArgb()
 )
+
+fun ParentedTag.asEntity(
+    id: Long? = this.id.nullIfNegative(),
+): TagEntity = asEntity(id, parentId)

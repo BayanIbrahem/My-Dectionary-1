@@ -44,13 +44,13 @@ class MDMarkerTagsViewModel @Inject constructor(
         _tagsState.selectedTags.clear()
         viewModelScope.launch(Dispatchers.IO) {
             nonMarkedTags.forEach { tag ->
-                repo.addOrUpdateTag(tag.copy(color = Color.Red, currentColorIsPassed = false))
+                repo.addOrUpdateTag(tag.onCopy(color = Color.Red, currentColorIsPassed = false))
             }
         }
     }
 
     val uiState: MDMarkerTagsUiState = _uiState
-    fun initWithNavArgs(args: MDDestination.MarkerTags) {
+    fun initWithNavArgs(args: MDDestination.TagsEditor) {
         viewModelScope.launch {
             _uiState.onExecute { true }
         }
@@ -74,7 +74,7 @@ class MDMarkerTagsViewModel @Inject constructor(
 
         override fun onUpdateSelectedTags(selectedTags: List<Tag>) {
             val tag = selectedTags.lastOrNull() ?: return
-            updateTag(tag.copy(color = Color.Red, currentColorIsPassed = false, passColorToChildren = true))
+            updateTag(tag.onCopy(color = Color.Red, currentColorIsPassed = false, passColorToChildren = true))
         }
 
         override fun removeTag(tag: Tag) {

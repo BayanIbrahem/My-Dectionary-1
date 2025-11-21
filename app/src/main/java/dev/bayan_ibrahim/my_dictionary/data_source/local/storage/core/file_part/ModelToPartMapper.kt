@@ -8,7 +8,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStr
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.applyMergable
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.applyNonMergable
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.validateWith
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ParentedTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
 import kotlinx.datetime.Clock
@@ -22,28 +22,28 @@ inline fun Word.validateWithDatabase(
      * pass a word to be the first data source for fields here, used if it is not wanted to override all fields in the word
      */
     dbWord: Word? = null,
-    dbWordStrategy: MDPropertyConflictStrategy,
+    conflictStrategy: MDPropertyConflictStrategy,
     corruptedStrategy: MDPropertyCorruptionStrategy,
-    getDBTag: (data: Tag) -> Tag,
+    getDBTag: (data: ParentedTag) -> ParentedTag,
     getDBWordClass: (data: WordClass) -> WordClass?,
 ): Word {
     return Word(
         id = dbWord?.id.invalidIfNull(),
-        meaning = dbWordStrategy.applyString(dbWord?.meaning) { this.meaning.validateWith(corruptedStrategy) },
-        translation = dbWordStrategy.applyString(dbWord?.translation) { this.translation.validateWith(corruptedStrategy) },
-        additionalTranslations = dbWordStrategy.applyComputedCollection(dbWord?.additionalTranslations) {
+        meaning = conflictStrategy.applyString(dbWord?.meaning) { this.meaning.validateWith(corruptedStrategy) },
+        translation = conflictStrategy.applyString(dbWord?.translation) { this.translation.validateWith(corruptedStrategy) },
+        additionalTranslations = conflictStrategy.applyComputedCollection(dbWord?.additionalTranslations) {
             this.additionalTranslations
         }.toList(),
         language = this.language,
-        tags = dbWordStrategy.applyComputedCollection(dbWord?.tags) { this.tags.map(getDBTag) }.toSet(),
-        transcription = dbWordStrategy.applyString(dbWord?.transcription) { this.transcription },
-        examples = dbWordStrategy.applyComputedCollection(dbWord?.examples) { this.examples }.toList(),
-        wordClass = dbWordStrategy.applyComputedOld(dbWord?.wordClass) { this.wordClass?.let { getDBWordClass(it) } },
-        relatedWords = dbWordStrategy.applyComputedCollection(dbWord?.relatedWords) {
+        tags = conflictStrategy.applyComputedCollection(dbWord?.tags) { this.tags.map(getDBTag) }.toSet(),
+        transcription = conflictStrategy.applyString(dbWord?.transcription) { this.transcription },
+        examples = conflictStrategy.applyComputedCollection(dbWord?.examples) { this.examples }.toList(),
+        wordClass = conflictStrategy.applyComputedOld(dbWord?.wordClass) { this.wordClass?.let { getDBWordClass(it) } },
+        relatedWords = conflictStrategy.applyComputedCollection(dbWord?.relatedWords) {
             this.relatedWords
         }.toList(),
         // no related words
-        lexicalRelations = dbWordStrategy.applyMergable(
+        lexicalRelations = conflictStrategy.applyMergable(
             oldData = {
                 dbWord?.lexicalRelations
             },
@@ -58,6 +58,20 @@ inline fun Word.validateWithDatabase(
         ) ?: emptyMap(),
         createdAt = dbWord?.createdAt ?: Clock.System.now(),
         updatedAt = Clock.System.now()
+    )
+}
+
+fun ParentedTag.validateWithDatabase(
+    dbTag: ParentedTag? = null,
+    conflictStrategy: MDPropertyConflictStrategy,
+    corruptedStrategy: MDPropertyCorruptionStrategy,
+): ParentedTag {
+    return ParentedTag(
+        id = dbTag?.id.invalidIfNull(),
+        label = conflictStrategy.applyString(dbTag?.label) { this.label.validateWith(corruptedStrategy) },
+        color = conflictStrategy.applyComputedOld(dbTag?.color) { this.color },
+        parentId = conflictStrategy.applyComputedOld(dbTag?.parentId) { this.parentId },
+        passColor = conflictStrategy.applyComputedOld(dbTag?.passColor) { this.passColor } == true,
     )
 }
 

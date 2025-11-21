@@ -9,7 +9,7 @@ import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.TagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTagColor
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTagId
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTagPath
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTagLabel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbTagTable
 import kotlinx.coroutines.flow.Flow
 
@@ -36,7 +36,7 @@ interface TagDao {
 
     @Query(
         """
-            DELETE FROM $dbTagTable WHERE $dbTagPath IN (:values)
+            DELETE FROM $dbTagTable WHERE $dbTagLabel IN (:values)
         """
     )
     suspend fun deleteTagsOfValues(values: Collection<String>)
@@ -47,6 +47,27 @@ interface TagDao {
         """
     )
     suspend fun getTag(id: Long): TagEntity?
+
+    @Query(
+        """
+            SELECT * FROM $dbTagTable WHERE $dbTagLabel = :label
+        """
+    )
+    suspend fun getTag(label: String): TagEntity?
+
+    @Query(
+        """
+            SELECT * FROM $dbTagTable WHERE $dbTagId IN (:ids)
+        """
+    )
+    suspend fun getTags(ids: Set<Long>): List<TagEntity>
+
+    @Query(
+        """
+            SELECT * FROM $dbTagTable WHERE $dbTagLabel IN (:labels)
+        """
+    )
+    suspend fun getTags(labels: Set<String>): List<TagEntity>
     @Query(
         """
             SELECT * FROM $dbTagTable
@@ -60,7 +81,7 @@ interface TagDao {
      */
     @Query(
         """
-            SELECT * FROM $dbTagTable WHERE $dbTagPath Like :pattern
+            SELECT * FROM $dbTagTable WHERE $dbTagLabel Like :pattern
         """
     )
     fun getTagsLike(

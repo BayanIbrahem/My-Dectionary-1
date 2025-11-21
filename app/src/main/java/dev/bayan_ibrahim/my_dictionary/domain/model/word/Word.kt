@@ -9,6 +9,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.code
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.getLanguage
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.ParentedTag
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import kotlinx.datetime.Instant
 
@@ -19,7 +20,7 @@ data class Word(
     val language: Language,
     val note: String = INVALID_TEXT,
     val additionalTranslations: List<String> = emptyList(),
-    val tags: Set<Tag> = emptySet(),
+    val tags: Set<ParentedTag> = emptySet(),
     val transcription: String = INVALID_TEXT,
     val examples: List<String> = emptyList(),
     val wordClass: WordClass? = null,

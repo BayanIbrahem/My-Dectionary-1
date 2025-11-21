@@ -43,7 +43,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapStringResource
@@ -52,18 +51,11 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCa
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIconDropdown
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDTopAppBar
-import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
-import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
-import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.Language
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelector
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorMutableUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -82,9 +74,6 @@ fun MDWordsListTopAppBar(
     onSelectLanguagePage: () -> Unit,
     onDeleteWordSpace: () -> Unit,
     onNavigationIconClick: () -> Unit,
-    // selection mode actions
-    tagsSelectionState: MDTagsSelectorUiState,
-    tagsSelectionActions: MDTagsSelectorUiActions,
     onClearSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
     onConfirmAppendTagsOnSelectedWords: (selectedTags: List<Tag>) -> Unit,
@@ -114,8 +103,6 @@ fun MDWordsListTopAppBar(
                 totalWordsCount = visibleWordsCount,
                 onClearSelection = onClearSelection,
                 onDeleteSelection = onDeleteSelection,
-                tagsSelectionState = tagsSelectionState,
-                tagsSelectionActions = tagsSelectionActions,
                 onConfirmAppendTagsOnSelectedWords = onConfirmAppendTagsOnSelectedWords,
                 modifier = modifier
             )
@@ -300,8 +287,6 @@ private fun WordsListTopAppBarSelectionMode(
     totalWordsCount: Int,
     onClearSelection: () -> Unit,
     onDeleteSelection: () -> Unit,
-    tagsSelectionState: MDTagsSelectorUiState,
-    tagsSelectionActions: MDTagsSelectorUiActions,
     onConfirmAppendTagsOnSelectedWords: (selectedTags: List<Tag>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -380,8 +365,6 @@ private fun WordsListTopAppBarSelectionMode(
         showDialog = showSelectedTagsDialog,
         onDismissRequest = { showSelectedTagsDialog = false },
         selectedWordsCount = selectedWordsCount,
-        tagsSelectionState = tagsSelectionState,
-        tagsSelectionActions = tagsSelectionActions,
         onConfirm = onConfirmAppendTagsOnSelectedWords,
     )
 }
@@ -391,40 +374,27 @@ private fun ExtraTagsDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
     selectedWordsCount: Int,
-    tagsSelectionState: MDTagsSelectorUiState,
-    tagsSelectionActions: MDTagsSelectorUiActions,
     onConfirm: (selectedTags: List<Tag>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (showDialog) {
-        Dialog(onDismissRequest = onDismissRequest) {
-            MDCard2(
-                modifier = modifier,
-                header = {
-                    MDCard2ListItem(
-                        title = firstCapStringResource(R.string.append_x, firstCapStringResource(R.string.tag)),
-                        subtitle = firstCapStringResource(R.string.x_selected, firstCapPluralsResource(R.plurals.word, selectedWordsCount)),
-                    )
-                },
-                footer = {
-                    MDCard2ActionRow {
-                        MDCard2ConfirmAction(enabled = tagsSelectionState.selectedTags.isNotEmpty()) {
-                            onConfirm(tagsSelectionState.selectedTags)
-                            tagsSelectionActions.clearSelectedTags()
-                            tagsSelectionActions.onResetToRoot()
-                            onDismissRequest()
-                        }
-                    }
-                }
-            ) {
-                MDTagsSelector(
-                    state = tagsSelectionState,
-                    actions = tagsSelectionActions
+    if(showDialog) {
+        MDTagsSelectorRoute(
+            modifier = modifier,
+            isDialog = true,
+            isSelectEnabled = true,
+            isDeleteEnabled = false,
+            isEditEnabled = false,
+            isAddEnabled = false,
+            onConfirmSelectedTags = onConfirm,
+            onPopOrDismissDialog = onDismissRequest,
+            title = {
+                MDCard2ListItem(
+                    title = firstCapStringResource(R.string.append_x, firstCapStringResource(R.string.tag)),
+                    subtitle = firstCapStringResource(R.string.x_selected, firstCapPluralsResource(R.plurals.word, selectedWordsCount)),
                 )
             }
-        }
+        )
     }
-
 }
 
 @Composable
@@ -470,7 +440,6 @@ private fun WordsListTopAppBarPreview() {
                 var selectionMode by remember {
                     mutableStateOf(true)
                 }
-                val viewModel: MDTagsSelectorViewModel = hiltViewModel()
                 MDWordsListTopAppBar(
                     isSelectionModeOn = selectionMode,
                     language = Language(code = "ar", selfDisplayName = "العربية", localDisplayName = "Arabic"),
@@ -485,8 +454,6 @@ private fun WordsListTopAppBarPreview() {
                         selectionMode = false
                     },
                     onDeleteSelection = {},
-                    tagsSelectionState = MDTagsSelectorMutableUiState(),
-                    tagsSelectionActions = viewModel.getUiActions(object : MDTagsSelectorNavigationUiActions {}),
                     onConfirmAppendTagsOnSelectedWords = {},
                     onNavigationIconClick = {},
                     searchQuery = "",

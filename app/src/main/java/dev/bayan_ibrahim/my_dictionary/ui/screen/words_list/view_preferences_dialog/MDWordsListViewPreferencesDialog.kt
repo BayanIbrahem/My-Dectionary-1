@@ -39,10 +39,8 @@ import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CheckboxItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ImportantAction
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2RadioButtonItem
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagExplorerDialog
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagListItem
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSearchTarget
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
@@ -56,8 +54,6 @@ fun MDWordsListViewPreferencesDialog(
     showDialog: Boolean,
     uiState: MDWordsListViewPreferencesUiState,
     uiActions: MDWordsListViewPreferencesUiActions,
-    tagsSelectionState: MDTagsSelectorUiState,
-    tagsSelectionActions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember {
@@ -104,19 +100,22 @@ fun MDWordsListViewPreferencesDialog(
                 ) { i ->
                     when (MDWordsListViewPreferencesTab.entries[i]) {
                         MDWordsListViewPreferencesTab.Search -> SearchBody(
-                            searchQuery = uiState.searchQuery,
-                            onSearchQueryChange = uiActions::onSearchQueryChange,
+//                            searchQuery = uiState.searchQuery,
+//                            onSearchQueryChange = uiActions::onSearchQueryChange,
                             selectedSearchTarget = uiState.searchTarget,
                             onSelectSearchTarget = uiActions::onSelectSearchTarget,
                         )
 
                         MDWordsListViewPreferencesTab.Filter -> FilterBody(
-                            tagsSelectionState = tagsSelectionState,
-                            tagsSelectionActions = tagsSelectionActions,
+                            selectedTags = uiState.selectedTags,
+                            onRemoveSelectedTag = { tag ->
+                                uiActions.onRemoveSelectedTag(tag)
+                            },
                             includeSelectedTags = uiState.includeSelectedTags,
                             selectedMemorizingProbabilityGroups = uiState.selectedMemorizingProbabilityGroups,
                             onToggleSelectedTags = uiActions::onToggleIncludeSelectedTags,
                             onSelectLearningGroup = uiActions::onSelectLearningGroup,
+                            onConfirmSelectedTags = uiActions::onUpdateSelectedTags,
                         )
 
                         MDWordsListViewPreferencesTab.Sort -> SortBody(
@@ -133,8 +132,8 @@ fun MDWordsListViewPreferencesDialog(
 
 @Composable
 private fun SearchBody(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
+//    searchQuery: String,
+//    onSearchQueryChange: (String) -> Unit,
     selectedSearchTarget: MDWordsListSearchTarget,
     onSelectSearchTarget: (MDWordsListSearchTarget) -> Unit,
     modifier: Modifier = Modifier,
@@ -157,14 +156,15 @@ private fun SearchBody(
 
 @Composable
 private fun FilterBody(
-    tagsSelectionState: MDTagsSelectorUiState,
-    tagsSelectionActions: MDTagsSelectorUiActions,
+    selectedTags: Set<Tag>,
+    onRemoveSelectedTag: (Tag) -> Unit,
+    onConfirmSelectedTags: (List<Tag>) -> Unit,
     includeSelectedTags: Boolean,
     selectedMemorizingProbabilityGroups: Set<MDWordsListMemorizingProbabilityGroup>,
     onToggleSelectedTags: (Boolean) -> Unit,
     onSelectLearningGroup: (MDWordsListMemorizingProbabilityGroup) -> Unit,
-    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceContainerHighest,
     modifier: Modifier = Modifier,
+    theme: MDCard2ListItemTheme = MDCard2ListItemTheme.SurfaceContainerHighest,
 ) {
     Column(
         modifier = modifier
@@ -172,7 +172,7 @@ private fun FilterBody(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        var showTagExploreDialog by remember {
+        var showTagsSelectorDialog by remember {
             mutableStateOf(false)
         }
         val selectedTheme = MDCard2ListItemTheme.PrimaryOnSurface.onSurfaceHighest
@@ -180,7 +180,7 @@ private fun FilterBody(
             header = {
                 MDCard2ListItem(
                     title = firstCapStringResource(R.string.tags),
-                    subtitle = if (tagsSelectionState.selectedTags.isEmpty()) {
+                    subtitle = if (selectedTags.isEmpty()) {
                         null
                     } else if (includeSelectedTags) {
                         firstCapStringResource(R.string.include_selected_tags_hint_on)
@@ -195,14 +195,14 @@ private fun FilterBody(
                         MDIcon(MDIconsSet.Add)
                     },
                     onTrailingClick = {
-                        showTagExploreDialog = true
+                        showTagsSelectorDialog = true
                     }
                 )
             },
             contentTheme = theme
         ) {
             AnimatedVisibility(
-                visible = tagsSelectionState.selectedTags.isNotEmpty(),
+                visible = selectedTags.isNotEmpty(),
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically(),
             ) {
@@ -216,23 +216,31 @@ private fun FilterBody(
                     title = firstCapStringResource(R.string.include_selected_tags)
                 )
             }
-            tagsSelectionState.selectedTags.forEachIndexed { i, tag ->
-                MDTagListItem(
-                    tag = tag,
-                    onTrailingIconClick = {
-                        tagsSelectionActions.onUnSelectTag(tag)
+            selectedTags.forEachIndexed { i, tag ->
+                MDCard2ListItem(
+                    title = tag.label,
+                    trailingIcon = {
+                        MDIcon(MDIconsSet.Close)
                     },
-                    tagOrder = i.inc()
+                    onTrailingClick = {
+                        onRemoveSelectedTag(tag)
+                    },
                 )
             }
-            MDTagExplorerDialog(
-                showDialog = showTagExploreDialog,
-                onDismissRequest = { showTagExploreDialog = false },
-                state = tagsSelectionState,
-                actions = tagsSelectionActions,
-                allowAddTags = false,
-                allowRemoveTags = false,
-            )
+            if (showTagsSelectorDialog) {
+                MDTagsSelectorRoute(
+                    isDialog = true,
+                    isSelectEnabled = true,
+                    isAddEnabled = false,
+                    isEditEnabled = false,
+                    isDeleteEnabled = false,
+                    isDeleteSubtreeEnabled = false,
+                    onPopOrDismissDialog = {
+                        showTagsSelectorDialog = false
+                    },
+                    onConfirmSelectedTags = onConfirmSelectedTags
+                )
+            }
         }
 
         MDCard2(

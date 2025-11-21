@@ -20,7 +20,6 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorViewModel
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.train_preferences_dialog.MDWordsListTrainPreferencesDialogRoute
-import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.view_preferences_dialog.MDWordsListViewPreferencesViewModel
 
 @Composable
 fun MDWordsListRoute(
@@ -31,18 +30,15 @@ fun MDWordsListRoute(
     navigateToTrainScreen: () -> Unit,
     modifier: Modifier = Modifier,
     wordsListViewModel: MDWordsListViewModel = hiltViewModel(),
-    tagsSelectorViewModel: MDTagsSelectorViewModel = hiltViewModel(),
 ) {
     DisposableEffect(Unit) {
         wordsListViewModel.initWithNavArgs(navArgs)
-        tagsSelectorViewModel.init()
         this.onDispose { }
     }
 
     val uiState = wordsListViewModel.uiState
     val wordsList = wordsListViewModel.paginatedWordsList.collectAsLazyPagingItems()
     val lifeMemorizingProbability by wordsListViewModel.lifeMemorizingProbability.collectAsStateWithLifecycle()
-    val tagsSelectorUiState = tagsSelectorViewModel.uiState
     val selectedWordSpace by uiState.selectedWordSpace.collectAsStateWithLifecycle()
     val currentSpeakingWordId by wordsListViewModel.currentSpeakingWordId.collectAsStateWithLifecycle()
 
@@ -60,28 +56,11 @@ fun MDWordsListRoute(
         }
     }
 
-    val tagsSelectorNavActions by remember {
-        derivedStateOf {
-            object : MDTagsSelectorNavigationUiActions {
-                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<Tag>) {
-                    super.onUpdateSelectedTags(selectedTags)
-                }
-            }
-        }
-    }
-    val tagsSelectorUiActions by remember {
-        derivedStateOf {
-            tagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
-        }
-    }
-
     val searchQuery by wordsListViewModel.searchQueryFlow.collectAsStateWithLifecycle()
     MDWordsListScreen(
         uiState = uiState,
         uiActions = uiActions,
         wordsList = wordsList,
-        tagsSelectionState = tagsSelectorUiState,
-        tagsSelectionActions = tagsSelectorUiActions,
         currentSpeakingWordId =currentSpeakingWordId,
         modifier = modifier,
         lifeMemorizingProbability = lifeMemorizingProbability,

@@ -75,6 +75,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFile
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDFilePicker
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.component.MDOptionSelectionGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagExplorerDialog
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
@@ -90,14 +91,12 @@ import kotlin.time.Duration.Companion.seconds
 fun MDImportFromFileScreen(
     uiState: MDImportFromFileUiState,
     summary: MDFileProcessingSummary,
-    tagsSelectorUiState: MDTagsSelectorUiState,
     uiActions: MDImportFromFileUiActions,
-    tagsSelectorUiActions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
 
-    var showTagsExplorerDialog by remember {
+    var showTagsSelectorDialog by remember {
         mutableStateOf(false)
     }
     MDScreen(
@@ -145,16 +144,16 @@ fun MDImportFromFileScreen(
                 header = {
                     MDCard2ListItem(
                         onClick = {
-                            showTagsExplorerDialog = true
+                            showTagsSelectorDialog = true
                         },
                         title = firstCapStringResource(R.string.extra_tags),
                         subtitle = firstCapStringResource(R.string.extra_tags_hint)
                     )
                 }
             ) {
-                tagsSelectorUiState.selectedTags.forEach { tag ->
+                uiState.selectedTags.forEach { tag ->
                     MDCard2ListItem(
-                        title = tag.value,
+                        title = tag.label,
                         leadingIcon = {
                             MDIcon(MDIconsSet.WordTag)
                         },
@@ -162,14 +161,14 @@ fun MDImportFromFileScreen(
                             MDIcon(MDIconsSet.Close)
                         },
                         onTrailingClick = {
-                            tagsSelectorUiActions.onDeleteTag(tag)
+                            uiActions.onUnselectTag(tag)
                         },
                     )
                 }
             }
-            val hasSelectedTags by remember {
+            val hasSelectedTags by remember(uiState.selectedTags) {
                 derivedStateOf {
-                    tagsSelectorUiState.selectedTags.isNotEmpty()
+                    uiState.selectedTags.isNotEmpty()
                 }
             }
             AnimatedVisibility(
@@ -204,12 +203,23 @@ fun MDImportFromFileScreen(
             summary = summary,
             onCancel = uiActions::onCancelImportProcess
         )
-        MDTagExplorerDialog(
-            showDialog = showTagsExplorerDialog,
-            onDismissRequest = { showTagsExplorerDialog = false },
-            state = tagsSelectorUiState,
-            actions = tagsSelectorUiActions
-        )
+
+        if (showTagsSelectorDialog) {
+            MDTagsSelectorRoute(
+                isDialog = true,
+                isSelectEnabled = true,
+                isAddEnabled = false,
+                isEditEnabled = false,
+                isDeleteEnabled = false,
+                isDeleteSubtreeEnabled = false,
+                onPopOrDismissDialog = {
+                    showTagsSelectorDialog = false
+                },
+                onConfirmSelectedTags = { tags->
+                    uiActions.onSetSelectedTags(tags)
+                }
+            )
+        }
     }
 }
 
@@ -246,6 +256,7 @@ private fun FileProgressDialog(
             onDismissRequest = {},
         ) {
             MDCard2(
+                modifier = modifier,
                 header = {
                     MDCard2ListItem(
                         title = firstCapStringResource(R.string.importing_data),

@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.data
 
 import androidx.room.withTransaction
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassRelatedWordDao
@@ -9,10 +10,11 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.word.WordD
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.db.MDDataBase
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelationEntity
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asRelationEntity
-import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asTagEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordClassModel
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
+import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordClassRepo
 import kotlinx.coroutines.flow.Flow
@@ -48,18 +50,31 @@ class MDRoomWordClassRepo(
 
     override suspend fun getWordClass(
         id: Long,
-    ): WordClass? = wordClassDao.getTagType(id)?.asWordClassModel()
+    ): WordClass? = wordClassDao.getWordClass(id)?.asWordClassModel()
+
+    override suspend fun getWordClass(
+        label: String,
+    ): WordClass? = wordClassDao.getWordClass(label)?.asWordClassModel()
+
+    override suspend fun getWordClassRelation(id: Long): WordClassRelation? {
+        return wordClassRelationDao.getRelation(id)?.toModel()
+
+    }
+
+    override suspend fun getWordClassRelation(wordClassId: Long, label: String): WordClassRelation? {
+        return wordClassRelationDao.getRelation(wordClassId, label.lowercase())?.toModel()
+    }
 
     private suspend fun insertWordsClassesWithRelationsTransaction(
-        tags: List<WordClass>,
+        wordsClasses: List<WordClass>,
         deleteOthers: Boolean,
     ) {
         db.withTransaction {
-            tags.groupBy { it.language }.forEach { (code, tags) ->
-                if (tags.isNotEmpty()) {
+            wordsClasses.groupBy { it.language }.forEach { (code, classes) ->
+                if (classes.isNotEmpty()) {
                     insertWordsClassesWithRelationsOfLanguage(
                         languageCode = code,
-                        tags = tags,
+                        classes = classes,
                         deleteOthers = deleteOthers,
                     )
                 }
@@ -69,7 +84,7 @@ class MDRoomWordClassRepo(
 
     private suspend fun insertWordsClassesWithRelationsOfLanguage(
         languageCode: LanguageCode,
-        tags: List<WordClass>,
+        classes: List<WordClass>,
         deleteOthers: Boolean,
     ) {
         val newRelationsEntities = mutableListOf<WordClassRelationEntity>()
@@ -77,11 +92,11 @@ class MDRoomWordClassRepo(
         val existedTagsEntities = mutableListOf<WordClassEntity>()
         val allNewTagsIds = mutableSetOf<Long>()
 
-        tags.forEach { tag ->
+        classes.forEach { tag ->
             val tagId = if (tag.id == INVALID_ID) {
-                wordClassDao.insertTagType(tag.asTagEntity())
+                wordClassDao.insertWordClass(tag.asEntity())
             } else {
-                existedTagsEntities.add(tag.asTagEntity())
+                existedTagsEntities.add(tag.asEntity())
                 tag.id
             }
             allNewTagsIds.add(tagId)
@@ -103,8 +118,48 @@ class MDRoomWordClassRepo(
 
     override suspend fun setLanguageWordsClasses(
         code: LanguageCode,
-        tags: List<WordClass>,
+        wordsClasses: List<WordClass>,
     ) {
-        insertWordsClassesWithRelationsTransaction(tags, true)
+        insertWordsClassesWithRelationsTransaction(wordsClasses, true)
+    }
+
+    override suspend fun addWordClass(wordClass: WordClass): WordClass {
+        val id = if (wordClass.id == INVALID_ID) {
+            wordClassDao.getWordClass(
+                wordClass.name.meaningViewNormalize
+            )?.wordClass?.id ?: wordClassDao.insertWordClass(
+                wordClass.asEntity()
+            )
+        } else {
+            wordClass.id
+        }
+        val existedRelationsNames = wordClassRelationDao.getWordClassRelations(id).map { it.label }.toSet()
+        // add all relations:
+        val relationsEntities = wordClass.relations.mapNotNull {
+            if (it.label in existedRelationsNames) {
+                null
+            } else {
+                it.asRelationEntity(id)
+            }
+        }
+        wordClassRelationDao.insertRelations(relationsEntities)
+        return wordClassDao.getWordClass(id)!!.asWordClassModel()
+    }
+
+    override suspend fun addWordClassRelation(wordClassId: Long, label: String): WordClassRelation {
+        val id = wordClassRelationDao.getRelation(
+            wordClassId = wordClassId,
+            label = label
+        )?.id ?: wordClassRelationDao.insertRelation(
+            relation = WordClassRelation(label = label)
+                .asRelationEntity(wordClassId)
+        )
+        return wordClassRelationDao.getRelation(id)!!.toModel()
     }
 }
+
+private fun WordClassRelationEntity.toModel(): WordClassRelation = WordClassRelation(
+    label = label,
+    id = id!!,
+)
+

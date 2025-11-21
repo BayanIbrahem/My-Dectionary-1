@@ -26,15 +26,12 @@ fun MDWordDetailsEditModeRoute(
     onNavigateToDetailsViewMode: (wordId: Long, language: LanguageCode) -> Unit,
     modifier: Modifier = Modifier,
     wordDetailsViewModel: MDWordDetailsEditModeViewModel = hiltViewModel(),
-    tagsSelectorViewModel: MDTagsSelectorViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(wordDetails) {
         wordDetailsViewModel.initWithNavArgs(wordDetails)
-        tagsSelectorViewModel.init()
     }
 
     val uiState = wordDetailsViewModel.uiState
-    val tagsSelectorUiState = tagsSelectorViewModel.uiState
 
     val navActions by remember {
         derivedStateOf {
@@ -52,25 +49,9 @@ fun MDWordDetailsEditModeRoute(
         }
     }
 
-    val tagsSelectorNavActions by remember {
-        derivedStateOf {
-            object : MDTagsSelectorNavigationUiActions {
-                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<Tag>) {
-                    uiActions.onUpdateSelectedTags(selectedTags)
-                }
-            }
-        }
-    }
-    val tagsSelectorUiActions by remember {
-        derivedStateOf {
-            tagsSelectorViewModel.getUiActions(tagsSelectorNavActions)
-        }
-    }
     MDWordDetailsEditModeScreen(
         uiState = uiState,
         uiActions = uiActions,
-        tagsState = tagsSelectorUiState,
-        tagsActions = tagsSelectorUiActions,
         modifier = modifier,
     )
 }

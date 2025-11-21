@@ -18,7 +18,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.export_to_file.MDExportToFileRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.import_from_file.MDImportFromFileRoute
-import dev.bayan_ibrahim.my_dictionary.ui.screen.marker_tags.MDMarkerTagsRoute
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.migrate_similar_words.MDMigrateSimilarWordsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.migrate_tags.MDMigrateTagsRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.profile.general.MDProfileRoute
@@ -168,21 +168,16 @@ fun MDNavHost(
             )
         }
 
-        composable<MDDestination.MarkerTags> {
-            val markerTags: MDDestination.MarkerTags = it.toRoute()
-            MDMarkerTagsRoute(
-                args = markerTags,
-                appUiState = appUiState,
-                appActions = appActions,
-            )
-        }
-
-        composable<MDDestination.MigrateTags> {
-            val markerTags: MDDestination.MigrateTags = it.toRoute()
-            MDMigrateTagsRoute(
-                markerTags,
-                appUiState = appUiState,
-                appActions = appActions,
+        composable<MDDestination.TagsEditor> {
+            val tagsEditor: MDDestination.TagsEditor = it.toRoute()
+            MDTagsSelectorRoute(
+                isDialog = false,
+                isSelectEnabled = false,
+                isEditEnabled = true,
+                isDeleteEnabled = true,
+                isAddEnabled = true,
+                isDeleteSubtreeEnabled = true,
+                onPopOrDismissDialog = navController::popBackStack,
             )
         }
 

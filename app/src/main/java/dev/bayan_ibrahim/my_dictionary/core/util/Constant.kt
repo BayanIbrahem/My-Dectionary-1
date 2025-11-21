@@ -12,8 +12,11 @@ val INVALID_LANGUAGE = Language(
     localDisplayName = ""
 )
 
+/**
+ * return null if the value is less than 0
+ */
 @JvmName("LongNullIfInvalid")
-fun Long.nullIfInvalid() = nullIfInvalid(INVALID_ID)
+fun Long.nullIfNegative() = this.takeUnless { it < 0 }
 
 @JvmName("StringNullIfInvalid")
 fun String.nullIfInvalid() = nullIfInvalid(INVALID_TEXT)

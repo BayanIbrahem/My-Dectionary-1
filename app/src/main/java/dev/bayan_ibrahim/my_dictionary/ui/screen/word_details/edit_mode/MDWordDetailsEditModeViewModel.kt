@@ -59,7 +59,6 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     )
 
     private val _uiState: MDWordDetailsEditModeMutableUiState = MDWordDetailsEditModeMutableUiState(
-        tags = _tagsState.selectedTags,
         availableWordsClasses = wordsClasses
     )
     val uiState: MDWordDetailsEditModeUiState = _uiState
@@ -98,8 +97,12 @@ class MDWordDetailsEditModeViewModel @Inject constructor(
     private fun getBusinessUiActions(
         navActions: MDWordDetailsEditModeNavigationUiActions,
     ): MDWordDetailsEditModeBusinessUiActions = object : MDWordDetailsEditModeBusinessUiActions {
-        override fun onUpdateSelectedTags(selectedTags: List<Tag>) {
-            _uiState.tags.setAll(selectedTags)
+        override fun onAddTag(tag: Tag) {
+            _uiState.tags.removeIf { it.id == tag.id }
+            _uiState.tags.add(tag)
+        }
+        override fun onRemoveTag(tag: Tag) {
+            _uiState.tags.removeIf { it.id == tag.id }
         }
         override fun onSave() {
             val lastWord = lastLoadedWord

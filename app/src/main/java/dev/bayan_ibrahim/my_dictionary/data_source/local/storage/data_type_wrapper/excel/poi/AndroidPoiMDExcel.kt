@@ -3,8 +3,9 @@ package dev.bayan_ibrahim.my_dictionary.data_source.local.storage.data_type_wrap
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.atDefaultStartOfDay
 import dev.bayan_ibrahim.my_dictionary.data_source.local.storage.data_type_wrapper.excel.MDExcel
 import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDCellData
+import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDExcelFileType
 import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDRowCell
-import dev.bayan_ibrahim.my_dictionary.domain.model.excel.MDSheet
+import dev.bayan_ibrahim.my_dictionary.domain.model.excel.sheet.MDSheet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,7 +38,7 @@ import java.util.Date
  *
  * @property isDisposed Indicates whether the workbook has been disposed.
  */
-class AndroidPoiMDExcel private constructor(private val workbook: Workbook) : MDExcel {
+class AndroidPoiMDExcel private constructor(private val workbook: Workbook, override val type: MDExcelFileType) : MDExcel {
     var isDisposed: Boolean = false
         private set
 
@@ -71,7 +72,7 @@ class AndroidPoiMDExcel private constructor(private val workbook: Workbook) : MD
         suspend fun createXSSF(inputStream: InputStream): Result<AndroidPoiMDExcel> {
             return runCatching {
                 val workbook = XSSFWorkbook(inputStream)
-                return@runCatching AndroidPoiMDExcel(workbook)
+                return@runCatching AndroidPoiMDExcel(workbook, MDExcelFileType.XSSF)
             }
         }
 
@@ -101,7 +102,7 @@ class AndroidPoiMDExcel private constructor(private val workbook: Workbook) : MD
             return runCatching {
                 val xssfWorkbook = XSSFWorkbook(inputStream)
                 val workbook = SXSSFWorkbook(xssfWorkbook, rowAccessWindowSize, compressTmpFiles, useSharedStringsTable)
-                return@runCatching AndroidPoiMDExcel(workbook)
+                return@runCatching AndroidPoiMDExcel(workbook, MDExcelFileType.SXSSF)
             }
         }
 
@@ -120,7 +121,7 @@ class AndroidPoiMDExcel private constructor(private val workbook: Workbook) : MD
         suspend fun createHSSF(inputStream: InputStream): Result<AndroidPoiMDExcel> {
             return runCatching {
                 val workbook = HSSFWorkbook(inputStream)
-                return@runCatching AndroidPoiMDExcel(workbook)
+                return@runCatching AndroidPoiMDExcel(workbook, MDExcelFileType.HSSF)
             }
         }
     }
@@ -132,7 +133,12 @@ class AndroidPoiMDExcel private constructor(private val workbook: Workbook) : MD
         }?.map { index ->
             val sheet = workbook.getSheetAt(index)
             sheet.sheetName
-            MDSheet(sheet.sheetName, index)
+            MDSheet(
+                rawName = sheet.sheetName,
+                index = index,
+                firstRow = sheet.firstRowNum,
+                lastRow = sheet.lastRowNum
+            )
         } ?: emptyList()
     }
 
@@ -218,6 +224,34 @@ class AndroidPoiMDExcel private constructor(private val workbook: Workbook) : MD
             onRowRead(rowIndex, rowData)
         }
     }
+
+    /**
+     * @param sheetName name of the sheet
+     * return sheet rows  if the sheet exists
+     */
+    override fun readSheetRows(
+        sheetName: String,
+    ): Result<Pair<Int, Int>> = runCatching {
+        requireNotDisposed()
+        val sheet = workbook.getSheet(sheetName) ?: throw IllegalStateException("invalid sheet")
+        readSheetRows(sheet)
+    }
+
+    /**
+     * @param sheetIndex index of the sheet
+     * return sheet rows  if the sheet exists
+     */
+    override fun readSheetRows(
+        sheetIndex: Int,
+    ): Result<Pair<Int, Int>> = runCatching {
+        requireNotDisposed()
+        val sheet = workbook.getSheetAt(sheetIndex) ?: throw IllegalStateException("invalid sheet")
+        readSheetRows(sheet)
+    }
+
+    private fun readSheetRows(
+        sheet: Sheet,
+    ): Pair<Int, Int> = Pair(sheet.firstRowNum, sheet.lastRowNum)
 
 
     override suspend fun copySheet(sourceSheetName: String, destinationSheetName: String): Result<Int> = runCatching {

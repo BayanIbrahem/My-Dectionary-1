@@ -7,7 +7,7 @@ import androidx.paging.PagingSource
 import androidx.paging.map
 import androidx.room.withTransaction
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
-import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfNegative
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.WordClassDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.tag.TagDao
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.dao.language.LanguageDao
@@ -28,7 +28,6 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.asWordMod
 import dev.bayan_ibrahim.my_dictionary.data_source.local.train.MDTrainDataSource
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.contains
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.domain.repo.WordRepo
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
@@ -150,9 +149,21 @@ class MDRoomWordRepo(
     override suspend fun getWord(wordId: Long): Word? {
         val word = wordWithTagsAndRelatedWordsDao.getWordWithTagsAndRelatedWordsRelation(wordId) ?: return null
         val wordClass = word.word.wordClassId?.let { wordClassId ->
-            wordClassDao.getTagType(wordClassId)
+            wordClassDao.getWordClass(wordClassId)
         }?.asWordClassModel()
         return word.asWordModel(wordClass)
+    }
+
+    override suspend fun getWord(
+        language: LanguageCode,
+        meaning: String,
+        translation: String,
+    ): Word? = wordDao.getWord(
+        meaning = language.code,
+        translation = meaning,
+        languageCode = translation
+    )?.id?.let { id ->
+        getWord(id)
     }
 
     override fun getWordsOfIds(ids: Set<Long>): Flow<Sequence<Word>> = wordWithTagsAndRelatedWordsDao
@@ -178,7 +189,7 @@ class MDRoomWordRepo(
     ): Flow<PagingData<Word>> = pagingDataOf(
         mapper = { wordWithRelation ->
             val wordClass = wordWithRelation.word.wordClassId?.let { wordClassId ->
-                wordClassDao.getTagType(wordClassId)
+                wordClassDao.getWordClass(wordClassId)
             }?.asWordClassModel()
             wordWithRelation.asWordModel(wordClass)
         }
@@ -267,7 +278,7 @@ class MDRoomWordRepo(
         tags: Collection<Tag>,
     ) {
         val tagsIds = tags.map {
-            it.id.nullIfInvalid() ?: tagDao.insertTag(it.asEntity())
+            it.id.nullIfNegative() ?: tagDao.insertTag(it.asEntity())
         }
         val relations = wordsIds.map { w ->
             tagsIds.map { t ->
@@ -320,7 +331,7 @@ class MDRoomWordRepo(
         wordId: Long,
     ): List<WordCrossTagEntity> {
         val tagsIds = tags.map {
-            it.id.nullIfInvalid() ?: tagDao.insertTag(it.asEntity())
+            it.id.nullIfNegative() ?: tagDao.insertTag(it.asEntity())
         }
 
         val relations = tagsIds.map { tagId ->

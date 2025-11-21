@@ -166,9 +166,9 @@ private fun DrawerContentToolsGroup(
             label = firstCapStringResource(R.string.marker_tags),
             leadingIcon = MDIconsSet.Colors,
             currentDestination = currentDestination,
-            associatedDestination = MDDestination.MarkerTags::class,
+            associatedDestination = MDDestination.TagsEditor::class,
             onClick = {
-                onNavigate(MDDestination.MarkerTags)
+                onNavigate(MDDestination.TagsEditor)
             }
         )
     }

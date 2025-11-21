@@ -2,6 +2,7 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -51,7 +52,6 @@ interface MDWordDetailsEditModeUiState : MDUiState {
 }
 
 class MDWordDetailsEditModeMutableUiState(
-    override val tags: SnapshotStateList<Tag>,
     override val availableWordsClasses: StateFlow<List<WordClass>>,
 ) : MDWordDetailsEditModeUiState, MDMutableUiState() {
     private val idGenerator = IncrementalIdGenerator()
@@ -62,6 +62,7 @@ class MDWordDetailsEditModeMutableUiState(
         return meaning.isNotBlank() && translation.isNotBlank()
     }
 
+    override val tags: SnapshotStateList<Tag> = mutableStateListOf()
     override var id: Long by mutableLongStateOf(INVALID_ID)
 
     // basic:

@@ -53,6 +53,7 @@ import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2Lis
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2
+import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2CheckboxItem
 import dev.bayan_ibrahim.my_dictionary.core.ui.card.MDCard2ConfirmAction
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.theme_util.DEFAULT_FRACTION
@@ -79,14 +80,18 @@ import kotlin.math.sin
 fun MDColorPickerDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
-    onConfirm: (Color) -> Unit,
+    onConfirm: (Color?, passColor: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     initialColor: Color = Color.Red,
+    initPassColor: Boolean = true,
     wheelHeight: Dp = 300.dp,
     horizontalAlignment: Boolean = false,
 ) {
     var selectedColor by remember(initialColor) {
         mutableStateOf(initialColor)
+    }
+    var passColor by remember(initPassColor) {
+            mutableStateOf(initPassColor)
     }
     val headerTheme = MDCard2ListItemTheme.SurfaceContainer.lerp(selectedColor, DEFAULT_FRACTION)
     if (showDialog)
@@ -109,7 +114,14 @@ fun MDColorPickerDialog(
                         MDCard2ConfirmAction(
                             label = firstCapStringResource(R.string.pick),
                             onClick = {
-                                onConfirm(selectedColor)
+                                onConfirm(selectedColor, passColor)
+                                onDismissRequest()
+                            },
+                        )
+                        MDCard2ConfirmAction(
+                            label = firstCapStringResource(R.string.remove),
+                            onClick = {
+                                onConfirm(null, passColor)
                                 onDismissRequest()
                             },
                         )
@@ -121,6 +133,14 @@ fun MDColorPickerDialog(
                     onSelectColor = { selectedColor = it },
                     wheelHeight = wheelHeight,
                     horizontalAlignment = horizontalAlignment,
+                )
+                MDCard2CheckboxItem(
+                    checked = passColor,
+                    // TODO, string res
+                    title = "Pass color",
+                    onCheckedChange = {
+                        passColor = it
+                    }
                 )
             }
         }

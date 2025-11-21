@@ -5,7 +5,7 @@ interface MDAppBusinessUiActions {
 }
 
 interface MDAppNavigationUiActions {
-    fun onOpenNavDrawer()
+    fun onOpenNavDrawer() {}
     fun onCloseNavDrawer() {}
     fun onPop() {}
 }

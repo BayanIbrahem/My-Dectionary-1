@@ -5,6 +5,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDExtraTagsStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStrategy
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 
 interface MDImportFromFileBusinessUiActions {
@@ -18,6 +19,8 @@ interface MDImportFromFileBusinessUiActions {
     fun onChangeExtraTagsStrategy(strategy: MDExtraTagsStrategy)
     fun onStartImportProcess()
     fun onCancelImportProcess()
+    fun onUnselectTag(tag: Tag)
+    fun onSetSelectedTags(tags: kotlin.collections.List<dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag>)
 }
 
 interface MDImportFromFileNavigationUiActions : MDAppNavigationUiActions {

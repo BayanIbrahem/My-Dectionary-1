@@ -1,6 +1,5 @@
 package dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClass
 import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
@@ -27,7 +26,8 @@ interface MDWordDetailsEditModeBusinessUiActions {
     fun onTypeRelationFocusChange(newFocused: Long)
     fun onLexicalRelationFocusChange(newFocused: Long)
     fun onFocusChange(newFocused: Long)
-    fun onUpdateSelectedTags(selectedTags: List<Tag>)
+    fun onRemoveTag(tag: Tag)
+    fun onAddTag(tag: Tag)
 }
 
 interface MDWordDetailsEditModeNavigationUiActions : MDAppNavigationUiActions {

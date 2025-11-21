@@ -7,6 +7,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.word.Word
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListMemorizingProbabilityGroup
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListSortByOrder
 import dev.bayan_ibrahim.my_dictionary.ui.screen.words_list.util.MDWordsListViewPreferencesSortBy
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 
@@ -21,6 +22,7 @@ interface WordRepo {
 
     fun getWordsOfIds(ids: Set<Long>): Flow<Sequence<Word>>
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun getWordsOf(
         languages: Set<LanguageCode> = emptySet(),
         tags: Set<Tag> = emptySet(),
@@ -36,6 +38,7 @@ interface WordRepo {
     ).flatMapConcat(::getWordsOfIds)
 
     suspend fun getWord(wordId: Long): Word?
+    suspend fun getWord(language: LanguageCode, meaning: String, translation: String): Word?
 
     // words list
     fun getPaginatedWordsList(

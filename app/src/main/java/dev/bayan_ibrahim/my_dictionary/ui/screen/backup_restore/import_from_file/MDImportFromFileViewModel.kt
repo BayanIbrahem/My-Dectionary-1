@@ -128,6 +128,14 @@ class MDImportFromFileViewModel @Inject constructor(
             fileProcessJob?.cancel()
             importSummaryActions.reset()
         }
+
+        override fun onSetSelectedTags(tags: List<Tag>) {
+            _uiState.selectedTags.setAll(tags)
+        }
+
+        override fun onUnselectTag(tag: Tag) {
+            _uiState.selectedTags.removeIf { it.id == tag.id }
+        }
     }
 
     fun onUpdateSelectedTags(selectedTags: List<Tag>) {

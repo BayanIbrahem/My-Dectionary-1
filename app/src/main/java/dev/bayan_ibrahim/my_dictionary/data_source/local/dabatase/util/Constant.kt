@@ -72,7 +72,8 @@ const val dbLanguageCode = "language_code"
 // Context tags:
 const val dbTagTable = "contextTags"
 const val dbTagId = "contextTags_id"
-const val dbTagPath = "contextTags_path"
+const val dbTagLabel = "contextTags_path"
+const val dbTagParent = "contextTags_parent"
 const val dbTagColor = "contextTags_color"
 const val dbTagPassColorToChildren = "contextTags_passColorToChildren"
 

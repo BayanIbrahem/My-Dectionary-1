@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelationEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationId
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationLabel
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationTable
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassRelationTagId
 import kotlinx.coroutines.flow.Flow
@@ -54,6 +55,7 @@ interface WordClassRelationWordsDao {
         """
     )
     suspend fun deleteRelations(ids: List<Long>)
+
     @Query(
         """
             DELETE FROM $dbWordClassRelationTable WHERE $dbWordClassRelationTagId = :tagId AND $dbWordClassRelationId NOT IN (:ids)
@@ -80,5 +82,19 @@ interface WordClassRelationWordsDao {
             SELECT * FROM $dbWordClassRelationTable WHERE $dbWordClassRelationId = :id
         """
     )
-    suspend fun getAllRelation(id: Long): WordClassRelationEntity?
+    suspend fun getRelation(id: Long): WordClassRelationEntity?
+
+    @Query(
+        """
+            SELECT * FROM $dbWordClassRelationTable WHERE $dbWordClassRelationTagId = :wordClassId AND $dbWordClassRelationLabel = :label
+        """
+    )
+    suspend fun getRelation(wordClassId: Long, label: String): WordClassRelationEntity?
+
+    @Query(
+        """
+            SELECT * FROM $dbWordClassRelationTable WHERE $dbWordClassRelationTagId = :wordClassId
+        """
+    )
+    suspend fun getWordClassRelations(wordClassId: Long): List<WordClassRelationEntity>
 }

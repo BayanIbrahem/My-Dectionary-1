@@ -91,6 +91,12 @@ class MDWordsListViewPreferencesViewModel @Inject constructor(
                 this.selectedTags = selectedTags.toSet()
             }
         }
+
+        override fun onRemoveSelectedTag(tag: Tag) {
+            editViewByPreferences {
+                selectedTags = selectedTags - tag
+            }
+        }
     }
 
     private fun editViewByPreferences(body: MDWordsListViewPreferencesMutableUiState.() -> Unit) {

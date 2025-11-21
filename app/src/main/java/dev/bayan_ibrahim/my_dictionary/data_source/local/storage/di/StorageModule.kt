@@ -53,9 +53,9 @@ class StorageModule {
     ): MDFileReaderAbstractFactory = MDFileReaderAbstractFactory(
         factories = listOf(
             MDJsonFileReaderFactory(json) {
-                context.contentResolver.openInputStream(
-                    it.uri
-                ) ?: throw IOException("can not open input stream for file ${it.name}, (${it.uri})")
+                with(context) {
+                    it.open()
+                }
             }
         )
     )

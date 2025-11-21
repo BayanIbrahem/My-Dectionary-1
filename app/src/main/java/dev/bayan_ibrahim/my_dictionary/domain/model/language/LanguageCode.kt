@@ -43,6 +43,7 @@ open class LanguageCode(code: String) {
     override fun toString(): String {
         return "LanguageCode(code='$code', valid=$valid)"
     }
-
 }
+val LanguageCode.language: Language get() = Language(code)
+fun LanguageCode.nullIfInvalid(): LanguageCode? = if(valid) this else null
 

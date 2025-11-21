@@ -4,6 +4,16 @@ import kotlinx.datetime.LocalDate
 
 sealed interface MDCellData {
     fun toStringValue(): String
+
+    /**
+     * using [toStringValue] then split value to lines
+     */
+    fun toStringListValue(): List<String> {
+        return toStringValue().lines().filter {
+            it.isNotBlank()
+        }
+    }
+
     data class Text(val text: String) : MDCellData {
         override fun toStringValue(): String = text
     }

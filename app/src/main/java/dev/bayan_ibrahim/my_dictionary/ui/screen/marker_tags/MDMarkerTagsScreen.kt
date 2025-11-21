@@ -24,10 +24,10 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCa
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagExplorerDialog
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorBusinessUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorMutableUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
 import dev.bayan_ibrahim.my_dictionary.ui.screen.marker_tags.component.MDMarkerTagListItem
@@ -45,7 +45,7 @@ fun MDMarkerTagsScreen(
     uiActions: MDMarkerTagsUiActions,
     modifier: Modifier = Modifier,
 ) {
-    var showExplorerDialog by remember {
+    var showTagsSelectorDialog by remember {
         mutableStateOf(false)
     }
     MDScreen(
@@ -53,7 +53,7 @@ fun MDMarkerTagsScreen(
         modifier = modifier,
         topBar = {
             MDMarkerTagsTopAppBar(
-                onAddTag = { showExplorerDialog = true }, onNavigateBack = uiActions::onPop
+                onAddTag = { showTagsSelectorDialog = true }, onNavigateBack = uiActions::onPop
             )
         },
     ) {
@@ -66,24 +66,42 @@ fun MDMarkerTagsScreen(
                 }
             }
             items(items = markerTags) { tag ->
-                MDMarkerTagListItem(modifier = Modifier.animateItem(), tag = tag, onChangeColor = {
-                    uiActions.updateTag(tag.copy(color = it))
-                }, onToggleInheritedMarkerColor = {
-                    uiActions.updateTag(tag.copy(passColorToChildren = it))
-                }, onRemoveTag = {
-                    uiActions.removeTag(tag)
-                }, onRemoveMarker = {
-                    uiActions.updateTag(tag.copy(color = null))
-                })
+                MDMarkerTagListItem(
+                    modifier = Modifier.animateItem(),
+                    tag = tag,
+                    onChangeColor = {
+                        uiActions.updateTag(tag.onCopy(color = it))
+                    },
+                    onToggleInheritedMarkerColor = {
+                        uiActions.updateTag(tag.onCopy(passColorToChildren = it))
+                    },
+                    onRemoveTag = {
+                        uiActions.removeTag(tag)
+                    },
+                    onRemoveMarker = {
+                        uiActions.updateTag(tag.onCopy(color = null))
+                    }
+                )
             }
         }
         // dialog:
-        MDTagExplorerDialog(
-            showDialog = showExplorerDialog,
-            onDismissRequest = { showExplorerDialog = false },
-            state = nonMarkerTagsState,
-            actions = nonMarkerTagsActions,
-        )
+        if (showTagsSelectorDialog) {
+            MDTagsSelectorRoute(
+                isDialog = true,
+                isSelectEnabled = true,
+                selectedTagsMaxSize = 1,
+                isAddEnabled = false,
+                isEditEnabled = false,
+                isDeleteEnabled = false,
+                isDeleteSubtreeEnabled = false,
+                onPopOrDismissDialog = {
+                    showTagsSelectorDialog = false
+                },
+                onConfirmSelectedTags = {
+
+                }
+            )
+        }
     }
 }
 
@@ -104,11 +122,12 @@ private fun MDMarkerTagsScreenPreview() {
                     },
                     markerTags = persistentListOf(),
                     nonMarkerTagsState = MDTagsSelectorMutableUiState(),
-                    nonMarkerTagsActions = MDTagsSelectorUiActions(navigationActions = object : MDTagsSelectorNavigationUiActions {},
+                    nonMarkerTagsActions = MDTagsSelectorUiActions(
+                        navigationActions = object : MDTagsSelectorNavigationUiActions {},
                         businessActions = object : MDTagsSelectorBusinessUiActions {
                             override fun onClickTag(tag: Tag) {}
 
-                            override fun onSelectTag(tag: Tag) {}
+                            override fun onToggleSelectTag(tag: Tag) {}
 
                             override fun onSelectCurrentTag() {}
 
@@ -118,9 +137,9 @@ private fun MDMarkerTagsScreenPreview() {
 
                             override fun clearSelectedTags() {}
 
-                            override fun onAddNewTag(tag: Tag) {}
+                            override fun onAddChild(tag: Tag) {}
 
-                            override fun onAddNewTag(segment: String) {}
+                            override fun onAddNewTag(label: String) {}
 
                             override fun onDeleteTag(tag: Tag) {}
 

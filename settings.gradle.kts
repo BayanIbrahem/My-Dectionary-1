@@ -20,6 +20,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "My Dictionary"
+rootProject.name = "Lexorge"
 include(":app")
  

@@ -27,7 +27,6 @@ fun MDImportFromFileRoute(
 ) {
     LaunchedEffect(args) {
         importViewModel.initWithNavArgs(args)
-        tagsViewModel.init()
     }
 
     val uiState = importViewModel.uiState
@@ -36,7 +35,6 @@ fun MDImportFromFileRoute(
             importViewModel.importSummary
         }
     }
-    val tagsSelectorUiState = tagsViewModel.uiState
     val navActions by remember {
         derivedStateOf {
             object : MDImportFromFileNavigationUiActions, MDAppNavigationUiActions by appActions{
@@ -48,28 +46,10 @@ fun MDImportFromFileRoute(
             importViewModel.getUiActions(navActions)
         }
     }
-    val tagsSelectorNavigationActions by remember {
-        derivedStateOf {
-            object : MDTagsSelectorNavigationUiActions {
-                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<Tag>) {
-                    super.onUpdateSelectedTags(selectedTags)
-                    importViewModel.onUpdateSelectedTags(selectedTags)
-                }
-            }
-        }
-    }
-    val tagsSelectorUiActions by remember {
-        derivedStateOf {
-            tagsViewModel.getUiActions(tagsSelectorNavigationActions)
-        }
-    }
     MDImportFromFileScreen(
         uiState = uiState,
         summary = summary,
         uiActions = uiActions,
         modifier = modifier,
-        tagsSelectorUiState = tagsSelectorUiState,
-        tagsSelectorUiActions = tagsSelectorUiActions
-
     )
 }

@@ -87,7 +87,7 @@ class MDWordSpaceViewModel @Inject constructor(
     private suspend fun onSubmitWordSpaceState(state: LanguageWordSpaceState) {
         wordClassRepo.setLanguageWordsClasses(
             code = state,
-            tags = state.tags.map { it.current }
+            wordsClasses = state.tags.map { it.current }
         )
     }
 

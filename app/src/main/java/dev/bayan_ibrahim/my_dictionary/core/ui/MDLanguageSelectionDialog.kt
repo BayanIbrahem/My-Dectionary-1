@@ -31,7 +31,7 @@ import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.eachFirstCapPluralsResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.lowerPluralsResource
-import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchDialogInputField
+import dev.bayan_ibrahim.my_dictionary.core.design_system.MDSearchField
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.MDCard2ListItemTheme
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.action.MDCard2ActionRow
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.card2Content
@@ -169,7 +169,7 @@ private fun LanguageSearchBar(
             allLanguages.values.random()
         }
     }
-    MDSearchDialogInputField(
+    MDSearchField(
         searchQuery = query,
         onSearchQueryChange = onQueryChange,
         modifier = modifier,

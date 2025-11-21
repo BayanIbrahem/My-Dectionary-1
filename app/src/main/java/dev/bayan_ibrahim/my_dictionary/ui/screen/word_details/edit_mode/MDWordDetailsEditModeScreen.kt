@@ -11,14 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -32,6 +34,7 @@ import dev.bayan_ibrahim.my_dictionary.R
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.format.firstCapStringResource
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDBasicDropDownMenu
 import dev.bayan_ibrahim.my_dictionary.core.design_system.MDIcon
+import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.list_item.MDCard2ListItem
 import dev.bayan_ibrahim.my_dictionary.core.design_system.card.card_2.overline.MDCard2Overline
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDScreen
 import dev.bayan_ibrahim.my_dictionary.core.ui.MDWordFieldTextField
@@ -40,12 +43,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.WordClassRelation
 import dev.bayan_ibrahim.my_dictionary.domain.model.language.LanguageCode
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 import dev.bayan_ibrahim.my_dictionary.domain.model.word.WordLexicalRelationType
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorBusinessUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorMutableUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorNavigationUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiActions
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorUiState
-import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.tagsSelector
+import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorRoute
 import dev.bayan_ibrahim.my_dictionary.ui.screen.word_details.edit_mode.component.MDWordDetailsEditModeTopAppBar
 import dev.bayan_ibrahim.my_dictionary.ui.theme.MyDictionaryTheme
 import dev.bayan_ibrahim.my_dictionary.ui.theme.icon.MDIconsSet
@@ -55,8 +53,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun MDWordDetailsEditModeScreen(
     uiState: MDWordDetailsEditModeUiState,
     uiActions: MDWordDetailsEditModeUiActions,
-    tagsState: MDTagsSelectorUiState,
-    tagsActions: MDTagsSelectorUiActions,
     modifier: Modifier = Modifier,
     spacedBy: Dp = 8.dp,
 ) {
@@ -157,14 +153,45 @@ fun MDWordDetailsEditModeScreen(
                     )
                 },
             ) {
-                tagsSelector(
-                    state = tagsState,
-                    actions = tagsActions,
-                    spacedBy = spacedBy,
-                    showTitle = false,
-                    showHorizontalDivider = false,
-                    allowEditTags = true
-                )
+                items(uiState.tags) { tag ->
+                    MDCard2ListItem(
+                        title = tag.label,
+                        trailingIcon = { MDIcon(MDIconsSet.Close) },
+                        onTrailingClick = {
+                            uiActions.onRemoveTag(tag)
+                        }
+                    )
+                }
+                item {
+                    var showDialog by remember {
+                        mutableStateOf(false)
+                    }
+                    MDCard2ListItem(
+                        title = firstCapStringResource(R.string.add_x, stringResource(R.string.tag)),
+                        onClick = {
+                            showDialog = true
+                        }
+                    )
+                    if (showDialog) {
+                        MDTagsSelectorRoute(
+                            isDialog = false,
+                            isSelectEnabled = true,
+                            selectedTagsMaxSize = 1,
+                            isAddEnabled = false,
+                            isEditEnabled = false,
+                            isDeleteEnabled = false,
+                            isDeleteSubtreeEnabled = false,
+                            onConfirmSelectedTags = {
+                                it.firstOrNull()?.let { tag ->
+                                    uiActions.onAddTag(tag)
+                                }
+                            },
+                            onPopOrDismissDialog = {
+                                showDialog = false
+                            }
+                        )
+                    }
+                }
             }
 
             editableGroup(
@@ -399,9 +426,6 @@ private fun MDWordDetailsEditModeScreenPreview() {
             ) {
                 MDWordDetailsEditModeScreen(
                     uiState = MDWordDetailsEditModeMutableUiState(
-                        tags = remember {
-                            mutableStateListOf()
-                        },
                         availableWordsClasses = MutableStateFlow(emptyList())
                     ).apply {
                         onExecute { true }
@@ -428,43 +452,10 @@ private fun MDWordDetailsEditModeScreenPreview() {
                             override fun onTypeRelationFocusChange(newFocused: Long) {}
                             override fun onLexicalRelationFocusChange(newFocused: Long) {}
                             override fun onFocusChange(newFocused: Long) {}
-                            override fun onUpdateSelectedTags(selectedTags: List<Tag>) {}
+                            override fun onAddTag(tag: Tag) {}
+                            override fun onRemoveTag(tag: Tag) {}
                         },
                     ),
-                    tagsState = MDTagsSelectorMutableUiState(),
-                    tagsActions = MDTagsSelectorUiActions(navigationActions = object : MDTagsSelectorNavigationUiActions {},
-                        businessActions = object : MDTagsSelectorBusinessUiActions {
-                            override fun onClickTag(tag: Tag) {}
-
-                            override fun onSelectTag(tag: Tag) {}
-
-                            override fun onSelectCurrentTag() {}
-
-                            override fun onUnSelectTag(tag: Tag) {}
-
-                            override fun onSetInitialSelectedTags(tags: Collection<Tag>) {}
-
-                            override fun clearSelectedTags() {}
-
-                            override fun onAddNewTag(tag: Tag) {}
-
-                            override fun onAddNewTag(segment: String) {}
-
-                            override fun onDeleteTag(tag: Tag) {}
-
-                            override fun onNavigateUp() {}
-
-                            override fun onResetToRoot() {}
-
-                            override fun onSetAllowedTagsFilter(filter: (Tag) -> Boolean) {}
-
-                            override fun onResetAllowedTagsFilter() {}
-                            override fun onSetForbiddenTagsFilter(filter: (Tag) -> Boolean) {}
-                            override fun onResetForbiddenTagsFilter() {}
-                            override fun onResetTagsFilter() {}
-                            override fun onSearchQueryChange(query: String) {}
-                            override fun refreshCurrentTree() {}
-                        }),
                 )
             }
         }

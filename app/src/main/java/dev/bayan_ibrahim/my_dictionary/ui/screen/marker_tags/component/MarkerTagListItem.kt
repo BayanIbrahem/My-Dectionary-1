@@ -61,7 +61,7 @@ fun MDMarkerTagListItem(
         headerTheme = headerTheme,
         header = {
             MDCard2ListItem(
-                title = tag.value,
+                title = tag.label,
                 leadingIcon = {
                     MDIcon(icon = MDIconsSet.WordTag)
                 },

@@ -2,9 +2,11 @@ package dev.bayan_ibrahim.my_dictionary.ui.screen.backup_restore.import_from_fil
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDMutableUiState
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.MDUiState
@@ -14,6 +16,7 @@ import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFilePartType
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDFileType
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyConflictStrategy
 import dev.bayan_ibrahim.my_dictionary.domain.model.file.MDPropertyCorruptionStrategy
+import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
 
 interface MDImportFromFileUiState : MDUiState {
     val fileData: MDDocumentData?
@@ -27,6 +30,7 @@ interface MDImportFromFileUiState : MDUiState {
     val validSelectedFileParts: Boolean
 
     val extraTagsStrategy: MDExtraTagsStrategy
+    val selectedTags: List<Tag>
 }
 
 class MDImportFromFileMutableUiState : MDImportFromFileUiState, MDMutableUiState() {
@@ -40,4 +44,5 @@ class MDImportFromFileMutableUiState : MDImportFromFileUiState, MDMutableUiState
     override val validSelectedFileParts: Boolean
         get() = fileData != null && selectedParts.count { it.value } > 0
     override var extraTagsStrategy: MDExtraTagsStrategy by mutableStateOf(MDExtraTagsStrategy.All)
+    override val selectedTags: SnapshotStateList<Tag> = mutableStateListOf()
 }

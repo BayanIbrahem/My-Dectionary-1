@@ -20,7 +20,7 @@ enum class MDPropertyConflictStrategy(@StringRes val labelRes: Int) : LabeledEnu
     /**
      * ignore only the new word if old word exists
      */
-    IgnoreWord(R.string.ignore_word),
+    IgnoreEntry(R.string.ignore_word), // TODO, string res
 
     /**
      * firstNotNullOfOrNull(old, new)
@@ -80,8 +80,8 @@ sealed class MDPropertyConflictException(
         private fun readResolve(): Any = AbortTransaction
     }
 
-    data object AbortWord : MDPropertyConflictException("Property Conflict Strategy, abort word") {
-        private fun readResolve(): Any = AbortWord
+    data object AbortEntry : MDPropertyConflictException("Property Conflict Strategy, abort word") {
+        private fun readResolve(): Any = AbortEntry
     }
 }
 
@@ -92,8 +92,8 @@ sealed class MDPropertyCorruptionException(
         private fun readResolve(): Any = AbortTransaction
     }
 
-    data object AbortWord : MDPropertyCorruptionException("Property Corruption Strategy, abort word") {
-        private fun readResolve(): Any = AbortWord
+    data object AbortEntry : MDPropertyCorruptionException("Property Corruption Strategy, abort word") {
+        private fun readResolve(): Any = AbortEntry
     }
 }
 
@@ -106,7 +106,7 @@ inline fun <T : Any> MDPropertyConflictStrategy.applyMergable(
     merge: (old: T, new: T) -> T,
 ): T? = when (this) {
     MDPropertyConflictStrategy.AbortTransaction -> throw MDPropertyConflictException.AbortTransaction
-    MDPropertyConflictStrategy.IgnoreWord -> throw MDPropertyConflictException.AbortWord
+    MDPropertyConflictStrategy.IgnoreEntry -> throw MDPropertyConflictException.AbortEntry
     MDPropertyConflictStrategy.IgnoreProperty -> oldData() ?: newData()
     MDPropertyConflictStrategy.Override -> newData() ?: oldData()
     MDPropertyConflictStrategy.MergeOrIgnore -> oldData()?.let { old ->
@@ -127,7 +127,7 @@ inline fun <T : Any> MDPropertyConflictStrategy.applyNonMergable(
     newData: () -> T?,
 ): T? = when (this) {
     MDPropertyConflictStrategy.AbortTransaction -> throw MDPropertyConflictException.AbortTransaction
-    MDPropertyConflictStrategy.IgnoreWord -> throw MDPropertyConflictException.AbortWord
+    MDPropertyConflictStrategy.IgnoreEntry -> throw MDPropertyConflictException.AbortEntry
     MDPropertyConflictStrategy.IgnoreProperty, MDPropertyConflictStrategy.MergeOrIgnore -> oldData() ?: newData()
     MDPropertyConflictStrategy.Override, MDPropertyConflictStrategy.MergeOrOverride -> newData() ?: oldData()
 }
@@ -141,7 +141,7 @@ inline fun <T : Any> T.validateWith(
     } else {
         when (corruptionStrategy) {
             MDPropertyCorruptionStrategy.AbortTransaction -> throw MDPropertyCorruptionException.AbortTransaction
-            MDPropertyCorruptionStrategy.IgnoreWord -> throw MDPropertyCorruptionException.AbortWord
+            MDPropertyCorruptionStrategy.IgnoreWord -> throw MDPropertyCorruptionException.AbortEntry
             MDPropertyCorruptionStrategy.IgnoreProperty -> null
         }
     }

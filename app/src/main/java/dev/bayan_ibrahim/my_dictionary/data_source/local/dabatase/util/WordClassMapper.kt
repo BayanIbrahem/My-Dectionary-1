@@ -1,6 +1,7 @@
 package dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util
 
-import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
+import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfNegative
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordClassWithRelation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelationEntity
@@ -39,19 +40,19 @@ fun WordClassWithRelation.asTagModelWithCount(relationsCount: Map<Long, Int>): W
     )
 }
 
-fun WordClass.asTagEntity(
-    id: Long? = this.id.nullIfInvalid(),
+fun WordClass.asEntity(
+    id: Long? = this.id.nullIfNegative(),
 ) = WordClassEntity(
     id = id,
-    name = name,
+    name = name.meaningViewNormalize,
     language = language.code,
 )
 
 fun WordClassRelation.asRelationEntity(
-    tagId: Long,
-    id: Long? = this.id.nullIfInvalid(),
+    wordClassId: Long,
+    id: Long? = this.id.nullIfNegative(),
 ) = WordClassRelationEntity(
     id = id,
-    label = label,
-    tagId = tagId,
+    label = label.meaningViewNormalize,
+    wordClassId = wordClassId,
 )

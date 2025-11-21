@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.bayan_ibrahim.my_dictionary.domain.model.tag.Tag
-import dev.bayan_ibrahim.my_dictionary.domain.model.tag.isMarkerTag
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.MDDestination
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppNavigationUiActions
 import dev.bayan_ibrahim.my_dictionary.ui.navigate.app.MDAppUiActions
@@ -21,7 +20,7 @@ import dev.bayan_ibrahim.my_dictionary.ui.screen.core.tag.MDTagsSelectorViewMode
 
 @Composable
 fun MDMarkerTagsRoute(
-    args: MDDestination.MarkerTags,
+    args: MDDestination.TagsEditor,
     appUiState: MDAppUiState,
     appActions: MDAppUiActions,
     modifier: Modifier = Modifier,
@@ -56,7 +55,7 @@ fun MDMarkerTagsRoute(
     val tagsSelectorNavActions by remember {
         derivedStateOf {
             object : MDTagsSelectorNavigationUiActions {
-                override fun onUpdateSelectedTags(selectedTags: SnapshotStateList<Tag>) {
+                override fun onNotifyConfirmSelectedTags(selectedTags: List<Tag>) {
                     uiActions.onUpdateSelectedTags(selectedTags)
                 }
             }

@@ -11,6 +11,7 @@ import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relatio
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassId
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassLanguage
+import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassName
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.util.dbWordClassTable
 import kotlinx.coroutines.flow.Flow
 
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.Flow
 interface WordClassDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTagType(tag: WordClassEntity): Long
+    suspend fun insertWordClass(tag: WordClassEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTagTypes(tags: List<WordClassEntity>): List<Long>
@@ -63,7 +64,15 @@ interface WordClassDao {
             SELECT * FROM $dbWordClassTable WHERE $dbWordClassId = :id
         """
     )
-    suspend fun getTagType(id: Long): WordClassWithRelation?
+    suspend fun getWordClass(id: Long): WordClassWithRelation?
+
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM $dbWordClassTable WHERE $dbWordClassName = :name
+        """
+    )
+    suspend fun getWordClass(name: String): WordClassWithRelation?
 
     /**
      * return only tags of languages that have ones

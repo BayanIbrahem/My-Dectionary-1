@@ -5,10 +5,6 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
-private const val separator = ", "
-
-private const val emptyJsonString = "\'\'"
-
 abstract class ListConverter<T>(
     serializer: KSerializer<T>,
     private val onCorruptedString: (String) -> List<T> = {emptyList()}

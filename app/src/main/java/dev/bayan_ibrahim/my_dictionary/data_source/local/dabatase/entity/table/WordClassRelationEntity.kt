@@ -33,5 +33,5 @@ data class WordClassRelationEntity(
     @ColumnInfo(name = dbWordClassRelationLabel)
     val label: String,
     @ColumnInfo(name = dbWordClassRelationTagId)
-    val tagId: Long,
+    val wordClassId: Long,
 )

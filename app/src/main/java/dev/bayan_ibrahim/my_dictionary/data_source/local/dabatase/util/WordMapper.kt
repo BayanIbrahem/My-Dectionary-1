@@ -4,7 +4,7 @@ import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.mea
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_classes.normalizer.meaningViewNormalize
 import dev.bayan_ibrahim.my_dictionary.core.common.helper_methods.date.asEpochMillisecondsInstant
 import dev.bayan_ibrahim.my_dictionary.core.util.INVALID_ID
-import dev.bayan_ibrahim.my_dictionary.core.util.nullIfInvalid
+import dev.bayan_ibrahim.my_dictionary.core.util.nullIfNegative
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.relation.WordWithTagsAndRelatedWordsRelation
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordEntity
 import dev.bayan_ibrahim.my_dictionary.data_source.local.dabatase.entity.table.WordClassRelatedWordEntity
@@ -19,7 +19,7 @@ import kotlinx.datetime.Clock
 
 @JvmName("WordWithRelatedWordsAsWordModel")
 fun WordWithTagsAndRelatedWordsRelation.asWordModel(
-    tag: WordClass? = null,
+    wordClass: WordClass? = null,
 ): Word = Word(
     id = this.word.id!!,
     meaning = this.word.meaning.meaningViewNormalize,
@@ -29,9 +29,9 @@ fun WordWithTagsAndRelatedWordsRelation.asWordModel(
     tags = this.tags.map { it.asModel() }.toSet(),
     transcription = this.word.transcription,
     examples = this.word.examples,
-    wordClass = tag,
+    wordClass = wordClass,
     note = this.word.note,
-    relatedWords = tag?.let {
+    relatedWords = wordClass?.let {
         relatedWords.map { word ->
             RelatedWord(
                 id = word.related.id!!,
@@ -91,7 +91,7 @@ fun WordEntity.getLexicalRelations(): Map<WordLexicalRelationType, List<WordLexi
 fun Word.asWordEntity(
     setUpdateTimeToNow: Boolean = true,
 ): WordEntity = WordEntity(
-    id = this.id.nullIfInvalid(),
+    id = this.id.nullIfNegative(),
     meaning = this.meaning,
     normalizedMeaning = this.meaning.meaningSearchNormalize,
     translation = this.translation,
@@ -101,7 +101,7 @@ fun Word.asWordEntity(
     languageCode = this.language.code,
     transcription = this.transcription,
     examples = this.examples,
-    wordClassId = this.wordClass?.id?.nullIfInvalid(),
+    wordClassId = this.wordClass?.id?.nullIfNegative(),
     memoryDecayFactor = this.memoryDecayFactor,
     lastTrainTime = this.lastTrainTime?.toEpochMilliseconds(),
     createdAt = this.createdAt.toEpochMilliseconds(),
@@ -123,9 +123,9 @@ fun Word.asWordEntity(
 )
 
 fun Word.asRelatedWords(): List<WordClassRelatedWordEntity> = this.relatedWords.mapNotNull { word ->
-    word.relationId.nullIfInvalid()?.let {
+    word.relationId.nullIfNegative()?.let {
         WordClassRelatedWordEntity(
-            id = word.id.nullIfInvalid(),
+            id = word.id.nullIfNegative(),
             relationId = word.relationId,
             baseWordId = this.id,
             word = word.value,
